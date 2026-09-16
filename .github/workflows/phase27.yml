@@ -32,4 +32,4 @@ jobs:
           fi
       - name: Phase 27 end-to-end verification
         run: TRACE_VM=1 TRACE_PATCH=1 TRACE_CODE=1 python3 phase27_unfinished/verify_phase27.py
-      # Clean trigger marker for the corrected Phase 26 compiler tree.
+      # Builder now derives relocation from the current Phase 26 source; no hard-coded insertion offset.
