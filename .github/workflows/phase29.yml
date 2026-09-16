@@ -1,0 +1,14 @@
+name: MIRROR7 Phase 29
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  mirr-source-closure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: MIRR source closure and compiler smoke test
+        run: python3 phase29_mirr_compiler/verify_phase29.py
