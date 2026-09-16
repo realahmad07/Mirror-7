@@ -64,14 +64,7 @@ def repair_create_pass_eof_guard(lines):
     return out
 
 def repair_find_word_targets(lines):
-    """Resolve legacy FIND targets by instruction structure, not global delta.
-
-    Phase-26 encoded two targets relative to the old image layout. After the
-    primitive prefix grows, blindly relocating those absolute values lands
-    inside the next instruction. The intended destinations are derived from
-    the actual emitted tokens: the mismatch path begins at `13 @ 255 =`, and
-    the non-255 path begins at the `1` after `0 13 !`.
-    """
+    """Resolve legacy FIND targets from the emitted instruction layout."""
     out=[]
     addr=PRIM_BYTES
     for line in lines:
@@ -89,14 +82,11 @@ def repair_find_word_targets(lines):
             for i,t in enumerate(body):
                 if not t.startswith('0branch:'):
                     continue
-                # Name-length/character mismatch: continue at the low-id
-                # limit check, whose opcode is the LIT 13 token.
+                # Legacy 445 lands two bytes into this LIT 13 after relocation.
                 if limit_start is not None and int(t.split(':',1)[1]) == limit_start + 2:
                     body[i]=f'0branch:{limit_start}'
-                # Low-id != 255: skip the high-byte reset and enter the
-                # low-byte increment path at the following literal 1.
-                if (i+4 < len(body) and body[i+1:i+4] == ['0','13','!']
-                        and body[i+4] == '1'):
+                # Legacy 468 lands one byte before the low-byte increment path.
+                if i+4 < len(body) and body[i+1:i+4] == ['0','13','!'] and body[i+4] == '1':
                     body[i]=f'0branch:{pcs[i+4]}'
             toks=toks[:2]+body+toks[-1:]
             line=' '.join(toks)
@@ -132,7 +122,7 @@ w=Wd('current-len'); w.t('18','@','19','@','word-code-len','swap','42','!','43',
 w=Wd('patch-at'); w.t('18','@','19','@','50','@','51','@','40','@','41','@','word-patch-u16','drop','drop','exit')
 w=Wd('if-open'); w.t('30','@','15','=','0','='); w.bz('BAD'); w.t('30','@','30','@','30','@','30','@','+','+','+','192','+','48','!','48','@','1','+','49','!','current-len','42','@','43','@','1','0','u16-add','swap','50','!','51','!','14','10','!','emit-byte','0','10','!','emit-byte','0','10','!','emit-byte','50','@','48','@','!','51','@','49','@','!','0','48','@','2','+','!','0','49','@','2','+','!','1','30','@','+','30','!','exit'); w.label('BAD'); w.t('0','31','!','exit')
 w=Wd('else-open'); w.t('30','@','0','=','0','='); w.bz('BAD'); w.t('30','@','1','-','30','@','1','-','30','@','1','-','30','@','1','-','+','+','+','192','+','48','!','48','@','1','+','49','!','48','@','2','+','@','52','!','49','@','2','+','@','53','!','52','@','53','@','+','0','='); w.bz('BAD'); w.t('48','@','@','50','!','49','@','@','51','!','current-len','42','@','43','@','1','0','u16-add','swap','54','!','55','!','15','10','!','emit-byte','0','10','!','emit-byte','0','10','!','emit-byte','current-end','patch-at','54','@','48','@','2','+','!','55','@','49','@','2','+','!','exit'); w.label('BAD'); w.t('0','31','!','exit')
-w=Wd('then-close'); w.t('30','@','0','='); w.bz('CONT'); w.t('0','31','!','exit'); w.label('CONT'); w.t('30','@','1','-','30','@','1','-','30','@','1','-','30','@','1','-','+','+','+','192','+','48','!','48','@','1','+','49','!','48','@','2','+','@','52','!','49','@','2','+','@','53','!','52','@','53','@','+','0','='); w.bz('HAS_ELSE'); w.t('48','@','@','50','!','49','@','51','@','current-end','patch-at','30','@','1','-','30','!','exit'); w.label('HAS_ELSE'); w.t('52','@','50','!','53','@','51','!','current-end','patch-at','30','@','1','-','30','!','exit')
+w=Wd('then-close'); w.t('30','@','0','='); w.bz('CONT'); w.t('0','31','!','exit'); w.label('CONT'); w.t('30','@','1','-','30','@','1','-','30','@','1','-','30','@','1','-','+','+','+','192','+','48','!','48','@','1','+','49','!','48','@','2','+','@','52','!','49','@','2','+','@','53','!','52','@','53','@','+','0','='); w.bz('HAS_ELSE'); w.t('48','@','@','50','!','49','@','@','51','@','current-end','patch-at','30','@','1','-','30','!','exit'); w.label('HAS_ELSE'); w.t('52','@','50','!','53','@','51','!','current-end','patch-at','30','@','1','-','30','!','exit')
 w=Wd('compile-structured'); w.t('1','31','!','create-pass','set-marker-pos'); w.label('L'); w.t('scan-token','12','!','12','@','0','='); w.bz('HAVE'); w.t('exit'); w.label('HAVE'); w.t('tok-colon'); w.bz('FAIL'); w.t('scan-token','12','!','12','@','0','='); w.bz('GN'); w.bz('FAIL'); w.label('GN'); w.t('find-word','19','!','18','!'); w.label('B'); w.t('scan-token','12','!','12','@','0','='); w.bz('BH'); w.bz('FAIL'); w.label('BH'); w.t('tok-semi'); w.bz('NOTS'); w.t('30','@','0','='); w.bz('FAIL'); w.t('10','10','!','emit-byte'); w.br('L'); w.label('NOTS'); w.t('tok-if'); w.bz('NOIF'); w.t('if-open','31','@','0','=','0','='); w.bz('FAIL'); w.br('B'); w.label('NOIF'); w.t('tok-else'); w.bz('NOELSE'); w.t('else-open','31','@','0','=','0','='); w.bz('FAIL'); w.br('B'); w.label('NOELSE'); w.t('tok-then'); w.bz('NOTHEN'); w.t('then-close','31','@','0','=','0','='); w.bz('FAIL'); w.br('B'); w.label('NOTHEN'); w.t('digit-first?'); w.bz('WORD'); w.t('parse-number','20','!','1','10','!','emit-byte','20','@','10','!','emit-byte'); w.br('B'); w.label('WORD'); w.t('find-word','21','!','20','!','9','10','!','emit-byte','20','@','10','!','emit-byte','21','@','10','!','emit-byte'); w.br('B'); w.label('FAIL'); w.t('exit')
 w=Wd('run-alpha'); w.t('compile-structured','word-count','19','!','18','!','18','@','1','-','18','!','18','@','19','@','word-exec','exit')
 cur=source_size(base_lines)
