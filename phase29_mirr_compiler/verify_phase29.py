@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import shutil
 
+# Phase 29 gate: source closure plus target-dictionary creation/lookup diagnostics.
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "phase27_unfinished" / "compiler_phase27.mirr"
 WORDS = ROOT / "phase27_unfinished" / "compiler_phase27_words.mirr"
