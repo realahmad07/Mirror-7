@@ -20,4 +20,4 @@ jobs:
           (cd "$tmp" && python3 "$GITHUB_WORKSPACE/phase27_unfinished/build_phase27.py")
           cat "$tmp/compiler_phase27_words.mirr"
       - name: Phase 27 end-to-end verification
-        run: python3 phase27_unfinished/verify_phase27.py
+        run: TRACE_VM=1 TRACE_PATCH=1 TRACE_CODE=1 python3 phase27_unfinished/verify_phase27.py
