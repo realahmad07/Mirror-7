@@ -31,6 +31,11 @@ jobs:
               if old not in s:
                   raise SystemExit('missing expected builder pattern: '+old)
               s = s.replace(old,new,1)
+          needle = "toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)"
+          patch = "bs=[i for i,t in enumerate(body) if t.startswith('0branch:') or t.startswith('branch:')]\n            if len(bs)==8:\n                ex=body.index('exit'); dr=body.index('drop'); st=body.index('scan-token')\n                targets=[pcs[ex],pcs[dr],pcs[dr],pcs[dr],pcs[dr],pcs[dr],pcs[st],pcs[dr]]\n                for j,i in enumerate(bs): body[i]=('0branch:' if body[i].startswith('0branch:') else 'branch:')+str(targets[j])\n          " + needle
+          if needle not in s:
+              raise SystemExit('create-pass finalization needle not found')
+          s = s.replace(needle, patch, 1)
           p.write_text(s)
           PY
       - name: Nucleus opcode/debug map
