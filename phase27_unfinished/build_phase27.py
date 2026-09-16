@@ -85,9 +85,12 @@ def repair_find_word_targets(lines):
                 # Legacy 445 lands two bytes into this LIT 13 after relocation.
                 if limit_start is not None and int(t.split(':',1)[1]) == limit_start + 2:
                     body[i]=f'0branch:{limit_start}'
-                # Legacy 468 lands one byte before the low-byte increment path.
-                if i+4 < len(body) and body[i+1:i+4] == ['0','13','!'] and body[i+4] == '1':
-                    body[i]=f'0branch:{pcs[i+4]}'
+                # The 0branch after '13 @ 255 =' must jump to the lo-byte increment
+                # path ('1 13 @ + 13 ! branch:...') when lo != 255, not to the
+                # hi-byte carry path ('1 14 @ + 14 @ branch:...') which is 7 tokens
+                # earlier. The lo++ path starts at body[i+11].
+                if i+11 < len(body) and body[i+1:i+4] == ['0','13','!'] and body[i+11] == '1':
+                    body[i]=f'0branch:{pcs[i+11]}'
             toks=toks[:2]+body+toks[-1:]
             line=' '.join(toks)
         out.append(line)
