@@ -1,6 +1,8 @@
 name: MIRROR7 Phase 27 Find-Word Debug
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -18,5 +20,5 @@ jobs:
           : debug-find set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! 18 @ 48 + emit exit ;
           EOF
           printf ': alpha 65 emit ;\n' > /tmp/input.mirr
-          ./nucleus /tmp/compiler.mirr debug-create --input /tmp/input.mirr
-          ./nucleus /tmp/compiler.mirr debug-find --input /tmp/input.mirr
+          printf 'CREATE='; ./nucleus /tmp/compiler.mirr debug-create --input /tmp/input.mirr
+          printf ' FIND='; ./nucleus /tmp/compiler.mirr debug-find --input /tmp/input.mirr
