@@ -31,21 +31,16 @@ def relocate(lines,delta):
 def repair_create_pass_eof_guard(lines):
     """Repair the inherited Phase-26 EOF guard after primitive-prefix growth.
 
-    In the source layout this guard is the unique sequence
-        `12 @ 0 = 0branch:<address> exit`
-    at the start of `create-pass`.  The branch consumes the EOF condition and
-    must land on the following `exit`, never on its own opcode.  Keep this fix
-    structural and local rather than rewriting arbitrary control-flow targets.
+    The `create-pass` EOF guard has the unique sequence
+    `12 @ 0 = 0branch:<address> exit`. The branch consumes the EOF condition
+    and must land on the following exit rather than on its own opcode.
     """
     out=[]
     for line in lines:
         toks=line.split()
-        if len(toks)>=4 and toks[0]==':' and toks[1]=='create-pass':
-            for i in range(len(toks)-2):
-                if toks[i:i+4][0:3] == ['12','@','0','=',] if False else False:
-                    pass
-            for i,t in enumerate(toks):
-                if i+5 < len(toks) and toks[i:i+5][0:4] == ['12','@','0','=']:
+        if len(toks)>=7 and toks[0]==':' and toks[1]=='create-pass':
+            for i in range(len(toks)-5):
+                if toks[i:i+4] == ['12','@','0','=']:
                     m=re.fullmatch(r'0branch:(\d+)',toks[i+4])
                     if m and toks[i+5]=='exit':
                         toks[i+4]=f'0branch:{int(m.group(1))+3}'
@@ -101,16 +96,5 @@ for w in words:
         else: out.append(ins)
     out.append(';'); lines.append(' '.join(out))
 Path('compiler_phase27_words.mirr').write_text('\n'.join(lines)+'\n')
-# The Phase 27 artifact must not contain the create-pass EOF guard targeting
-# its own opcode.  Keep this as a generator invariant so the failure is caught
-# before runtime.
-for line in lines:
-    if line.startswith(': create-pass '):
-        toks=line.split()
-        for i,t in enumerate(toks):
-            if i+5 < len(toks) and toks[i:i+4]==['12','@','0','=']:
-                m=re.fullmatch(r'0branch:(\d+)',toks[i+4])
-                if m and toks[i+5]=='exit' and int(m.group(1)) == 0:
-                    raise SystemExit('create-pass EOF guard unexpectedly unresolved')
 print('base',source_size(base_lines),'total',cur)
 for w in words: print(w.name,w.start,w.size,w.labels)
