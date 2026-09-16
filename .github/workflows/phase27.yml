@@ -12,6 +12,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Nucleus opcode/debug map
         run: |
-          grep -nE 'enum|OP_|word_exec|word-patch|word_append|word_new|word_count|JZ|BRANCH' phase25_26/nucleus.c | head -n 160
+          grep -nE 'enum|OP_|word_exec|word-patch|word_append|word_new|word_count|JZ|BRANCH' phase25_26/nucleus.c | head -n 220
       - name: Phase 27 end-to-end verification
         run: python3 phase27_unfinished/verify_phase27.py
