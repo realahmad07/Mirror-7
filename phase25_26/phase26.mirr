@@ -12,7 +12,3 @@
 : emit-byte 18 @ 19 @ 10 @ word-append 19 ! 18 ! exit ;
 : create-pass set-marker-pos scan-token 12 ! 12 @ 0 = 0branch:740 exit tok-colon 0branch:803 scan-token 12 ! 12 @ 0 = 0branch:764 branch:803 64 0 12 @ 0 word-new drop drop scan-token 12 ! 12 @ 0 = 0branch:794 branch:803 tok-semi 0branch:776 branch:724 drop exit ;
 : compile-pass set-marker-pos scan-token 12 ! 12 @ 0 = 0branch:825 exit tok-colon 0branch:963 scan-token 12 ! 12 @ 0 = 0branch:849 branch:963 find-word 19 ! 18 ! scan-token 12 ! 12 @ 0 = 0branch:876 branch:963 tok-semi 0branch:893 10 10 ! emit-byte branch:809 digit-first? 0branch:925 parse-number 20 ! 1 10 ! emit-byte 20 @ 10 ! emit-byte branch:858 find-word 21 ! 20 ! 9 10 ! emit-byte 20 @ 10 ! emit-byte 21 @ 10 ! emit-byte branch:858 ;
-: BOOTSTRAP ;
-: beta 65 emit ;
-: alpha beta ;
-: main mark-pos create-pass compile-pass ;
