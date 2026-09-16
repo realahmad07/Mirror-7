@@ -17,55 +17,20 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
           p = Path('phase27_unfinished/build_phase27.py')
           s = p.read_text()
-
-          old = "for i in range(len(body)-3):\n                if body[i:i+4]==['word-count','16','!','15','!']:"
-          new = "for i in range(len(body)-4):\n                if body[i:i+5]==['word-count','16','!','15','!']:"
-          if old not in s:
-              raise SystemExit('expected find-word storage rewrite pattern not found')
-          s = s.replace(old, new, 1)
-
-          old_create = '''            if toks and toks[0]==':' and toks[1]=='create-pass':
-                body=toks[2:-1]; pcs=[]; pc=addr
-                for t in body:pcs.append(pc); pc+=token_size(t)
-                a=body.index('tok-colon'); b=body.index('word-new')-5; c=body.index('tok-semi'); d=body.index('scan-token'); e=body.index('scan-token',b); f=body.index('drop')
-                for i,t in enumerate(body):
-                    if not (t.startswith('0branch:') or t.startswith('branch:')):continue
-                    if i<a:body[i]=f'0branch:{pcs[a]}'
-                    elif i==a+1:body[i]=f'0branch:{pcs[f]}'
-                    elif a<i<b and t.startswith('0branch:'):body[i]=f'0branch:{pcs[b]}'
-                    elif a<i<b and t.startswith('branch:'):body[i]=f'branch:{pcs[f]}'
-                    elif b<i<c and t.startswith('0branch:'):body[i]=f'0branch:{pcs[c]}'
-                    elif b<i<c and t.startswith('branch:'):body[i]=f'branch:{pcs[f]}'
-                    elif i==c+1:body[i]=f'0branch:{pcs[e]}'
-                    elif i==c+2:body[i]=f'branch:{pcs[d]}'
-                toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)'''
-          new_create = '''            if toks and toks[0]==':' and toks[1]=='create-pass':
-                body=toks[2:-1]; pcs=[]; pc=addr
-                for t in body:pcs.append(pc); pc+=token_size(t)
-                a=body.index('tok-colon'); c=body.index('tok-semi'); f=body.index('drop'); start=body.index('scan-token')
-                for i,t in enumerate(body):
-                    if not (t.startswith('0branch:') or t.startswith('branch:')):continue
-                    if i<a:body[i]=f'0branch:{pcs[a+1]}'
-                    elif i==a+1:body[i]=f'0branch:{pcs[f]}'
-                    elif i==a+7:body[i]=f'0branch:{pcs[f]}'
-                    elif i==a+8:body[i]=f'branch:{pcs[f]}'
-                    elif i==c-2:body[i]=f'0branch:{pcs[f]}'
-                    elif i==c-1:body[i]=f'branch:{pcs[f]}'
-                    elif i==c+1:body[i]=f'0branch:{pcs[start]}'
-                    elif i==c+2:body[i]=f'branch:{pcs[f]}'
-                toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)'''
-          if old_create not in s:
-              raise SystemExit('expected create-pass repair block not found')
-          s = s.replace(old_create, new_create, 1)
-
-          old_carry = "['1','14','@','+','14','@']"
-          new_carry = "['1','14','@','+','14','!']"
-          if old_carry in s:
-              s = s.replace(old_carry, new_carry, 1)
-
+          reps = [
+            ("if i<a:body[i]=f'0branch:{pcs[a]}'", "if i<a:body[i]=f'0branch:{pcs[a+1]}'"),
+            ("elif a<i<b and t.startswith('0branch:'):body[i]=f'0branch:{pcs[b]}'", "elif a<i<b and t.startswith('0branch:'):body[i]=f'0branch:{pcs[f]}'"),
+            ("elif b<i<c and t.startswith('0branch:'):body[i]=f'0branch:{pcs[c]}'", "elif b<i<c and t.startswith('0branch:'):body[i]=f'0branch:{pcs[f]}'"),
+            ("elif i==c+1:body[i]=f'0branch:{pcs[e]}'", "elif i==c+1:body[i]=f'0branch:{pcs[d]}'"),
+            ("elif i==c+2:body[i]=f'branch:{pcs[d]}'", "elif i==c+2:body[i]=f'branch:{pcs[f]}'"),
+            ("for i in range(len(body)-3):\n                if body[i:i+4]==['word-count','16','!','15','!']:", "for i in range(len(body)-4):\n                if body[i:i+5]==['word-count','16','!','15','!']:")
+          ]
+          for old,new in reps:
+              if old not in s:
+                  raise SystemExit('missing expected builder pattern: '+old)
+              s = s.replace(old,new,1)
           p.write_text(s)
           PY
       - name: Nucleus opcode/debug map
