@@ -11,10 +11,8 @@ BUILDER = PHASE / "build_phase27.py"
 EXPECTED = PHASE / "compiler_phase27_words.mirr"
 NUCLEUS = ROOT / "phase25_26" / "nucleus.c"
 
-
 def run(cmd, *, cwd=None, env=None):
     return subprocess.run(cmd, cwd=cwd, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
-
 
 def main():
     for path in (SOURCE, BUILDER, EXPECTED, NUCLEUS):
@@ -32,9 +30,8 @@ def main():
             inp=td/f"case_{i}.mirr"; inp.write_text(source)
             p=run([str(td/"nucleus"),str(rebuilt),"run-alpha","--input",str(inp)])
             if p.returncode!=0 or p.stdout!=want:
-                trace=run([str(td/"nucleus"),str(rebuilt),"run-alpha","--input",str(inp)],env={**os.environ,"TRACE_PATCH":"1","TRACE_CODE":"1"})
-                raise SystemExit(f"phase27 case {i} failed: rc={p.returncode}, stdout={p.stdout!r}, stderr={p.stderr!r}\nPATCH/CODE TRACE:\n{trace.stderr[-12000:]}")
+                trace=run([str(td/"nucleus"),str(rebuilt),"run-alpha","--input",str(inp)],env={**os.environ,"TRACE_VM":"1","TRACE_CODE":"1","DUMP_WORDS":"1"})
+                raise SystemExit(f"phase27 case {i} failed: rc={p.returncode}, stdout={p.stdout!r}, stderr={p.stderr!r}\nVM TRACE:\n{trace.stderr[-24000:]}")
     print("PHASE27_VERIFICATION_PASS")
-
 
 if __name__=="__main__": main()
