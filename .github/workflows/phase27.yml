@@ -1,0 +1,14 @@
+name: MIRROR7 Phase 27
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  structured-control-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Phase 27 end-to-end verification
+        run: python3 phase27_unfinished/verify_phase27.py
