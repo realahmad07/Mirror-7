@@ -1,0 +1,42 @@
+name: MIRROR7 Phase 27 Live Debug
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'phase27_unfinished/build_phase27.py'
+      - 'phase27_unfinished/compiler_phase27_words.mirr'
+      - '.github/workflows/phase27_live_debug.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build nucleus
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase25_26/nucleus.c -o nucleus
+      - name: Rebuild and inspect layout
+        run: |
+          rm -rf /tmp/m7
+          mkdir /tmp/m7
+          cp phase25_26/compiler_phase26_words.mirr /tmp/m7/
+          python3 phase27_unfinished/build_phase27.py 2>&1 | tee /tmp/m7/builder.log
+          cp compiler_phase27_words.mirr /tmp/m7/generated.mirr
+          echo '--- BUILDER ---'
+          cat /tmp/m7/builder.log
+          echo '--- NUCLEUS WORD TABLE ---'
+          DUMP_WORDS=1 ./nucleus /tmp/m7/generated.mirr run-alpha --input <(printf ': alpha 65 emit ;\n') 2>/tmp/m7/words.trace || true
+          cat /tmp/m7/words.trace
+          echo '--- TARGETS ---'
+          grep -oE '(0branch|branch):[0-9]+' /tmp/m7/generated.mirr | tail -80
+          echo '--- RUNTIME TRACE ---'
+          TRACE_VM=1 TRACE_CODE=1 ./nucleus /tmp/m7/generated.mirr run-alpha --input <(printf ': alpha 65 emit ;\n') >/tmp/m7/out 2>/tmp/m7/trace || true
+          cat /tmp/m7/out
+          tail -n 300 /tmp/m7/trace
+      - name: Verify generated artifact
+        run: |
+          cmp compiler_phase27_words.mirr /tmp/m7/generated.mirr
