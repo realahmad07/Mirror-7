@@ -28,39 +28,33 @@ def relocate(lines,delta):
         out.append(' '.join(toks))
     return out
 
-def repair_fallthrough_self_targets(lines):
-    """Fix legacy branches that target their own opcode before a following exit.
+def repair_create_pass_eof_guard(lines):
+    """Repair the inherited Phase-26 EOF guard after primitive-prefix growth.
 
-    The Phase 26 create-pass EOF guard contains `0branch:<its-own-address> exit`.
-    The VM branches to the encoded absolute address, so that form loops back to
-    the branch after consuming its condition and then underflows the data stack.
-    Only repair this unambiguous `branch ; exit` shape; leave intentional loops
-    untouched.
+    In the source layout this guard is the unique sequence
+        `12 @ 0 = 0branch:<address> exit`
+    at the start of `create-pass`.  The branch consumes the EOF condition and
+    must land on the following `exit`, never on its own opcode.  Keep this fix
+    structural and local rather than rewriting arbitrary control-flow targets.
     """
     out=[]
-    addr=PRIM_BYTES
     for line in lines:
         toks=line.split()
-        if not toks:
-            continue
-        body=toks[2:-1]
-        fixed=[]
-        for i,t in enumerate(body):
-            m=re.match(r'^(0branch:|branch:)(\d+)$',t)
-            if m and i+1 < len(body) and body[i+1]=='exit':
-                here=addr
-                target=int(m.group(2))
-                if target==here:
-                    t=m.group(1)+str(here+3)
-            fixed.append(t)
-            addr += token_size(t)
-        out.append(' '.join(toks[:2]+fixed+toks[-1:]))
+        if len(toks)>=4 and toks[0]==':' and toks[1]=='create-pass':
+            for i in range(len(toks)-2):
+                if toks[i:i+4][0:3] == ['12','@','0','=',] if False else False:
+                    pass
+            for i,t in enumerate(toks):
+                if i+5 < len(toks) and toks[i:i+5][0:4] == ['12','@','0','=']:
+                    m=re.fullmatch(r'0branch:(\d+)',toks[i+4])
+                    if m and toks[i+5]=='exit':
+                        toks[i+4]=f'0branch:{int(m.group(1))+3}'
+                        break
+        out.append(' '.join(toks))
     return out
 
-# Relocate inherited Phase 26 absolute targets, then repair the one legacy
-# fall-through self-target in create-pass using the actual generated address.
 base_lines=relocate(base_lines,PRIM_DELTA)
-base_lines=repair_fallthrough_self_targets(base_lines)
+base_lines=repair_create_pass_eof_guard(base_lines)
 
 def source_size(lines):
     total=PRIM_BYTES
@@ -107,5 +101,16 @@ for w in words:
         else: out.append(ins)
     out.append(';'); lines.append(' '.join(out))
 Path('compiler_phase27_words.mirr').write_text('\n'.join(lines)+'\n')
+# The Phase 27 artifact must not contain the create-pass EOF guard targeting
+# its own opcode.  Keep this as a generator invariant so the failure is caught
+# before runtime.
+for line in lines:
+    if line.startswith(': create-pass '):
+        toks=line.split()
+        for i,t in enumerate(toks):
+            if i+5 < len(toks) and toks[i:i+4]==['12','@','0','=']:
+                m=re.fullmatch(r'0branch:(\d+)',toks[i+4])
+                if m and toks[i+5]=='exit' and int(m.group(1)) == 0:
+                    raise SystemExit('create-pass EOF guard unexpectedly unresolved')
 print('base',source_size(base_lines),'total',cur)
 for w in words: print(w.name,w.start,w.size,w.labels)
