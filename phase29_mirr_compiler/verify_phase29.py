@@ -96,16 +96,21 @@ def main():
             raise SystemExit('strict nucleus build failed:\n' + cc.stderr)
 
         diagnostic = td / 'diagnostic.mirr'
-        diagnostic.write_text(generated.read_text() + ': debug-create create-pass word-count drop 1 - 48 + emit exit ;\n')
+        diagnostic.write_text(
+            generated.read_text()
+            + ': debug-create create-pass word-count drop 1 - 48 + emit exit ;\n'
+            + ': debug-find 0 19 ! set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! 19 @ 0 = 48 + emit exit ;\n'
+        )
         inp = td / 'smoke.mirr'
         inp.write_text(': alpha 1 IF 65 emit ELSE 66 emit THEN ;\n')
+
         d = run([str(td / 'nucleus'), str(diagnostic), 'debug-create', '--input', str(inp)])
-        if d.returncode:
-            raise SystemExit(f"create-pass diagnostic failed: rc={d.returncode} stdout={d.stdout!r} stderr={d.stderr!r}")
-        # The generated compiler contains 50 dictionary entries before the target
-        # word; create-pass must add alpha, so low-byte count is 51 -> ASCII 'b'.
-        if d.stdout != 'b':
-            raise SystemExit(f"create-pass did not create the target word: observed count marker {d.stdout!r}, expected 'b'")
+        if d.returncode or d.stdout != 'c':
+            raise SystemExit(f"create-pass diagnostic failed: rc={d.returncode} stdout={d.stdout!r} stderr={d.stderr!r}; expected dictionary-count marker 'c'")
+
+        f = run([str(td / 'nucleus'), str(diagnostic), 'debug-find', '--input', str(inp)])
+        if f.returncode or f.stdout != '0':
+            raise SystemExit(f"find-word diagnostic failed: rc={f.returncode} stdout={f.stdout!r} stderr={f.stderr!r}; expected nonzero alpha id")
 
         p = run([str(td / 'nucleus'), str(generated), 'run-alpha', '--input', str(inp)])
         if p.returncode or p.stdout != 'A':
