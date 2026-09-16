@@ -10,7 +10,7 @@
 : set-marker-pos 0 0 0 0 src-set-pos exit ;
 : mark-pos seek-marker src-pos 3 ! 2 ! 1 ! 0 ! exit ;
 : emit-byte 18 @ 19 @ 10 @ word-append 19 ! 18 ! exit ;
-: create-pass set-marker-pos scan-token 12 ! 12 @ 0 = 0branch:786 exit tok-colon 0branch:853 scan-token 12 @ 0 = 0branch:810 branch:853 64 0 12 @ 0 word-new 19 ! 18 ! scan-token 12 ! 12 @ 0 = 0branch:844 branch:853 tok-semi 0branch:826 branch:770 drop exit ;
+: create-pass set-marker-pos scan-token 12 ! 12 @ 0 = 0branch:782 exit tok-colon 0branch:853 scan-token 12 @ 0 = 0branch:810 branch:853 64 0 12 @ 0 word-new 19 ! 18 ! scan-token 12 ! 12 @ 0 = 0branch:844 branch:853 tok-semi 0branch:826 branch:770 drop exit ;
 : compile-pass set-marker-pos scan-token 12 ! 12 @ 0 = 0branch:875 exit tok-colon 0branch:1013 scan-token 12 @ 0 = 0branch:899 branch:1013 find-word 19 ! 18 ! scan-token 12 ! 12 @ 0 = 0branch:926 branch:1013 tok-semi 0branch:943 10 10 ! emit-byte branch:859 digit-first? 0branch:975 parse-number 20 ! 1 10 ! emit-byte 20 @ 10 ! emit-byte branch:908 find-word 21 ! 20 ! 9 10 ! emit-byte 20 @ 10 ! emit-byte 21 @ 10 ! emit-byte branch:908 ;
 : tok-if 12 @ 2 = 64 @ 105 = + 65 @ 102 = + 3 = exit ;
 : tok-else 12 @ 4 = 64 @ 101 = + 65 @ 108 = + 66 @ 115 = + 67 @ 101 = + 5 = exit ;
