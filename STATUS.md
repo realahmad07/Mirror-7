@@ -20,6 +20,7 @@ This is the canonical human-readable status page for the repository. It delibera
 | Whole-project deep audit | ☐ | Static audit is implemented; current CI execution is still required. |
 | Phase 13 heritage preservation | ☑ | Pre-MIRR artifact/bootstrap evidence is preserved under `phase13_heritage/` and included in the deep audit. |
 | Phase 19 heritage preservation | ☑ | RAW-free self-language, semantic self-source, fixed-point evidence, native-seed source, and artifact hashes are preserved under `phase19_heritage/` and included in the deep audit. |
+| Phase 69 portable-carrier heritage | ☑ | V69 execution-carrier methodology is preserved under `phase69_heritage/` with a fresh verification gate; it is reference infrastructure, not current self-hosting. |
 | Compiler entirely in MIRR | ☐ | **Phase 30 in progress:** the MIRR compiler source now has a dedicated direct-execution acceptance gate under `phase30_compiler_mirr/`. No promotion to PASS until that gate succeeds on CI. |
 | Separate source/target dictionary ABI | ☐ | Compiler dictionary and fresh generated target dictionary must be independently selectable. |
 | Remove hard-coded absolute branch dependency | ☐ | Control-flow targets must be generated/relocated from symbolic structure or equivalent metadata. |
@@ -30,11 +31,16 @@ This is the canonical human-readable status page for the repository. It delibera
 | Independent verification | ☐ | Verification must be independently executable and not rely solely on builder assertions. |
 | Bootstrap complete | ☐ | All preceding gates must be green. |
 
+## Phase 69 portable-carrier integration
+The supplied V69 archive was reviewed against the current MIRR/Nucleus roadmap. The retained material captures an important intermediate portability pattern: serialize an explicit execution-kernel contract with a bounded machine artifact, replay it through independent implementations, and check cross-runner equivalence without importing the symbolic Mirror evaluator. The native C runner provides a second implementation family.
+
+This heritage is intentionally not promoted as current MIRR self-hosting. Its value is methodological: it makes hidden execution assumptions explicit and provides a template for future independent rebuild and bootstrap verification. The supplied archive's historical V69 report recorded a targeted 17/17 pass; the present repository uses a fresh, narrower verifier rather than treating that historical result as current CI evidence.
+
 ## Phase 13 heritage integration
 The repository preserves the pre-MIRR/Nucleus Phase 13 development line under `phase13_heritage/`. It provides earlier artifact/bootstrap experiments and deterministic testing as reference material only.
 
 ## Phase 19 heritage integration
-The repository now preserves the supplied Phase 19 RAW-free self-language experiment under `phase19_heritage/`. The retained material documents a 20-generation byte-identical fixed point for an older semantic VM, a semantic self-source with no legacy RAW token, randomized/adversarial test discipline, tamper/hash checks, and the native-seed source.
+The repository preserves the supplied Phase 19 RAW-free self-language experiment under `phase19_heritage/`. The retained material documents a 20-generation byte-identical fixed point for an older semantic VM, a semantic self-source with no legacy RAW token, randomized/adversarial test discipline, tamper/hash checks, and the native-seed source.
 
 This is intentionally **not** promoted as current MIRR self-hosting. Its value is the acceptance methodology it contributes to the current roadmap: deterministic artifact reconstruction, semantic self-source validation, repeated fixed-point checking, malformed-input rejection, and explicit tamper detection.
 
@@ -48,6 +54,7 @@ Phase 30 adds `phase30_compiler_mirr/verify_phase30.py`, which checks the compil
 ```text
 Phase 13 heritage preservation         ☑
 Phase 19 RAW-free heritage             ☑
+Phase 69 portable-carrier heritage     ☑
 Phase 27 implementation correction     ☑
 Phase 27 artifact synchronization      ☑
 Phase 27 actual CI promotion           ☐

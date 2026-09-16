@@ -1,0 +1,14 @@
+name: MIRROR7 Phase 69 Heritage Carrier
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  portable-carrier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify portable execution-carrier heritage
+        run: python3 phase69_heritage/verify_phase69_heritage.py
