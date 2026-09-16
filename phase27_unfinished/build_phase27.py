@@ -52,9 +52,11 @@ def relocate(lines,delta):
 def repair_create_pass_eof_guard(lines):
     """Repair the inherited Phase-26 EOF guard after primitive-prefix growth.
 
-    The `create-pass` EOF guard has the unique sequence
-    `12 @ 0 = 0branch:<address> exit`. The branch consumes the EOF condition
-    and must land on the following exit rather than on its own opcode.
+    The inherited target is inside the guard sequence. After structural
+    relocation it maps to the guard's branch instruction itself; the valid
+    EOF destination is the following RET (`exit`), six bytes after the
+    relocated inherited target. This is derived from the emitted instruction
+    layout rather than a global relocation delta.
     """
     out=[]
     for line in lines:
@@ -64,7 +66,7 @@ def repair_create_pass_eof_guard(lines):
                 if toks[i:i+4] == ['12','@','0','=']:
                     m=re.fullmatch(r'0branch:(\d+)',toks[i+4])
                     if m and toks[i+5]=='exit':
-                        toks[i+4]=f'0branch:{int(m.group(1))+3}'
+                        toks[i+4]=f'0branch:{int(m.group(1))+6}'
                         break
         out.append(' '.join(toks))
     return out
