@@ -1,7 +1,7 @@
 : space? 10 @ 32 = 10 @ 9 = + 10 @ 10 = + 10 @ 13 = + 0 = 0 = exit ;
 : seek-marker nextc dup 10 ! 0 = 0branch:97 drop drop exit 10 @ 66 = 0branch:83 nextc dup 10 ! 79 = 0branch:83 nextc dup 10 ! 79 = 0branch:83 nextc dup 10 ! 84 = 0branch:83 nextc dup 10 ! 83 = 0branch:83 nextc dup 10 ! 84 = 0branch:83 nextc dup 10 ! 82 = 0branch:83 nextc dup 10 ! 65 = 0branch:83 nextc dup 10 ! 80 = 0branch:83 nextc dup 10 ! 0 = 0branch:208 drop drop exit 10 @ 59 = 0branch:194 exit ;
 : scan-token 0 11 ! nextc dup 10 ! 0 = 0branch:251 11 @ 0 = 0branch:247 0 exit 11 @ exit space? 0branch:260 branch:224 10 @ 64 11 @ + ! 1 11 @ + 11 ! nextc dup 10 ! 0 = 0branch:294 11 @ exit space? 0branch:304 11 @ exit 10 @ 64 11 @ + ! 1 11 @ + 11 ! branch:279 ;
-: find-word 0 13 ! 0 14 ! word-count 16 ! 15 ! 13 @ 15 @ = 14 @ 16 @ = + 2 = 0branch:367 drop exit 13 @ 14 @ word-name-len 12 @ = 0branch:442 0 17 ! 17 @ 12 @ = 0branch:403 13 @ 14 @ exit 13 @ 14 @ 17 @ word-name-char 10 ! 17 @ 64 + @ 10 @ = 0branch:442 1 17 @ + 17 ! branch:386 13 @ 255 = 0branch:468 0 13 ! 1 14 @ + 14 @ branch:344 1 13 @ + 13 ! branch:344 ;
+: find-word 0 13 ! 0 14 ! word-count 16 ! 15 ! 13 @ 15 @ = 14 @ 16 @ = + 2 = 0 = 0branch:365 drop exit 13 @ 14 @ word-name-len 12 @ = 0branch:442 0 17 ! 17 @ 12 @ = 0branch:403 13 @ 14 @ exit 13 @ 14 @ 17 @ word-name-char 10 ! 17 @ 64 + @ 10 @ = 0branch:442 1 17 @ + 17 ! branch:386 13 @ 255 = 0branch:468 0 13 ! 1 14 @ + 14 @ branch:344 1 13 @ + 13 ! branch:344 ;
 : probe seek-marker scan-token 12 ! find-word 14 ! 13 ! 0 word-name-char emit exit ;
 : tok-colon 12 @ 1 = 64 @ 58 = + 2 = exit ;
 : tok-semi 12 @ 1 = 64 @ 59 = + 2 = exit ;
@@ -10,5 +10,5 @@
 : set-marker-pos 0 0 0 0 src-set-pos exit ;
 : mark-pos seek-marker src-pos 3 ! 2 ! 1 ! 0 ! exit ;
 : emit-byte 18 @ 19 @ 10 @ word-append 19 ! 18 ! exit ;
-: create-pass set-marker-pos scan-token 12 ! 12 @ 0 = 0branch:780 exit tok-colon 0branch:847 scan-token 12 @ 0 = 0branch:808 branch:847 64 0 12 @ 0 word-new drop drop scan-token 12 ! 12 @ 0 = 0branch:838 branch:847 tok-semi 0branch:820 branch:768 drop exit ;
+: create-pass set-marker-pos scan-token 12 ! 12 @ 0 = 0branch:780 exit tok-colon 0branch:847 scan-token 12 @ 0 = 0branch:808 branch:847 64 0 12 @ 0 word-new 19 ! 18 ! scan-token 12 ! 12 @ 0 = 0branch:838 branch:847 tok-semi 0branch:820 branch:768 drop exit ;
 : compile-pass set-marker-pos scan-token 12 ! 12 @ 0 = 0branch:869 exit tok-colon 0branch:1007 scan-token 12 @ 0 = 0branch:893 branch:1007 find-word 19 ! 18 ! scan-token 12 ! 12 @ 0 = 0branch:920 branch:1007 tok-semi 0branch:937 10 10 ! emit-byte branch:853 digit-first? 0branch:969 parse-number 20 ! 1 10 ! emit-byte 20 @ 10 ! emit-byte branch:902 find-word 21 ! 20 ! 9 10 ! emit-byte 20 @ 10 ! emit-byte 21 @ 10 ! emit-byte branch:902 ;
