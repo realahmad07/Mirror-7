@@ -1,0 +1,12 @@
+{
+  "compiler_image_b64": "Cw0BAA4ICAANARAPCBETBQANASQPCEkBEAQNAQEOCCUMCwwHAA0BBw4IMAwLDAcADQEIDgg7DAsMBwANAQkOCEYMCwwHAAwHABMFAA==",
+  "compiler_sha256": "b455e20f9f842f28c885de221165c4ecc9831591a279094910311ed98a3f23f3",
+  "format": "MIRROR_NATIVE_SELF_LANGUAGE_V2",
+  "language": {"0x10":"HALT","0x11":"PUSH","0x12":"POP","0x13":"ADD","0x14":"SUB","0x15":"LOAD","0x16":"STORE","0x17":"JMP","0x18":"JZ","0x19":"CALL","0x1a":"RET","0x1b":"IN","0x1c":"OUT","0x1d":"DUP","0x1e":"EQ","0x1f":"LT","0x20":"AND","0x21":"OR","0x22":"XOR","0x23":"DROP"},
+  "operand_ops": ["0x11","0x17","0x18","0x19"],
+  "raw_escape_removed": true,
+  "self_source_b64": "Gx0RAB4YCBAdERAfGBEjFRAdESQfGEkREBQdEQEeGCUcGxwXAB0RBx4YMBwbHBcAHREIHhg7HBscFwAdEQkeGEYcGxwXABwXACMVEAA=",
+  "self_source_sha256": "c4ffbe4f160170eee042f301505da387da1c00fbd26941d9150e8f50df366435",
+  "sha256": "3532ab11d26850abea115b3fe8c9d6c7ae4243b1f777c62676da12fe903309ee",
+  "source_end": "0x0"
+}
