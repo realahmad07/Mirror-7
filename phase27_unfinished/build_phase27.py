@@ -37,8 +37,9 @@ if PRIM_DELTA:
     base_lines=fixed
 # Phase 27 needs the current word id after the source definition is created.
 # Replace the two dropped word-new result bytes with storage into 18/19.
-# This inserts four bytes at the end of the word-new instruction; every absolute
-# branch target at or after that point must move by the same amount.
+# The replacement is four bytes longer. The insertion point is immediately after
+# word-new in create-pass (address 820 in the relocated Phase-27 image), so only
+# absolute targets at/after 820 move.
 for i,line in enumerate(base_lines):
     if line.startswith(': create-pass '):
         base_lines[i]=line.replace('word-new drop drop','word-new 19 ! 18 !',1)
@@ -50,7 +51,7 @@ for line in base_lines:
     out=[]
     for t in line.split():
         m=re.match(r'^(0branch:|branch:)(\d+)$',t)
-        if m and int(m.group(2))>=786:t=m.group(1)+str(int(m.group(2))+4)
+        if m and int(m.group(2))>=820:t=m.group(1)+str(int(m.group(2))+4)
         out.append(t)
     shifted.append(' '.join(out))
 base_lines=shifted
