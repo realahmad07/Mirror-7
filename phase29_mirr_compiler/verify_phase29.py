@@ -99,7 +99,7 @@ def main():
         diagnostic.write_text(
             generated.read_text()
             + ': debug-create create-pass word-count drop 1 - 48 + emit exit ;\n'
-            + ': debug-find 0 19 ! set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! 19 @ 0 = 48 + emit exit ;\n'
+            + ': debug-find create-pass 0 19 ! set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! 19 @ 0 = 48 + emit exit ;\n'
         )
         inp = td / 'smoke.mirr'
         inp.write_text(': alpha 1 IF 65 emit ELSE 66 emit THEN ;\n')
