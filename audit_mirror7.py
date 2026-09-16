@@ -1,4 +1,5 @@
 from pathlib import Path
+import difflib
 import re
 import shutil
 import subprocess
@@ -92,7 +93,9 @@ def main():
         if b.returncode: raise SystemExit(f'builder failed:\n{b.stderr}{b.stdout}')
         rebuilt=td/'compiler_phase27_words.mirr'
         expected=ROOT/'phase27_unfinished/compiler_phase27_words.mirr'
-        if rebuilt.read_bytes()!=expected.read_bytes(): raise SystemExit('generated artifact differs from builder output')
+        if rebuilt.read_bytes()!=expected.read_bytes():
+            diff=''.join(difflib.unified_diff(expected.read_text().splitlines(True),rebuilt.read_text().splitlines(True),fromfile='committed',tofile='rebuilt',n=2))
+            raise SystemExit('generated artifact differs from builder output:\n'+diff[:16000])
         audit_generated(rebuilt)
 
         for c in [
