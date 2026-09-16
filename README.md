@@ -49,8 +49,10 @@ independent verification
 | Phase 24 — runtime dictionary | ☑ PASS recorded | Preserved Phase 24 implementation/test artifacts. |
 | Phase 25 — tokenization + lookup + compilation | ☑ Implemented; fresh verification required | Source preserved; historical result is not treated as a new clean-room PASS. |
 | Phase 26 — integrated native compiler path | ☑ Implemented; fresh verification required | Source preserved; historical result is not treated as a new clean-room PASS. |
-| Phase 27 — structured relocation/control flow | ☐ Verification required | Remains a bootstrap gate until the actual current source is re-run end-to-end. |
-| Phase 28 — integrated surface parser | ☐ Verification required | Standalone parser CI exists; integration must be verified through the real compiler path. |
+| Phase 27 — structured relocation/control flow | ☑ Implementation corrected; CI promotion pending | Builder/artifact synchronization and structured-control fixes are committed; actual end-to-end CI result is still required before promotion. |
+| Phase 28 — surface parser component | ☑ Component verified | Strict C17 plus parser regression/fuzz and ASan/UBSan execution are implemented. |
+| Phase 28 — compiler integration | ☑ Integration gate implemented; CI promotion pending | The verification path exercises parser-valid and parser-invalid programs through the real Phase-27 compiler path. |
+| Whole-project deep audit | ☑ Static audit implemented; CI promotion pending | `audit_mirror7.py` checks repository inputs, generated-artifact reproducibility, layout/branch invariants, u16 limits, and strict C17 host builds. |
 | Compiler entirely in MIRR | ☐ Not verified | Must compile the compiler without a host-side compiler implementation dependency. |
 | Separate source/target dictionary ABI | ☐ Not verified | Compiler execution dictionary and generated target dictionary must be independently selectable. |
 | Remove hard-coded absolute branch dependency | ☐ Not verified | Branch targets must derive from relocation/symbolic structure rather than fixed offsets. |
@@ -59,6 +61,21 @@ independent verification
 | Byte-identical fixed point | ☐ Not verified | Recompilation must produce identical output under the defined reproducible-build conditions. |
 | Independent rebuild | ☐ Not verified | A separate build path must reproduce the same artifact. |
 | Independent verification | ☐ Not verified | Verification must not rely solely on the builder's own assertions. |
+| Bootstrap complete | ☐ Not verified | All preceding gates must be green. |
+
+## Recent Phase 27/28 engineering work
+
+The current branch contains the following corrections and verification infrastructure:
+
+- Phase 27 generated output was synchronized with `build_phase27.py` after a stale absolute branch target was found.
+- `create-pass` now retains the newly created target word ID so structured-control patching does not depend on stale dictionary cells.
+- The relocation adjustment for that insertion uses the actual insertion boundary; targets before it remain unchanged and targets at/after it move by the inserted size.
+- `verify_phase27.py` rebuilds the generated artifact, checks byte-for-byte reproducibility, performs a strict nucleus build, and exercises simple, IF/ELSE/THEN, and nested structured programs.
+- Phase 28's surface parser has a CLI entry point and strict/sanitizer verification.
+- `verify_phase28.py` connects parser acceptance/rejection to the real compiler path rather than treating the standalone C parser as the eventual self-hosted compiler.
+- `audit_mirror7.py` provides a repository-wide static consistency gate and explicitly reports the remaining architectural bootstrap blockers.
+
+These fixes are committed on `main`. The latest Phase 27 correction commit is `9447b98c62fcfaa765d831a10ed1fdab4cb340e8`. CI status must still be observed before claiming an end-to-end PASS.
 
 ## Repository layout
 
@@ -66,6 +83,8 @@ independent verification
 Mirror-7/
 ├── README.md
 ├── STATUS.md
+├── audit_mirror7.py
+├── .github/workflows/phase27.yml
 ├── .github/workflows/phase28.yml
 ├── phase24/
 ├── phase25_26/
@@ -103,8 +122,8 @@ MIRROR7 is a research/engineering project. The bootstrap work is about establish
 ## Next acceptance sequence
 
 ```text
-Phase 27 closure
-  → Phase 28 compiler integration
+Phase 27 CI closure
+  → Phase 28 CI closure
   → compiler entirely in MIRR
   → separate source/target dictionary ABI
   → symbolic relocation
