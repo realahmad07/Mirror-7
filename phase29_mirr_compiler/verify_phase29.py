@@ -101,6 +101,7 @@ def main():
             generated.read_text()
             + ': debug-base word-count drop 48 + emit exit ;\n'
             + ': debug-create create-pass word-count drop 48 + emit exit ;\n'
+            + ': debug-name create-pass word-count drop 1 19 ! 18 ! 19 @ 18 @ word-name-len drop emit exit ;\n'
             + ': debug-find create-pass 0 19 ! set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! 19 @ 0 = 48 + emit exit ;\n'
         )
         inp = td / 'smoke.mirr'
@@ -112,6 +113,10 @@ def main():
             raise SystemExit(f"dictionary-count diagnostic failed: base={base.stdout!r}/{base.returncode}, after={made.stdout!r}/{made.returncode}")
         if ord(made.stdout) != ord(base.stdout) + 1:
             raise SystemExit(f"create-pass did not add exactly one target word: base={base.stdout!r}, after={made.stdout!r}")
+
+        n = run([str(td / 'nucleus'), str(diagnostic), 'debug-name', '--input', str(inp)])
+        if n.returncode or n.stdout != '\x05':
+            raise SystemExit(f"word-new name diagnostic failed: rc={n.returncode} stdout={n.stdout!r} stderr={n.stderr!r}; expected target name length 5")
 
         f = run([str(td / 'nucleus'), str(diagnostic), 'debug-find', '--input', str(inp)])
         if f.returncode or f.stdout != '0':
