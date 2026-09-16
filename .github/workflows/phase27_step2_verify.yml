@@ -1,0 +1,38 @@
+name: MIRROR7 Phase 27 Step 2 Verify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'phase27_unfinished/STEP2_TRIGGER'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  step2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run surface parser gate
+        run: |
+          python3 phase27_unfinished/verify_phase27.py
+      - name: Record PASS
+        if: success()
+        run: |
+          printf '# Phase 27 Step 2 — PASS\n\nSurface parser verification passed: literals, IF/ELSE/THEN, false branch, and nested structured control flow all produced the expected output.\n\nCommit: %s\n' "$GITHUB_SHA" > phase27_unfinished/STEP2_PASS.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase27_unfinished/STEP2_PASS.md
+          git commit -m 'test: record Phase 27 step 2 surface parser PASS'
+          git push
+      - name: Record FAIL
+        if: failure()
+        run: |
+          printf '# Phase 27 Step 2 — FAIL\n\nSurface parser verification failed. Inspect the workflow log before changing Phase 27.\n\nCommit: %s\n' "$GITHUB_SHA" > phase27_unfinished/STEP2_FAIL.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase27_unfinished/STEP2_FAIL.md
+          git commit -m 'test: record Phase 27 step 2 surface parser FAIL'
+          git push || true
