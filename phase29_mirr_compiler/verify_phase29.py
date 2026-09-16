@@ -11,14 +11,12 @@ BUILDER = ROOT / "phase27_unfinished" / "build_phase27.py"
 NUCLEUS = ROOT / "phase25_26" / "nucleus.c"
 INTEGRATION = ROOT / "phase28_surface_parser" / "verify_phase28.py"
 
-# These are the only host-provided operations that the MIRR compiler may call.
 PRIMS = {
     '+', '-', 'dup', 'drop', 'swap', '@', '!', 'emit', 'next', 'nextc',
     'src-pos', 'src-len', 'word-count', 'word-name-len', 'word-name-char',
     'word-code-len', 'word-code-byte', 'word-new', 'word-append', 'word-exec',
     'src-set-pos', 'word-code-start', 'word-patch-u16', 'u16-add', '='
 }
-
 TOKEN_RE = re.compile(r'\S+')
 WORD_RE = re.compile(r'^:\s+([^\s]+)\s+(.*?)\s*;\s*$', re.S)
 
@@ -53,12 +51,10 @@ def main():
     if not src:
         raise SystemExit("compiler source contains no MIRR definitions")
 
-    # Every non-literal/non-control token used by the compiler implementation
-    # must either be a primitive or another word in the same MIRR source.
     unresolved = []
     for name, body in src.items():
         for tok in body:
-            if tok in PRIMS or tok in {'exit'}:
+            if tok in PRIMS or tok == 'exit':
                 continue
             if tok.startswith(('branch:', '0branch:')):
                 if not tok.split(':', 1)[1].isdigit():
@@ -85,8 +81,6 @@ def main():
     if missing:
         raise SystemExit(f"compiler source is missing required MIRR words: {missing}")
 
-    # The generated compiler must still be exactly reproducible from the
-    # preserved Phase-26 source plus the Phase-27 builder.
     with tempfile.TemporaryDirectory() as td_name:
         td = Path(td_name)
         shutil.copy2(ROOT / 'phase25_26' / 'compiler_phase26_words.mirr', td / 'compiler_phase26_words.mirr')
@@ -101,9 +95,18 @@ def main():
         if cc.returncode:
             raise SystemExit('strict nucleus build failed:\n' + cc.stderr)
 
-        # Smoke-test the real compiler path after source-closure validation.
+        diagnostic = td / 'diagnostic.mirr'
+        diagnostic.write_text(generated.read_text() + ': debug-create create-pass word-count drop 1 - 48 + emit exit ;\n')
         inp = td / 'smoke.mirr'
         inp.write_text(': alpha 1 IF 65 emit ELSE 66 emit THEN ;\n')
+        d = run([str(td / 'nucleus'), str(diagnostic), 'debug-create', '--input', str(inp)])
+        if d.returncode:
+            raise SystemExit(f"create-pass diagnostic failed: rc={d.returncode} stdout={d.stdout!r} stderr={d.stderr!r}")
+        # The generated compiler contains 50 dictionary entries before the target
+        # word; create-pass must add alpha, so low-byte count is 51 -> ASCII 'b'.
+        if d.stdout != 'b':
+            raise SystemExit(f"create-pass did not create the target word: observed count marker {d.stdout!r}, expected 'b'")
+
         p = run([str(td / 'nucleus'), str(generated), 'run-alpha', '--input', str(inp)])
         if p.returncode or p.stdout != 'A':
             raise SystemExit(f"compiler smoke test failed: rc={p.returncode} stdout={p.stdout!r} stderr={p.stderr!r}")
