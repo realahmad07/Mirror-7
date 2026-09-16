@@ -1,0 +1,14 @@
+name: MIRROR7 Phase 30
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  compiler-entirely-in-mirr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify compiler source closure and direct MIRR execution
+        run: python3 phase30_compiler_mirr/verify_phase30.py
