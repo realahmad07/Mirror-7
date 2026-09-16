@@ -75,6 +75,26 @@ def repair_structured_passes(lines):
         out.append(line)
         if toks:addr+=sum(token_size(t) for t in toks[2:-1])+1
     return out
+def repair_find_word_storage(lines):
+    out=[]
+    for line in lines:
+        toks=line.split()
+        if toks and toks[0]==':' and toks[1]=='find-word':
+            body=toks[2:-1]
+            for i in range(len(body)-3):
+                if body[i:i+4]==['word-count','16','!','15','!']:
+                    body[i:i+4]=['word-count','swap','15','!','16','!']
+                    break
+            toks=toks[:2]+body+toks[-1:]
+        elif toks and toks[0]==':' and toks[1]=='probe':
+            body=toks[2:-1]
+            for i in range(len(body)-4):
+                if body[i:i+4]==['find-word','14','!','13','!']:
+                    body[i:i+4]=['find-word','swap','13','!','14','!']
+                    break
+            toks=toks[:2]+body+toks[-1:]
+        out.append(' '.join(toks))
+    return out
 def repair_find_word_targets(lines):
     out=[]; addr=PRIM_BYTES
     for line in lines:
@@ -93,7 +113,7 @@ def repair_find_word_targets(lines):
         out.append(line)
         if toks:addr+=sum(token_size(t) for t in toks[2:-1])+1
     return out
-base_lines=relocate(base_lines,PRIM_DELTA); base_lines=repair_structured_passes(base_lines); base_lines=repair_find_word_targets(base_lines)
+base_lines=relocate(base_lines,PRIM_DELTA); base_lines=repair_structured_passes(base_lines); base_lines=repair_find_word_storage(base_lines); base_lines=repair_find_word_targets(base_lines)
 def source_size(lines):
     total=PRIM_BYTES
     for line in lines:
