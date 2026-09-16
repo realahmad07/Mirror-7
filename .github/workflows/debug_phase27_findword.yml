@@ -12,6 +12,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build nucleus
         run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase25_26/nucleus.c -o nucleus
+      - name: Inspect dictionary primitive implementation
+        run: |
+          grep -n -A28 -B4 'OP_WORD_NEW' phase25_26/nucleus.c
+          grep -n -A8 -B4 'OP_WORD_NAME_LEN' phase25_26/nucleus.c
       - name: Build diagnostic compiler
         run: |
           cp phase27_unfinished/compiler_phase27_words.mirr /tmp/compiler.mirr
