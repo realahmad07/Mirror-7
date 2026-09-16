@@ -1,0 +1,16 @@
+name: MIRROR7 Deep Audit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Whole-project static/bootstrap audit
+        run: python3 audit_mirror7.py
+      - name: Phase 28 integration gate
+        run: python3 phase28_surface_parser/verify_phase28.py
