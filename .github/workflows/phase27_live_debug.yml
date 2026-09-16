@@ -40,3 +40,4 @@ jobs:
       - name: Verify generated artifact
         run: |
           cmp compiler_phase27_words.mirr /tmp/m7/generated.mirr
+          echo "LIVE_DEBUG_COMMIT=$GITHUB_SHA"
