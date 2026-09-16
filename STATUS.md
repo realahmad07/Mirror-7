@@ -1,6 +1,6 @@
 # MIRROR7 — Detailed Source and Phase Status
 
-This is the canonical human-readable status page for the repository. It deliberately distinguishes implementation history, component verification, and bootstrap completion.
+This is the canonical human-readable status page for the repository. It deliberately distinguishes implementation history, component verification, integration verification, and bootstrap completion.
 
 ## Legend
 
@@ -17,7 +17,9 @@ This is the canonical human-readable status page for the repository. It delibera
 | Phase 25 — tokenization + lookup + compilation | ☑ | Implementation preserved; clean-room verification remains a separate requirement. |
 | Phase 26 — integrated native compiler path | ☑ | Implementation preserved; clean-room verification remains a separate requirement. |
 | Phase 27 — structured relocation/control flow | ☐ | Must pass actual compiler-level valid, malformed, nested, stress and sanitizer tests. |
-| Phase 28 — surface parser | ☑ | Standalone parser component verified by strict build, regression/fuzz, and sanitizers; end-to-end compiler integration remains part of the bootstrap gate. |
+| Phase 28 — surface parser component | ☑ | Strict C17, regression/fuzz, and ASan/UBSan component tests are implemented. |
+| Phase 28 — surface parser/compiler integration | ☑ | End-to-end gate is implemented: parser acceptance/rejection is compared with the real Phase-27 compiler path. CI result is still required for promotion. |
+| Whole-project deep audit | ☑ | Static consistency audit and strict host builds are implemented; CI result is still required. |
 | Compiler entirely in MIRR | ☐ | No hidden host compiler implementation may remain in the accepted self-hosting path. |
 | Separate source/target dictionary ABI | ☐ | Compiler dictionary and fresh generated target dictionary must be independently selectable. |
 | Remove hard-coded absolute branch dependency | ☐ | Control-flow targets must be generated/relocated from symbolic structure or equivalent position-independent metadata. |
@@ -30,34 +32,25 @@ This is the canonical human-readable status page for the repository. It delibera
 
 ## Current engineering boundary
 
-The next implementation work is compiler-in-MIRR self-hosting. Two architectural defects must be eliminated before that can be promoted:
+The next implementation work is compiler-in-MIRR self-hosting. Two architectural defects remain acceptance blockers:
 
-1. **Absolute branch dependency:** old generated branch offsets can become stale when primitive/dictionary layout changes. This must be replaced or contained by real relocation based on the current generated layout.
-2. **Single-dictionary ABI:** compiler execution and compiler output cannot safely share an implicit dictionary when the goal is a fresh target rebuild. The runtime needs explicit source/executable-dictionary and target/generated-dictionary context.
+1. **Absolute branch dependency:** generated branch offsets are still encoded as absolute addresses. Current Phase 27 generation verifies them against the current layout, but a fresh dictionary layout can make them stale. The long-term fix is real relocation based on symbolic structure or equivalent position-independent metadata.
+2. **Single-dictionary ABI:** compiler execution and compiler output still share an implicit dictionary context. A fresh target rebuild requires explicit source/executable-dictionary and target/generated-dictionary separation.
 
 These are bootstrap correctness issues, not documentation issues.
 
-## Phase 28 component evidence
+## Phase 28 integration evidence
 
-The surface parser component in `phase28_surface_parser/parser.c` is tested for:
+`phase28_surface_parser/parser.c` now has a normal CLI entrypoint in addition to its strict test mode. `phase28_surface_parser/verify_phase28.py` exercises two layers:
 
-- valid definitions and nested control flow;
-- invalid names and malformed numeric literals;
-- `ELSE` outside `IF`;
-- duplicate `ELSE`;
-- unmatched `THEN`;
-- unclosed `IF`;
-- empty branches;
-- malformed nested constructs;
-- randomized parser input;
-- strict C17 warnings-as-errors;
-- AddressSanitizer and UndefinedBehaviorSanitizer execution.
+1. the surface parser accepts valid definitions and rejects malformed control flow, names, and numeric literals;
+2. the actual Phase-27 compiler is rebuilt from its current builder and exercised with the parser-valid programs, while parser-invalid programs must fail compilation.
 
-The CI workflow records the component result. It is not used as evidence that the entire self-hosting compiler has already closed the Phase-28/29 boundary.
+This is an integration contract, not a claim that the parser C implementation has become part of the eventual self-hosted MIRR compiler. The latter remains an explicit future gate.
 
-## Repository/UI policy
+## Deep-audit evidence
 
-Source is stored as individual repository files, never as a ZIP dependency. Documentation is Markdown so it remains inspectable and versioned. The browser UI is a presentation layer over repository status; it does not replace executable tests or acceptance evidence.
+`audit_mirror7.py` checks required repository inputs, exact builder/artifact reproducibility, primitive-count/layout assumptions, duplicate definitions, u16 code-size limits, branch-target containment and instruction-boundary validity, and strict C17 builds of the nucleus and parser. It deliberately reports absolute-address relocation and dictionary-ABI separation as remaining architectural debt rather than hiding them behind a green local check.
 
 ## Debugging protocol
 
