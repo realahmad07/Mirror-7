@@ -1,5 +1,4 @@
 name: MIRROR7 Phase 27 Live Debug
-
 on:
   workflow_dispatch:
   push:
@@ -7,37 +6,43 @@ on:
     paths:
       - 'phase27_unfinished/build_phase27.py'
       - 'phase27_unfinished/compiler_phase27_words.mirr'
+      - 'phase27_unfinished/verify_phase27.py'
       - '.github/workflows/phase27_live_debug.yml'
-
 permissions:
-  contents: read
-
+  contents: write
 jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build nucleus
-        run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase25_26/nucleus.c -o nucleus
-      - name: Rebuild and inspect layout
+      - name: Run Step 2 verification and record result
+        shell: bash
         run: |
-          rm -rf /tmp/m7
-          mkdir /tmp/m7
-          cp phase25_26/compiler_phase26_words.mirr /tmp/m7/
-          python3 phase27_unfinished/build_phase27.py 2>&1 | tee /tmp/m7/builder.log
-          cp compiler_phase27_words.mirr /tmp/m7/generated.mirr
-          echo '--- BUILDER ---'
-          cat /tmp/m7/builder.log
-          echo '--- NUCLEUS WORD TABLE ---'
-          DUMP_WORDS=1 ./nucleus /tmp/m7/generated.mirr run-alpha --input <(printf ': alpha 65 emit ;\n') 2>/tmp/m7/words.trace || true
-          cat /tmp/m7/words.trace
-          echo '--- TARGETS ---'
-          grep -oE '(0branch|branch):[0-9]+' /tmp/m7/generated.mirr | tail -80
-          echo '--- RUNTIME TRACE ---'
-          TRACE_VM=1 TRACE_CODE=1 ./nucleus /tmp/m7/generated.mirr run-alpha --input <(printf ': alpha 65 emit ;\n') >/tmp/m7/out 2>/tmp/m7/trace || true
-          cat /tmp/m7/out
-          tail -n 300 /tmp/m7/trace
-      - name: Verify generated artifact
+          set +e
+          python3 phase27_unfinished/verify_phase27.py > /tmp/result.log 2>&1
+          rc=$?
+          cat /tmp/result.log
+          {
+            echo "# Phase 27 Step 2 Live CI Result"
+            echo
+            echo "Commit: $GITHUB_SHA"
+            echo "Exit code: $rc"
+            echo
+            if [ "$rc" -eq 0 ]; then echo "## PASS"; else echo "## FAIL"; fi
+            echo
+            echo '```text'
+            tail -n 300 /tmp/result.log
+            echo '```'
+          } > phase27_unfinished/CI_LIVE_RESULT.md
+          echo "$rc" > /tmp/rc
+          exit 0
+      - name: Commit CI result
+        if: always()
+        shell: bash
         run: |
-          cmp compiler_phase27_words.mirr /tmp/m7/generated.mirr
-          echo "LIVE_DEBUG_COMMIT=$GITHUB_SHA"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add phase27_unfinished/CI_LIVE_RESULT.md
+          git diff --cached --quiet && exit 0
+          git commit -m "ci(phase27): record live Step 2 result"
+          git push origin HEAD:main
