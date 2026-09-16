@@ -26,3 +26,18 @@ jobs:
           printf ': alpha 65 emit ;\n' > /tmp/input.mirr
           printf 'CREATE='; TRACE_VM=1 ./nucleus /tmp/compiler.mirr debug-create --input /tmp/input.mirr
           printf ' FIND='; TRACE_VM=1 ./nucleus /tmp/compiler.mirr debug-find --input /tmp/input.mirr
+      - name: Capture Phase 27 runtime trace
+        if: always()
+        run: |
+          printf ': alpha 65 emit ;\n' > /tmp/simple.mirr
+          TRACE_VM=1 TRACE_PATCH=1 TRACE_CODE=1 ./nucleus phase27_unfinished/compiler_phase27_words.mirr run-alpha --input /tmp/simple.mirr > phase27-runtime.stdout 2> phase27-runtime.trace || true
+          cat phase27-runtime.stdout
+          tail -n 400 phase27-runtime.trace
+      - name: Upload runtime trace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase27-runtime-trace
+          path: |
+            phase27-runtime.trace
+            phase27-runtime.stdout
