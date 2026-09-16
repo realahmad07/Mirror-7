@@ -59,114 +59,58 @@ def repair_structured_passes(lines):
             pcs=[]; pc=addr
             for t in body:
                 pcs.append(pc); pc += token_size(t)
-            
-            t_tok_colon = body.index('tok-colon')
-            t_word_new = body.index('word-new') - 5
-            t_tok_semi = body.index('tok-semi')
-            t_outer_scan = body.index('scan-token')
-            t_inner_scan = body.index('scan-token', t_word_new)
-            t_drop_exit = body.index('drop')
-            
-            for i, t in enumerate(body):
+            t_tok_colon=body.index('tok-colon'); t_word_new=body.index('word-new')-5; t_tok_semi=body.index('tok-semi'); t_outer_scan=body.index('scan-token'); t_inner_scan=body.index('scan-token',t_word_new); t_drop_exit=body.index('drop')
+            for i,t in enumerate(body):
                 if not (t.startswith('0branch:') or t.startswith('branch:')): continue
-                if i < t_tok_colon:
-                    body[i] = f'0branch:{pcs[t_tok_colon]}'
-                elif i == t_tok_colon + 1:
-                    body[i] = f'0branch:{pcs[t_drop_exit]}'
-                elif i > t_tok_colon and i < t_word_new and t.startswith('0branch:'):
-                    body[i] = f'0branch:{pcs[t_word_new]}'
-                elif i > t_tok_colon and i < t_word_new and t.startswith('branch:'):
-                    body[i] = f'branch:{pcs[t_drop_exit]}'
-                elif i > t_word_new and i < t_tok_semi and t.startswith('0branch:'):
-                    body[i] = f'0branch:{pcs[t_tok_semi]}'
-                elif i > t_word_new and i < t_tok_semi and t.startswith('branch:'):
-                    body[i] = f'branch:{pcs[t_drop_exit]}'
-                elif i == t_tok_semi + 1:
-                    body[i] = f'0branch:{pcs[t_inner_scan]}'
-                elif i == t_tok_semi + 2:
-                    body[i] = f'branch:{pcs[t_outer_scan]}'
-            toks = toks[:2] + body + toks[-1:]
-            line = ' '.join(toks)
-        
+                if i<t_tok_colon: body[i]=f'0branch:{pcs[t_tok_colon]}'
+                elif i==t_tok_colon+1: body[i]=f'0branch:{pcs[t_drop_exit]}'
+                elif i>t_tok_colon and i<t_word_new and t.startswith('0branch:'): body[i]=f'0branch:{pcs[t_word_new]}'
+                elif i>t_tok_colon and i<t_word_new and t.startswith('branch:'): body[i]=f'branch:{pcs[t_drop_exit]}'
+                elif i>t_word_new and i<t_tok_semi and t.startswith('0branch:'): body[i]=f'0branch:{pcs[t_tok_semi]}'
+                elif i>t_word_new and i<t_tok_semi and t.startswith('branch:'): body[i]=f'branch:{pcs[t_drop_exit]}'
+                elif i==t_tok_semi+1: body[i]=f'0branch:{pcs[t_inner_scan]}'
+                elif i==t_tok_semi+2: body[i]=f'branch:{pcs[t_outer_scan]}'
+            toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)
         elif toks and toks[0]==':' and toks[1] == 'compile-pass':
             body=toks[2:-1]
             pcs=[]; pc=addr
-            for t in body:
-                pcs.append(pc); pc += token_size(t)
-                
-            t_tok_colon = body.index('tok-colon')
-            t_find_1 = body.index('find-word')
-            t_tok_semi = body.index('tok-semi')
-            t_digit_first = body.index('digit-first?')
-            t_find_2 = body.index('find-word', t_digit_first)
-            t_outer_scan = body.index('scan-token')
-            t_inner_scan = body.index('scan-token', t_find_1)
-            t_exit = len(body) - 1
-            
-            for i, t in enumerate(body):
+            for t in body: pcs.append(pc); pc+=token_size(t)
+            t_tok_colon=body.index('tok-colon'); t_find_1=body.index('find-word'); t_tok_semi=body.index('tok-semi'); t_digit_first=body.index('digit-first?'); t_find_2=body.index('find-word',t_digit_first); t_outer_scan=body.index('scan-token'); t_inner_scan=body.index('scan-token',t_find_1); t_exit=len(body)-1
+            for i,t in enumerate(body):
                 if not (t.startswith('0branch:') or t.startswith('branch:')): continue
-                if i < t_tok_colon:
-                    body[i] = f'0branch:{pcs[t_tok_colon]}'
-                elif i == t_tok_colon + 1:
-                    body[i] = f'0branch:{pcs[t_exit]}'
-                elif i > t_tok_colon and i < t_find_1 and t.startswith('0branch:'):
-                    body[i] = f'0branch:{pcs[t_find_1]}'
-                elif i > t_tok_colon and i < t_find_1 and t.startswith('branch:'):
-                    body[i] = f'branch:{pcs[t_exit]}'
-                elif i > t_find_1 and i < t_tok_semi and t.startswith('0branch:'):
-                    body[i] = f'0branch:{pcs[t_tok_semi]}'
-                elif i > t_find_1 and i < t_tok_semi and t.startswith('branch:'):
-                    body[i] = f'branch:{pcs[t_exit]}'
-                elif i == t_tok_semi + 1:
-                    body[i] = f'0branch:{pcs[t_digit_first]}'
-                elif i > t_tok_semi and i < t_digit_first and t.startswith('branch:'):
-                    body[i] = f'branch:{pcs[t_outer_scan]}'
-                elif i == t_digit_first + 1:
-                    body[i] = f'0branch:{pcs[t_find_2]}'
-                elif i > t_digit_first and i < t_find_2 and t.startswith('branch:'):
-                    body[i] = f'branch:{pcs[t_inner_scan]}'
-                elif i > t_find_2 and t.startswith('branch:'):
-                    body[i] = f'branch:{pcs[t_inner_scan]}'
-            toks = toks[:2] + body + toks[-1:]
-            line = ' '.join(toks)
-
+                if i<t_tok_colon: body[i]=f'0branch:{pcs[t_tok_colon]}'
+                elif i==t_tok_colon+1: body[i]=f'0branch:{pcs[t_exit]}'
+                elif i>t_tok_colon and i<t_find_1 and t.startswith('0branch:'): body[i]=f'0branch:{pcs[t_find_1]}'
+                elif i>t_tok_colon and i<t_find_1 and t.startswith('branch:'): body[i]=f'branch:{pcs[t_exit]}'
+                elif i>t_find_1 and i<t_tok_semi and t.startswith('0branch:'): body[i]=f'0branch:{pcs[t_tok_semi]}'
+                elif i>t_find_1 and i<t_tok_semi and t.startswith('branch:'): body[i]=f'branch:{pcs[t_exit]}'
+                elif i==t_tok_semi+1: body[i]=f'0branch:{pcs[t_digit_first]}'
+                elif i>t_tok_semi and i<t_digit_first and t.startswith('branch:'): body[i]=f'branch:{pcs[t_outer_scan]}'
+                elif i==t_digit_first+1: body[i]=f'0branch:{pcs[t_find_2]}'
+                elif i>t_digit_first and i<t_find_2 and t.startswith('branch:'): body[i]=f'branch:{pcs[t_inner_scan]}'
+                elif i>t_find_2 and t.startswith('branch:'): body[i]=f'branch:{pcs[t_inner_scan]}'
+            toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)
         out.append(line)
-        if toks:
-            addr += sum(token_size(t) for t in toks[2:-1]) + 1
+        if toks: addr+=sum(token_size(t) for t in toks[2:-1])+1
     return out
+
 def repair_find_word_targets(lines):
-    """Resolve legacy FIND targets from the emitted instruction layout."""
-    out=[]
-    addr=PRIM_BYTES
+    out=[]; addr=PRIM_BYTES
     for line in lines:
         toks=line.split()
         if toks and toks[0]==':' and toks[1]=='find-word':
-            body=toks[2:-1]
-            pcs=[]; pc=addr
-            for t in body:
-                pcs.append(pc); pc += token_size(t)
+            body=toks[2:-1]; pcs=[]; pc=addr
+            for t in body: pcs.append(pc); pc+=token_size(t)
             limit_start=None
             for i in range(len(body)-3):
-                if body[i:i+4] == ['13','@','255','=']:
-                    limit_start=pcs[i]
-                    break
+                if body[i:i+4]==['13','@','255','=']: limit_start=pcs[i]; break
             for i,t in enumerate(body):
-                if not t.startswith('0branch:'):
-                    continue
-                # Legacy 445 lands two bytes into this LIT 13 after relocation.
-                if limit_start is not None and int(t.split(':',1)[1]) == limit_start + 2:
-                    body[i]=f'0branch:{limit_start}'
-                # The 0branch after '13 @ 255 =' must jump to the lo-byte increment
-                # path ('1 13 @ + 13 ! branch:...') when lo != 255, not to the
-                # hi-byte carry path ('1 14 @ + 14 @ branch:...') which is 7 tokens
-                # earlier. The lo++ path starts at body[i+11].
-                if i+11 < len(body) and body[i+1:i+4] == ['0','13','!'] and body[i+11] == '1':
-                    body[i]=f'0branch:{pcs[i+11]}'
-            toks=toks[:2]+body+toks[-1:]
-            line=' '.join(toks)
+                if not t.startswith('0branch:'): continue
+                if limit_start is not None and int(t.split(':',1)[1])==limit_start+2: body[i]=f'0branch:{limit_start}'
+                if i+11<len(body) and body[i+1:i+4]==['0','13','!'] and body[i+11]=='1': body[i]=f'0branch:{pcs[i+11]}'
+            toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)
         out.append(line)
-        if toks:
-            addr += sum(token_size(t) for t in toks[2:-1])+1
+        if toks: addr+=sum(token_size(t) for t in toks[2:-1])+1
     return out
 
 base_lines=relocate(base_lines,PRIM_DELTA)
@@ -198,7 +142,7 @@ w=Wd('if-open'); w.t('30','@','15','=','0','='); w.bz('BAD'); w.t('30','@','30',
 w=Wd('else-open'); w.t('30','@','0','=','0','='); w.bz('BAD'); w.t('30','@','1','-','30','@','1','-','30','@','1','-','30','@','1','-','+','+','+','192','+','48','!','48','@','1','+','49','!','48','@','2','+','@','52','!','49','@','2','+','@','53','!','52','@','53','@','+','0','='); w.bz('BAD'); w.t('48','@','@','50','!','49','@','@','51','!','current-len','42','@','43','@','1','0','u16-add','swap','54','!','55','!','15','10','!','emit-byte','0','10','!','emit-byte','0','10','!','emit-byte','current-end','patch-at','54','@','48','@','2','+','!','55','@','49','@','2','+','!','exit'); w.label('BAD'); w.t('0','31','!','exit')
 w=Wd('then-close'); w.t('30','@','0','='); w.bz('CONT'); w.t('0','31','!','exit'); w.label('CONT'); w.t('30','@','1','-','30','@','1','-','30','@','1','-','30','@','1','-','+','+','+','192','+','48','!','48','@','1','+','49','!','48','@','2','+','@','52','!','49','@','2','+','@','53','!','52','@','53','@','+','0','='); w.bz('HAS_ELSE'); w.t('48','@','@','50','!','49','@','@','51','@','current-end','patch-at','30','@','1','-','30','!','exit'); w.label('HAS_ELSE'); w.t('52','@','50','!','53','@','51','!','current-end','patch-at','30','@','1','-','30','!','exit')
 w=Wd('compile-structured'); w.t('1','31','!','create-pass','set-marker-pos'); w.label('L'); w.t('scan-token','12','!','12','@','0','='); w.bz('HAVE'); w.t('exit'); w.label('HAVE'); w.t('tok-colon'); w.bz('FAIL'); w.t('scan-token','12','!','12','@','0','='); w.bz('GN'); w.bz('FAIL'); w.label('GN'); w.t('find-word','19','!','18','!'); w.label('B'); w.t('scan-token','12','!','12','@','0','='); w.bz('BH'); w.bz('FAIL'); w.label('BH'); w.t('tok-semi'); w.bz('NOTS'); w.t('30','@','0','='); w.bz('FAIL'); w.t('10','10','!','emit-byte'); w.br('L'); w.label('NOTS'); w.t('tok-if'); w.bz('NOIF'); w.t('if-open','31','@','0','=','0','='); w.bz('FAIL'); w.br('B'); w.label('NOIF'); w.t('tok-else'); w.bz('NOELSE'); w.t('else-open','31','@','0','=','0','='); w.bz('FAIL'); w.br('B'); w.label('NOELSE'); w.t('tok-then'); w.bz('NOTHEN'); w.t('then-close','31','@','0','=','0','='); w.bz('FAIL'); w.br('B'); w.label('NOTHEN'); w.t('digit-first?'); w.bz('WORD'); w.t('parse-number','20','!','1','10','!','emit-byte','20','@','10','!','emit-byte'); w.br('B'); w.label('WORD'); w.t('find-word','21','!','20','!','9','10','!','emit-byte','20','@','10','!','emit-byte','21','@','10','!','emit-byte'); w.br('B'); w.label('FAIL'); w.t('exit')
-w=Wd('run-alpha'); w.t('compile-structured','word-count','19','!','18','!','18','@','1','-','18','!','18','@','19','@','word-exec','exit')
+w=Wd('run-alpha'); w.t('compile-structured','word-count','19','!','18','!','18','@','19','@','1','-','19','!','18','@','19','@','word-exec','exit')
 cur=source_size(base_lines)
 for w in words:
     w.start=cur; local=0; labs={}
