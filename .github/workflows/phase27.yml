@@ -32,3 +32,4 @@ jobs:
           fi
       - name: Phase 27 end-to-end verification
         run: TRACE_VM=1 TRACE_PATCH=1 TRACE_CODE=1 python3 phase27_unfinished/verify_phase27.py
+      # Trigger a fresh end-to-end run whenever the Phase 27 workflow itself changes.
