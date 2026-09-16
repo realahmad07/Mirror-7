@@ -18,3 +18,5 @@ jobs:
         run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined -DTEST phase28_surface_parser/parser.c -o phase28_parser_san
       - name: Sanitizer execution
         run: ASAN_OPTIONS=detect_leaks=1 ./phase28_parser_san
+      - name: End-to-end compiler integration
+        run: python3 phase28_surface_parser/verify_phase28.py
