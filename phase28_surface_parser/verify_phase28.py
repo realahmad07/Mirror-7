@@ -1,4 +1,5 @@
 from pathlib import Path
+import difflib
 import shutil
 import subprocess
 import tempfile
@@ -61,7 +62,10 @@ def main():
             raise SystemExit(f"phase27 builder failed during phase28 integration:\n{built.stderr}{built.stdout}")
         rebuilt = td / EXPECTED.name
         if rebuilt.read_bytes() != EXPECTED.read_bytes():
-            raise SystemExit("phase27 generated compiler is not reproducible during Phase 28 integration")
+            a = EXPECTED.read_text().splitlines()
+            b = rebuilt.read_text().splitlines()
+            diff = ''.join(difflib.unified_diff(a, b, fromfile='committed', tofile='rebuilt', n=2))
+            raise SystemExit("phase27 generated compiler is not reproducible during Phase 28 integration:\n" + diff[:12000])
 
         cc = run(["cc", "-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", str(NUCLEUS), "-o", str(td / "nucleus")])
         if cc.returncode:
