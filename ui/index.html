@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIRROR7 — Bootstrap Status</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#0b1020;color:#eef2ff}main{max-width:1100px;margin:auto;padding:32px}h1{margin-bottom:6px}.sub{opacity:.75}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:24px}.card{background:#151c31;border:1px solid #2a3555;border-radius:14px;padding:18px}.ok{border-left:5px solid #36d399}.wait{border-left:5px solid #f6c85f}.state{font-weight:700}.flow{white-space:pre-wrap;background:#10162a;border-radius:12px;padding:18px;overflow:auto}.bar{height:10px;background:#29334f;border-radius:20px;overflow:hidden}.fill{height:100%;width:35%}a{color:#9cc7ff}</style>
+</head>
+<body><main>
+<h1>MIRROR7</h1><div class="sub">Open-source bootstrap and self-hosting verification dashboard</div>
+<div class="grid">
+<div class="card ok"><div class="state">☑ Phase 24</div><p>Runtime dictionary — PASS recorded.</p></div>
+<div class="card ok"><div class="state">☑ Phase 28 component</div><p>Surface parser — strict C17, fuzz/regression and sanitizer checks recorded.</p></div>
+<div class="card wait"><div class="state">☐ Phase 27</div><p>Structured relocation — compiler-level acceptance still open.</p></div>
+<div class="card wait"><div class="state">☐ Compiler entirely in MIRR</div><p>Self-hosting compiler gate not yet verified.</p></div>
+<div class="card wait"><div class="state">☐ Source/target ABI</div><p>Separate executable source dictionary and generated target dictionary not yet verified.</p></div>
+<div class="card wait"><div class="state">☐ Fresh bootstrap</div><p>Fresh-stage rebuild and fixed point remain open.</p></div>
+</div>
+<h2>Bootstrap chain</h2>
+<div class="flow">C nucleus → runtime/dictionary → tokenization → MIRR compiler → structured relocation → surface parser → compiler entirely in MIRR → source/target dictionary ABI → symbolic relocation → fresh-stage bootstrap → self-recompile → byte-identical fixed point → independent rebuild → independent verification</div>
+<h2>Verification progress</h2><div class="bar"><div class="fill"></div></div>
+<p>Progress is intentionally conservative: unfinished gates are not presented as complete.</p>
+<p><a href="../README.md">README</a> · <a href="../STATUS.md">Detailed STATUS</a></p>
+</main></body></html>
