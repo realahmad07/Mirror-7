@@ -6,7 +6,7 @@
 : tok-colon 12 @ 1 = 64 @ 58 = + 2 = exit ;
 : tok-semi 12 @ 1 = 64 @ 59 = + 2 = exit ;
 : digit-first? 64 @ 48 = 64 @ 49 = + 64 @ 50 = + 64 @ 51 = + 64 @ 52 = + 64 @ 53 = + 64 @ 54 = + 64 @ 55 = + 64 @ 56 = + 64 @ 57 = + 0 = 0 = exit ;
-: parse-number 0 24 ! 0 23 ! 23 @ 12 @ = 0branch:665 23 @ 64 + @ 21 ! 21 @ 48 - 22 ! 24 @ dup + 25 ! 25 @ dup + 26 ! 27 ! 25 @ + 24 ! 24 @ 22 @ + 24 ! 1 23 @ + 23 ! branch:580 24 @ exit ;
+: parse-number 0 24 ! 0 23 ! 23 @ 12 @ = 0branch:665 23 @ 64 + @ 21 ! 21 @ 48 - 22 ! 24 @ dup + 25 ! 25 @ dup + 26 ! dup + 27 ! 27 @ 25 @ + 24 ! 24 @ 22 @ + 24 ! 1 23 @ + 23 ! branch:580 24 @ exit ;
 : set-marker-pos 0 0 0 0 src-set-pos exit ;
 : mark-pos seek-marker src-pos 3 ! 2 ! 1 ! 0 ! exit ;
 : emit-byte 18 @ 19 @ 10 @ word-append 19 ! 18 ! exit ;
