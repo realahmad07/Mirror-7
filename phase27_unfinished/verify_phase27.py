@@ -11,8 +11,8 @@ EXPECTED = PHASE / "compiler_phase27_words.mirr"
 NUCLEUS = ROOT / "phase25_26" / "nucleus.c"
 
 
-def run(cmd, *, cwd=None):
-    return subprocess.run(cmd, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+def run(cmd, *, cwd=None, env=None):
+    return subprocess.run(cmd, cwd=cwd, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
 
 
 def main():
@@ -47,7 +47,8 @@ def main():
             inp.write_text(source)
             p = run([str(td / "nucleus"), str(rebuilt), "run-alpha", "--input", str(inp)])
             if p.returncode != 0 or p.stdout != want:
-                raise SystemExit(f"phase27 case {i} failed: rc={p.returncode}, stdout={p.stdout!r}, stderr={p.stderr!r}")
+                trace = run([str(td / "nucleus"), str(rebuilt), "run-alpha", "--input", str(inp)], env={**__import__('os').environ, "TRACE_VM":"1", "TRACE_CODE":"1"})
+                raise SystemExit(f"phase27 case {i} failed: rc={p.returncode}, stdout={p.stdout!r}, stderr={p.stderr!r}\nTRACE:\n{trace.stderr[-20000:]}")
 
     print("PHASE27_VERIFICATION_PASS")
 
