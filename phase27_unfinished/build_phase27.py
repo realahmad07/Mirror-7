@@ -18,12 +18,33 @@ def token_size(t):
     return 3 if t not in (':',';') else 0
 
 def relocate(lines,delta):
+    all_toks=[line.split() for line in lines]
+    old_addr=PRIM_BYTES-delta
+    new_addr=PRIM_BYTES
+    addr_map={}
+    for toks in all_toks:
+        if not toks: continue
+        body=toks[2:-1] if toks[0]==':' else toks
+        for t in body:
+            addr_map[old_addr]=new_addr
+            sz=token_size(t)
+            old_addr+=sz
+            new_addr+=sz
+        if toks[0]==':':
+            old_addr+=1
+            new_addr+=1
+    def remap(old_target):
+        if old_target in addr_map:
+            return addr_map[old_target]
+        prior=max((a for a in addr_map if a<=old_target),default=None)
+        if prior is None: return old_target+delta
+        return addr_map[prior]+(old_target-prior)
     out=[]
     for line in lines:
         toks=[]
         for t in line.split():
             m=re.match(r'^(0branch:|branch:)(\d+)$',t)
-            if m:t=m.group(1)+str(int(m.group(2))+delta)
+            if m: t=m.group(1)+str(remap(int(m.group(2))))
             toks.append(t)
         out.append(' '.join(toks))
     return out
