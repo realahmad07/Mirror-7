@@ -1,7 +1,7 @@
 : space? 10 @ 32 = 10 @ 9 = + 10 @ 10 = + 10 @ 13 = + 0 = 0 = exit ;
 : seek-marker nextc dup 10 ! 0 = 0branch:99 drop drop exit 10 @ 66 = 0branch:85 nextc dup 10 ! 79 = 0branch:85 nextc dup 10 ! 79 = 0branch:85 nextc dup 10 ! 84 = 0branch:85 nextc dup 10 ! 83 = 0branch:85 nextc dup 10 ! 84 = 0branch:85 nextc dup 10 ! 82 = 0branch:85 nextc dup 10 ! 65 = 0branch:85 nextc dup 10 ! 80 = 0branch:85 nextc dup 10 ! 0 = 0branch:210 drop drop exit 10 @ 59 = 0branch:196 exit ;
 : scan-token 0 11 ! nextc dup 10 ! 0 = 0branch:253 11 @ 0 = 0branch:249 0 exit 11 @ exit space? 0branch:262 branch:226 10 @ 64 11 @ + ! 1 11 @ + 11 ! nextc dup 10 ! 0 = 0branch:296 11 @ exit space? 0branch:306 11 @ exit 10 @ 64 11 @ + ! 1 11 @ + 11 ! branch:281 ;
-: find-word 0 13 ! 0 14 ! word-count 16 ! 15 ! 13 @ 15 @ = 14 @ 16 @ = + 2 = 0 = 0branch:370 drop exit 13 @ 14 @ word-name-len 12 @ = 0branch:444 0 17 ! 17 @ 12 @ = 0branch:405 13 @ 14 @ exit 13 @ 14 @ 17 @ word-name-char 10 ! 17 @ 64 + @ 10 @ = 0branch:444 1 17 @ + 17 ! branch:388 13 @ 255 = 0branch:470 0 13 ! 1 14 @ + 14 @ branch:346 1 13 @ + 13 ! branch:346 ;
+: find-word 0 13 ! 0 14 ! word-count 16 ! 15 ! 13 @ 15 @ = 14 @ 16 @ = + 2 = 0 = 0branch:374 drop exit 13 @ 14 @ word-name-len 12 @ = 0branch:449 0 17 ! 17 @ 12 @ = 0branch:449 13 @ 14 @ exit 13 @ 14 @ 17 @ word-name-char 10 ! 17 @ 64 + @ 10 @ = 0branch:449 1 17 @ + 17 ! branch:393 13 @ 255 = 0branch:472 0 13 ! 1 14 @ + 14 @ branch:348 1 13 @ + 13 ! branch:348 ;
 : probe seek-marker scan-token 12 ! find-word 14 ! 13 ! 0 word-name-char emit exit ;
 : tok-colon 12 @ 1 = 64 @ 58 = + 2 = exit ;
 : tok-semi 12 @ 1 = 64 @ 59 = + 2 = exit ;
