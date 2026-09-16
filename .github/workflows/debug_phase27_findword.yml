@@ -17,7 +17,7 @@ jobs:
           cp phase27_unfinished/compiler_phase27_words.mirr /tmp/compiler.mirr
           cat >> /tmp/compiler.mirr <<'EOF'
           : debug-create create-pass word-count drop 1 - 48 + emit exit ;
-          : debug-find set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! drop 18 @ 48 + emit exit ;
+          : debug-find set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! 18 @ 48 + emit exit ;
           EOF
           printf ': alpha 65 emit ;\n' > /tmp/input.mirr
           printf 'CREATE='; TRACE_VM=1 ./nucleus /tmp/compiler.mirr debug-create --input /tmp/input.mirr
