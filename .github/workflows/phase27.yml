@@ -20,5 +20,12 @@ jobs:
           (cd "$tmp" && python3 "$GITHUB_WORKSPACE/phase27_unfinished/build_phase27.py")
           sha256sum "$tmp/compiler_phase27_words.mirr" phase27_unfinished/compiler_phase27_words.mirr
           cmp -l "$tmp/compiler_phase27_words.mirr" phase27_unfinished/compiler_phase27_words.mirr | head -n 20 || true
+          cp "$tmp/compiler_phase27_words.mirr" phase27_unfinished/generated_by_ci.mirr
+      - name: Upload generated artifact for exact synchronization
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase27-generated-${{ github.sha }}
+          path: phase27_unfinished/generated_by_ci.mirr
+          if-no-files-found: error
       - name: Phase 27 end-to-end verification
         run: TRACE_VM=1 TRACE_PATCH=1 TRACE_CODE=1 python3 phase27_unfinished/verify_phase27.py
