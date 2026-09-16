@@ -1,0 +1,22 @@
+name: MIRROR7 Phase 27 Find-Word Debug
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build nucleus
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase25_26/nucleus.c -o nucleus
+      - name: Build diagnostic compiler
+        run: |
+          cp phase27_unfinished/compiler_phase27_words.mirr /tmp/compiler.mirr
+          cat >> /tmp/compiler.mirr <<'EOF'
+          : debug-create create-pass word-count 1 - 48 + emit exit ;
+          : debug-find set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! 18 @ 48 + emit exit ;
+          EOF
+          printf ': alpha 65 emit ;\n' > /tmp/input.mirr
+          ./nucleus /tmp/compiler.mirr debug-create --input /tmp/input.mirr
+          ./nucleus /tmp/compiler.mirr debug-find --input /tmp/input.mirr
