@@ -101,8 +101,9 @@ def main():
             generated.read_text()
             + ': debug-base word-count drop 48 + emit exit ;\n'
             + ': debug-create create-pass word-count drop 48 + emit exit ;\n'
-            + ': debug-name create-pass word-count drop 1 19 ! 18 ! 19 @ 18 @ word-name-len drop emit exit ;\n'
-            + ': debug-find create-pass 0 19 ! set-marker-pos scan-token drop scan-token 12 ! find-word 19 ! 18 ! 19 @ 0 = 48 + emit exit ;\n'
+            + ': debug-name create-pass word-count 18 ! 19 ! 18 @ 19 @ word-name-len emit exit ;\n'
+            + ': debug-last-char create-pass word-count 18 ! 19 ! 18 @ 1 - 18 ! 18 @ 19 @ 0 word-name-char emit exit ;\n'
+            + ': debug-last-code create-pass word-count 18 ! 19 ! 18 @ 1 - 18 ! 18 @ 19 @ word-code-len drop emit exit ;\n'
         )
         inp = td / 'smoke.mirr'
         inp.write_text(': alpha 1 IF 65 emit ELSE 66 emit THEN ;\n')
@@ -118,9 +119,9 @@ def main():
         if n.returncode or n.stdout != '\x05':
             raise SystemExit(f"word-new name diagnostic failed: rc={n.returncode} stdout={n.stdout!r} stderr={n.stderr!r}; expected target name length 5")
 
-        f = run([str(td / 'nucleus'), str(diagnostic), 'debug-find', '--input', str(inp)])
-        if f.returncode or f.stdout != '0':
-            raise SystemExit(f"find-word diagnostic failed: rc={f.returncode} stdout={f.stdout!r} stderr={f.stderr!r}; expected nonzero alpha id")
+        c = run([str(td / 'nucleus'), str(diagnostic), 'debug-last-char', '--input', str(inp)])
+        if c.returncode or c.stdout != 'a':
+            raise SystemExit(f"target-name diagnostic failed: rc={c.returncode} stdout={c.stdout!r} stderr={c.stderr!r}; expected first character 'a'")
 
         p = run([str(td / 'nucleus'), str(generated), 'run-alpha', '--input', str(inp)])
         if p.returncode or p.stdout != 'A':
