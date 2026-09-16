@@ -1,0 +1,20 @@
+name: MIRROR7 Phase 28
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  surface-parser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Strict C17 build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror -DTEST phase28_surface_parser/parser.c -o phase28_parser_test
+      - name: Parser regression and fuzz
+        run: ./phase28_parser_test
+      - name: Sanitizer build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined -DTEST phase28_surface_parser/parser.c -o phase28_parser_san
+      - name: Sanitizer execution
+        run: ASAN_OPTIONS=detect_leaks=1 ./phase28_parser_san
