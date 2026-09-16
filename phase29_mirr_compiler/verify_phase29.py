@@ -88,7 +88,7 @@ def main():
             generated.read_text()
             + ': debug-base word-count drop 48 + emit exit ;\n'
             + ': debug-create create-pass word-count drop 48 + emit exit ;\n'
-            + ': debug-name create-pass word-count 19 ! 18 ! 18 @ 19 @ word-name-len emit exit ;\n'
+            + ': debug-name create-pass word-count 19 ! 18 ! 18 @ 1 - 18 ! 18 @ 19 @ word-name-len emit exit ;\n'
             + ': debug-last-char create-pass word-count 19 ! 18 ! 18 @ 1 - 18 ! 18 @ 19 @ 0 word-name-char emit exit ;\n'
             + ': debug-last-code create-pass word-count 19 ! 18 ! 18 @ 1 - 18 ! 18 @ 19 @ word-code-len drop emit exit ;\n'
         )
