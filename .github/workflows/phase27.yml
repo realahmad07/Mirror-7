@@ -13,6 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Repair Phase 27 builder storage rewrite
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('phase27_unfinished/build_phase27.py')
+          s = p.read_text()
+          old = "for i in range(len(body)-3):\n                if body[i:i+4]==['word-count','16','!','15','!']:"
+          new = "for i in range(len(body)-4):\n                if body[i:i+5]==['word-count','16','!','15','!']:"
+          if old not in s:
+              raise SystemExit('expected find-word storage rewrite pattern not found')
+          p.write_text(s.replace(old, new, 1))
+          PY
       - name: Nucleus opcode/debug map
         run: |
           grep -nE 'enum|OP_|word_exec|word-patch|word_append|word_new|word_count|JZ|BRANCH' phase25_26/nucleus.c | head -n 220
