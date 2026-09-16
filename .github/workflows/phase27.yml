@@ -16,9 +16,8 @@ jobs:
       - name: Show fresh generated Phase 27 artifact
         run: |
           tmp=$(mktemp -d)
-          cp phase25_26/compiler_phase26_words.mirr "$tmp/"
-          python3 phase27_unfinished/build_phase27.py < /dev/null || true
-          cp phase27_unfinished/compiler_phase27_words.mirr "$tmp/"
+          cp phase25_26/compiler_phase26_words.mirr "$tmp/compiler_phase26_words.mirr"
+          (cd "$tmp" && python3 "$GITHUB_WORKSPACE/phase27_unfinished/build_phase27.py")
           cat "$tmp/compiler_phase27_words.mirr"
       - name: Phase 27 end-to-end verification
         run: python3 phase27_unfinished/verify_phase27.py
