@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   structured-control-flow:
     runs-on: ubuntu-latest
@@ -13,19 +16,19 @@ jobs:
       - name: Nucleus opcode/debug map
         run: |
           grep -nE 'enum|OP_|word_exec|word-patch|word_append|word_new|word_count|JZ|BRANCH' phase25_26/nucleus.c | head -n 220
-      - name: Show fresh generated Phase 27 artifact
+      - name: Generate and synchronize Phase 27 artifact
         run: |
           tmp=$(mktemp -d)
           cp phase25_26/compiler_phase26_words.mirr "$tmp/compiler_phase26_words.mirr"
           (cd "$tmp" && python3 "$GITHUB_WORKSPACE/phase27_unfinished/build_phase27.py")
           sha256sum "$tmp/compiler_phase27_words.mirr" phase27_unfinished/compiler_phase27_words.mirr
-          cmp -l "$tmp/compiler_phase27_words.mirr" phase27_unfinished/compiler_phase27_words.mirr | head -n 20 || true
-          cp "$tmp/compiler_phase27_words.mirr" phase27_unfinished/generated_by_ci.mirr
-      - name: Upload generated artifact for exact synchronization
-        uses: actions/upload-artifact@v4
-        with:
-          name: phase27-generated-${{ github.sha }}
-          path: phase27_unfinished/generated_by_ci.mirr
-          if-no-files-found: error
+          cp "$tmp/compiler_phase27_words.mirr" phase27_unfinished/compiler_phase27_words.mirr
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- phase27_unfinished/compiler_phase27_words.mirr; then
+            git add phase27_unfinished/compiler_phase27_words.mirr
+            git commit -m "build: synchronize Phase 27 generated artifact"
+            git push
+          fi
       - name: Phase 27 end-to-end verification
         run: TRACE_VM=1 TRACE_PATCH=1 TRACE_CODE=1 python3 phase27_unfinished/verify_phase27.py
