@@ -11,7 +11,6 @@ WORDS = ROOT / "phase27_unfinished" / "compiler_phase27_words.mirr"
 BUILDER = ROOT / "phase27_unfinished" / "build_phase27.py"
 NUCLEUS = ROOT / "phase25_26" / "nucleus.c"
 INTEGRATION = ROOT / "phase28_surface_parser" / "verify_phase28.py"
-
 PRIMS = {
     '+', '-', 'dup', 'drop', 'swap', '@', '!', 'emit', 'next', 'nextc',
     'src-pos', 'src-len', 'word-count', 'word-name-len', 'word-name-char',
@@ -20,7 +19,6 @@ PRIMS = {
 }
 TOKEN_RE = re.compile(r'\S+')
 WORD_RE = re.compile(r'^:\s+([^\s]+)\s+(.*?)\s*;\s*$', re.S)
-
 
 def parse_mirr(text):
     out = {}
@@ -37,21 +35,14 @@ def parse_mirr(text):
         out[name] = TOKEN_RE.findall(body)
     return out
 
-
 def run(cmd, cwd=None):
-    return subprocess.run(cmd, cwd=cwd, text=True, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE, check=False)
-
+    return subprocess.run(cmd, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
 
 def main():
     for p in (SOURCE, WORDS, BUILDER, NUCLEUS, INTEGRATION):
         if not p.is_file():
             raise SystemExit(f"missing Phase 29 input: {p}")
-
     src = parse_mirr(SOURCE.read_text())
-    if not src:
-        raise SystemExit("compiler source contains no MIRR definitions")
-
     unresolved = []
     for name, body in src.items():
         for tok in body:
@@ -69,14 +60,11 @@ def main():
                 unresolved.append((name, tok))
     if unresolved:
         raise SystemExit("unresolved compiler-source references: " + repr(unresolved[:20]))
-
     required = {
-        'space?', 'seek-marker', 'scan-token', 'find-word', 'probe',
-        'tok-colon', 'tok-semi', 'digit-first?', 'parse-number',
-        'set-marker-pos', 'mark-pos', 'emit-byte', 'create-pass',
-        'compile-pass', 'tok-if', 'tok-else', 'tok-then', 'current-end',
-        'current-len', 'patch-at', 'if-open', 'else-open', 'then-close',
-        'compile-structured', 'run-alpha'
+        'space?', 'seek-marker', 'scan-token', 'find-word', 'probe', 'tok-colon', 'tok-semi',
+        'digit-first?', 'parse-number', 'set-marker-pos', 'mark-pos', 'emit-byte', 'create-pass',
+        'compile-pass', 'tok-if', 'tok-else', 'tok-then', 'current-end', 'current-len', 'patch-at',
+        'if-open', 'else-open', 'then-close', 'compile-structured', 'run-alpha'
     }
     missing = sorted(required - src.keys())
     if missing:
@@ -91,7 +79,6 @@ def main():
         generated = td / WORDS.name
         if generated.read_bytes() != WORDS.read_bytes():
             raise SystemExit('generated compiler artifact is not byte-identical to the committed artifact')
-
         cc = run(['cc', '-std=c17', '-Wall', '-Wextra', '-Wpedantic', '-Werror', str(NUCLEUS), '-o', str(td / 'nucleus')])
         if cc.returncode:
             raise SystemExit('strict nucleus build failed:\n' + cc.stderr)
@@ -101,9 +88,9 @@ def main():
             generated.read_text()
             + ': debug-base word-count drop 48 + emit exit ;\n'
             + ': debug-create create-pass word-count drop 48 + emit exit ;\n'
-            + ': debug-name create-pass word-count 18 ! 19 ! 18 @ 19 @ word-name-len emit exit ;\n'
-            + ': debug-last-char create-pass word-count 18 ! 19 ! 18 @ 1 - 18 ! 18 @ 19 @ 0 word-name-char emit exit ;\n'
-            + ': debug-last-code create-pass word-count 18 ! 19 ! 18 @ 1 - 18 ! 18 @ 19 @ word-code-len drop emit exit ;\n'
+            + ': debug-name create-pass word-count 19 ! 18 ! 18 @ 19 @ word-name-len emit exit ;\n'
+            + ': debug-last-char create-pass word-count 19 ! 18 ! 18 @ 1 - 18 ! 18 @ 19 @ 0 word-name-char emit exit ;\n'
+            + ': debug-last-code create-pass word-count 19 ! 18 ! 18 @ 1 - 18 ! 18 @ 19 @ word-code-len drop emit exit ;\n'
         )
         inp = td / 'smoke.mirr'
         inp.write_text(': alpha 1 IF 65 emit ELSE 66 emit THEN ;\n')
@@ -114,15 +101,12 @@ def main():
             raise SystemExit(f"dictionary-count diagnostic failed: base={base.stdout!r}/{base.returncode}, after={made.stdout!r}/{made.returncode}")
         if ord(made.stdout) != ord(base.stdout) + 1:
             raise SystemExit(f"create-pass did not add exactly one target word: base={base.stdout!r}, after={made.stdout!r}")
-
         n = run([str(td / 'nucleus'), str(diagnostic), 'debug-name', '--input', str(inp)])
         if n.returncode or n.stdout != '\x05':
             raise SystemExit(f"word-new name diagnostic failed: rc={n.returncode} stdout={n.stdout!r} stderr={n.stderr!r}; expected target name length 5")
-
         c = run([str(td / 'nucleus'), str(diagnostic), 'debug-last-char', '--input', str(inp)])
         if c.returncode or c.stdout != 'a':
             raise SystemExit(f"target-name diagnostic failed: rc={c.returncode} stdout={c.stdout!r} stderr={c.stderr!r}; expected first character 'a'")
-
         p = run([str(td / 'nucleus'), str(generated), 'run-alpha', '--input', str(inp)])
         if p.returncode or p.stdout != 'A':
             raise SystemExit(f"compiler smoke test failed: rc={p.returncode} stdout={p.stdout!r} stderr={p.stderr!r}")
@@ -130,7 +114,6 @@ def main():
     print('PHASE29_MIRR_SOURCE_CLOSURE_PASS')
     print(f'MIRR compiler words: {len(src)}')
     print('Host dependency remains limited to the bootstrap loader/builder; self-recompile is not claimed.')
-
 
 if __name__ == '__main__':
     main()
