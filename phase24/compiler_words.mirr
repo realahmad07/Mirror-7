@@ -1,0 +1,15 @@
+: emit-char emit ;
+: add1 1 + ;
+: sub1 1 - ;
+: zero? 0 = ;
+: nonzero? zero? 0 = ;
+: src-char nextc ;
+: src-length src-len ;
+: position src-pos ;
+: word-count word-count ;
+: word-name-length word-name-len ;
+: word-name-byte word-name-char ;
+: word-code-length word-code-len ;
+: word-code-byte word-code-byte ;
+: read-digit nextc 48 - ;
+: putc ! ;
