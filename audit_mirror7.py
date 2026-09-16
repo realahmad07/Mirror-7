@@ -1,5 +1,6 @@
 from pathlib import Path
 import difflib
+import json
 import re
 import shutil
 import subprocess
@@ -75,15 +76,34 @@ def audit_generated(generated):
             pc += token_size(t)
 
 
+def audit_phase13_heritage():
+    root=ROOT/'phase13_heritage'
+    required=[root/'PHASE13_FINAL.md',root/'PHASE13_REPORT.md',root/'V122_REPORT.md',root/'V123_REPORT.md',root/'artifacts_phase13/source_artifact_v1.json',root/'v129/artifact_compiler.py',root/'v129/bootstrap_artifact.py',root/'tests_phase13/test_phase13.py',root/'tests_phase13/stress_phase13.py']
+    for p in required:
+        if not p.is_file(): raise SystemExit(f'missing Phase 13 heritage input: {p}')
+    data=json.loads((root/'artifacts_phase13/source_artifact_v1.json').read_text())
+    if data.get('format')!='MIRROR_SOURCE_ARTIFACT_V1': raise SystemExit('invalid preserved Phase 13 artifact format')
+    templates=data.get('encoder',{}).get('templates')
+    rules=data.get('rules')
+    if not isinstance(templates,dict) or not templates: raise SystemExit('preserved Phase 13 encoder templates missing')
+    if not isinstance(rules,dict) or not rules: raise SystemExit('preserved Phase 13 language rules missing')
+    allowed={'NOARG','IMM','LET_IMM'}
+    for name,rule in rules.items():
+        if not isinstance(name,str) or not name or not isinstance(rule,dict) or rule.get('kind') not in allowed or not isinstance(rule.get('emit'),list) or not rule['emit']:
+            raise SystemExit(f'invalid preserved Phase 13 rule: {name!r}')
+
+
 def main():
     required=[
         ROOT/'README.md', ROOT/'STATUS.md', ROOT/'phase25_26/compiler_phase26_words.mirr',
         ROOT/'phase25_26/nucleus.c', ROOT/'phase27_unfinished/build_phase27.py',
         ROOT/'phase27_unfinished/compiler_phase27_words.mirr', ROOT/'phase28_surface_parser/parser.c',
-        ROOT/'phase28_surface_parser/verify_phase28.py'
+        ROOT/'phase28_surface_parser/verify_phase28.py', ROOT/'phase13_heritage/verify_heritage.py'
     ]
     for p in required:
         if not p.is_file(): raise SystemExit(f'missing audit input: {p}')
+
+    audit_phase13_heritage()
 
     with tempfile.TemporaryDirectory() as td_name:
         td=Path(td_name)
@@ -106,6 +126,7 @@ def main():
             if r.returncode: raise SystemExit(f'strict build failed:\n{r.stderr}')
 
     print('MIRROR7_DEEP_AUDIT_STATIC_PASS')
+    print('MIRROR7_PHASE13_HERITAGE_AUDIT_PASS')
     print('NOTE: absolute branch targets remain a documented architecture debt; this audit proves current targets are internally consistent, not position-independent.')
     print('NOTE: source/target dictionary separation, fresh-stage bootstrap, self-recompile, fixed-point and independent rebuild remain open acceptance gates.')
 

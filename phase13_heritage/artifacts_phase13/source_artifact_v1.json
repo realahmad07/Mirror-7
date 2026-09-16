@@ -1,0 +1,25 @@
+{
+  "default_terminator": ["EXIT"],
+  "encoder": {
+    "arch": "x86_64",
+    "format": "MIRROR_NATIVE_ENCODER_V2",
+    "templates": {
+      "ADD": {"bytes": [5, "IMM32"], "clobbers": "eax", "imm": "IMM32"},
+      "CMP0": {"bytes": [131, 248, 0], "clobbers": "flags", "imm": "NONE"},
+      "EXIT": {"bytes": [137, 199, 184, 60, 0, 0, 0, 15, 5], "clobbers": "syscall", "imm": "NONE"},
+      "JMP": {"bytes": [235, "REL8"], "clobbers": "pc", "imm": "REL8"},
+      "JZ": {"bytes": [116, "REL8"], "clobbers": "pc", "imm": "REL8"},
+      "RET": {"bytes": [195], "clobbers": "pc", "imm": "NONE"},
+      "SET": {"bytes": [184, "IMM32"], "clobbers": "eax", "imm": "IMM32"},
+      "SUB": {"bytes": [45, "IMM32"], "clobbers": "eax", "imm": "IMM32"}
+    }
+  },
+  "format": "MIRROR_SOURCE_ARTIFACT_V1",
+  "rules": {
+    "add": {"emit": ["ADD", "${arg1}"], "kind": "IMM"},
+    "exit": {"emit": ["EXIT"], "kind": "NOARG"},
+    "let": {"emit": ["SET", "${value}"], "kind": "LET_IMM"},
+    "sub": {"emit": ["SUB", "${arg1}"], "kind": "IMM"}
+  },
+  "version": 1
+}

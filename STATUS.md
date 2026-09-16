@@ -20,6 +20,7 @@ This is the canonical human-readable status page for the repository. It delibera
 | Phase 28 — surface parser component | ☑ | Strict C17, regression/fuzz, and ASan/UBSan component tests are implemented. |
 | Phase 28 — surface parser/compiler integration | ☐ | Integration harness is implemented; current CI must prove parser-valid programs compile and malformed programs are rejected through the real compiler path. |
 | Whole-project deep audit | ☐ | Static audit implementation is committed; current CI execution is still required before promoting the audit gate. |
+| Phase 13 heritage preservation | ☑ | Pre-MIRR artifact/bootstrap evidence is preserved under `phase13_heritage/` and included in the deep audit as a non-active reference layer. |
 | Compiler entirely in MIRR | ☐ | No hidden host compiler implementation may remain in the accepted self-hosting path. |
 | Separate source/target dictionary ABI | ☐ | Compiler dictionary and fresh generated target dictionary must be independently selectable. |
 | Remove hard-coded absolute branch dependency | ☐ | Control-flow targets must be generated/relocated from symbolic structure or equivalent position-independent metadata. |
@@ -30,6 +31,12 @@ This is the canonical human-readable status page for the repository. It delibera
 | Independent verification | ☐ | Verification must be independently executable and not rely solely on builder assertions. |
 | Bootstrap complete | ☐ | All preceding gates must be green. |
 
+## Phase 13 heritage integration
+
+The repository now preserves the pre-MIRR/Nucleus Phase 13 development line under `phase13_heritage/`. The retained material includes the learned native encoder/source artifact, artifact-driven compiler engine, bootstrap wrapper, deterministic fixed-point evidence, data-only language-extension tests, and the explicit record that full self-construction was not yet proven.
+
+This historical layer is intentionally reference-only. It does not enter the active Phase 24–29 compiler path. Its role is to preserve useful architectural invariants for the later self-hosting work and to give the deep audit a machine-checkable artifact/bootstrap reference.
+
 ## Phase 27 corrections
 
 The current Phase 27 builder and generated artifact include corrections discovered by tracing the structured-control path:
@@ -38,8 +45,6 @@ The current Phase 27 builder and generated artifact include corrections discover
 2. **Relocation boundary:** the generated image accounts for the exact insertion point and shifts only absolute branch targets at or after that point. Targets before the insertion remain unchanged.
 3. **Generated-artifact reproducibility:** the committed `compiler_phase27_words.mirr` is maintained as generated output from the committed builder.
 4. **Verification:** `verify_phase27.py` rebuilds in a temporary directory, compares bytes, performs a strict C17 nucleus build, and runs structured valid/nested cases. CI execution is the authoritative end-to-end gate.
-
-The repository history contains the debugging commits that led to these corrections, including the latest alignment commit `9447b98c62fcfaa765d831a10ed1fdab4cb340e8`.
 
 ## Phase 28 integration evidence
 
@@ -54,7 +59,7 @@ This is an integration contract, not a claim that the parser C implementation ha
 
 ## Deep-audit evidence
 
-`audit_mirror7.py` checks required repository inputs, exact builder/artifact reproducibility, primitive-count/layout assumptions, duplicate definitions, u16 code-size limits, branch-target containment and instruction-boundary validity, and strict C17 builds of the nucleus and parser.
+`audit_mirror7.py` checks required repository inputs, exact builder/artifact reproducibility, primitive-count/layout assumptions, duplicate definitions, u16 code-size limits, branch-target containment and instruction-boundary validity, strict C17 builds of the nucleus and parser, and the structural integrity of the preserved Phase 13 artifact layer.
 
 The audit deliberately does **not** convert architectural debt into a green result. In particular, it reports these as remaining blockers:
 
@@ -65,6 +70,7 @@ The audit deliberately does **not** convert architectural debt into a green resu
 ## Current acceptance boundary
 
 ```text
+Phase 13 heritage preservation         ☑
 Phase 27 implementation correction     ☑
 Phase 27 artifact synchronization      ☑
 Phase 27 actual CI promotion           ☐
