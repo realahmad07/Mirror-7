@@ -1,0 +1,40 @@
+name: MIRROR7 Phase 27 Step 1 Verify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'phase27_unfinished/STEP1_TRIGGER'
+
+permissions:
+  contents: write
+
+jobs:
+  step1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify builder reproducibility only
+        run: |
+          tmp=$(mktemp -d)
+          cp phase25_26/compiler_phase26_words.mirr "$tmp/compiler_phase26_words.mirr"
+          (cd "$tmp" && python3 "$GITHUB_WORKSPACE/phase27_unfinished/build_phase27.py")
+          cmp -s "$tmp/compiler_phase27_words.mirr" phase27_unfinished/compiler_phase27_words.mirr
+      - name: Record PASS
+        if: success()
+        run: |
+          printf '# Phase 27 Step 1 — PASS\n\nBuilder regeneration is byte-identical to the committed Phase 27 artifact.\n\nCommit: %s\n' "$GITHUB_SHA" > phase27_unfinished/STEP1_PASS.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add phase27_unfinished/STEP1_PASS.md
+          git commit -m "test: record Phase 27 step 1 reproducibility PASS"
+          git push
+      - name: Record FAIL
+        if: failure()
+        run: |
+          printf '# Phase 27 Step 1 — FAIL\n\nBuilder regeneration did not match the committed artifact.\n\nCommit: %s\n' "$GITHUB_SHA" > phase27_unfinished/STEP1_FAIL.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add phase27_unfinished/STEP1_FAIL.md
+          git commit -m "test: record Phase 27 step 1 reproducibility FAIL"
+          git push || true
