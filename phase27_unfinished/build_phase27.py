@@ -28,9 +28,39 @@ def relocate(lines,delta):
         out.append(' '.join(toks))
     return out
 
-# Phase 26 already contains the corrected create-pass stores.  Relocate only
-# the existing absolute control-flow targets; never patch a guessed address.
+def repair_fallthrough_self_targets(lines):
+    """Fix legacy branches that target their own opcode before a following exit.
+
+    The Phase 26 create-pass EOF guard contains `0branch:<its-own-address> exit`.
+    The VM branches to the encoded absolute address, so that form loops back to
+    the branch after consuming its condition and then underflows the data stack.
+    Only repair this unambiguous `branch ; exit` shape; leave intentional loops
+    untouched.
+    """
+    out=[]
+    addr=PRIM_BYTES
+    for line in lines:
+        toks=line.split()
+        if not toks:
+            continue
+        body=toks[2:-1]
+        fixed=[]
+        for i,t in enumerate(body):
+            m=re.match(r'^(0branch:|branch:)(\d+)$',t)
+            if m and i+1 < len(body) and body[i+1]=='exit':
+                here=addr
+                target=int(m.group(2))
+                if target==here:
+                    t=m.group(1)+str(here+3)
+            fixed.append(t)
+            addr += token_size(t)
+        out.append(' '.join(toks[:2]+fixed+toks[-1:]))
+    return out
+
+# Relocate inherited Phase 26 absolute targets, then repair the one legacy
+# fall-through self-target in create-pass using the actual generated address.
 base_lines=relocate(base_lines,PRIM_DELTA)
+base_lines=repair_fallthrough_self_targets(base_lines)
 
 def source_size(lines):
     total=PRIM_BYTES
