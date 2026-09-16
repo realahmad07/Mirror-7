@@ -42,17 +42,11 @@ def repair_structured_passes(lines):
         if toks and toks[0]==':' and toks[1]=='create-pass':
             body=toks[2:-1]; pcs=[]; pc=addr
             for t in body:pcs.append(pc); pc+=token_size(t)
-            a=body.index('tok-colon'); b=body.index('word-new')-5; c=body.index('tok-semi'); d=body.index('scan-token'); e=body.index('scan-token',b); f=body.index('drop')
-            for i,t in enumerate(body):
-                if not (t.startswith('0branch:') or t.startswith('branch:')):continue
-                if i<a:body[i]=f'0branch:{pcs[a]}'
-                elif i==a+1:body[i]=f'0branch:{pcs[f]}'
-                elif a<i<b and t.startswith('0branch:'):body[i]=f'0branch:{pcs[b]}'
-                elif a<i<b and t.startswith('branch:'):body[i]=f'branch:{pcs[f]}'
-                elif b<i<c and t.startswith('0branch:'):body[i]=f'0branch:{pcs[c]}'
-                elif b<i<c and t.startswith('branch:'):body[i]=f'branch:{pcs[f]}'
-                elif i==c+1:body[i]=f'0branch:{pcs[e]}'
-                elif i==c+2:body[i]=f'branch:{pcs[d]}'
+            bs=[i for i,t in enumerate(body) if t.startswith('0branch:') or t.startswith('branch:')]
+            if len(bs)!=8: raise ValueError('create-pass branch count changed')
+            ex=body.index('exit'); dr=body.index('drop'); st=body.index('scan-token')
+            targets=[pcs[ex],pcs[dr],pcs[dr],pcs[dr],pcs[dr],pcs[dr],pcs[st],pcs[dr]]
+            for j,i in enumerate(bs): body[i]=('0branch:' if body[i].startswith('0branch:') else 'branch:')+str(targets[j])
             toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)
         elif toks and toks[0]==':' and toks[1]=='compile-pass':
             body=toks[2:-1]; pcs=[]; pc=addr
@@ -81,17 +75,18 @@ def repair_find_word_storage(lines):
         toks=line.split()
         if toks and toks[0]==':' and toks[1]=='find-word':
             body=toks[2:-1]
-            for i in range(len(body)-3):
-                if body[i:i+4]==['word-count','16','!','15','!']:
-                    body[i:i+4]=['word-count','swap','15','!','16','!']
-                    break
+            for i in range(len(body)-4):
+                if body[i:i+5]==['word-count','16','!','15','!']:
+                    body[i:i+5]=['word-count','swap','15','!','16','!']; break
+            for i in range(len(body)-5):
+                if body[i:i+6]==['1','14','@','+','14','@']:
+                    body[i:i+6]=['1','14','@','+','14','!']; break
             toks=toks[:2]+body+toks[-1:]
         elif toks and toks[0]==':' and toks[1]=='probe':
             body=toks[2:-1]
             for i in range(len(body)-4):
                 if body[i:i+4]==['find-word','14','!','13','!']:
-                    body[i:i+4]=['find-word','swap','13','!','14','!']
-                    break
+                    body[i:i+4]=['find-word','swap','13','!','14','!']; break
             toks=toks[:2]+body+toks[-1:]
         out.append(' '.join(toks))
     return out
