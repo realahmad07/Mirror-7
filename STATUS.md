@@ -1,70 +1,90 @@
 # MIRROR7 — Detailed Source and Phase Status
 
-This file records repository state and separates implementation history from fresh verification.
+This is the canonical human-readable status page for the repository. It deliberately distinguishes implementation history, component verification, and bootstrap completion.
 
-## Status legend
+## Legend
 
-- ☑ **PASS recorded** — a preserved artifact reports a successful verification result.
-- ☑ **Component verified; integration required** — the component itself passed its tests, but the full phase gate is not yet closed.
-- ☑ **Implemented; verification required** — source is present, but no fresh clean-room PASS is claimed.
-- ☐ **UNFINISHED** — active or incomplete work; it must not be treated as complete.
-- ☐ **Not verified** — insufficient evidence for completion.
+- ☑ **PASS recorded** — preserved artifacts contain evidence of a successful historical test.
+- ☑ **Component verified** — the named component has passed its own tests, but the larger integration gate remains open.
+- ☑ **Implemented; verification required** — implementation exists but is not currently promoted to PASS.
+- ☐ **UNFINISHED / NOT VERIFIED** — the acceptance gate is still open.
 
-## Bootstrap phases
+## Acceptance board
 
-| Step | Tick | Status |
+| Gate | State | Requirement |
 |---|---:|---|
-| Phase 24 — runtime dictionary creation | ☑ | PASS recorded in preserved Phase 24 artifacts. |
-| Phase 25 — tokenization + lookup + compilation | ☑ | Implemented source preserved; fresh verification required. |
-| Phase 26 — integrated native compiler path | ☑ | Implemented source preserved; fresh verification required. |
-| Phase 27 — structured relocation/control flow | ☐ | UNFINISHED; compiler failure propagation and relocation still require full compiler-level verification. |
-| Phase 28 — complete surface parser | ☑ | **Parser component verified** by strict C17, regression/fuzz, and ASan/UBSan GitHub Actions. Full MIRR compiler integration is still required before the phase can be marked PASS. |
-| Phase 29 — compiler entirely in MIRR | ☐ | Not verified. Depends on closing Phase 27/28 integration and removing remaining host/compiler-generation dependencies. |
-| Fresh-stage bootstrap | ☐ | Not verified. |
-| Self-recompile | ☐ | Not verified. |
-| Byte-identical fixed point | ☐ | Not verified. |
-| Independent rebuild | ☐ | Not verified. |
-| Independent verification | ☐ | Not verified. |
-| Bootstrap complete | ☐ | Not verified. |
+| Phase 24 — runtime dictionary | ☑ | Runtime dictionary implementation and preserved tests. |
+| Phase 25 — tokenization + lookup + compilation | ☑ | Implementation preserved; clean-room verification remains a separate requirement. |
+| Phase 26 — integrated native compiler path | ☑ | Implementation preserved; clean-room verification remains a separate requirement. |
+| Phase 27 — structured relocation/control flow | ☐ | Must pass actual compiler-level valid, malformed, nested, stress and sanitizer tests. |
+| Phase 28 — surface parser | ☑ | Standalone parser component verified by strict build, regression/fuzz, and sanitizers; end-to-end compiler integration remains part of the bootstrap gate. |
+| Compiler entirely in MIRR | ☐ | No hidden host compiler implementation may remain in the accepted self-hosting path. |
+| Separate source/target dictionary ABI | ☐ | Compiler dictionary and fresh generated target dictionary must be independently selectable. |
+| Remove hard-coded absolute branch dependency | ☐ | Control-flow targets must be generated/relocated from symbolic structure or equivalent position-independent metadata. |
+| Fresh-stage bootstrap | ☐ | A fresh stage must rebuild the compiler from the accepted bootstrap substrate. |
+| Self-recompile | ☐ | The MIRR compiler must compile its own source through the same bootstrap path. |
+| Byte-identical fixed point | ☐ | Repeated self-recompilation must produce identical bytes under fixed build inputs. |
+| Independent rebuild | ☐ | A separate rebuild path must reproduce the same accepted artifact. |
+| Independent verification | ☐ | Verification must be independently executable and not rely solely on builder assertions. |
+| Bootstrap complete | ☐ | All preceding gates must be green. |
 
-## Phase 27 boundary
+## Current engineering boundary
 
-The immediate unresolved compiler boundary is structured relocation/control flow. The preserved compiler contains `IF`, `ELSE`, and `THEN` handling and relocation/patching machinery. The critical invariant remains:
+The next implementation work is compiler-in-MIRR self-hosting. Two architectural defects must be eliminated before that can be promoted:
+
+1. **Absolute branch dependency:** old generated branch offsets can become stale when primitive/dictionary layout changes. This must be replaced or contained by real relocation based on the current generated layout.
+2. **Single-dictionary ABI:** compiler execution and compiler output cannot safely share an implicit dictionary when the goal is a fresh target rebuild. The runtime needs explicit source/executable-dictionary and target/generated-dictionary context.
+
+These are bootstrap correctness issues, not documentation issues.
+
+## Phase 28 component evidence
+
+The surface parser component in `phase28_surface_parser/parser.c` is tested for:
+
+- valid definitions and nested control flow;
+- invalid names and malformed numeric literals;
+- `ELSE` outside `IF`;
+- duplicate `ELSE`;
+- unmatched `THEN`;
+- unclosed `IF`;
+- empty branches;
+- malformed nested constructs;
+- randomized parser input;
+- strict C17 warnings-as-errors;
+- AddressSanitizer and UndefinedBehaviorSanitizer execution.
+
+The CI workflow records the component result. It is not used as evidence that the entire self-hosting compiler has already closed the Phase-28/29 boundary.
+
+## Repository/UI policy
+
+Source is stored as individual repository files, never as a ZIP dependency. Documentation is Markdown so it remains inspectable and versioned. The browser UI is a presentation layer over repository status; it does not replace executable tests or acceptance evidence.
+
+## Debugging protocol
+
+For every failure:
 
 ```text
-malformed descendant
-        ↓
-compiler failure
-        ↓
-failure propagates through every enclosing compiler layer
-        ↓
-top-level compilation failure
+reproduce
+  ↓
+minimize
+  ↓
+trace exact boundary
+  ↓
+inspect ABI / layout / ownership assumptions
+  ↓
+consult authoritative technical references when useful
+  ↓
+minimal justified fix
+  ↓
+rerun failing case
+  ↓
+regression
+  ↓
+combination / fuzz / sanitizer
+  ↓
+promote only with evidence
 ```
 
-Cases that must remain adversarial tests include `ELSE` outside `IF`, duplicate `ELSE`, unmatched `THEN`, malformed nested constructs, and failures occurring inside nested compiler calls.
+## Final rule
 
-## Phase 28 verification
-
-`phase28_surface_parser/parser.c` implements the current surface grammar and rejects malformed definitions, malformed numeric literals, invalid names, empty branches, duplicate `ELSE`, unmatched `THEN`, and unclosed control flow.
-
-The repository CI workflow verifies:
-
-1. strict C17 compilation with `-Wall -Wextra -Wpedantic -Werror`;
-2. parser regression tests;
-3. 100,000 randomized parser inputs;
-4. ASan/UBSan compilation;
-5. sanitizer execution.
-
-These checks passed in GitHub Actions. This is evidence for the standalone parser component only. It does **not** yet prove that the MIRR compiler path uses this parser end-to-end.
-
-## Phase 29 blocker analysis
-
-The current MIRR compiler source still contains generated/hard-coded branch addresses, and the stage-0 runtime currently exposes one dictionary context to compiler operations. A true fresh-stage self-recompile needs an explicit separation between the dictionary containing executable compiler words and the fresh target dictionary being generated. This ABI issue must be resolved before claiming a closed self-hosting bootstrap.
-
-## Repository contents
-
-The repository is being maintained as individual source files, not as a ZIP dependency. Phase directories retain source, tests, build tooling, and reports needed to reproduce and inspect the work.
-
-## Verification policy
-
-No later bootstrap claim may be inferred from file presence. Promote a phase only after its actual build/execution path passes, malformed cases are attacked, regressions are rerun, and independent/sanitizer or fuzz checks provide supporting evidence.
+No file, README, generated artifact, or successful isolated demonstration is sufficient to claim **BOOTSTRAP COMPLETE**. The accepted result requires a genuinely fresh self-hosted rebuild followed by self-recompile, byte-identical fixed-point verification, independent rebuild, and independent verification.
