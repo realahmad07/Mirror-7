@@ -49,20 +49,91 @@ def relocate(lines,delta):
         out.append(' '.join(toks))
     return out
 
-def repair_create_pass_eof_guard(lines):
+def repair_structured_passes(lines):
     out=[]
+    addr=PRIM_BYTES
     for line in lines:
         toks=line.split()
-        if len(toks)>=7 and toks[0]==':' and toks[1]=='create-pass':
-            for i in range(len(toks)-5):
-                if toks[i:i+4] == ['12','@','0','=']:
-                    m=re.fullmatch(r'0branch:(\d+)',toks[i+4])
-                    if m and toks[i+5]=='exit':
-                        toks[i+4]=f'0branch:{int(m.group(1))+1}'
-                        break
-        out.append(' '.join(toks))
-    return out
+        if toks and toks[0]==':' and toks[1] == 'create-pass':
+            body=toks[2:-1]
+            pcs=[]; pc=addr
+            for t in body:
+                pcs.append(pc); pc += token_size(t)
+            
+            t_tok_colon = body.index('tok-colon')
+            t_word_new = body.index('word-new') - 5
+            t_tok_semi = body.index('tok-semi')
+            t_outer_scan = body.index('scan-token')
+            t_inner_scan = body.index('scan-token', t_word_new)
+            t_drop_exit = body.index('drop')
+            
+            for i, t in enumerate(body):
+                if not (t.startswith('0branch:') or t.startswith('branch:')): continue
+                if i < t_tok_colon:
+                    body[i] = f'0branch:{pcs[t_tok_colon]}'
+                elif i == t_tok_colon + 1:
+                    body[i] = f'0branch:{pcs[t_drop_exit]}'
+                elif i > t_tok_colon and i < t_word_new and t.startswith('0branch:'):
+                    body[i] = f'0branch:{pcs[t_word_new]}'
+                elif i > t_tok_colon and i < t_word_new and t.startswith('branch:'):
+                    body[i] = f'branch:{pcs[t_drop_exit]}'
+                elif i > t_word_new and i < t_tok_semi and t.startswith('0branch:'):
+                    body[i] = f'0branch:{pcs[t_tok_semi]}'
+                elif i > t_word_new and i < t_tok_semi and t.startswith('branch:'):
+                    body[i] = f'branch:{pcs[t_drop_exit]}'
+                elif i == t_tok_semi + 1:
+                    body[i] = f'0branch:{pcs[t_inner_scan]}'
+                elif i == t_tok_semi + 2:
+                    body[i] = f'branch:{pcs[t_outer_scan]}'
+            toks = toks[:2] + body + toks[-1:]
+            line = ' '.join(toks)
+        
+        elif toks and toks[0]==':' and toks[1] == 'compile-pass':
+            body=toks[2:-1]
+            pcs=[]; pc=addr
+            for t in body:
+                pcs.append(pc); pc += token_size(t)
+                
+            t_tok_colon = body.index('tok-colon')
+            t_find_1 = body.index('find-word')
+            t_tok_semi = body.index('tok-semi')
+            t_digit_first = body.index('digit-first?')
+            t_find_2 = body.index('find-word', t_digit_first)
+            t_outer_scan = body.index('scan-token')
+            t_inner_scan = body.index('scan-token', t_find_1)
+            t_exit = len(body) - 1
+            
+            for i, t in enumerate(body):
+                if not (t.startswith('0branch:') or t.startswith('branch:')): continue
+                if i < t_tok_colon:
+                    body[i] = f'0branch:{pcs[t_tok_colon]}'
+                elif i == t_tok_colon + 1:
+                    body[i] = f'0branch:{pcs[t_exit]}'
+                elif i > t_tok_colon and i < t_find_1 and t.startswith('0branch:'):
+                    body[i] = f'0branch:{pcs[t_find_1]}'
+                elif i > t_tok_colon and i < t_find_1 and t.startswith('branch:'):
+                    body[i] = f'branch:{pcs[t_exit]}'
+                elif i > t_find_1 and i < t_tok_semi and t.startswith('0branch:'):
+                    body[i] = f'0branch:{pcs[t_tok_semi]}'
+                elif i > t_find_1 and i < t_tok_semi and t.startswith('branch:'):
+                    body[i] = f'branch:{pcs[t_exit]}'
+                elif i == t_tok_semi + 1:
+                    body[i] = f'0branch:{pcs[t_digit_first]}'
+                elif i > t_tok_semi and i < t_digit_first and t.startswith('branch:'):
+                    body[i] = f'branch:{pcs[t_outer_scan]}'
+                elif i == t_digit_first + 1:
+                    body[i] = f'0branch:{pcs[t_find_2]}'
+                elif i > t_digit_first and i < t_find_2 and t.startswith('branch:'):
+                    body[i] = f'branch:{pcs[t_inner_scan]}'
+                elif i > t_find_2 and t.startswith('branch:'):
+                    body[i] = f'branch:{pcs[t_inner_scan]}'
+            toks = toks[:2] + body + toks[-1:]
+            line = ' '.join(toks)
 
+        out.append(line)
+        if toks:
+            addr += sum(token_size(t) for t in toks[2:-1]) + 1
+    return out
 def repair_find_word_targets(lines):
     """Resolve legacy FIND targets from the emitted instruction layout."""
     out=[]
@@ -99,7 +170,7 @@ def repair_find_word_targets(lines):
     return out
 
 base_lines=relocate(base_lines,PRIM_DELTA)
-base_lines=repair_create_pass_eof_guard(base_lines)
+base_lines=repair_structured_passes(base_lines)
 base_lines=repair_find_word_targets(base_lines)
 
 def source_size(lines):
