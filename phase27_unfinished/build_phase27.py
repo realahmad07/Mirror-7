@@ -114,7 +114,9 @@ def repair_find_word_targets(lines):
             toks=toks[:2]+body+toks[-1:];line=' '.join(toks)
         out.append(line)
     return out
-base_lines=relocate(base_lines,PRIM_DELTA); base_lines=repair_structured_passes(base_lines); base_lines=repair_find_word_storage(base_lines); base_lines=repair_find_word_targets(base_lines)
+# Ordering is intentional: find-word/probe storage repairs change byte lengths and therefore
+# must be applied before structured-pass branch addresses are calculated.
+base_lines=relocate(base_lines,PRIM_DELTA); base_lines=repair_find_word_storage(base_lines); base_lines=repair_structured_passes(base_lines); base_lines=repair_find_word_targets(base_lines)
 def source_size(lines):
     total=PRIM_BYTES
     for line in lines:
