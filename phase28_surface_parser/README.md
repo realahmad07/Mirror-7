@@ -1,6 +1,6 @@
-# Phase 28 — Complete Surface Parser
+# Phase 28 — Surface Parser → MIRR Compiler Integration
 
-Phase 28 extends the Phase 27 structured-control-flow compiler into a complete surface-syntax validation layer.
+Phase 28 connects the surface syntax layer to the real MIRR compiler. The parser now emits a versioned, validated parsed-structure IR that is designed to be consumed by the compiler; compiler integration remains the next gated step.
 
 ## Required grammar
 
@@ -17,7 +17,6 @@ The parser must reject:
 - empty or missing definition names
 - stray `;`
 - unterminated definitions
-- unknown words when compilation requires immediate resolution
 - malformed numbers
 - `ELSE` without an open `IF`
 - duplicate `ELSE` in one `IF`
@@ -25,10 +24,40 @@ The parser must reject:
 - unclosed `IF` blocks
 - malformed nested definitions
 
+## Phase 28.2 — Parsed-structure ABI
+
+The parser/compiler boundary is explicitly defined by `surface_ir.h`.
+
+The ABI is:
+
+- versioned (`MIRROR7_SURFACE_IR_VERSION`)
+- bounded (`MIRROR7_SURFACE_IR_MAX_TOKENS`)
+- source ordered
+- typed by `mirror7_ir_kind_t`
+- source-position aware
+- explicit about 16-bit numeric values
+- independently validated by `mirror7_surface_ir_validate()`
+
+`mirror7_parse_ir()` is the parser producer API. `mirror7_parse()` remains as a compatibility validation wrapper.
+
+The boundary is deliberately not yet connected to the compiler:
+
+```text
+MIRR SOURCE
+     ↓
+SURFACE PARSER
+     ↓
+versioned surface IR
+     ↓
+MIRR COMPILER  ← Phase 28.3
+```
+
+`test_surface_ir.c` verifies token ordering, source positions, typed tokens, numeric representation, version validation, and malformed-IR rejection.
+
 ## Verification rule
 
-Presence of the parser source is not a PASS. Phase 28 is PASS only after the implementation is executed against valid, invalid, nested, boundary, and fuzz-generated inputs and the regression suite succeeds.
+Phase 28 is NOT complete merely because the parser or IR component passes. The final gate requires the actual parser output to be consumed by the real MIRR compiler and then exercised through dictionary generation, relocation, executable generation, VM execution, held-out programs, negative cases, and Phase 27 regression.
 
 ## Next gate
 
-After Phase 28 passes, analyze the compiler boundary for Phase 29: moving the complete compiler implementation into MIRR without relying on a host-language compiler for compiler logic.
+**Phase 28.3 — connect the parser-produced surface IR to the real MIRR compiler without a parallel raw-source bypass.**
