@@ -1,1 +1,1 @@
-# RECOVERY FAILED
+# restore from parent commit pending retrieval
