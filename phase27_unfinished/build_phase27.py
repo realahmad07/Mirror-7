@@ -1,1 +1,1 @@
-# no-op recovery
+# intentionally incomplete; awaiting recovery
