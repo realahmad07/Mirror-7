@@ -64,6 +64,10 @@ jobs:
         run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase28_surface_parser/test_phase28_7.c -o phase28_7_test
       - name: Phase 28.7 nested control-flow programs
         run: |
+          for i in 0 1 2 3 4 5 6 7 8 9; do
+            out=$(./phase28_7_test "$i")
+            printf 'PHASE28_7_CASE_%s=%s\n' "$i" "$out"
+          done
           test "$(./phase28_7_test 0)" = "A"
           test "$(./phase28_7_test 1)" = "B"
           test "$(./phase28_7_test 2)" = "C"
