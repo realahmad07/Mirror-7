@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define main mirror7_phase28_3_bridge_main
 #include "surface_ir_compiler_bridge.c"
