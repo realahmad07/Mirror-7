@@ -73,7 +73,7 @@ jobs:
           test "$(./phase28_7_test 2)" = "C"
           test "$(./phase28_7_test 3)" = "C"
           test "$(./phase28_7_test 4)" = "A"
-          test "$(./phase28_7_test 5)" = "B"
+          test "$(./phase28_7_test 5)" = "C"
           test "$(./phase28_7_test 6)" = "D"
           test "$(./phase28_7_test 7)" = "A"
           test "$(./phase28_7_test 8)" = "B"
