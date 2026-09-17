@@ -14,6 +14,10 @@ jobs:
         run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror -DTEST phase28_surface_parser/parser.c -o phase28_parser_test
       - name: Parser regression and fuzz
         run: ./phase28_parser_test
+      - name: Parsed-structure ABI strict build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror -DMIRROR7_NO_MAIN phase28_surface_parser/parser.c phase28_surface_parser/test_surface_ir.c -o phase28_surface_ir_test
+      - name: Parsed-structure ABI regression
+        run: ./phase28_surface_ir_test
       - name: Sanitizer build
         run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined -DTEST phase28_surface_parser/parser.c -o phase28_parser_san
       - name: Sanitizer execution
