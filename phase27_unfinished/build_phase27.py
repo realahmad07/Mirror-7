@@ -109,7 +109,7 @@ def repair_find_word_targets(lines):
                 if body[i:i+4]==['13','@','255','=']:limit_start=pcs[i];break
             name_len_i=body.index('word-name-len')
             success_exit_i=body.index('exit',name_len_i)
-            candidate_advance_pc=pcs[success_exit_i+1]
+            candidate_advance_pc=limit_start
             char_loop_branch_i=body.index('branch:390')
             for i,t in enumerate(body):
                 if not t.startswith('0branch:'):continue
