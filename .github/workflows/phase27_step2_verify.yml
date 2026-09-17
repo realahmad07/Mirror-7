@@ -1,10 +1,6 @@
 name: MIRROR7 Phase 27 Step 2 Verify
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'phase27_unfinished/STEP2_TRIGGER'
   workflow_dispatch:
 
 permissions:
