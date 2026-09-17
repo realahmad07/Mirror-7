@@ -110,7 +110,8 @@ def repair_find_word_targets(lines):
             name_len_i=body.index('word-name-len')
             success_exit_i=body.index('exit',name_len_i)
             candidate_advance_pc=limit_start
-            char_loop_branch_i=body.index('branch:390')
+            name_char_i=body.index('word-name-char')
+            char_loop_branch_i=next(i for i in range(name_char_i+1,len(body)) if body[i].startswith('branch:'))
             for i,t in enumerate(body):
                 if not t.startswith('0branch:'):continue
                 if limit_start is not None and int(t.split(':',1)[1])==limit_start+2:body[i]=f'0branch:{limit_start}'
