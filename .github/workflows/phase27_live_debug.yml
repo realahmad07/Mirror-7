@@ -1,13 +1,6 @@
 name: MIRROR7 Phase 27 Live Debug
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'phase27_unfinished/build_phase27.py'
-      - 'phase27_unfinished/compiler_phase27_words.mirr'
-      - 'phase27_unfinished/verify_phase27.py'
-      - '.github/workflows/phase27_live_debug.yml'
 permissions:
   contents: write
 jobs:
@@ -15,52 +8,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Repair builder byte ordering and regenerate artifact
+      - name: Validate canonical compiler word-id ABI and regenerate artifact
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('phase27_unfinished/build_phase27.py')
-          s=p.read_text()
-          s2=s.replace("w.t('1','31','!','create-pass','set-marker-pos')", "w.t('1','31','!','create-pass','set-marker-pos')")
-          s2=s2.replace("'word-new','19','!','18','!'", "'word-new','swap','19','!','18','!'")
-          s2=s2.replace("'find-word','19','!','18','!'", "'find-word','swap','19','!','18','!'")
-          s2=s2.replace("'find-word','21','!','20','!'", "'find-word','swap','21','!','20','!'")
-          if s2 != s:
-              p.write_text(s2)
+          s=Path('phase27_unfinished/build_phase27.py').read_text()
+          forbidden=(
+              "w.t('find-word','swap','19','!','18','!')",
+              "w.t('find-word','swap','21','!','20','!')",
+          )
+          if any(x in s for x in forbidden):
+              raise SystemExit('Phase 27 ABI regression: compile-structured must use canonical find-word result order')
           PY
           tmp=$(mktemp -d)
           cp phase25_26/compiler_phase26_words.mirr "$tmp/compiler_phase26_words.mirr"
           (cd "$tmp" && python3 "$GITHUB_WORKSPACE/phase27_unfinished/build_phase27.py")
           cp "$tmp/compiler_phase27_words.mirr" phase27_unfinished/compiler_phase27_words.mirr
-      - name: Run Step 2 verification and record result
+      - name: Run Step 2 verification
         shell: bash
-        run: |
-          set +e
-          python3 phase27_unfinished/verify_phase27.py > /tmp/result.log 2>&1
-          rc=$?
-          cat /tmp/result.log
-          {
-            echo "# Phase 27 Step 2 Live CI Result"
-            echo
-            echo "Commit: $GITHUB_SHA"
-            echo "Exit code: $rc"
-            echo
-            if [ "$rc" -eq 0 ]; then echo "## PASS"; else echo "## FAIL"; fi
-            echo
-            echo '```text'
-            tail -n 300 /tmp/result.log
-            echo '```'
-          } > phase27_unfinished/CI_LIVE_RESULT.md
-          echo "$rc" > /tmp/rc
-          exit 0
-      - name: Commit repaired builder and artifact
-        if: always()
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add phase27_unfinished/build_phase27.py phase27_unfinished/compiler_phase27_words.mirr phase27_unfinished/CI_LIVE_RESULT.md
-          git diff --cached --quiet && exit 0
-          git commit -m "fix(phase27): repair dynamic word id byte ordering"
-          git push origin HEAD:main
+        run: python3 phase27_unfinished/verify_phase27.py
