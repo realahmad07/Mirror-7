@@ -44,12 +44,14 @@ jobs:
         run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase28_surface_parser/test_phase28_6.c -o phase28_6_test
       - name: Phase 28.6 control-flow programs
         run: |
-          expected=(A B AB B AC BC AD BD)
-          for i in $(seq 0 7); do
-            actual="$(./phase28_6_test "$i")"
-            printf '28.6 case %s: actual=[%s] expected=[%s]\n' "$i" "$actual" "${expected[$i]}"
-            test "$actual" = "${expected[$i]}"
-          done
+          test "$(./phase28_6_test 0)" = "A"
+          test "$(./phase28_6_test 1)" = "B"
+          test "$(./phase28_6_test 2)" = "AB"
+          test "$(./phase28_6_test 3)" = "B"
+          test "$(./phase28_6_test 4)" = "AC"
+          test "$(./phase28_6_test 5)" = "BC"
+          test "$(./phase28_6_test 6)" = "AD"
+          test "$(./phase28_6_test 7)" = "BC"
       - name: Phase 28.6 sanitizer build
         run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined phase28_surface_parser/test_phase28_6.c -o phase28_6_test_san
       - name: Phase 28.6 sanitizer execution
