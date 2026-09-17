@@ -1,1 +1,1 @@
-# restore from parent commit pending retrieval
+# restored canonical builder requires exact content from commit 496475923c57acba32084216a8ecae183a818d80; cannot safely recreate without fetch
