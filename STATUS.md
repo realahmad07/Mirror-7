@@ -15,8 +15,9 @@ This is the canonical human-readable status page for the repository. It delibera
 | Phase 25 — tokenization + lookup + compilation | ☑ | Implementation preserved; clean-room verification remains separate. |
 | Phase 26 — integrated native compiler path | ☑ | Implementation preserved; clean-room verification remains separate. |
 | Phase 27 — structured relocation/control flow | ☐ | Implementation is corrected and locally exercised, but the latest GitHub Actions debug run failed; CI/artifact closure is required. |
-| Phase 28 — surface parser component | ☑ | Strict C17, regression/fuzz, and ASan/UBSan component tests are implemented. |
-| Phase 28 — surface parser/compiler integration | ☐ | **NOT VERIFIED:** parser output is not yet a parsed structure consumed by the compiler; current verifier exercises the parser and compiler as separate stages. |
+| Phase 28.1 — surface parser component | ☑ | Strict C17, regression/fuzz, and ASan/UBSan component tests are implemented. |
+| Phase 28.2 — parsed-structure ABI | ☑ | Versioned surface IR is emitted and independently validated by a strict C17 ABI regression. |
+| Phase 28 — surface parser/compiler integration | ☐ | **NOT VERIFIED:** the parser now produces a parsed structure, but the real compiler does not yet consume it. |
 | Whole-project deep audit | ☐ | Static audit is implemented; current CI execution is still required. |
 | Phase 13 heritage preservation | ☑ | Pre-MIRR artifact/bootstrap evidence is preserved under `phase13_heritage/` and included in the deep audit. |
 | Phase 19 heritage preservation | ☑ | RAW-free self-language, semantic self-source, fixed-point evidence, native-seed source, and artifact hashes are preserved under `phase19_heritage/` and included in the deep audit. |
@@ -33,20 +34,20 @@ This is the canonical human-readable status page for the repository. It delibera
 
 ## Phase 28 audit
 
-The supplied `phase28.zip` was compared against the repository. The package's standalone parser implementation is valid as a component, but its claimed final Phase 28 report was overstated.
+The supplied `phase28.zip` was compared against the repository. Its claimed final Phase 28 report overstated the integration status. The parser and compiler were previously separate stages.
 
-The parser currently returns validation success/failure. It does not emit a parsed structure that is then consumed by the MIRR compiler. The compiler continues to read raw source through its own token-reading path. Therefore the true integration gate remains open.
+Phase 28.2 now closes the missing data-contract definition: `phase28_surface_parser/surface_ir.h` defines a versioned, bounded, source-ordered token IR with typed tokens, source byte offsets, and explicit 16-bit numeric values. `mirror7_parse_ir()` produces it and `mirror7_surface_ir_validate()` validates it. `test_surface_ir.c` exercises the contract.
 
-Required architecture:
+The actual compiler integration remains open. The current architecture is now:
 
 ```text
 MIRR SOURCE
      ↓
 SURFACE PARSER
      ↓
-PARSED STRUCTURE
+PARSED SURFACE IR       ← Phase 28.2 PASS
      ↓
-MIRR COMPILER
+MIRR COMPILER           ← Phase 28.3 OPEN
      ↓
 DICTIONARY + RELOCATION
      ↓
@@ -57,7 +58,14 @@ VM
 OUTPUT
 ```
 
-Detailed evidence is recorded in `PHASE_28_AUDIT.md` and `PHASE_28_REPORT.md`.
+## Phase 28.2 verification evidence
+
+- `surface_ir.h` defines ABI version 1 and fixed bounds.
+- `parser.c` emits typed tokens for `:`, names, numbers, `;`, `IF`, `ELSE`, and `THEN` while retaining the existing grammar validation.
+- Numeric tokens carry a `uint16_t` value and source byte position; name/control tokens retain bounded text and source byte position.
+- `mirror7_surface_ir_validate()` rejects unsupported versions and malformed numeric/token fields.
+- `test_surface_ir.c` passes under strict C17 (`-Wall -Wextra -Wpedantic -Werror`) and reports `PHASE28_2_ABI_PASS`.
+- The existing parser regression/fuzz test also passes and reports `PHASE28_PARSER_TEST_PASS`.
 
 ## Phase 27/28 engineering notes
 
@@ -65,7 +73,8 @@ Detailed evidence is recorded in `PHASE_28_AUDIT.md` and `PHASE_28_REPORT.md`.
 - The current Phase 27 verifier includes generated-artifact reproducibility, strict nucleus build, and structured execution cases.
 - The latest GitHub Actions run used to close the Phase 27 boundary (`35255177479`, commit `f260011ad95b4ac2f0c55e7de6e42eaa3c5ce01c`) completed with failure. It is therefore not represented as a current green CI gate.
 - Phase 28 parser tests include valid/invalid grammar cases and a fuzz loop with strict and sanitizer builds.
-- `verify_phase28.py` currently checks parser behavior and the compiler/runtime path separately. It must be extended or redesigned to consume parser output through the real compiler before Phase 28 can be promoted.
+- Phase 28.2 adds the first explicit parser → compiler data contract, but does not yet claim compiler consumption.
+- `verify_phase28.py` must be extended or redesigned in Phase 28.3 to consume parser output through the real compiler.
 
 ## Debugging protocol
 
