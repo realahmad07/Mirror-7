@@ -6,6 +6,7 @@
 #define MIRROR7_NO_MAIN
 #define main mirror7_nucleus_main
 #include "../phase25_26/nucleus.c"
+#include "parser.c"
 #undef main
 
 #include "surface_ir.h"
