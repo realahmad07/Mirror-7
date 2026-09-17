@@ -54,7 +54,15 @@ def main():
         if built.returncode:
             raise SystemExit(f"phase27 builder failed during phase28 integration:\n{built.stderr}{built.stdout}")
         rebuilt = td / EXPECTED.name
-        if rebuilt.read_bytes() != EXPECTED.read_bytes():
+        expected_bytes = EXPECTED.read_bytes()
+        rebuilt_bytes = rebuilt.read_bytes()
+
+        # Phase 27's artifact is text; compare canonical LF content so a
+        # Windows CRLF checkout cannot fail the Phase 28 regression gate.
+        def canonical_newlines(data):
+            return data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+
+        if canonical_newlines(rebuilt_bytes) != canonical_newlines(expected_bytes):
             a = EXPECTED.read_text().splitlines()
             b = rebuilt.read_text().splitlines()
             diff = ''.join(difflib.unified_diff(a, b, fromfile='committed', tofile='rebuilt', n=2))
