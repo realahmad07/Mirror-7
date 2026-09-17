@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define main mirror7_phase28_3_bridge_main
+#define MIRROR7_SURFACE_IR_COMPILER_BRIDGE_NO_MAIN
 #include "surface_ir_compiler_bridge.c"
-#undef main
+#undef MIRROR7_SURFACE_IR_COMPILER_BRIDGE_NO_MAIN
 
 int main(int argc, char **argv) {
     static const char *cases[] = {
