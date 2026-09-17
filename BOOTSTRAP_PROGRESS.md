@@ -21,4 +21,4 @@ A checkbox is promoted only after an executable test demonstrates the correspond
 
 ## Current boundary
 
-Phase 27 structured relocation/control-flow is promoted on the recorded acceptance gate. The next active gate is Phase 28: integrate the surface parser into the real MIRR compiler path rather than treating the parser as a standalone substitute.
+Phase 27 structured relocation/control-flow remains subject to the documented CI/artifact closure. Phase 28.1 parser analysis and Phase 28.2 parsed-structure ABI are component-passed. The next active gate is Phase 28.3: make the real MIRR compiler consume the parser-produced structure rather than reparsing raw source.
