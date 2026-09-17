@@ -136,6 +136,7 @@ static int compile_and_run(const char *source, const char *word) {
     return run_word(&d, id, (uint8_t *)source, strlen(source));
 }
 
+#ifndef MIRROR7_SURFACE_IR_COMPILER_BRIDGE_NO_MAIN
 int main(void) {
     const char *cases[] = {
         ": alpha 1 IF 65 emit ELSE 66 emit THEN ;",
@@ -152,3 +153,4 @@ int main(void) {
     }
     return 0;
 }
+#endif
