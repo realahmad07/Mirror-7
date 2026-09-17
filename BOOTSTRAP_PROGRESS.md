@@ -21,4 +21,4 @@ A checkbox is promoted only after an executable test demonstrates the correspond
 
 ## Current boundary
 
-The repository currently contains the Phase 27 unfinished compiler and a separately verified Phase 28 parser component. The active work must integrate these into the real compiler path rather than treating the parser as a standalone substitute.
+Phase 27 structured relocation/control-flow is promoted on the recorded acceptance gate. The next active gate is Phase 28: integrate the surface parser into the real MIRR compiler path rather than treating the parser as a standalone substitute.
