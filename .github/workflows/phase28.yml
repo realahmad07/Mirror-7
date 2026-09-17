@@ -60,6 +60,28 @@ jobs:
           ASAN_OPTIONS=detect_leaks=1 ./phase28_6_test_san 1 >/dev/null
           ASAN_OPTIONS=detect_leaks=1 ./phase28_6_test_san 4 >/dev/null
           ASAN_OPTIONS=detect_leaks=1 ./phase28_6_test_san 7 >/dev/null
+      - name: Phase 28.7 strict build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase28_surface_parser/test_phase28_7.c -o phase28_7_test
+      - name: Phase 28.7 nested control-flow programs
+        run: |
+          test "$(./phase28_7_test 0)" = "A"
+          test "$(./phase28_7_test 1)" = "B"
+          test "$(./phase28_7_test 2)" = "C"
+          test "$(./phase28_7_test 3)" = "C"
+          test "$(./phase28_7_test 4)" = "A"
+          test "$(./phase28_7_test 5)" = "B"
+          test "$(./phase28_7_test 6)" = "D"
+          test "$(./phase28_7_test 7)" = "B"
+          test "$(./phase28_7_test 8)" = "B"
+          test "$(./phase28_7_test 9)" = "B"
+      - name: Phase 28.7 sanitizer build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined phase28_surface_parser/test_phase28_7.c -o phase28_7_test_san
+      - name: Phase 28.7 sanitizer execution
+        run: |
+          ASAN_OPTIONS=detect_leaks=1 ./phase28_7_test_san 0 >/dev/null
+          ASAN_OPTIONS=detect_leaks=1 ./phase28_7_test_san 4 >/dev/null
+          ASAN_OPTIONS=detect_leaks=1 ./phase28_7_test_san 6 >/dev/null
+          ASAN_OPTIONS=detect_leaks=1 ./phase28_7_test_san 9 >/dev/null
       - name: Phase 28.4/28.5 sanitizer build
         run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined phase28_surface_parser/test_phase28_4_5.c -o phase28_4_5_test_san
       - name: Phase 28.4/28.5 sanitizer execution
