@@ -26,6 +26,27 @@ jobs:
         run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined phase28_surface_parser/surface_ir_compiler_bridge.c -o phase28_ir_compiler_bridge_san
       - name: Phase 28.3 IR compiler bridge sanitizer execution
         run: ASAN_OPTIONS=detect_leaks=1 ./phase28_ir_compiler_bridge_san >/dev/null
+      - name: Phase 28.4/28.5 strict build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase28_surface_parser/test_phase28_4_5.c -o phase28_4_5_test
+      - name: Phase 28.4 simple surface programs
+        run: |
+          test "$(./phase28_4_5_test 0)" = "A"
+          test "$(./phase28_4_5_test 1)" = "A"
+          test "$(./phase28_4_5_test 2)" = "B"
+          test "$(./phase28_4_5_test 3)" = "A"
+      - name: Phase 28.5 definitions
+        run: |
+          test "$(./phase28_4_5_test 4)" = "A"
+          test "$(./phase28_4_5_test 5)" = "A"
+          test "$(./phase28_4_5_test 6)" = "AA"
+          test "$(./phase28_4_5_test 7)" = "A"
+      - name: Phase 28.4/28.5 sanitizer build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined phase28_surface_parser/test_phase28_4_5.c -o phase28_4_5_test_san
+      - name: Phase 28.4/28.5 sanitizer execution
+        run: |
+          ASAN_OPTIONS=detect_leaks=1 ./phase28_4_5_test_san 0 >/dev/null
+          ASAN_OPTIONS=detect_leaks=1 ./phase28_4_5_test_san 4 >/dev/null
+          ASAN_OPTIONS=detect_leaks=1 ./phase28_4_5_test_san 7 >/dev/null
       - name: Sanitizer build
         run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined -DTEST phase28_surface_parser/parser.c -o phase28_parser_san
       - name: Sanitizer execution
