@@ -48,17 +48,17 @@ def repair_structured_passes(lines):
         toks=line.split()
         if toks and toks[0]==':' and toks[1]=='create-pass':
             body=toks[2:-1]; pcs=[]; pc=addr
-            for t in body:pcs.append(pc);pc+=token_size(t)
+            for t in body:pcs.append(pc); pc+=token_size(t)
             bs=[i for i,t in enumerate(body) if t.startswith('0branch:') or t.startswith('branch:')]
             if len(bs)!=8: raise ValueError('create-pass branch count changed')
             ex=body.index('exit'); dr=body.index('drop'); st=body.index('scan-token')
             targets=[pcs[ex],pcs[dr],pcs[dr],pcs[dr],pcs[dr],pcs[dr],pcs[st],pcs[dr]]
             for j,i in enumerate(bs): body[i]=('0branch:' if body[i].startswith('0branch:') else 'branch:')+str(targets[j])
-            toks=toks[:2]+body+toks[-1:];line=' '.join(toks)
+            toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)
         elif toks and toks[0]==':' and toks[1]=='compile-pass':
-            body=toks[2:-1];pcs=[];pc=addr
-            for t in body:pcs.append(pc);pc+=token_size(t)
-            a=body.index('tok-colon');b=body.index('find-word');c=body.index('tok-semi');d=body.index('digit-first?');e=body.index('find-word',d);f=body.index('scan-token');g=body.index('scan-token',b);h=len(body)-1
+            body=toks[2:-1]; pcs=[]; pc=addr
+            for t in body:pcs.append(pc); pc+=token_size(t)
+            a=body.index('tok-colon'); b=body.index('find-word'); c=body.index('tok-semi'); d=body.index('digit-first?'); e=body.index('find-word',d); f=body.index('scan-token'); g=body.index('scan-token',b); h=len(body)-1
             for i,t in enumerate(body):
                 if not (t.startswith('0branch:') or t.startswith('branch:')):continue
                 if i<a:body[i]=f'0branch:{pcs[a]}'
@@ -72,7 +72,7 @@ def repair_structured_passes(lines):
                 elif i==d+1:body[i]=f'0branch:{pcs[e]}'
                 elif d<i<e and t.startswith('branch:'):body[i]=f'branch:{pcs[g]}'
                 elif i>e and t.startswith('branch:'):body[i]=f'branch:{pcs[g]}'
-            toks=toks[:2]+body+toks[-1:];line=' '.join(toks)
+            toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)
         out.append(line)
     return out
 def repair_find_word_storage(lines):
@@ -101,26 +101,52 @@ def repair_find_word_targets(lines):
     for line in lines:
         addr=_address_before(out)
         toks=line.split()
-        if toks and toks[0]==':' and toks[1]=='find-word':
-            body=toks[2:-1];pcs=[];pc=addr
-            for t in body:pcs.append(pc);pc+=token_size(t)
-            limit_start=None
-            for i in range(len(body)-3):
-                if body[i:i+4]==['13','@','255','=']:limit_start=pcs[i];break
-            name_len_i=body.index('word-name-len')
-            success_exit_i=body.index('exit',name_len_i)
-            candidate_advance_pc=limit_start
-            name_char_i=body.index('word-name-char')
-            char_loop_branch_i=next(i for i in range(name_char_i+1,len(body)) if body[i].startswith('branch:'))
-            for i,t in enumerate(body):
-                if not t.startswith('0branch:'):continue
-                if limit_start is not None and int(t.split(':',1)[1])==limit_start+2:body[i]=f'0branch:{limit_start}'
-            for i in range(name_len_i+1,char_loop_branch_i):
-                if body[i].startswith('0branch:'):body[i]=f'0branch:{candidate_advance_pc}'
-            toks=toks[:2]+body+toks[-1:];line=' '.join(toks)
-        out.append(line)
+        if not (toks and toks[0]==':' and toks[1]=='find-word'):
+            out.append(' '.join(toks))
+            continue
+        items=[
+            '0','13','!','0','14','!','word-count','swap','15','!','16','!',
+            ('BR','NOT_FOUND',True),
+            '13','@','14','@','word-name-len','12','@','=',('BR','NEXT',True),
+            '0','17','!',
+            ('LABEL','CHAR'),
+            '17','@','12','@','=',('BR','COMPARE',True),
+            '13','@','14','@','exit',
+            ('LABEL','COMPARE'),
+            '13','@','14','@','17','@','word-name-char','10','!',
+            '17','@','64','+','@','10','@','=',('BR','NEXT',True),
+            '1','17','@','+','17','!',('BR','CHAR',False),
+            ('LABEL','NEXT'),
+            '13','@','255','=',('BR','LOW_ADVANCE',True),
+            '0','13','!','1','14','@','+','14','!',('BR','CANDIDATE',False),
+            ('LABEL','LOW_ADVANCE'),
+            '1','13','@','+','13','!',('BR','CANDIDATE',False),
+            ('LABEL','CANDIDATE'),
+            '13','@','15','@','=','14','@','16','@','=','+','2','=','0','=',('BR','NOT_FOUND',True),
+            '13','@','14','@','word-name-len','12','@','=',('BR','NEXT',True),
+            '0','17','!',('BR','CHAR',False),
+            ('LABEL','NOT_FOUND'),'word-count','exit'
+        ]
+        labels={};pc=addr
+        for item in items:
+            if isinstance(item,tuple) and item[0]=='LABEL':
+                labels[item[1]]=pc
+            elif isinstance(item,tuple) and item[0]=='BR':
+                pc+=3
+            else:
+                pc+=token_size(item)
+        body=[]
+        for item in items:
+            if isinstance(item,tuple):
+                if item[0]=='LABEL':
+                    continue
+                if item[0]=='BR':
+                    body.append(('0branch:' if item[2] else 'branch:')+str(labels[item[1]]))
+            else:
+                body.append(item)
+        out.append(' '.join([':', 'find-word', *body, ';']))
     return out
-base_lines=relocate(base_lines,PRIM_DELTA);base_lines=repair_find_word_storage(base_lines);base_lines=repair_structured_passes(base_lines);base_lines=repair_find_word_targets(base_lines)
+base_lines=relocate(base_lines,PRIM_DELTA);base_lines=repair_find_word_storage(base_lines);base_lines=repair_find_word_targets(base_lines);base_lines=repair_structured_passes(base_lines)
 def source_size(lines):
     total=PRIM_BYTES
     for line in lines:
