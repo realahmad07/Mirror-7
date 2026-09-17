@@ -107,10 +107,15 @@ def repair_find_word_targets(lines):
             limit_start=None
             for i in range(len(body)-3):
                 if body[i:i+4]==['13','@','255','=']:limit_start=pcs[i];break
+            name_len_i=body.index('word-name-len')
+            success_exit_i=body.index('exit',name_len_i)
+            candidate_advance_pc=pcs[success_exit_i+1]
+            char_loop_branch_i=body.index('branch:390')
             for i,t in enumerate(body):
                 if not t.startswith('0branch:'):continue
                 if limit_start is not None and int(t.split(':',1)[1])==limit_start+2:body[i]=f'0branch:{limit_start}'
-                if i+11<len(body) and body[i+1:i+4]==['0','13','!'] and body[i+11]=='1':body[i]=f'0branch:{pcs[i+11]}'
+            for i in range(name_len_i+1,char_loop_branch_i):
+                if body[i].startswith('0branch:'): body[i]=f'0branch:{candidate_advance_pc}'
             toks=toks[:2]+body+toks[-1:];line=' '.join(toks)
         out.append(line)
     return out
