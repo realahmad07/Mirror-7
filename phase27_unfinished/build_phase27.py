@@ -35,9 +35,16 @@ def relocate(lines,delta):
             toks.append(t)
         out.append(' '.join(toks))
     return out
+def _address_before(out):
+    addr=PRIM_BYTES
+    for prev in out:
+        toks=prev.split()
+        if toks: addr+=sum(token_size(t) for t in toks[2:-1])+1
+    return addr
 def repair_structured_passes(lines):
-    out=[]; addr=PRIM_BYTES
+    out=[]
     for line in lines:
+        addr=_address_before(out)
         toks=line.split()
         if toks and toks[0]==':' and toks[1]=='create-pass':
             body=toks[2:-1]; pcs=[]; pc=addr
@@ -67,7 +74,6 @@ def repair_structured_passes(lines):
                 elif i>e and t.startswith('branch:'):body[i]=f'branch:{pcs[g]}'
             toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)
         out.append(line)
-        if toks:addr+=sum(token_size(t) for t in toks[2:-1])+1
     return out
 def repair_find_word_storage(lines):
     out=[]
@@ -91,8 +97,9 @@ def repair_find_word_storage(lines):
         out.append(' '.join(toks))
     return out
 def repair_find_word_targets(lines):
-    out=[]; addr=PRIM_BYTES
+    out=[]
     for line in lines:
+        addr=_address_before(out)
         toks=line.split()
         if toks and toks[0]==':' and toks[1]=='find-word':
             body=toks[2:-1]; pcs=[]; pc=addr
@@ -106,7 +113,6 @@ def repair_find_word_targets(lines):
                 if i+11<len(body) and body[i+1:i+4]==['0','13','!'] and body[i+11]=='1':body[i]=f'0branch:{pcs[i+11]}'
             toks=toks[:2]+body+toks[-1:];line=' '.join(toks)
         out.append(line)
-        if toks:addr+=sum(token_size(t) for t in toks[2:-1])+1
     return out
 base_lines=relocate(base_lines,PRIM_DELTA); base_lines=repair_structured_passes(base_lines); base_lines=repair_find_word_storage(base_lines); base_lines=repair_find_word_targets(base_lines)
 def source_size(lines):
