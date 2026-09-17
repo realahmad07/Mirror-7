@@ -18,6 +18,14 @@ jobs:
         run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror -DMIRROR7_NO_MAIN phase28_surface_parser/parser.c phase28_surface_parser/test_surface_ir.c -o phase28_surface_ir_test
       - name: Parsed-structure ABI regression
         run: ./phase28_surface_ir_test
+      - name: Phase 28.3 IR compiler bridge strict build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -Werror phase28_surface_parser/surface_ir_compiler_bridge.c -o phase28_ir_compiler_bridge
+      - name: Phase 28.3 IR compiler bridge execution
+        run: test "$(./phase28_ir_compiler_bridge)" = "ABAAA"
+      - name: Phase 28.3 IR compiler bridge sanitizer build
+        run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined phase28_surface_parser/surface_ir_compiler_bridge.c -o phase28_ir_compiler_bridge_san
+      - name: Phase 28.3 IR compiler bridge sanitizer execution
+        run: ASAN_OPTIONS=detect_leaks=1 ./phase28_ir_compiler_bridge_san >/dev/null
       - name: Sanitizer build
         run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined -DTEST phase28_surface_parser/parser.c -o phase28_parser_san
       - name: Sanitizer execution
