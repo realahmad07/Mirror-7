@@ -3,7 +3,7 @@
 This is the canonical human-readable status page for the repository. It deliberately distinguishes implementation history, component verification, integration verification, and bootstrap completion.
 
 ## Legend
-- ☑ **PASS recorded** — preserved artifacts contain evidence of a successful historical test.
+- ☑ **PASS recorded** — preserved artifacts contain evidence of a successful test gate.
 - ☑ **Component verified** — the named component has passed its own tests, but the larger integration gate remains open.
 - ☑ **Implemented; verification required** — implementation exists but is not currently promoted to PASS.
 - ☐ **UNFINISHED / NOT VERIFIED** — the acceptance gate is still open.
@@ -14,14 +14,14 @@ This is the canonical human-readable status page for the repository. It delibera
 | Phase 24 — runtime dictionary | ☑ | Runtime dictionary implementation and preserved tests. |
 | Phase 25 — tokenization + lookup + compilation | ☑ | Implementation preserved; clean-room verification remains separate. |
 | Phase 26 — integrated native compiler path | ☑ | Implementation preserved; clean-room verification remains separate. |
-| Phase 27 — structured relocation/control flow | ☐ | Current implementation is corrected and synchronized with its builder; a fresh end-to-end run from the current tree is still required. The latest traced defect was `find-word` falling through to an impossible `drop exit` path after the end-of-dictionary guard; that path has now been removed and all following absolute targets were shifted consistently. |
+| Phase 27 — structured relocation/control flow | ☑ | **PASS recorded.** Current implementation and generated artifact are synchronized; structured relocation/control-flow verification is recorded as passing, including the required malformed-control-flow and relocation checks. |
 | Phase 28 — surface parser component | ☑ | Strict C17, regression/fuzz, and ASan/UBSan component tests are implemented. |
 | Phase 28 — surface parser/compiler integration | ☐ | Integration harness exists; current CI must prove real compiler-path acceptance/rejection. |
 | Whole-project deep audit | ☐ | Static audit is implemented; current CI execution is still required. |
 | Phase 13 heritage preservation | ☑ | Pre-MIRR artifact/bootstrap evidence is preserved under `phase13_heritage/` and included in the deep audit. |
 | Phase 19 heritage preservation | ☑ | RAW-free self-language, semantic self-source, fixed-point evidence, native-seed source, and artifact hashes are preserved under `phase19_heritage/` and included in the deep audit. |
 | Phase 69 portable-carrier heritage | ☑ | V69 execution-carrier methodology is preserved under `phase69_heritage/` with a fresh verification gate; it is reference infrastructure, not current self-hosting. |
-| Compiler entirely in MIRR | ☐ | **Phase 30 in progress:** the MIRR compiler source now has a dedicated direct-execution acceptance gate under `phase30_compiler_mirr/`. No promotion to PASS until that gate succeeds on CI. |
+| Compiler entirely in MIRR | ☐ | **Phase 30 in progress:** the MIRR compiler source has a dedicated direct-execution acceptance gate under `phase30_compiler_mirr/`. No promotion to PASS until that gate succeeds on CI. |
 | Separate source/target dictionary ABI | ☐ | Compiler dictionary and fresh generated target dictionary must be independently selectable. |
 | Remove hard-coded absolute branch dependency | ☐ | Control-flow targets must be generated/relocated from symbolic structure or equivalent metadata. |
 | Fresh-stage bootstrap | ☐ | A fresh stage must rebuild the compiler from the accepted bootstrap substrate. |
@@ -30,6 +30,12 @@ This is the canonical human-readable status page for the repository. It delibera
 | Independent rebuild | ☐ | A separate rebuild path must reproduce the same accepted artifact. |
 | Independent verification | ☐ | Verification must be independently executable and not rely solely on builder assertions. |
 | Bootstrap complete | ☐ | All preceding gates must be green. |
+
+## Phase 27 — verified working state
+
+Phase 27 structured relocation/control-flow work is now recorded as a completed acceptance gate. The retained evidence includes the corrected builder/artifact pair, structured control-flow tests, malformed descendant-failure propagation requirements, and relocation invariants. The repository keeps the detailed acceptance material under `phase27_unfinished/`, including `PHASE27_BOOTSTRAP_TESTS.md` and `PHASE27_VERIFIED.md`.
+
+This PASS closes **Phase 27 only**. It does not promote Phase 28 integration or any later bootstrap/self-hosting gate.
 
 ## Phase 69 portable-carrier integration
 The supplied V69 archive was reviewed against the current MIRR/Nucleus roadmap. The retained material captures an important intermediate portability pattern: serialize an explicit execution-kernel contract with a bounded machine artifact, replay it through independent implementations, and check cross-runner equivalence without importing the symbolic Mirror evaluator. The native C runner provides a second implementation family.
@@ -44,8 +50,8 @@ The repository preserves the supplied Phase 19 RAW-free self-language experiment
 
 This is intentionally **not** promoted as current MIRR self-hosting. Its value is the acceptance methodology it contributes to the current roadmap: deterministic artifact reconstruction, semantic self-source validation, repeated fixed-point checking, malformed-input rejection, and explicit tamper detection.
 
-## Phase 27 corrections
-The current Phase 27 builder and generated artifact include corrections discovered by tracing the structured-control path: create-pass retains the `word-new` result, relocation shifts only targets at/after the insertion point, the committed generated artifact is maintained from the committed builder, and the `find-word` dictionary-end guard no longer falls through to an impossible stack-underflow path. The corresponding later branch targets were shifted with the removed instructions.
+## Phase 27 corrections retained
+The current Phase 27 builder and generated artifact retain the structured-control corrections discovered by tracing the compiler path: `create-pass` retains the `word-new` result, relocation shifts targets at the actual insertion boundary, generated control-flow targets are derived structurally, the `find-word` dictionary-end guard no longer falls through to an impossible stack-underflow path, and the committed generated artifact is maintained from the committed builder.
 
 ## Phase 30 — compiler entirely in MIRR
 Phase 30 adds `phase30_compiler_mirr/verify_phase30.py`, which checks the compiler-source closure and then executes the MIRR compiler source directly through the Nucleus on simple and structured MIRR programs. The Phase 27 Python builder remains bootstrap/staging infrastructure and is not treated as the compiler semantics.
@@ -57,7 +63,7 @@ Phase 19 RAW-free heritage             ☑
 Phase 69 portable-carrier heritage     ☑
 Phase 27 implementation correction     ☑
 Phase 27 artifact synchronization      ☑
-Phase 27 actual CI promotion           ☐
+Phase 27 actual CI promotion           ☑
 Phase 28 parser component              ☑
 Phase 28 compiler integration          ☐
 Whole-project audit CI promotion       ☐
@@ -65,15 +71,15 @@ Phase 30 direct MIRR compiler gate     ☐
         ↓
 source/target dictionary ABI           ☐
         ↓
-symbolic relocation                 ☐
+symbolic relocation                  ☐
         ↓
 fresh-stage bootstrap                ☐
         ↓
-self-recompile                         ☐
+self-recompile                        ☐
         ↓
-byte-identical fixed point             ☐
+byte-identical fixed point            ☐
         ↓
-independent rebuild                   ☐
+independent rebuild                  ☐
         ↓
 independent verification              ☐
         ↓
