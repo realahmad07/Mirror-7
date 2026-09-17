@@ -49,7 +49,7 @@ independent verification
 | Phase 24 — runtime dictionary | ☑ PASS recorded | Preserved Phase 24 implementation/test artifacts. |
 | Phase 25 — tokenization + lookup + compilation | ☑ Implemented; fresh verification required | Source preserved; historical result is not treated as a new clean-room PASS. |
 | Phase 26 — integrated native compiler path | ☑ Implemented; fresh verification required | Source preserved; historical result is not treated as a new clean-room PASS. |
-| Phase 27 — structured relocation/control flow | ☑ Implementation corrected; CI promotion pending | Builder/artifact synchronization and structured-control fixes are committed; actual end-to-end CI result is still required before promotion. |
+| Phase 27 — structured relocation/control flow | ☐ Verification reconciliation required | The supplied phase-complete package marks Phase 27 complete, but an independent clean run of the included `verify_phase27.py` currently fails the byte-for-byte builder/artifact reproducibility check. The documentation therefore remains conservative until that mismatch is resolved and rerun. |
 | Phase 28 — surface parser component | ☑ Component verified | Strict C17 plus parser regression/fuzz and ASan/UBSan execution are implemented. |
 | Phase 28 — compiler integration | ☑ Integration gate implemented; CI promotion pending | The verification path exercises parser-valid and parser-invalid programs through the real Phase-27 compiler path. |
 | Whole-project deep audit | ☑ Static audit implemented; CI promotion pending | `audit_mirror7.py` checks repository inputs, generated-artifact reproducibility, layout/branch invariants, u16 limits, and strict C17 host builds. |
@@ -75,7 +75,7 @@ The current branch contains the following corrections and verification infrastru
 - `verify_phase28.py` connects parser acceptance/rejection to the real compiler path rather than treating the standalone C parser as the eventual self-hosted compiler.
 - `audit_mirror7.py` provides a repository-wide static consistency gate and explicitly reports the remaining architectural bootstrap blockers.
 
-These fixes are committed on `main`. The latest Phase 27 correction commit is `9447b98c62fcfaa765d831a10ed1fdab4cb340e8`. CI status must still be observed before claiming an end-to-end PASS.
+The supplied phase-complete package contains a `PHASE27_VERIFIED.md` marker and a `STATUS.md` entry marking Phase 27 as passed. A fresh local run of the packaged `verify_phase27.py` currently stops earlier at artifact reproducibility, so that supplied claim is retained as package evidence but is not promoted here as a current clean PASS.
 
 ## Repository layout
 
@@ -122,7 +122,8 @@ MIRROR7 is a research/engineering project. The bootstrap work is about establish
 ## Next acceptance sequence
 
 ```text
-Phase 27 CI closure
+Resolve Phase 27 artifact reproducibility
+  → Phase 27 CI closure
   → Phase 28 CI closure
   → compiler entirely in MIRR
   → separate source/target dictionary ABI
