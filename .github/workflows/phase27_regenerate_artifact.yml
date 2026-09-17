@@ -28,8 +28,8 @@ jobs:
               s = s.replace(old, new, 1)
           elif new not in s:
               raise SystemExit('expected find-word candidate equality insertion point not found')
-          old_wrap = "'13','@','255','=','('BR','LOW_ADVANCE',True),"
-          new_wrap = "'14','@','255','=','('BR','LOW_ADVANCE',True),"
+          old_wrap = "'13','@','255','=',('BR','LOW_ADVANCE',True),"
+          new_wrap = "'14','@','255','=',('BR','LOW_ADVANCE',True),"
           if old_wrap in s:
               s = s.replace(old_wrap, new_wrap, 1)
           elif new_wrap not in s:
