@@ -49,9 +49,9 @@ independent verification
 | Phase 24 — runtime dictionary | ☑ PASS recorded | Preserved Phase 24 implementation/test artifacts. |
 | Phase 25 — tokenization + lookup + compilation | ☑ Implemented; fresh verification required | Source preserved; historical result is not treated as a new clean-room PASS. |
 | Phase 26 — integrated native compiler path | ☑ Implemented; fresh verification required | Source preserved; historical result is not treated as a new clean-room PASS. |
-| Phase 27 — structured relocation/control flow | ☐ Verification reconciliation required | The supplied phase-complete package marks Phase 27 complete, but an independent clean run of the included `verify_phase27.py` currently fails the byte-for-byte builder/artifact reproducibility check. The documentation therefore remains conservative until that mismatch is resolved and rerun. |
+| Phase 27 — structured relocation/control flow | ☐ CI closure required | Implementation is corrected and locally exercised, but the latest GitHub Actions debug run failed; no current green CI promotion is claimed. |
 | Phase 28 — surface parser component | ☑ Component verified | Strict C17 plus parser regression/fuzz and ASan/UBSan execution are implemented. |
-| Phase 28 — compiler integration | ☑ Integration gate implemented; CI promotion pending | The verification path exercises parser-valid and parser-invalid programs through the real Phase-27 compiler path. |
+| Phase 28 — parser/compiler integration | ☐ NOT VERIFIED | Audit found no parsed-structure ABI: the parser validates source separately while the compiler still consumes raw source through its own token path. |
 | Whole-project deep audit | ☑ Static audit implemented; CI promotion pending | `audit_mirror7.py` checks repository inputs, generated-artifact reproducibility, layout/branch invariants, u16 limits, and strict C17 host builds. |
 | Compiler entirely in MIRR | ☐ Not verified | Must compile the compiler without a host-side compiler implementation dependency. |
 | Separate source/target dictionary ABI | ☐ Not verified | Compiler execution dictionary and generated target dictionary must be independently selectable. |
@@ -63,19 +63,53 @@ independent verification
 | Independent verification | ☐ Not verified | Verification must not rely solely on the builder's own assertions. |
 | Bootstrap complete | ☐ Not verified | All preceding gates must be green. |
 
+## Phase 28 audit result
+
+The supplied Phase 28 package was compared against the repository. The package's parser implementation is present on `main`, but its claimed final report overstated the integration state.
+
+The current implementation proves this separate behavior:
+
+```text
+MIRR SOURCE ──► Surface Parser ──► PASS/FAIL
+      │
+      └────────► MIRR Compiler ──► VM
+```
+
+It does **not yet** prove the required integrated path:
+
+```text
+MIRR SOURCE
+     ↓
+SURFACE PARSER
+     ↓
+PARSED STRUCTURE
+     ↓
+MIRR COMPILER
+     ↓
+DICTIONARY + RELOCATION
+     ↓
+EXECUTABLE
+     ↓
+VM
+     ↓
+OUTPUT
+```
+
+The detailed findings are recorded in `PHASE_28_AUDIT.md` and `PHASE_28_REPORT.md`. Phase 28 therefore remains open until a real parser-output-to-compiler boundary is implemented and verified.
+
+A separate reproducibility issue was also observed in the supplied Phase 28 verifier: the Phase 27 builder output and packaged artifact differed in line endings (LF versus CRLF), causing the byte-for-byte artifact check to fail. This is a build/artifact synchronization issue and is not being hidden behind the Phase 28 claim.
+
 ## Recent Phase 27/28 engineering work
 
-The current branch contains the following corrections and verification infrastructure:
+The current branch contains the following verification infrastructure and corrections:
 
 - Phase 27 generated output was synchronized with `build_phase27.py` after a stale absolute branch target was found.
-- `create-pass` now retains the newly created target word ID so structured-control patching does not depend on stale dictionary cells.
-- The relocation adjustment for that insertion uses the actual insertion boundary; targets before it remain unchanged and targets at/after it move by the inserted size.
+- `create-pass` retains the newly created target word ID so structured-control patching does not depend on stale dictionary cells.
+- Relocation adjustment uses the actual insertion boundary; targets before it remain unchanged and targets at/after it move by the inserted size.
 - `verify_phase27.py` rebuilds the generated artifact, checks byte-for-byte reproducibility, performs a strict nucleus build, and exercises simple, IF/ELSE/THEN, and nested structured programs.
 - Phase 28's surface parser has a CLI entry point and strict/sanitizer verification.
-- `verify_phase28.py` connects parser acceptance/rejection to the real compiler path rather than treating the standalone C parser as the eventual self-hosted compiler.
-- `audit_mirror7.py` provides a repository-wide static consistency gate and explicitly reports the remaining architectural bootstrap blockers.
-
-The supplied phase-complete package contains a `PHASE27_VERIFIED.md` marker and a `STATUS.md` entry marking Phase 27 as passed. A fresh local run of the packaged `verify_phase27.py` currently stops earlier at artifact reproducibility, so that supplied claim is retained as package evidence but is not promoted here as a current clean PASS.
+- `verify_phase28.py` validates parser acceptance/rejection and separately exercises the Phase 27 compiler/runtime path; it is not yet a proof of parser-output-to-compiler integration.
+- `audit_mirror7.py` provides a repository-wide static consistency gate and reports remaining bootstrap blockers.
 
 ## Repository layout
 
@@ -83,6 +117,8 @@ The supplied phase-complete package contains a `PHASE27_VERIFIED.md` marker and 
 Mirror-7/
 ├── README.md
 ├── STATUS.md
+├── PHASE_28_AUDIT.md
+├── PHASE_28_REPORT.md
 ├── audit_mirror7.py
 ├── .github/workflows/phase27.yml
 ├── .github/workflows/phase28.yml
@@ -122,9 +158,10 @@ MIRROR7 is a research/engineering project. The bootstrap work is about establish
 ## Next acceptance sequence
 
 ```text
-Resolve Phase 27 artifact reproducibility
-  → Phase 27 CI closure
-  → Phase 28 CI closure
+Resolve Phase 27 CI/artifact reproducibility
+  → define Phase 28 parsed-structure ABI
+  → connect parser output to the real MIRR compiler
+  → Phase 28 end-to-end acceptance
   → compiler entirely in MIRR
   → separate source/target dictionary ABI
   → symbolic relocation
