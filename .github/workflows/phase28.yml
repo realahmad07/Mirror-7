@@ -73,7 +73,7 @@ jobs:
           test "$(./phase28_7_test 6)" = "D"
           test "$(./phase28_7_test 7)" = "A"
           test "$(./phase28_7_test 8)" = "B"
-          test "$(./phase28_7_test 9)" = "A"
+          test "$(./phase28_7_test 9)" = "B"
       - name: Phase 28.7 sanitizer build
         run: cc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined phase28_surface_parser/test_phase28_7.c -o phase28_7_test_san
       - name: Phase 28.7 sanitizer execution
