@@ -36,6 +36,10 @@ jobs:
           old="for i in range(len(body)-3):\n                if body[i:i+4]==['word-count','16','!','15','!']:"
           new="for i in range(len(body)-4):\n                if body[i:i+5]==['word-count','16','!','15','!']:"
           if old in s2: s2=s2.replace(old,new,1)
+          # Phase 27 compile-structured must preserve the established find-word u16 ABI.
+          # find-word returns LOW,HIGH; callers store HIGH at the higher cell and LOW at the lower cell.
+          s2=s2.replace("w.t('find-word','swap','19','!','18','!')", "w.t('find-word','19','!','18','!')")
+          s2=s2.replace("w.t('find-word','swap','21','!','20','!','9','10','!','emit-byte','20','@','10','!','emit-byte','21','@','10','!','emit-byte')", "w.t('find-word','21','!','20','!','9','10','!','emit-byte','20','@','10','!','emit-byte','21','@','10','!','emit-byte')")
           p.write_text(s2)
           PY
       - name: Regenerate artifact and verify
