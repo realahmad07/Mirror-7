@@ -30,7 +30,7 @@ def relocate(lines,delta):
     for line in lines:
         toks=[]
         for t in line.split():
-            m=re.match(r'^(0branch:|branch:)(\d+)$',t)
+            m=re.match(r'^(0branch:|branch:)(d+)$',t)
             if m:t=m.group(1)+str(remap(int(m.group(2))))
             toks.append(t)
         out.append(' '.join(toks))
@@ -47,12 +47,18 @@ def repair_structured_passes(lines):
         addr=_address_before(out)
         toks=line.split()
         if toks and toks[0]==':' and toks[1]=='create-pass':
-            body=toks[2:-1]; pcs=[]; pc=addr
+            body=toks[2:-1]
+            st_indices = [i for i, x in enumerate(body) if x == 'scan-token']
+            if len(st_indices) > 1 and body[st_indices[1]+2] != '!':
+                body.insert(st_indices[1]+1, '12')
+                body.insert(st_indices[1]+2, '!')
+            pcs=[]; pc=addr
             for t in body:pcs.append(pc); pc+=token_size(t)
             bs=[i for i,t in enumerate(body) if t.startswith('0branch:') or t.startswith('branch:')]
             if len(bs)!=8: raise ValueError('create-pass branch count changed')
-            ex=body.index('exit'); dr=body.index('drop'); st=body.index('scan-token')
-            targets=[pcs[ex],pcs[dr],pcs[dr],pcs[dr],pcs[dr],pcs[dr],pcs[st],pcs[dr]]
+            tc=body.index('tok-colon'); wn=body.index('64'); ts=body.index('tok-semi'); dr=body.index('drop')
+            st_all=[i for i,x in enumerate(body) if x=='scan-token']
+            targets=[pcs[tc],pcs[dr],pcs[wn],pcs[dr],pcs[ts],pcs[dr],pcs[st_all[2]],pcs[st_all[0]]]
             for j,i in enumerate(bs): body[i]=('0branch:' if body[i].startswith('0branch:') else 'branch:')+str(targets[j])
             toks=toks[:2]+body+toks[-1:]; line=' '.join(toks)
         elif toks and toks[0]==':' and toks[1]=='compile-pass':
@@ -102,68 +108,70 @@ def repair_find_word_targets(lines):
         addr=_address_before(out)
         toks=line.split()
         if not (toks and toks[0]==':' and toks[1]=='find-word'):
-            out.append(' '.join(toks))
-            continue
-        items=[
-            '0','13','!','0','14','!','word-count','swap','15','!','16','!',
-            ('BR','NOT_FOUND',True),
-            '13','@','14','@','word-name-len','12','@','=',('BR','NEXT',True),
-            '0','17','!',
-            ('LABEL','CHAR'),
-            '17','@','12','@','=',('BR','COMPARE',True),
-            '13','@','14','@','exit',
-            ('LABEL','COMPARE'),
-            '13','@','14','@','17','@','word-name-char','10','!',
-            '17','@','64','+','@','10','@','=',('BR','NEXT',True),
-            '1','17','@','+','17','!',('BR','CHAR',False),
-            ('LABEL','NEXT'),
-            '13','@','255','=',('BR','LOW_ADVANCE',True),
-            '0','13','!','1','14','@','+','14','!',('BR','CANDIDATE',False),
-            ('LABEL','LOW_ADVANCE'),
-            '1','13','@','+','13','!',('BR','CANDIDATE',False),
-            ('LABEL','CANDIDATE'),
-            '13','@','15','@','=','14','@','16','@','=','+','2','=','0','=',('BR','NOT_FOUND',True),
-            '13','@','14','@','word-name-len','12','@','=',('BR','NEXT',True),
-            '0','17','!',('BR','CHAR',False),
-            ('LABEL','NOT_FOUND'),'word-count','exit'
-        ]
+            out.append(' '.join(toks)); continue
+        items=['0','13','!','0','14','!','word-count','swap','15','!','16!',]
+        # placeholder replaced below to keep the repair pass explicit
+        items=['0','13','!','0','14','!','word-count','swap','15','!','16!',('BR','CANDIDATE',False),
+               '13','@','14','@','word-name-len','12','@','=',('BR','NEXT',True),'0','17','!',('LABEL','CHAR'),
+               '17','@','12','@','=',('BR','COMPARE',True),'13','@','14','@','exit',('LABEL','COMPARE'),
+               '13','@','14','@','17','@','word-name-char','10','!','17','@','64','+','@','10','@','=',('BR','NEXT',True),
+               '1','17','@','+','17','!',('BR','CHAR',False),('LABEL','NEXT'),'13','@','255','=','0','=',('BR','LOW_ADVANCE',True),
+               '0','13','!','1','14','@','+','14','!',('BR','CANDIDATE',False),('LABEL','LOW_ADVANCE'),
+               '1','13','@','+','13','!',('BR','CANDIDATE',False),('LABEL','CANDIDATE'),
+               '13','@','15','@','=','14','@','16','@','=','+','2','=','0','=',('BR','NOT_FOUND',True),
+               '13','@','14','@','word-name-len','12','@','=',('BR','NEXT',True),'0','17','!',('BR','CHAR',False),
+               ('LABEL','NOT_FOUND'),'word-count','exit']
+        # normalize accidental compact token if present
+        items=[('16','!') if x=='16!' else x for x in items]
         labels={};pc=addr
         for item in items:
-            if isinstance(item,tuple) and item[0]=='LABEL':
-                labels[item[1]]=pc
-            elif isinstance(item,tuple) and item[0]=='BR':
-                pc+=3
-            else:
-                pc+=token_size(item)
+            if isinstance(item,tuple) and item[0]=='LABEL': labels[item[1]]=pc
+            elif isinstance(item,tuple) and item[0]=='BR': pc+=3
+            else: pc+=token_size(item)
         body=[]
         for item in items:
             if isinstance(item,tuple):
-                if item[0]=='LABEL':
-                    continue
-                if item[0]=='BR':
-                    body.append(('0branch:' if item[2] else 'branch:')+str(labels[item[1]]))
-            else:
-                body.append(item)
+                if item[0]=='LABEL': continue
+                body.append(('0branch:' if item[2] else 'branch:')+str(labels[item[1]]))
+            else: body.append(item)
         out.append(' '.join([':', 'find-word', *body, ';']))
     return out
-base_lines=relocate(base_lines,PRIM_DELTA);base_lines=repair_find_word_storage(base_lines);base_lines=repair_find_word_targets(base_lines);base_lines=repair_structured_passes(base_lines)
+def repair_parse_number(lines):
+    out=[]
+    for line in lines:
+        addr=_address_before(out); toks=line.split()
+        if 'parse-number' in line and ':' in line:
+            line=line.replace('26 ! dup + 27 !','26 ! 26 @ dup + 27 !')
+            toks=line.split(); body=toks[2:-1]; pcs=[];pc=addr
+            for t in body:pcs.append(pc);pc+=token_size(t)
+            bz=[i for i,t in enumerate(body) if t.startswith('0branch:')][0]
+            br=[i for i,t in enumerate(body) if t.startswith('branch:')][0]
+            body[bz]=f'0branch:{pcs[bz+4]}'; body[br]=f'branch:{pcs[6]}'
+            toks=toks[:2]+body+toks[-1:];line=' '.join(toks)
+        out.append(line)
+    return out
+base_lines=relocate(base_lines,PRIM_DELTA)
+base_lines=repair_find_word_storage(base_lines)
+base_lines=repair_find_word_targets(base_lines)
+base_lines=repair_parse_number(base_lines)
+base_lines=repair_structured_passes(base_lines)
 def source_size(lines):
     total=PRIM_BYTES
     for line in lines:
         toks=line.split()
-        if toks:total+=sum(token_size(t) for t in toks[2:-1])+1
+        if toks: total+=sum(token_size(t) for t in toks[2:-1])+1
     return total
 class W:
-    def __init__(self,name):self.name=name;self.ins=[]
-    def t(self,*xs):self.ins+=xs
-    def label(self,n):self.ins.append(('LABEL',n))
-    def br(self,l):self.ins.append(('BR',l,False))
-    def bz(self,l):self.ins.append(('BR',l,True))
+    def __init__(self,name): self.name=name; self.ins=[]
+    def t(self,*xs): self.ins+=xs
+    def label(self,n): self.ins.append(('LABEL',n))
+    def br(self,l): self.ins.append(('BR',l,False))
+    def bz(self,l): self.ins.append(('BR',l,True))
 words=[]
-def Wd(n):w=W(n);words.append(w);return w
-w=Wd('tok-if');w.t('12','@','2','=','64','@','105','=','+','65','@','102','=','+','3','=','exit')
-w=Wd('tok-else');w.t('12','@','4','=','64','@','101','=','+','65','@','108','=','+','66','@','115','=','+','67','@','101','=','+','5','=','exit')
-w=Wd('tok-then');w.t('12','@','4','=','64','@','116','=','+','65','@','104','=','+','66','@','101','=','+','67','@','110','=','+','5','=','exit')
+def Wd(n): w=W(n);words.append(w);return w
+w=Wd('tok-if');w.t('12','@','2','=','64','@','73','=','+','65','@','70','=','+','3','=','exit')
+w=Wd('tok-else');w.t('12','@','4','=','64','@','69','=','+','65','@','76','=','+','66','@','83','=','+','67','@','69','=','+','5','=','exit')
+w=Wd('tok-then');w.t('12','@','4','=','64','@','84','=','+','65','@','72','=','+','66','@','69','=','+','67','@','78','=','+','5','=','exit')
 w=Wd('current-end');w.t('18','@','19','@','word-code-start','swap','40','!','41','!','18','@','19','@','word-code-len','swap','42','!','43','!','40','@','41','@','42','@','43','@','u16-add','swap','40','!','41','!','exit')
 w=Wd('current-len');w.t('18','@','19','@','word-code-len','swap','42','!','43','!','exit')
 w=Wd('patch-at');w.t('18','@','19','@','50','@','51','@','40','@','41','@','word-patch-u16','drop','drop','exit')
@@ -171,7 +179,7 @@ w=Wd('if-open');w.t('30','@','15','=','0','=');w.bz('BAD');w.t('30','@','30','@'
 w=Wd('else-open');w.t('30','@','0','=','0','=');w.bz('BAD');w.t('30','@','1','-','30','@','1','-','30','@','1','-','30','@','1','-','+','+','+','192','+','48','!','48','@','1','+','49','!','48','@','2','+','@','52','!','49','@','2','+','@','53','!','52','@','53','@','+','0','=');w.bz('BAD');w.t('48','@','@','50','!','49','@','@','51','!','current-len','42','@','43','@','1','0','u16-add','swap','54','!','55','!','15','10','!','emit-byte','0','10','!','emit-byte','0','10','!','emit-byte','current-end','patch-at','54','@','48','@','2','+','!','55','@','49','@','2','+','!','exit');w.label('BAD');w.t('0','31','!','exit')
 w=Wd('then-close');w.t('30','@','0','=');w.bz('CONT');w.t('0','31','!','exit');w.label('CONT');w.t('30','@','1','-','30','@','1','-','30','@','1','-','30','@','1','-','+','+','+','192','+','48','!','48','@','1','+','49','!','48','@','2','+','@','52','!','49','@','2','+','@','53','!','52','@','53','@','+','0','=');w.bz('HAS_ELSE');w.t('48','@','@','50','!','49','@','@','51','@','current-end','patch-at','30','@','1','-','30','!','exit');w.label('HAS_ELSE');w.t('52','@','50','!','53','@','51','!','current-end','patch-at','30','@','1','-','30','!','exit')
 w=Wd('compile-structured');w.t('1','31','!','create-pass','set-marker-pos');w.label('L');w.t('scan-token','12','!','12','@','0','=');w.bz('HAVE');w.t('exit');w.label('HAVE');w.t('tok-colon');w.bz('FAIL');w.t('scan-token','12','!','12','@','0','=');w.bz('GN');w.bz('FAIL');w.label('GN');w.t('find-word','19','!','18','!');w.label('B');w.t('scan-token','12','!','12','@','0','=');w.bz('BH');w.bz('FAIL');w.label('BH');w.t('tok-semi');w.bz('NOTS');w.t('30','@','0','=');w.bz('FAIL');w.t('10','10','!','emit-byte');w.br('L');w.label('NOTS');w.t('tok-if');w.bz('NOIF');w.t('if-open','31','@','0','=','0','=');w.bz('FAIL');w.br('B');w.label('NOIF');w.t('tok-else');w.bz('NOELSE');w.t('else-open','31','@','0','=','0','=');w.bz('FAIL');w.br('B');w.label('NOELSE');w.t('tok-then');w.bz('NOTHEN');w.t('then-close','31','@','0','=','0','=');w.bz('FAIL');w.br('B');w.label('NOTHEN');w.t('digit-first?');w.bz('WORD');w.t('parse-number','20','!','1','10','!','emit-byte','20','@','10','!','emit-byte');w.br('B');w.label('WORD');w.t('find-word','21','!','20','!','9','10','!','emit-byte','20','@','10','!','emit-byte','21','@','10','!','emit-byte');w.br('B');w.label('FAIL');w.t('exit')
-w=Wd('run-alpha');w.t('compile-structured','word-count','swap','19','!','18','!','19','@','1','-','19','!','18','@','19','@','word-exec','exit')
+w=Wd('run-alpha');w.t('compile-structured','word-count','19','!','18','!','18','@','1','-','18','!','18','@','19','@','word-exec','exit')
 cur=source_size(base_lines)
 for w in words:
     w.start=cur;local=0;labs={}
