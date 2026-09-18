@@ -140,3 +140,24 @@ The repository stores source and verification files directly. ZIP archives are r
 ## Bootstrap result
 
 **BOOTSTRAP COMPLETE — verified by executable acceptance gates.**
+
+
+## Phase 31 — Discovered Representation, Stable State, and Temporal Identity
+
+Phase 31 is verified locally with the supplied Phase 31 bundle. The pipeline is:
+
+```text
+raw observation → discovered representation → stable structural state
+→ temporal state identity → cross-encoding invariance → integrated raw→state pipeline
+```
+
+| Gate | Status | Evidence |
+|---|---|---|
+| Phase 31.1 — discovered representation | ☑ PASS | `phase31_bootstrap/test_phase31_step1.py` |
+| Phase 31.2 — stable state extraction | ☑ PASS | `phase31_bootstrap/test_phase31_step2.py` |
+| Phase 31.3 — temporal state identity | ☑ PASS | `phase31_bootstrap/test_phase31_step3.py` |
+| Phase 31.4 — cross-encoding invariance | ☑ PASS | `phase31_bootstrap/test_phase31_step4.py` |
+| Phase 31.5 — raw→state integration | ☑ PASS | `phase31_bootstrap/test_phase31_step5.py` |
+| Phase 31.6 — full acceptance gate | ☑ PASS | `phase31_bootstrap/test_phase31_gate.py` |
+
+**Phase 31 result: 37 / 37 tests passed locally.** See `phase31_bootstrap/README.md` for scope, metrics, and limitations.
