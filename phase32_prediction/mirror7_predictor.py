@@ -20,7 +20,10 @@ except (ImportError, ValueError):
     except (ImportError, ValueError):
         pass
 
-from .mirror7_transition import ObservedTransition, TransitionMemory, _extract_state_id
+try:
+    from .mirror7_transition import ObservedTransition, TransitionMemory, _extract_state_id
+except (ImportError, ValueError):
+    from mirror7_transition import ObservedTransition, TransitionMemory, _extract_state_id
 
 
 class PredictionStatus(str, Enum):
