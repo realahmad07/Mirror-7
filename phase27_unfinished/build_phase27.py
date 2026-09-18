@@ -109,20 +109,16 @@ def repair_find_word_targets(lines):
         toks=line.split()
         if not (toks and toks[0]==':' and toks[1]=='find-word'):
             out.append(' '.join(toks)); continue
-        items=['0','13','!','0','14','!','word-count','swap','15','!','16!',]
-        # placeholder replaced below to keep the repair pass explicit
         items=['0','13','!','0','14','!','word-count','swap','15','!','16!',('BR','CANDIDATE',False),
                '13','@','14','@','word-name-len','12','@','=',('BR','NEXT',True),'0','17','!',('LABEL','CHAR'),
                '17','@','12','@','=',('BR','COMPARE',True),'13','@','14','@','exit',('LABEL','COMPARE'),
                '13','@','14','@','17','@','word-name-char','10','!','17','@','64','+','@','10','@','=',('BR','NEXT',True),
-               '1','17','@','+','17','!',('BR','CHAR',False),('LABEL','NEXT'),'13','@','255','=','0','=',('BR','LOW_ADVANCE',True),
+               '1','17','@','+','17','!',('BR','CHAR',False),('LABEL','NEXT'),'13','@','255','=',('BR','LOW_ADVANCE',True),
                '0','13','!','1','14','@','+','14','!',('BR','CANDIDATE',False),('LABEL','LOW_ADVANCE'),
                '1','13','@','+','13','!',('BR','CANDIDATE',False),('LABEL','CANDIDATE'),
                '13','@','15','@','=','14','@','16','@','=','+','2','=','0','=',('BR','NOT_FOUND',True),
                '13','@','14','@','word-name-len','12','@','=',('BR','NEXT',True),'0','17','!',('BR','CHAR',False),
                ('LABEL','NOT_FOUND'),'word-count','exit']
-        # normalize accidental compact token if present
-        items=[('16','!') if x=='16!' else x for x in items]
         labels={};pc=addr
         for item in items:
             if isinstance(item,tuple) and item[0]=='LABEL': labels[item[1]]=pc
