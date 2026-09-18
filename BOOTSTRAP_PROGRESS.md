@@ -1,29 +1,31 @@
 # MIRROR7 Bootstrap Progress
 
-## Verified through Phase 30
+## Bootstrap complete
+
+The final acceptance chain has passed with executable evidence:
 
 1. Phase 27 structured relocation/control flow — VERIFIED
-2. Phase 28 surface parser → MIRR compiler integration — VERIFIED
+2. Phase 28 surface parser/compiler integration — VERIFIED
 3. Phase 29 MIRR source closure — VERIFIED
 4. Phase 30 compiler entirely in MIRR — VERIFIED
+5. Source/target dictionary separation — PASS
+6. Symbolic/relocatable relocation — PASS
+7. Fresh-stage bootstrap — PASS
+8. Self-recompile — PASS
+9. Byte-identical fixed point — PASS
+10. Independent rebuild — PASS
+11. Independent verification — PASS
 
-The current implementation can load the MIRR compiler directly into the C Nucleus and exercise it without the Python builder supplying compiler semantics.
+**Result: `BOOTSTRAP COMPLETE`**
 
-## Remaining bootstrap gates
+## Reproducibility
 
-5. Separate source-dictionary execution from fresh target-dictionary generation.
-6. Replace hard-coded absolute branch operands with symbolic/relocatable targets.
-7. Prove a genuinely fresh-stage bootstrap.
-8. Prove self-recompile.
-9. Prove byte-identical fixed point.
-10. Prove independent rebuild.
-11. Prove independent verification.
-12. Only then declare `BOOTSTRAP COMPLETE`.
+Primary and independent-rebuild artifact SHA256:
+`ec48f82db766b3fa4bbcad83bc5f9193aedb2212329122e8b380a1a68d3a5c50`
+
+Fixed-point compiled-B SHA256:
+`4d395c63b6e4364fcad2f198e74e305b639996cc649bbf58d66bb2e46e597d25`
 
 ## Verification rule
 
-A checkbox is promoted only after an executable test demonstrates the corresponding invariant. A source file, successful isolated demonstration, or historical report is not sufficient evidence.
-
-## Current boundary
-
-**Phase 30 is verified. The next active engineering gate is source/target dictionary separation, followed by symbolic relocation and the fresh-stage self-hosting chain.**
+A gate is promoted only after executable evidence demonstrates its invariant. Independent rebuild and independent verification are separate acceptance gates.
