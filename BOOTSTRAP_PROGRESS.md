@@ -29,3 +29,15 @@ Fixed-point compiled-B SHA256:
 ## Verification rule
 
 A gate is promoted only after executable evidence demonstrates its invariant. Independent rebuild and independent verification are separate acceptance gates.
+
+
+## Phase 31
+
+12. ☑ Phase 31.1 raw observation → discovered representation.
+13. ☑ Phase 31.2 discovered representation → stable state.
+14. ☑ Phase 31.3 temporal state identity.
+15. ☑ Phase 31.4 cross-encoding invariance.
+16. ☑ Phase 31.5 raw → state integration.
+17. ☑ Phase 31.6 full Phase 31 acceptance gate.
+
+**Phase 31 COMPLETE — 37 / 37 tests passed locally.**
