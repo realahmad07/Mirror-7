@@ -35,3 +35,17 @@
 ## Scope boundary
 
 Bootstrap completion establishes a reproducible self-hosting computational substrate. It is **not a claim of AGI**. Future learning, world-model, planning, tool-use, and capability-acquisition work is separate from the completed bootstrap chain.
+
+
+## Phase 31 — Discovered Representation / State / Temporal Identity
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Phase 31.1 — discovered representation | ☑ PASS | Raw observation structural discovery tests. |
+| Phase 31.2 — stable state extraction | ☑ PASS | Canonical structural state tests. |
+| Phase 31.3 — temporal state identity | ☑ PASS | Temporal trajectory and return-state tests. |
+| Phase 31.4 — cross-encoding invariance | ☑ PASS | Vocabulary-invariant identity and divergence tests. |
+| Phase 31.5 — raw→state integration | ☑ PASS | Direct and streaming pipeline tests. |
+| Phase 31.6 — full acceptance gate | ☑ PASS | 37 / 37 Phase 31 tests passed. |
+
+**Phase 31 COMPLETE — verified executable acceptance suite.**
