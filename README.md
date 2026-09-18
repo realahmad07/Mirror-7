@@ -11,29 +11,23 @@ MIRROR7 is an experimental open-source computational architecture whose bootstra
 ```text
 Stage-0 C nucleus
     ↓
-VM / memory / dictionary
-    ↓
-runtime dictionary creation
-    ↓
-tokenization + lookup
+VM / runtime dictionary
     ↓
 MIRR compilation machinery
     ↓
-integrated compiler path
-    ↓
 structured relocation / control flow
     ↓
-Phase 28 surface parser
+Phase 28 surface parser + structured IR
     ↓
-Phase 28 parsed-structure ABI        ← CURRENT PASS
+MIRR compiler integration
     ↓
-Phase 28 parser → real compiler      ← NEXT
+Phase 29 MIRR source closure
     ↓
-compiler entirely in MIRR
+Phase 30 compiler entirely in MIRR
     ↓
-source/target dictionary ABI
+source/target dictionary ABI              ← NEXT
     ↓
-symbolic relocation (no generated absolute-branch dependency)
+symbolic relocation
     ↓
 fresh-stage bootstrap
     ↓
@@ -44,6 +38,8 @@ byte-identical fixed point
 independent rebuild
     ↓
 independent verification
+    ↓
+BOOTSTRAP COMPLETE
 ```
 
 ## Status
@@ -53,14 +49,14 @@ independent verification
 | Phase 24 — runtime dictionary | ☑ PASS recorded | Preserved Phase 24 implementation/test artifacts. |
 | Phase 25 — tokenization + lookup + compilation | ☑ Implemented; fresh verification required | Source preserved; historical result is not treated as a new clean-room PASS. |
 | Phase 26 — integrated native compiler path | ☑ Implemented; fresh verification required | Source preserved; historical result is not treated as a new clean-room PASS. |
-| Phase 27 — structured relocation/control flow | ☐ CI closure required | Implementation is corrected and locally exercised, but the latest GitHub Actions debug run failed; no current green CI promotion is claimed. |
+| Phase 27 — structured relocation/control flow | ☑ VERIFIED | Current builder output was regenerated and strict Phase 27 verification passes. |
 | Phase 28.1 — surface parser component | ☑ Component verified | Strict C17 plus parser regression/fuzz and ASan/UBSan execution are implemented. |
 | Phase 28.2 — parsed-structure ABI | ☑ Component verified | Versioned surface IR is emitted and independently validated by a strict C17 ABI regression. |
-| Phase 28 — parser/compiler integration | ☐ NOT VERIFIED | The parser now produces a parsed structure, but the real compiler does not yet consume it. |
+| Phase 28 — parser/compiler integration | ☑ VERIFIED | 28.1–28.12 pass, including held-out programs, relocation, VM execution, and Phase 27 regression. |
 | Whole-project deep audit | ☑ Static audit implemented; CI promotion pending | `audit_mirror7.py` checks repository inputs, generated-artifact reproducibility, layout/branch invariants, u16 limits, and strict C17 host builds. |
-| Compiler entirely in MIRR | ☐ Not verified | Must compile the compiler without a host-side compiler implementation dependency. |
-| Separate source/target dictionary ABI | ☐ Not verified | Compiler execution dictionary and generated target dictionary must be independently selectable. |
-| Remove hard-coded absolute branch dependency | ☐ Not verified | Branch targets must derive from relocation/symbolic structure rather than fixed offsets. |
+| Phase 29 — MIRR source closure | ☑ VERIFIED | Compiler source closes over MIRR words/Nucleus primitives and runs through the bootstrap builder path. |\n| Phase 30 — compiler entirely in MIRR | ☑ VERIFIED | Compiler source loads directly into the Nucleus and compiles/executes representative MIRR programs without the Python builder supplying semantics. |
+| Separate source/target dictionary ABI | ☐ OPEN | Compiler execution dictionary and generated target dictionary must be independently selectable. |
+| Remove hard-coded absolute branch dependency | ☐ OPEN | Branch targets must derive from relocation/symbolic structure rather than fixed offsets. |
 | Fresh-stage bootstrap | ☐ Not verified | A clean stage must rebuild the compiler from the bootstrap substrate. |
 | Self-recompile | ☐ Not verified | The MIRR compiler must successfully compile its own source. |
 | Byte-identical fixed point | ☐ Not verified | Recompilation must produce identical output under the defined reproducible-build conditions. |
@@ -126,6 +122,20 @@ For every failure:
 ## Important scope boundary
 
 MIRROR7 is a research/engineering project. The bootstrap work is about establishing a reproducible self-hosted computational substrate. Future learning, world-model, planning, tool-use, capability-acquisition, and AGI experiments are architectural goals and are not claimed merely because the bootstrap compiler exists.
+
+## Current capabilities
+
+Mirror 7 can now:
+
+- execute the C Nucleus/VM and maintain a runtime dictionary;
+- parse the supported MIRR surface grammar into structured IR;
+- compile definitions, numeric literals, calls, and nested `IF/ELSE/THEN` control flow;
+- relocate generated branch targets and execute the resulting code;
+- represent the compiler implementation as MIRR definitions;
+- load that MIRR compiler directly into the Nucleus and use it to compile representative MIRR programs;
+- run strict verification, held-out tests, regression checks, and deep static audits.
+
+These milestones establish a verified computational/bootstrap substrate. They do **not** by themselves establish AGI or bootstrap completion.
 
 ## Repository layout
 
