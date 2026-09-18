@@ -87,6 +87,9 @@ class TemporalStateTracker:
         return len(self._history)
 
     def step(self, state: Any) -> StateTransition:
+        """
+        Record a state observation at the next discrete time step.
+        """
         if not isinstance(state, StructuralState):
             raise TypeError(f"step requires a StructuralState instance, got {type(state).__name__}")
 
@@ -107,23 +110,41 @@ class TemporalStateTracker:
                 relation = TemporalRelation.TRANSITION_NOVEL
 
         thash = _compute_transition_hash(step_idx, from_id, to_id, relation.value)
-        trans = StateTransition(step_idx, from_id, to_id, relation, thash)
+        trans = StateTransition(
+            step=step_idx,
+            from_state_id=from_id,
+            to_state_id=to_id,
+            relation=relation,
+            transition_hash=thash,
+        )
 
         self._history.append(state)
         self._transitions.append(trans)
-        self._seen_state_ids.setdefault(to_id, []).append(step_idx)
+        if to_id not in self._seen_state_ids:
+            self._seen_state_ids[to_id] = []
+        self._seen_state_ids[to_id].append(step_idx)
+
         return trans
 
     def is_repeated_state(self, state_id: str) -> bool:
+        """Returns True if the given state has been visited more than once."""
         return len(self._seen_state_ids.get(state_id, [])) > 1
 
     def has_returned_to(self, state_id: str) -> bool:
+        """Returns True if the system was in this state, moved away, and later returned."""
         indices = self._seen_state_ids.get(state_id, [])
         if len(indices) < 2:
             return False
-        return any(indices[i + 1] - indices[i] > 1 for i in range(len(indices) - 1))
+        # Check if there is any gap > 1 between occurrences
+        for i in range(len(indices) - 1):
+            if indices[i + 1] - indices[i] > 1:
+                return True
+        return False
 
     def temporal_signature(self) -> str:
+        """
+        Deterministic checksum characterizing the entire temporal trajectory.
+        """
         hasher = hashlib.sha256()
         for t in self._transitions:
             hasher.update(f"{t.step}:{t.from_state_id}->{t.to_state_id}:{t.relation.value}|".encode("ascii"))
@@ -131,6 +152,9 @@ class TemporalStateTracker:
 
     @classmethod
     def replay(cls, states: Sequence[StructuralState]) -> "TemporalStateTracker":
+        """
+        Deterministically reconstruct tracker trajectory from a sequence of states.
+        """
         tracker = cls()
         for s in states:
             tracker.step(s)
