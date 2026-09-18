@@ -1,0 +1,20 @@
+name: Phase 32 Prediction
+
+on:
+  push:
+    paths:
+      - "phase31_bootstrap/**"
+      - "phase32_prediction/**"
+      - ".github/workflows/phase32.yml"
+  workflow_dispatch:
+
+jobs:
+  phase32:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run Phase 32 acceptance suite
+        run: python phase32_prediction/test_phase32.py
