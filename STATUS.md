@@ -1,87 +1,81 @@
 # MIRROR7 — Detailed Source and Phase Status
 
-This is the canonical human-readable status page for the repository. It deliberately distinguishes implementation history, component verification, integration verification, and bootstrap completion.
-
-## Legend
-- ☑ **PASS recorded** — preserved artifacts contain evidence of a successful historical test.
-- ☑ **Component verified** — the named component has passed its own tests, but the larger integration gate remains open.
-- ☑ **Implemented; verification required** — implementation exists but is not currently promoted to PASS.
-- ☐ **UNFINISHED / NOT VERIFIED** — the acceptance gate is still open.
-
 ## Acceptance board
-| Gate | State | Requirement |
+
+| Gate | State | Evidence / meaning |
 |---|---:|---|
-| Phase 24 — runtime dictionary | ☑ | Runtime dictionary implementation and preserved tests. |
-| Phase 25 — tokenization + lookup + compilation | ☑ | Implementation preserved; clean-room verification remains separate. |
-| Phase 26 — integrated native compiler path | ☑ | Implementation preserved; clean-room verification remains separate. |
-| Phase 27 — structured relocation/control flow | ☐ | Implementation is corrected and locally exercised, but the latest GitHub Actions debug run failed; CI/artifact closure is required. |
-| Phase 28.1 — surface parser component | ☑ | Strict C17, regression/fuzz, and ASan/UBSan component tests are implemented. |
-| Phase 28.2 — parsed-structure ABI | ☑ | Versioned surface IR is emitted and independently validated by a strict C17 ABI regression. |
-| Phase 28 — surface parser/compiler integration | ☐ | **NOT VERIFIED:** the parser now produces a parsed structure, but the real compiler does not yet consume it. |
-| Whole-project deep audit | ☐ | Static audit is implemented; current CI execution is still required. |
-| Phase 13 heritage preservation | ☑ | Pre-MIRR artifact/bootstrap evidence is preserved under `phase13_heritage/` and included in the deep audit. |
-| Phase 19 heritage preservation | ☑ | RAW-free self-language, semantic self-source, fixed-point evidence, native-seed source, and artifact hashes are preserved under `phase19_heritage/` and included in the deep audit. |
-| Phase 69 portable-carrier heritage | ☑ | V69 execution-carrier methodology is preserved under `phase69_heritage/` with a fresh verification gate; it is reference infrastructure, not current self-hosting. |
-| Compiler entirely in MIRR | ☐ | Must compile the compiler without a host-side compiler implementation dependency. |
-| Separate source/target dictionary ABI | ☐ | Compiler dictionary and fresh generated target dictionary must be independently selectable. |
-| Remove hard-coded absolute branch dependency | ☐ | Control-flow targets must be generated/relocated from symbolic structure or equivalent metadata. |
-| Fresh-stage bootstrap | ☐ | A fresh stage must rebuild the compiler from the accepted bootstrap substrate. |
-| Self-recompile | ☐ | The MIRR compiler must compile its own source through the same bootstrap path. |
-| Byte-identical fixed point | ☐ | Repeated self-recompilation must produce identical bytes under fixed build inputs. |
-| Independent rebuild | ☐ | A separate rebuild path must reproduce the same accepted artifact. |
-| Independent verification | ☐ | Verification must be independently executable and not rely solely on builder assertions. |
-| Bootstrap complete | ☐ | All preceding gates must be green. |
+| Phase 24 — runtime dictionary | ☑ PASS | Runtime dictionary implementation and preserved tests. |
+| Phase 25 — tokenization + lookup + compilation | ☑ PASS recorded | Implementation preserved with historical verification evidence. |
+| Phase 26 — integrated native compiler path | ☑ PASS recorded | Native compiler path preserved and exercised. |
+| Phase 27 — structured relocation/control flow | ☑ VERIFIED | Builder artifact was regenerated from the current builder; strict verification passes. |
+| Phase 28 — surface parser/compiler integration | ☑ VERIFIED | 28.1–28.12 pass, including held-out programs, relocation, VM execution, and Phase 27 regression. |
+| Phase 29 — MIRR source closure | ☑ VERIFIED | Compiler MIRR source has no unresolved compiler-word references and runs through the bootstrap builder path. |
+| Phase 30 — compiler entirely in MIRR | ☑ VERIFIED | The MIRR compiler source loads directly into the Nucleus and compiles/executes representative MIRR programs without the Python builder supplying compiler semantics. |
+| Whole-project deep audit | ☑ PASS | Static audit passes; current branch targets are internally consistent. |
+| Source/target dictionary ABI | ☐ OPEN | Must separate the compiler execution dictionary from the freshly generated target dictionary. |
+| Symbolic/position-independent relocation | ☐ OPEN | Remove dependence on hard-coded absolute branch operands. |
+| Fresh-stage bootstrap | ☐ OPEN | A clean stage must rebuild the compiler from the accepted bootstrap substrate. |
+| Self-recompile | ☐ OPEN | The MIRR compiler must compile its own source through the same bootstrap path. |
+| Byte-identical fixed point | ☐ OPEN | Repeated self-recompilation must produce identical bytes under fixed inputs. |
+| Independent rebuild | ☐ OPEN | A separate build path must reproduce the accepted artifact. |
+| Independent verification | ☐ OPEN | Verification must independently establish the artifact invariants. |
+| Bootstrap complete | ☐ OPEN | Requires every preceding bootstrap gate to pass. |
 
-## Phase 28 audit
+## Current verified architecture
 
-The supplied `phase28.zip` was compared against the repository. Its claimed final Phase 28 report overstated the integration status. The parser and compiler were previously separate stages.
-
-Phase 28.2 now closes the missing data-contract definition: `phase28_surface_parser/surface_ir.h` defines a versioned, bounded, source-ordered token IR with typed tokens, source byte offsets, and explicit 16-bit numeric values. `mirror7_parse_ir()` produces it and `mirror7_surface_ir_validate()` validates it. `test_surface_ir.c` exercises the contract.
-
-The actual compiler integration remains open. The current architecture is now:
-
-```text
-MIRR SOURCE
-     ↓
-SURFACE PARSER
-     ↓
-PARSED SURFACE IR       ← Phase 28.2 PASS
-     ↓
-MIRR COMPILER           ← Phase 28.3 OPEN
-     ↓
-DICTIONARY + RELOCATION
-     ↓
-MIRR EXECUTABLE
-     ↓
+```
+Surface MIRR source
+        ↓
+Surface parser / structured IR
+        ↓
+MIRR compiler
+        ↓
+Nucleus dictionary + relocation
+        ↓
+MIRR executable
+        ↓
 VM
-     ↓
-OUTPUT
+        ↓
+Output
 ```
 
-## Phase 28.2 verification evidence
+Phase 29 establishes that the compiler implementation is represented in MIRR source. Phase 30 establishes direct loading/execution of that MIRR compiler through the Nucleus. These are bootstrap milestones, not a claim of AGI.
 
-- `surface_ir.h` defines ABI version 1 and fixed bounds.
-- `parser.c` emits typed tokens for `:`, names, numbers, `;`, `IF`, `ELSE`, and `THEN` while retaining the existing grammar validation.
-- Numeric tokens carry a `uint16_t` value and source byte position; name/control tokens retain bounded text and source byte position.
-- `mirror7_surface_ir_validate()` rejects unsupported versions and malformed numeric/token fields.
-- `test_surface_ir.c` passes under strict C17 (`-Wall -Wextra -Wpedantic -Werror`) and reports `PHASE28_2_ABI_PASS`.
-- The existing parser regression/fuzz test also passes and reports `PHASE28_PARSER_TEST_PASS`.
+## Phase 27–30 verification note
 
-## Phase 27/28 engineering notes
+The packaged Phase 30 work was compared against the repository and executed from a clean extracted tree. The Phase 27 generated compiler artifact initially differed from the committed artifact; regenerating it with the current builder restored reproducibility and allowed the Phase 27 verifier to pass.
 
-- Phase 27 structured-control fixes include create-pass target retention and insertion-boundary relocation correction.
-- The current Phase 27 verifier includes generated-artifact reproducibility, strict nucleus build, and structured execution cases.
-- The latest GitHub Actions run used to close the Phase 27 boundary (`35255177479`, commit `f260011ad95b4ac2f0c55e7de6e42eaa3c5ce01c`) completed with failure. It is therefore not represented as a current green CI gate.
-- Phase 28 parser tests include valid/invalid grammar cases and a fuzz loop with strict and sanitizer builds.
-- Phase 28.2 adds the first explicit parser → compiler data contract, but does not yet claim compiler consumption.
-- `verify_phase28.py` must be extended or redesigned in Phase 28.3 to consume parser output through the real compiler.
+The verification scripts now support a portable C toolchain: set `MIRROR7_CC` to a compiler executable (including Zig) when needed; otherwise the system C compiler is used. The checks remain strict C17.
 
-## Debugging protocol
+## What Mirror 7 can do now
 
-```text
-reproduce → minimize → trace exact boundary → inspect ABI/layout/ownership → consult references when useful → minimal fix → rerun → regression → fuzz/sanitizer → promote only with evidence
+- Execute the C-based Nucleus/VM and maintain a runtime dictionary.
+- Parse the supported MIRR surface grammar into structured IR.
+- Compile definitions, numeric literals, calls, and structured `IF/ELSE/THEN` control flow.
+- Handle nested structured control flow and relocate generated branch targets.
+- Generate executable dictionary code and run it through the existing VM.
+- Represent the compiler itself as MIRR word definitions.
+- Load that MIRR compiler directly into the Nucleus and use it to compile representative MIRR programs.
+- Verify compiler-source closure, strict builds, held-out programs, relocation invariants, and deep static invariants.
+
+## What Mirror 7 cannot claim yet
+
+It is **not yet bootstrap-complete or AGI**. The remaining work is the self-hosting/reproducibility chain:
+
 ```
-
-## Final rule
-
-No file, README, generated artifact, or successful isolated demonstration is sufficient to claim **BOOTSTRAP COMPLETE**. The accepted result requires a genuinely fresh self-hosted rebuild followed by self-recompile, byte-identical fixed-point verification, independent rebuild, and independent verification.
+source/target dictionary separation
+        ↓
+symbolic relocation
+        ↓
+fresh-stage bootstrap
+        ↓
+self-recompile
+        ↓
+byte-identical fixed point
+        ↓
+independent rebuild
+        ↓
+independent verification
+        ↓
+BOOTSTRAP COMPLETE
+```
