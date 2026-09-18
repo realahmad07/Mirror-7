@@ -1,135 +1,183 @@
-"""Phase 31: deterministic raw-observation representation discovery.
+#"Mirror 7 — Phase 31.1: Raw Observation -> Structural Representation
 
-The module deliberately accepts only bytes. It does not assume a schema, field names,
-entity labels, or numeric object structure. It extracts repeated local structure and
-returns a canonical representation suitable for later state learning.
-"""
 from __future__ import annotations
+
 from dataclasses import dataclass
-from hashlib import sha256
-from typing import Iterable
+import hashlib
+from typing import Any, Sequence, Tuple, Union
 
 
 @dataclass(frozen=True)
-class Segment:
-    start: int
-    end: int
-    value: bytes
-
-
-@dataclass(frozen=True)
-class Representation:
-    length: int
-    runs: tuple[tuple[int, int, int], ...]
-    transitions: tuple[tuple[int, int], ...]
-    motifs: tuple[tuple[bytes, tuple[int, ...]], ...]
+class DiscoveredRepresentation:
+    """
+    Immutable, deterministic structural representation discovered from raw observation.
+    """
+    raw_length: int
+    vocab_size: int
+    canonical_tokens: Tuple[int, ...]
+    runs: Tuple[Tuple[int, int], ...]
+    transitions: Tuple[Tuple[int, int], ...]
+    motifs: Tuple[Tuple[Tuple[int, ...], int], ...]
     checksum: str
 
-    def canonical_bytes(self) -> bytes:
+    def __repr__(self) -> str:
+        return (
+            f"DiscoveredRepresentation(len={self.raw_length}, vocab={self.vocab_size}, "
+            f"motifs={len(self.motifs)}, checksum={self.checksum[:8]}...)"
+        )
+
+
+def _validate_raw_input(raw: Any) -> bytes:
+    """
+    Validates that input is raw byte-like data (bytes, bytearray, or Sequence[int] in 0..255).
+    Rejects strings, floats, None, dicts, or other types explicitly.
+    """
+    if raw is None:
+        raise TypeError("raw observation cannot be None")
+    if isinstance(raw, (str, dict, set)):
+        raise TypeError(f"raw observation must be byte-like, got {type(raw).__name__}")
+    if isinstance(raw, (bytes, bytearray)):
+        return bytes(raw)
+    if isinstance(raw, (list, tuple)):
         out = bytearray()
-        out.extend(self.length.to_bytes(4, "big"))
-        for v, s, e in self.runs:
-            out.extend(bytes((v,)))
-            out.extend(s.to_bytes(4, "big"))
-            out.extend(e.to_bytes(4, "big"))
-        out.append(0xff)
-        for a, b in self.transitions:
-            out.extend(bytes((a, b)))
-        out.append(0xfe)
-        for motif, positions in self.motifs:
-            out.extend(len(motif).to_bytes(2, "big"))
-            out.extend(motif)
-            out.extend(len(positions).to_bytes(2, "big"))
-            for p in positions:
-                out.extend(p.to_bytes(4, "big"))
+        for idx, val in enumerate(raw):
+            if not isinstance(val, int) or isinstance(val, bool):
+                raise TypeError(f"Element at index {idx} is not an integer: {type(val).__name__}")
+            if val < 0 or val > 255:
+                raise ValueError(f"Element at index {idx} out of byte range 0..255: {val}")
+            out.append(val)
         return bytes(out)
+    raise TypeError(f"unsupported observation type: {type(raw).__name__}")
 
 
-def _canonicalize(obs: bytes) -> bytes:
-    mapping = {}
+def canonicalize_symbols(raw_bytes: bytes) -> Tuple[Tuple[int, ...], int]:
+    """
+    Map raw symbol identities to canonical IDs ordered by first appearance (0, 1, 2, ...).
+    This guarantees that identical structures with different raw vocabularies
+    (e.g., [65, 65, 66] vs [9, 9, 7]) produce the exact same canonical token sequence.
+    """
+    symbol_map = {}
+    canonical = []
     next_id = 0
-    out = bytearray()
-    for x in obs:
-        if x not in mapping:
-            mapping[x] = next_id
+
+    for b in raw_bytes:
+        if b not in symbol_map:
+            symbol_map[b] = next_id
             next_id += 1
-        out.append(mapping[x])
-    return bytes(out)
+        canonical.append(symbol_map[b])
+
+    return tuple(canonical), next_id
 
 
-def _runs(obs: bytes) -> tuple[tuple[int, int, int], ...]:
-    if not obs:
+def extract_runs(canonical_tokens: Tuple[int, ...]) -> Tuple[Tuple[int, int], ...]:
+    """
+    Extract run-length structure as a tuple of (canonical_symbol, count).
+    """
+    if not canonical_tokens:
         return ()
-    result = []
-    start = 0
-    value = obs[0]
-    for i, x in enumerate(obs[1:], 1):
-        if x != value:
-            result.append((value, start, i))
-            start, value = i, x
-    result.append((value, start, len(obs)))
-    return tuple(result)
+
+    runs = []
+    current_sym = canonical_tokens[0]
+    current_count = 1
+
+    for sym in canonical_tokens[1:]:
+        if sym == current_sym:
+            current_count += 1
+        else:
+            runs.append((current_sym, current_count))
+            current_sym = sym
+            current_count = 1
+    runs.append((current_sym, current_count))
+
+    return tuple(runs)
 
 
-def _transitions(obs: bytes) -> tuple[tuple[int, int], ...]:
-    return tuple(sorted(set(zip(obs, obs[1:]))))
+def extract_transitions(canonical_tokens: Tuple[int, ...]) -> Tuple[Tuple[int, int], ...]:
+    """
+    Extract directed transitions (bigrams) between adjacent canonical symbols.
+    """
+    if len(canonical_tokens) < 2:
+        return ()
+
+    return tuple((canonical_tokens[i], canonical_tokens[i + 1]) for i in range(len(canonical_tokens) - 1))
 
 
-def _motifs(obs: bytes, widths: Iterable[int] = (2, 3, 4)) -> tuple[tuple[bytes, tuple[int, ...]], ...]:
-    found = []
-    for width in widths:
-        if len(obs) < width:
-            continue
-        buckets: dict[bytes, list[int]] = {}
-        for i in range(len(obs) - width + 1):
-            motif = obs[i:i + width]
-            buckets.setdefault(motif, []).append(i)
-        for motif, positions in buckets.items():
-            if len(positions) >= 2:
-                found.append((motif, tuple(positions)))
-    return tuple(sorted(found, key=lambda x: (len(x[0]), x[0], x[1])))
+def extract_motifs(canonical_tokens: Tuple[int, ...], min_len: int = 2, max_len: int = 4) -> Tuple[Tuple[Tuple[int, ...], int], ...]:
+    """
+    Discover repeated subsequences (motifs) occurring at least 2 times.
+    Sorted deterministically by frequency descending, length descending, then motif content.
+    """
+    n = len(canonical_tokens)
+    if n < min_len:
+        return ()
+
+    counts = {}
+    for mlen in range(min_len, min(max_len + 1, n + 1)):
+        for i in range(n - mlen + 1):
+            sub = canonical_tokens[i : i + mlen]
+            counts[sub] = counts.get(sub, 0) + 1
+
+    repeated = [(motif, count) for motif, count in counts.items() if count >= 2]
+    repeated.sort(key=lambda item: (-item[1], -len(item[0]), item[0]))
+
+    return tuple(repeated)
 
 
-def discover_representation(observation: bytes | bytearray | memoryview) -> Representation:
-    if not isinstance(observation, (bytes, bytearray, memoryview)):
-        raise TypeError("observation must be bytes-like")
-    obs = _canonicalize(bytes(observation))
-    runs = _runs(obs)
-    transitions = _transitions(obs)
-    motifs = _motifs(obs)
-    provisional = Representation(len(obs), runs, transitions, motifs, "")
-    checksum = sha256(provisional.canonical_bytes()).hexdigest()
-    return Representation(len(obs), runs, transitions, motifs, checksum)
+def compute_representation_checksum(
+    raw_length: int,
+    vocab_size: int,
+    canonical_tokens: Tuple[int, ...],
+    runs: Tuple[Tuple[int, int], ...],
+    transitions: Tuple[Tuple[int, int], ...],
+    motifs: Tuple[Tuple[Tuple[int, ...], int], ...],
+) -> str:
+    """
+    Compute a deterministic SHA256 checksum over all discovered structural dimensions.
+    """
+    hasher = hashlib.sha256()
+    hasher.update(f"L:{raw_length}|V:{vocab_size}|".encode("ascii"))
+    hasher.update(f"TOK:{','.join(map(str, canonical_tokens))}|".encode("ascii"))
+    hasher.update(f"RUNS:{';'.join(f'{s}:{c}' for s, c in runs)}|".encode("ascii"))
+    hasher.update(f"TRANS:{';'.join(f'{a}->{b}' for a, b in transitions)}|".encode("ascii"))
+    hasher.update(f"MOTIFS:{';'.join(f'{list(m)}:{c}' for m, c in motifs)}|".encode("ascii"))
+    return hasher.hexdigest()
 
 
-def similarity(a: Representation, b: Representation) -> float:
-    """Structural similarity independent of absolute byte vocabulary."""
-    if a.length == 0 or b.length == 0:
-        return 1.0 if a.length == b.length else 0.0
-    ar = [(e - s) for _, s, e in a.runs]
-    br = [(e - s) for _, s, e in b.runs]
-    run_score = _sequence_score(ar, br)
-    at = set((x, y) for x, y in a.transitions)
-    bt = set((x, y) for x, y in b.transitions)
-    trans_score = _set_score(at, bt)
-    am = {len(m): len(pos) for m, pos in a.motifs}
-    bm = {len(m): len(pos) for m, pos in b.motifs}
-    motif_score = _set_score(set(am.items()), set(bm.items()))
-    return (run_score + trans_score + motif_score) / 3.0
+def discover_representation(raw_observation: Any) -> DiscoveredRepresentation:
+    """
+    Discover the structural representation from an undifferentiated raw observation.
+    """
+    raw_bytes = _validate_raw_input(raw_observation)
+    raw_length = len(raw_bytes)
+
+    canonical_tokens, vocab_size = canonicalize_symbols(raw_bytes)
+    runs = extract_runs(canonical_tokens)
+    transitions = extract_transitions(canonical_tokens)
+    motifs = extract_motifs(canonical_tokens)
+    checksum = compute_representation_checksum(
+        raw_length=raw_length,
+        vocab_size=vocab_size,
+        canonical_tokens=canonical_tokens,
+        runs=runs,
+        transitions=transitions,
+        motifs=motifs,
+    )
+
+    return DiscoveredRepresentation(
+        raw_length=raw_length,
+        vocab_size=vocab_size,
+        canonical_tokens=canonical_tokens,
+        runs=runs,
+        transitions=transitions,
+        motifs=motifs,
+        checksum=checksum,
+    )
 
 
-def _set_score(a: set, b: set) -> float:
-    if not a and not b:
-        return 1.0
-    return len(a & b) / max(1, len(a | b))
-
-
-def _sequence_score(a: list[int], b: list[int]) -> float:
-    if not a and not b:
-        return 1.0
-    if not a or not b:
-        return 0.0
-    n = min(len(a), len(b))
-    equal = sum(x == y for x, y in zip(a[:n], b[:n]))
-    length_score = 1.0 - abs(len(a) - len(b)) / max(len(a), len(b))
-    return 0.5 * (equal / n) + 0.5 * length_score
+def are_structurally_equivalent(rep1: DiscoveredRepresentation, rep2: DiscoveredRepresentation) -> bool:
+    """
+    Test whether two discovered representations are structurally identical.
+    """
+    if not isinstance(rep1, DiscoveredRepresentation) or not isinstance(rep2, DiscoveredRepresentation):
+        raise TypeError("Both arguments must be DiscoveredRepresentation instances")
+    return rep1.checksum == rep2.checksum
