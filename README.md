@@ -1,163 +1,282 @@
-# MIRROR7
+# MIRROR 7
 
-## Open-source bootstrap and self-hosting project
+> **An open-source research architecture for explicit representation, state, prediction, and self-hosted computation.**
 
-MIRROR7 is an experimental open-source computational architecture whose bootstrap path is developed from a small C nucleus toward a self-hosted MIRR compiler and reproducible self-rebuild.
+[![Phase 31](https://img.shields.io/badge/Phase%2031-COMPLETE-2ea44f?style=flat-square)](./phase31_bootstrap)
+[![Phase 32](https://img.shields.io/badge/Phase%2032-COMPLETE-2ea44f?style=flat-square)](./phase32_prediction)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-COMPLETE-2ea44f?style=flat-square)](./BOOTSTRAP_PROGRESS.md)
+[![License](https://img.shields.io/github/license/realahmad07/Mirror-7?style=flat-square)](./LICENSE)
 
-> **Verification rule:** source presence is not a PASS. A stage is promoted only after the implementation path has been executed and its acceptance tests pass. Verification distinguishes builder output, independent rebuild, and independent verification.
+## 🧭 What is Mirror 7?
 
-## Bootstrap status — COMPLETE
+Mirror 7 is an experimental open-source project exploring an alternative route toward machine intelligence:
 
-The final bootstrap tree has been exercised from a clean extraction. The complete acceptance chain is green:
+**raw observation → discovered structure → stable state → temporal identity → transition memory → prediction → discrepancy → learning**
+
+The project deliberately favors **explicit, inspectable mechanisms** over opaque learned weights wherever the research question permits.
+
+> **Research boundary:** passing a phase proves the tested mechanism and its acceptance criteria. It does **not** by itself prove AGI, consciousness, human-level intelligence, or general-world reasoning.
+
+---
+
+## 🟢 Current Status
+
+### Bootstrap substrate
+**COMPLETE**
+
+The compiler/bootstrap line has reached the documented self-hosting and reproducibility gates, including:
+
+- structured relocation
+- compiler-in-MIRR path
+- source/target dictionary separation
+- fresh-stage bootstrap
+- self-recompile
+- byte-identical fixed point
+- independent rebuild
+- independent verification
+
+See **[BOOTSTRAP_PROGRESS.md](./BOOTSTRAP_PROGRESS.md)** for the preserved verification chain.
+
+### Intelligence research line
+**Phase 31 + Phase 32 COMPLETE**
+
+| Phase | Capability | Status |
+|---|---|:---:|
+| 31.1 | Raw → discovered structural representation | ✅ |
+| 31.2 | Representation → stable structural state | ✅ |
+| 31.3 | Temporal state identity | ✅ |
+| 31.4 | Cross-encoding invariance | ✅ |
+| 31.5 | Raw → state integration | ✅ |
+| 31.X | Comprehensive Phase 31 gate | ✅ |
+| 32.1 | Transition representation | ✅ |
+| 32.2 | Transition memory | ✅ |
+| 32.3 | State → next-state prediction | ✅ |
+| 32.4 | Multiple successors / ambiguity | ✅ |
+| 32.5 | Transition generalization | ✅ |
+| 32.6 | Prediction error / discrepancy | ✅ |
+| 32.7 | Online transition update | ✅ |
+| 32.8 | Temporal sequence rollout | ✅ |
+| 32.9 | Strict unseen-state handling | ✅ |
+| 32.10 | Noise / perturbation testing | ✅ |
+| 32.X | Full Phase 32 acceptance gate | ✅ |
+
+**Phase 32 acceptance evidence:** 11 comprehensive criteria, multi-seed checks, progressive difficulty, held-out cases, adversarial controls, serialization fixed-point checks, end-to-end integration, and Phase 31 regression.
+
+---
+
+## 🔬 The Current Intelligence Pipeline
 
 ```text
-Phase 27 structured relocation/control flow
-        ↓
-Phase 28 surface parser/compiler integration
-        ↓
-Phase 29 MIRR source closure
-        ↓
-Phase 30 compiler entirely in MIRR
-        ↓
-source/target dictionary separation
-        ↓
-symbolic / relocatable control-flow targets
-        ↓
-fresh-stage bootstrap
-        ↓
-self-recompile
-        ↓
-byte-identical fixed point
-        ↓
-genuinely independent rebuild
-        ↓
-independent verification
-        ↓
-BOOTSTRAP COMPLETE
+                         MIRROR 7
+                            │
+                            ▼
+                  ┌─────────────────────┐
+                  │   RAW OBSERVATION   │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │  DISCOVER STRUCTURE  │
+                  │      Phase 31.1      │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │    STABLE STATE     │
+                  │      Phase 31.2      │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   TEMPORAL IDENTITY │
+                  │      Phase 31.3      │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │  TRANSITION MEMORY  │
+                  │      Phase 32.1–2    │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │      PREDICTION     │
+                  │      Phase 32.3–5    │
+                  └──────────┬──────────┘
+                             │
+                    ┌────────┴────────┐
+                    ▼                 ▼
+             ┌─────────────┐   ┌──────────────┐
+             │   MATCH     │   │ DISCREPANCY  │
+             └──────┬──────┘   └──────┬───────┘
+                    │                 │
+                    │                 ▼
+                    │        ┌────────────────┐
+                    │        │ ONLINE UPDATE  │
+                    │        │    Phase 32.7  │
+                    │        └───────┬────────┘
+                    │                │
+                    └───────┬────────┘
+                            ▼
+                    ┌─────────────────┐
+                    │ TEMPORAL ROLLOUT│
+                    │   / NEXT STATE  │
+                    └─────────────────┘
 ```
 
-## Acceptance board
+---
 
-| Gate | Status | Evidence |
-|---|---|---|
-| Phase 27 deep audit | ☑ PASS | `MIRROR7_PHASE19_HERITAGE_AUDIT_PASS` and `MIRROR7_DEEP_AUDIT_STATIC_PASS`. |
-| Phase 27 verification | ☑ PASS | `PHASE27_VERIFICATION_PASS`; regenerated artifact is reproducible and executable. |
-| Phase 28 | ☑ PASS | `PHASE28_INTEGRATION_PASS`; strict C17 parser/compiler integration and regression. |
-| Phase 29 | ☑ PASS | `PHASE29_MIRR_SOURCE_CLOSURE_PASS`; 29 MIRR compiler words verified. |
-| Phase 30 | ☑ PASS | `PHASE30_COMPILER_ENTIRELY_IN_MIRR_PASS`; direct Nucleus execution verified. |
-| Source/target dictionary separation | ☑ PASS | `STEP_2_DICTIONARY_SEPARATION_PASS`. |
-| Symbolic / position-independent relocation | ☑ PASS | `STEP_3_RELOCATION_PASS`. |
-| Fresh-stage bootstrap | ☑ PASS | `STEP_4_FRESH_STAGE_BOOTSTRAP_PASS`. |
-| Self-recompile | ☑ PASS | `STEP_5_SELF_RECOMPILE_PASS`; Compiler A compiles the MIRR compiler source and the resulting Compiler B executes held-out programs. |
-| Byte-identical fixed point | ☑ PASS | `STEP_6_BYTE_IDENTICAL_FIXED_POINT_PASS`; two independent compilation runs produced identical compiled-B bytes and identical held-out behavior. |
-| Independent rebuild | ☑ PASS | `STEP_7_INDEPENDENT_REBUILD_PASS`; standalone reconstruction matches the primary artifact byte-for-byte. |
-| Independent verification | ☑ PASS | `STEP_8_INDEPENDENT_VERIFICATION_PASS`; independent structural checks plus adversarial corruption rejection. |
-| Bootstrap complete | ☑ PASS | All bootstrap acceptance gates are green. |
+## 🧠 Design Principles
 
-## Reproducibility evidence
+| Principle | Meaning |
+|---|---|
+| **Explicit state** | Internal state has a defined, inspectable representation. |
+| **Deterministic where possible** | Equivalent inputs should produce reproducible results. |
+| **No silent guessing** | Unknown states remain **UNKNOWN**; ambiguous states remain visible. |
+| **Non-destructive learning** | New observations extend transition memory instead of silently erasing history. |
+| **Held-out validation** | Tests include observations not used during the corresponding training/setup step. |
+| **Adversarial testing** | Negative controls attempt to expose false positives and accidental shortcuts. |
+| **Regression first** | A failed gate stops progression until the failure is understood and corrected. |
+| **No AGI overclaim** | A verified mechanism is not presented as proof of general intelligence. |
 
-- Primary artifact SHA256: `ec48f82db766b3fa4bbcad83bc5f9193aedb2212329122e8b380a1a68d3a5c50`
-- Independent rebuild SHA256: `ec48f82db766b3fa4bbcad83bc5f9193aedb2212329122e8b380a1a68d3a5c50`
-- Fixed-point compiled-B SHA256: `4d395c63b6e4364fcad2f198e74e305b639996cc649bbf58d66bb2e46e597d25`
+---
 
-## Adversarial verification
-
-- **ADV1:** corrupted out-of-bounds `0branch:99999` → rejected, exit code `71`.
-- **ADV2:** truncated/malformed word definition → rejected, exit code `69`.
-
-## Phase 28 architecture
-
-```text
-MIRR SOURCE
-     ↓
-SURFACE PARSER
-     ↓
-PARSED SURFACE IR
-     ↓
-MIRR COMPILER
-     ↓
-SOURCE/TARGET DICTIONARY SEPARATION
-     ↓
-SYMBOLIC RELOCATION
-     ↓
-MIRR EXECUTABLE
-     ↓
-VM
-     ↓
-OUTPUT
-```
-
-## Verification method
-
-For every bootstrap gate:
-
-1. execute the implementation rather than trusting source presence or a previous report;
-2. reproduce failures at the smallest boundary;
-3. make the smallest justified correction;
-4. rerun the failed gate;
-5. rerun the relevant regression suite;
-6. require byte-level equality where reproducibility is claimed;
-7. use a separate build/verification path for the corresponding gates;
-8. retain adversarial rejection tests.
-
-## What Mirror 7 can do now
-
-Mirror 7 can now:
-
-- execute the C Nucleus/VM and maintain a runtime dictionary;
-- parse the supported MIRR surface grammar into structured IR;
-- compile definitions, numeric literals, calls, and nested `IF/ELSE/THEN` control flow;
-- generate and execute relocated dictionary code;
-- represent the compiler implementation as MIRR definitions;
-- load and execute the MIRR compiler directly through the Nucleus;
-- separate compiler execution state from generated target state;
-- perform fresh-stage bootstrap and self-recompile;
-- reproduce a byte-identical fixed point;
-- reproduce the accepted artifact through an independent rebuild path;
-- independently verify artifact structure and reject adversarial corruption.
-
-These milestones establish a verified bootstrap/self-hosting computational substrate. **They do not by themselves establish AGI.**
-
-## Repository layout
+## 📁 Repository Map
 
 ```text
 Mirror-7/
-├── README.md
+│
+├── phase31_bootstrap/
+│   ├── mirror7_representation.py
+│   ├── mirror7_state.py
+│   ├── mirror7_temporal.py
+│   ├── mirror7_invariance.py
+│   ├── mirror7_pipeline.py
+│   └── test_phase31_*.py
+│
+├── phase32_prediction/
+│   ├── mirror7_transition.py
+│   ├── mirror7_predictor.py
+│   ├── test_phase32_*.py
+│   └── README.md
+│
+├── phase28_surface_parser/
+├── phase27_unfinished/
+├── phase24/
+├── phase25_26/
+│
 ├── STATUS.md
 ├── BOOTSTRAP_PROGRESS.md
-├── audit_mirror7.py
-├── phase25_26/
-├── phase27_unfinished/
-├── phase28_surface_parser/
-├── phase29_mirr_compiler/
-├── phase30_compiler_mirr/
-├── phase31_bootstrap/
-└── test_step2_dict_sep.py … test_step8_independent_verifier.py
+└── README.md
 ```
 
-The repository stores source and verification files directly. ZIP archives are release/audit bundles, not the source representation.
+---
 
-## Bootstrap result
+## ▶️ Run the Phase 32 Gate
 
-**BOOTSTRAP COMPLETE — verified by executable acceptance gates.**
+From the repository root:
 
+```bash
+python phase32_prediction/test_phase32_gate.py
+```
 
-## Phase 31 — Discovered Representation, Stable State, and Temporal Identity
+The acceptance gate exercises:
 
-Phase 31 is verified locally with the supplied Phase 31 bundle. The pipeline is:
+- determinism and serialization
+- multi-seed validation
+- progressive difficulty
+- held-out sequences
+- adversarial controls
+- ambiguity detection
+- online learning integrity
+- multi-step rollout
+- noise/perturbation handling
+- end-to-end Phase 31 → Phase 32 integration
+- Phase 31 regression
+
+Expected terminal boundary:
 
 ```text
-raw observation → discovered representation → stable structural state
-→ temporal state identity → cross-encoding invariance → integrated raw→state pipeline
+PHASE 31 COMPLETE: ALL CRITERIA VERIFIED AND PASSED
+PHASE 32 COMPLETE: ALL CRITERIA VERIFIED AND PASSED
 ```
 
-| Gate | Status | Evidence |
-|---|---|---|
-| Phase 31.1 — discovered representation | ☑ PASS | `phase31_bootstrap/test_phase31_step1.py` |
-| Phase 31.2 — stable state extraction | ☑ PASS | `phase31_bootstrap/test_phase31_step2.py` |
-| Phase 31.3 — temporal state identity | ☑ PASS | `phase31_bootstrap/test_phase31_step3.py` |
-| Phase 31.4 — cross-encoding invariance | ☑ PASS | `phase31_bootstrap/test_phase31_step4.py` |
-| Phase 31.5 — raw→state integration | ☑ PASS | `phase31_bootstrap/test_phase31_step5.py` |
-| Phase 31.6 — full acceptance gate | ☑ PASS | `phase31_bootstrap/test_phase31_gate.py` |
+---
 
-**Phase 31 result: 37 / 37 tests passed locally.** See `phase31_bootstrap/README.md` for scope, metrics, and limitations.
+## 🧪 Verification Philosophy
+
+Mirror 7 uses a strict promotion rule:
+
+```text
+IMPLEMENT
+   ↓
+MINIMAL TEST
+   ↓
+3+ PROGRESSIVE LEVELS
+   ↓
+3+ RANDOM SEEDS
+   ↓
+HELD-OUT CASE
+   ↓
+ADVERSARIAL NEGATIVE CONTROL
+   ↓
+FULL REGRESSION
+   ↓
+PROMOTE ONLY IF GREEN
+```
+
+When a failure appears:
+
+```text
+FAIL
+ ↓
+REPRODUCE
+ ↓
+MINIMIZE
+ ↓
+TRACE EXACT BOUNDARY
+ ↓
+SMALLEST JUSTIFIED FIX
+ ↓
+RERUN FAILED TEST
+ ↓
+RERUN FULL REGRESSION
+ ↓
+PROMOTE
+```
+
+---
+
+## 🚧 What Comes Next
+
+Phase 32 establishes **prediction over discovered states**. It does not yet provide causal reasoning, planning, tool use, persistent world models, or general intelligence.
+
+The next research boundary should therefore build on the verified transition/prediction substrate rather than skipping directly to an AGI claim.
+
+```text
+Phase 31  →  REPRESENT
+     ↓
+Phase 32  →  PREDICT
+     ↓
+Phase 33  →  CAUSAL STRUCTURE
+     ↓
+Future    →  MODEL / PLAN / ACT / LEARN
+     ↓
+Long-term →  GENERAL INTELLIGENCE RESEARCH
+```
+
+---
+
+## 📜 Project Rule
+
+**No green README badge is evidence by itself.**
+
+Every promoted phase must have executable evidence in its repository tests and must preserve the distinction between:
+
+- implemented
+- component verified
+- integration verified
+- acceptance gate passed
+- research hypothesis still unproven
+
+That distinction is part of the engineering design of Mirror 7.
