@@ -13,6 +13,8 @@ Phase 33  CAUSE
       ↓
 Phase 34  REASON / PLAN        ✅ COMPLETE
       ↓
+Phase 55  REPRESENTATION INDEPENDENCE ✅ COMPLETE
+      ↓
 Phase 35  ACT
       ↓
 Phase 36  CLOSED LOOP
@@ -89,6 +91,32 @@ Mirror 7 now has explicit mechanisms for:
 - full-system integration;
 - explicit evidence/assumption ledgers and contradiction checks.
 
+## Phase 55 — Representation Independence
+
+Phase 55 is complete at its bounded acceptance boundary.
+
+```text
+same latent relational structure
+          ↓
+edge-list bytes
+          ↕
+neighbor-map bytes
+          ↕
+binary-matrix bytes
+          ↓
+same unlabeled canonical structure
+```
+
+Acceptance evidence:
+
+- 27/27 progressive cross-representation comparisons;
+- 2/2 held-out graph families;
+- 6/6 adversarial controls;
+- 11 pytest tests;
+- 20-seed determinism/invariance regression.
+
+See [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md).
+
 ## What remains
 
 Passing these phases is not equivalent to AGI.
@@ -96,8 +124,8 @@ Passing these phases is not equivalent to AGI.
 The major research gaps are:
 
 1. broad, independent, unseen-environment evaluation;
-2. scalable world modeling beyond hand-structured benchmark environments;
-3. general concept acquisition from raw, mixed-modality observations;
+2. general concept acquisition from raw, mixed-modality observations;
+3. scalable world modeling beyond hand-structured benchmark environments;
 4. reliable long-horizon autonomy;
 5. stronger compositional and abstract reasoning;
 6. continual learning at realistic scale without knowledge corruption;
@@ -108,9 +136,7 @@ The major research gaps are:
 
 ## Next research boundary
 
-Phase 34's repository source-artifact gap is now closed. Phases 35–54 remain the current verified capability and generalization boundary.
-
-There is no formal Phase 55 acceptance specification in the repository yet. The next boundary should be chosen from the unresolved scientific gaps rather than adding another capability row by default.
+Phase 55 closes the bounded representation-independence question. The next boundary should attack **raw concept acquisition**: discovering useful entities, relations, events, and state from raw or weakly structured observations without developer-defined ontology assumptions.
 
 ---
 
@@ -130,6 +156,21 @@ Phase 53  BLIND GENERALIZATION TEST        [BENCHMARK PASS]
 ```
 
 Phase 53 is complete as a project-internal blind benchmark. The learner solves 21/21 episodes with 12/12 held-out and 0 invalid actions. Third-party independent reproduction remains open.
+
+
+---
+
+## Phase 55 — Representation Independence
+
+```text
+Phase 54  FRESH INDEPENDENT-STYLE TEST [18/18]
+Phase 55  REPRESENTATION INDEPENDENCE     [27/27]
+              |
+              v
+      RAW CONCEPT ACQUISITION
+```
+
+Phase 55 passes its bounded representation-independence gate. The remaining gap is whether Mirror 7 can discover the underlying concepts themselves rather than only normalize changes in serialization.
 
 
 ---
