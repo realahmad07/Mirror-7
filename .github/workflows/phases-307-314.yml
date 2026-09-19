@@ -1,0 +1,15 @@
+name: Mirror 7 phases-307-314
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  multi-capability-frontier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest
+      - run: python -m pytest -q phase307_capability_adapter_contract/test_phase307.py phase308_planning_frontier_adapter/test_phase308.py phase309_language_frontier_adapter/test_phase309.py phase310_reasoning_frontier_adapter/test_phase310.py phase311_adapter_registry/test_phase311.py phase312_multicapability_frontier/test_phase312.py phase313_multi_capability_campaign/test_phase313.py phase314_frontier_integration/test_phase314.py
