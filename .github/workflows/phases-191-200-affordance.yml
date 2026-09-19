@@ -1,0 +1,20 @@
+name: Mirror 7 phases 191-200 affordance discovery
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  affordance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Phase 191-200 focused gate
+        run: python -m pytest -q phase191_200_affordance_discovery/test_phase191_200.py
