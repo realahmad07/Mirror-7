@@ -1,0 +1,17 @@
+name: phases-85-87-regression
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run phases 85-87
+        run: python -m pytest -q phase85_integrated_agent phase86_horizon_planning phase87_curriculum_memory
+      - name: Run phases 80-84
+        run: python -m pytest -q phase80_unified_autonomous_system phase81_persistent_transfer_memory phase82_autonomous_regression_gate phase83_self_model_consistency phase84_compositional_state_graph
