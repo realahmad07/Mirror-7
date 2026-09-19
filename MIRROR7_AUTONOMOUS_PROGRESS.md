@@ -24,6 +24,14 @@
 | 271-274 | VERIFIED BOUNDED | 24/24 focused tests in dedicated CI gate | Broader causal/transfer/embodiment studies |
 | 275-278 | VERIFIED BOUNDED | 24/24 focused tests in dedicated CI gate | Larger independent external task packs |
 
+| 279 | VERIFIED BOUNDED | Capability-gap detection + deterministic bounded hypothesis generation; 9/9 local tests | Larger hypothesis spaces and independent task generators |
+| 280 | VERIFIED BOUNDED | Sealed candidate evaluator with hidden targets, held-out evidence, regression gate; 9/9 local tests | Separate-process candidate families and richer external evaluation |
+| 281 | VERIFIED BOUNDED | Atomic promotion, rejection without mutation, rollback journal; 9/9 local tests | Durable cross-session provenance and stronger independent attestation |
+| 282 | VERIFIED BOUNDED | Closed self-improvement loop; 10/10 phase tests; 37/37 combined 279-282 local regression | Broader self-generated variants, source-level redesign, open-world lifelong learning |
+
+### Self-improvement boundary
+Phase 282 demonstrates bounded behavioral self-improvement over an explicit finite parameter space: detect a measured gap, generate candidate variants, evaluate them without exposing hidden targets, require held-out/regression evidence, promote the verified variant, and repeat until stable. It does **not** demonstrate unrestricted self-rewriting, autonomous architecture invention, or AGI.
+
 ## Audit summary
 
 Internal regression excluding network-backed UCI suites: **630 passed, 1 skipped**.
