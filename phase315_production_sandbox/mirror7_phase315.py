@@ -162,6 +162,7 @@ class ProductionSandbox:
             "run",
             "--rm",
             "--init",
+            "--interactive",
             "--name",
             container_name,
             "--network",
