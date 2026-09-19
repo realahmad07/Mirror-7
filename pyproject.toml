@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mirror7-backend"
+version = "0.1.0"
+description = "UI-independent HTTP backend boundary for Mirror 7"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+
+[tool.pytest.ini_options]
+testpaths = [
+  "mirror7_backend",
+  "phase329_backend_integration",
+  "phase330_backend_api",
+  "phase331_backend_e2e",
+  "phase332_backend_finalization",
+  "phase333_backend_reliability",
+  "phase334_backend_api",
+  "phase335_backend_hardening",
+]
