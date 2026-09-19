@@ -72,18 +72,25 @@ class HierarchicalReasoner:
         return tuple(x for x in order if x not in self.completed)
 
     def execute(self,root:GoalNode,verifier:Callable[[GoalNode],bool])->bool:
-        order=list(self.plan(root))
+        self.plan(root)
         nodes={}
         def collect(n):
             nodes[n.name]=n
             for c in n.children: collect(c)
         collect(root)
-        for name in order:
-            if self.steps>=self.budget: return False
-            self.steps+=1
-            n=nodes[name]
-            if any(dep not in self.completed for dep in n.depends_on): return False
-            if not self.verify(n,verifier): return False
+        pending=set(nodes)
+        while pending:
+            progressed=False
+            for name in tuple(sorted(pending)):
+                if self.steps>=self.budget: return False
+                n=nodes[name]
+                if any(dep not in self.completed for dep in n.depends_on): continue
+                if any(not c.verified for c in n.children): continue
+                self.steps+=1
+                if not self.verify(n,verifier): return False
+                pending.remove(name)
+                progressed=True
+            if not progressed: return False
         return root.verified
 
     def compose(self,names:Iterable[str])->GoalNode:
