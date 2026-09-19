@@ -40,3 +40,17 @@ def test_empty_rollback_safe():
 
 def test_reject_does_not_append_history():
     r=SourcePromotionRegistry(BASE); r.promote(GOOD,s(.8,.8),s(.7,.9)); assert len(r.history)==0
+
+
+def test_rollback_restores_exact_previous_source():
+    r=SourcePromotionRegistry(BASE)
+    r.promote(GOOD,s(.2,.2),s(.8,.8))
+    rec=r.rollback()
+    assert rec.accepted and r.source==BASE
+
+def test_second_rollback_does_not_target_rollback_record():
+    r=SourcePromotionRegistry(BASE)
+    r.promote(GOOD,s(.2,.2),s(.8,.8))
+    r.rollback()
+    rec=r.rollback()
+    assert rec.accepted and r.source==GOOD
