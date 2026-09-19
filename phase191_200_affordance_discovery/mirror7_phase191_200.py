@@ -13,16 +13,18 @@ from typing import Any, Sequence
 
 
 def canonical_observation(obs: Any) -> tuple:
+    """Canonicalize observable state while preserving state distinctions.
+
+    First-appearance relabeling is unsuitable for affordance preconditions:
+    [0] and [2] are different observable states even though their equality
+    pattern is identical. Preserve bounded integer values so action effects
+    and context gates cannot collapse distinct states.
+    """
     if isinstance(obs,(bytes,bytearray)): seq=list(obs)
     elif isinstance(obs,str): seq=list(obs.encode())
     elif isinstance(obs,Sequence): seq=[int(x)&255 for x in obs]
     else: raise TypeError("observation must be bytes, text, or a numeric sequence")
-    # identity-insensitive first-appearance encoding
-    m={}; out=[]
-    for x in seq:
-        if x not in m: m[x]=len(m)
-        out.append(m[x])
-    return tuple(out)
+    return tuple(seq)
 
 
 def _action_key(action: bytes) -> str:
