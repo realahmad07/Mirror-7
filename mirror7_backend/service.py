@@ -136,6 +136,11 @@ class BackendService:
     def session_snapshot(self, session_id: str) -> Mapping[str, Any]:
         return self.get_session(session_id).snapshot()
 
+    def has_checkpoint(self, session_id: str) -> bool:
+        if self.checkpoint_store is None:
+            raise RuntimeError("checkpoint store is not configured")
+        return self.checkpoint_store.path_for(session_id).is_file()
+
     def delete_checkpoint(self, session_id: str) -> None:
         if self.checkpoint_store is None:
             raise RuntimeError("checkpoint store is not configured")
