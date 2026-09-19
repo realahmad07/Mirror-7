@@ -77,6 +77,11 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             session_id = self._session_id(parts[2])
             self._send(200, {"ok": True, "snapshot": service.session_snapshot(session_id)})
             return
+        parts = [p for p in path.split("/") if p]
+        if len(parts) == 3 and parts[:2] == ["api", "sessions"]:
+            session_id = self._session_id(parts[2])
+            self._send(200, {"ok": True, "snapshot": service.session_snapshot(session_id)})
+            return
         self._send(404, {"ok": False, "error": "not found"})
 
     def do_POST(self) -> None:
