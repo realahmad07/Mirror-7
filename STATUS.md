@@ -323,3 +323,23 @@ This local verification covers the Phase 62 acceptance suite. It does not consti
 **Phase 63 COMPLETE — bounded nonstationary world handling and autonomous experiment-selection acceptance suite passes.**
 
 Evidence: [PHASE63_ACCEPTANCE.md](./PHASE63_ACCEPTANCE.md). Boundary: finite regime-hypothesis tracking and discriminating experiments; not unrestricted nonstationary-world understanding or general autonomous science.
+
+
+## Phase 64 — Unknown-Regime Discovery + Autonomous Experiment Sequences
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive unknown-regime discovery | ☑ PASS | 3 regime families × 3 seeds |
+| Held-out regime invention | ☑ PASS | New regime cluster is created without supplied regime labels |
+| Experiment selection by predicted disagreement | ☑ PASS | Multi-action sequence is chosen using hypothesis-prefix disagreement |
+| Same-regime cluster stability | ☑ PASS | Repeated identical dynamics do not create uncontrolled regime proliferation |
+| Irrelevant-state variation control | ☑ PASS | Numeric variation in untouched state dimensions preserves the effect signature |
+| Controlled regime-switch re-identification | ☑ PASS | New dynamics are discovered and reused for a held-out goal |
+| Experiment-budget bound | ☑ PASS | Experiment count never exceeds configured budget |
+| Phase 63 state/goal contract | ☑ PASS | Phase 64 consumes the established tuple-based state/goal interface |
+| Malformed-input rejection | ☑ PASS | Invalid bounds and empty goals are rejected |
+| Regression suite | ☑ PASS | 9 / 9 tests passed |
+
+**Phase 64 COMPLETE — bounded unknown-regime discovery and autonomous experiment-sequence acceptance suite passes.**
+
+Evidence: [PHASE64_ACCEPTANCE.md](./PHASE64_ACCEPTANCE.md). Boundary: unlabeled regime construction from controlled transition-effect experiments; not unrestricted open-world hypothesis generation or autonomous science.
