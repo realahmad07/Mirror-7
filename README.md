@@ -15,6 +15,7 @@
 [![Phase 61](https://img.shields.io/badge/Phase%2061-PASS-2ea44f?style=for-the-badge)](./PHASE61_ACCEPTANCE.md)
 [![Phase 62](https://img.shields.io/badge/Phase%2062-PASS-2ea44f?style=for-the-badge)](./PHASE62_ACCEPTANCE.md)
 [![Phase 63](https://img.shields.io/badge/Phase%2063-PASS-2ea44f?style=for-the-badge)](./PHASE63_ACCEPTANCE.md)
+[![Phase 64](https://img.shields.io/badge/Phase%2064-PASS-2ea44f?style=for-the-badge)](./PHASE64_ACCEPTANCE.md)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
 
 ---
@@ -96,10 +97,11 @@ The project emphasizes **explicit, inspectable mechanisms** wherever the researc
 | Phase 61 predictive closed-loop autonomy | ✅ PASS |
 | Phase 62 partial observability + active information | ✅ PASS |
 | Phase 63 nonstationary world + experiment design | ✅ PASS |
+| Phase 64 unknown-regime discovery + experiment sequences | ✅ PASS |
 
 ### Current frontier
 
-Phases 58–61 are now complete at their bounded acceptance boundaries: hierarchical abstraction **8/8**, predictive concept learning **8/8**, long-horizon world modeling **8/8**, and predictive closed-loop autonomy **9/9**. Phase 61 integrates the Phase 58 hierarchy, Phase 59 predictor, and Phase 60 world model inside an online goal-directed control loop. Phase 63 adds nonstationary-regime tracking, repeated-mismatch drift detection, and autonomous experiment selection from competing transition hypotheses. The next research boundary is open-ended experiment design, richer changing environments, longer unseen tasks, and independent external evaluation.
+Phases 58–61 are now complete at their bounded acceptance boundaries: hierarchical abstraction **8/8**, predictive concept learning **8/8**, long-horizon world modeling **8/8**, and predictive closed-loop autonomy **9/9**. Phase 61 integrates the Phase 58 hierarchy, Phase 59 predictor, and Phase 60 world model inside an online goal-directed control loop. Phase 64 removes the finite regime list from Phase 63: Mirror 7 constructs unlabeled regime hypotheses from controlled experiments and selects multi-action experiments from predicted hypothesis disagreement. The next research boundary is richer delayed/stochastic effects, open-ended hypothesis refinement, and independent external evaluation.
 
 ---
 
@@ -541,6 +543,41 @@ Pytest:      9 passed
 See [Phase 63 acceptance](./PHASE63_ACCEPTANCE.md).
 
 
+### 16. Phase 64 unknown-regime discovery + autonomous experiment sequences
+
+Phase 64 removes the finite, developer-supplied regime bank:
+
+```text
+no regime labels
+       ↓
+controlled experiment
+       ↓
+transition-effect profile
+       ↓
+create / merge hypothesis
+       ↓
+multi-step experiment design
+       ↓
+predicted prefix disagreement
+       ↓
+regime identification
+       ↓
+goal-directed planning
+```
+
+Result:
+
+```text
+Progressive: 3 regime families × 3 seeds
+Held-out:     2 / 2
+Adversarial: 3 / 3
+Integration: Phase 63 state/goal contract
+Pytest:      9 passed
+```
+
+See [Phase 64 acceptance](./PHASE64_ACCEPTANCE.md).
+
+
 
 ## 🔁 The Core Learning Loop
 
@@ -858,6 +895,8 @@ Phase 54 is an **independent-style** evaluation, not a third-party scientific re
 | [phase62_active_information/](./phase62_active_information/) | Phase 62 implementation and tests |
 | [PHASE63_ACCEPTANCE.md](./PHASE63_ACCEPTANCE.md) | Phase 63 acceptance record |
 | [phase63_nonstationary_experiments/](./phase63_nonstationary_experiments/) | Phase 63 implementation and tests |
+| [PHASE64_ACCEPTANCE.md](./PHASE64_ACCEPTANCE.md) | Phase 64 acceptance record |
+| [phase64_unknown_regime_discovery/](./phase64_unknown_regime_discovery/) | Phase 64 implementation and tests |
 | [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
 | [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
 | [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
