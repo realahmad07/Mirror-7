@@ -1401,7 +1401,8 @@ The next boundary separates Mirror 7 from repository-internal benchmark design b
 | 174 | Deterministic public task fingerprint | ✅ |
 | 175 | Separate evaluator process with no Mirror 7 runtime import | ✅ |
 | 176 | Evaluator negative-control enforcement | ✅ |
-| 177–180 | Real external datasets / external task families | ⏳ |
+| 177 | Real external UCI Iris dataset ingestion + sealed evaluator boundary | ✅ |
+| 178–180 | Additional external task families + actual agent-performance evaluation | ⏳ |
 
 Verification: the new foundation gate re-runs phases 141–152, 153–160, and 161–170, plus independent evaluator positive/negative controls.
 
@@ -1601,7 +1602,7 @@ Passing internal phases is evidence about the tested mechanisms; it is not, by i
 
 ## Continuation point
 
-**Current repository frontier: Phase 176 complete.**
+**Current repository frontier: Phase 177 complete (external-data boundary plumbing).**
 
-**Next concrete implementation:** Phase 177 — consume a genuinely external task pack through the Phase 171–176 evaluator boundary, without modifying the evaluator to fit the task.
+**Next concrete implementation:** Phase 178 — add another genuinely external task family and begin measuring actual Mirror 7 agent performance through the unchanged evaluator.
 
