@@ -252,13 +252,16 @@ class OpenEndedLearner:
         if unknown:
             return unknown[0]
 
-        # 3. Do not re-probe a known action solely because the state changed.
-        # A successful action may be destructive outside the state where it was
-        # first observed (for example, a reset-like transition). Re-discovery
-        # at every new state creates avoidable destructive exploration. Unknown
-        # actions are still explored above, so first-time action discovery is
-        # preserved.
-        #
+        # 3. Probe actions not yet attempted at this exact state. This
+        # preserves state-dependent discovery while avoiding known failures.
+        state_unknown = [
+            action
+            for action in ep.actions
+            if not ep.attempted(action) and not ep.failed_at_current(action)
+        ]
+        if state_unknown:
+            return state_unknown[0]
+
         # 4. If no strict improvement exists, continue with the best learned
         # successor that is not known to fail at this exact state.
         non_failing = [
