@@ -8,6 +8,7 @@
 [![Phase 54](https://img.shields.io/badge/Phase%2054-18%2F18%20PASS-2ea44f?style=for-the-badge)](./INDEPENDENT_EVALUATION_2026-09-19.md)
 [![Phase 55](https://img.shields.io/badge/Phase%2055-27%2F27%20PASS-2ea44f?style=for-the-badge)](./PHASE55_ACCEPTANCE.md)
 [![Phase 56](https://img.shields.io/badge/Phase%2056-PASS-2ea44f?style=for-the-badge)](./PHASE56_ACCEPTANCE.md)
+[![Phase 57](https://img.shields.io/badge/Phase%2057-PASS-2ea44f?style=for-the-badge)](./PHASE57_ACCEPTANCE.md)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
 
 ---
@@ -82,10 +83,11 @@ The project emphasizes **explicit, inspectable mechanisms** wherever the researc
 | Phase 54 invalid actions | ✅ 0 |
 | Phase 55 representation independence | ✅ 27/27 |
 | Phase 56 raw concept acquisition | ✅ PASS |
+| Phase 57 cross-view concept acquisition | ✅ PASS |
 
 ### Current frontier
 
-Phase 56 raw concept acquisition is complete at its bounded acceptance boundary: **7/7 tests**, 3 progressive families × 3 seeds, 2 held-out cases, and 3 adversarial controls passed. The next research boundary should attack the remaining raw-world and scaling gaps.
+Phase 57 cross-view raw concept acquisition is complete at its bounded acceptance boundary: **10/10 tests**, 3 progressive families × 3 seeds, 2 held-out cases, 3 adversarial controls, a scaling guard, and deterministic regression passed. The next research boundary should attack broader raw modalities, hierarchical abstraction, long-horizon prediction, and independent external evaluation.
 
 ---
 
@@ -306,6 +308,36 @@ Pytest:      7 passed
 ```
 
 See [Phase 56 acceptance](./PHASE56_ACCEPTANCE.md).
+
+### 9. Phase 57 cross-view raw concept acquisition
+
+Phase 57 removes the single-byte-stream boundary by receiving an unlabeled bundle of raw views and canonicalizing reusable relational structure across 1-D sequences and 2-D grids:
+
+```text
+unlabeled raw views
+       ↓
+relational atoms
+       ↓
+cross-view / cross-episode support
+       ↓
+permutation-null filtering
+       ↓
+compact concept vocabulary
+       ↓
+view-invariant relations + within-view events
+```
+
+Result:
+
+```text
+Progressive: 3 families × 3 seeds
+Held-out:     2 / 2
+Adversarial: 3 / 3
+Scaling:      1 / 1
+Pytest:      10 passed
+```
+
+See [Phase 57 acceptance](./PHASE57_ACCEPTANCE.md).
 
 ---
 
@@ -611,6 +643,8 @@ Phase 54 is an **independent-style** evaluation, not a third-party scientific re
 | [phase55_representation_independence/](./phase55_representation_independence/) | Phase 55 implementation and tests |
 | [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md) | Phase 56 acceptance record |
 | [phase56_raw_concept_acquisition/](./phase56_raw_concept_acquisition/) | Phase 56 implementation and tests |
+| [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md) | Phase 57 acceptance record |
+| [phase57_multiview_concept_acquisition/](./phase57_multiview_concept_acquisition/) | Phase 57 implementation and tests |
 | [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
 | [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
 | [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
@@ -640,6 +674,13 @@ For the Phase 56 acceptance gate:
 ```bash
 python -m phase56_raw_concept_acquisition.run_phase56_gate
 python -m pytest phase56_raw_concept_acquisition/test_phase56.py -q
+```
+
+For the Phase 57 acceptance gate:
+
+```bash
+python -m phase57_multiview_concept_acquisition.run_phase57_gate
+python -m pytest phase57_multiview_concept_acquisition/test_phase57.py -q
 ```
 
 For the Phase 55 acceptance gate:
