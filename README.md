@@ -59,7 +59,7 @@ The project emphasizes **explicit, inspectable mechanisms** wherever the researc
 | State + temporal identity | ✅ Verified |
 | Transition memory + prediction | ✅ Verified |
 | Causal reasoning | ✅ Verified |
-| Reasoning / planning mechanism | ⚠️ Source-artifact gap remains |
+| Reasoning / planning mechanism | ✅ Verified |
 | Action + closed loop | ✅ Verified |
 | Memory | ✅ Verified |
 | World model | ✅ Verified |
@@ -200,7 +200,7 @@ COUNTERFACTUAL
 REVISE
 ```
 
-See [Phase 35–51 verification](./PHASE35_51_VERIFICATION.md).
+See [Phase 34 acceptance](./PHASE34_ACCEPTANCE.md) and [Phase 35–51 verification](./PHASE35_51_VERIFICATION.md).
 
 ### 4. Open-ended black-box learning
 
@@ -350,7 +350,7 @@ Rules:
 | 31 | ✅ Representation / state / temporal identity |
 | 32 | ✅ Prediction / transition memory / discrepancy |
 | 33 | ✅ Causal structure / interventions |
-| 34 | ⚠️ Verification reported; dedicated source artifact still missing |
+| 34 | ✅ Goal-directed reasoning / planning |
 
 </details>
 
@@ -492,9 +492,9 @@ The **scope statement** is important: these capabilities are demonstrated in bou
 
 ## 🧪 Research Boundaries & Known Caveats
 
-### Phase 34 artifact gap
+### Phase 34 source publication
 
-Phase 34 reasoning/planning was reported as verified in the project workflow, but the supplied source artifact did not contain a dedicated Phase 34 implementation directory. The repository therefore keeps this boundary explicit rather than manufacturing a source-code claim.
+Phase 34 is now represented by a dedicated repository implementation under `phase34_reasoning_planning/`. Its executable acceptance gate covers 3 progressive task families × 3 seeds, 3 held-out cases, 3 adversarial controls, exact-plan validation, and 8/8 regression. The gate and pytest suite were repeated locally with the same result. This establishes the bounded reasoning/planning mechanism; it does not claim unrestricted planning or AGI.
 
 ### Phase 51 benchmark caveat
 
@@ -513,7 +513,7 @@ Phase 54 is an **independent-style** evaluation, not a third-party scientific re
 | [STATUS.md](./STATUS.md) | Detailed acceptance board and evidence |
 | [ROADMAP.md](./ROADMAP.md) | Capability roadmap and remaining research gaps |
 | [BOOTSTRAP_PROGRESS.md](./BOOTSTRAP_PROGRESS.md) | Bootstrap / self-hosting chain |
-| [PHASE35_51_VERIFICATION.md](./PHASE35_51_VERIFICATION.md) | Phase 35–51 verification record |
+| [PHASE34_ACCEPTANCE.md](./PHASE34_ACCEPTANCE.md) | Phase 34 acceptance record |\n| [phase34_reasoning_planning/](./phase34_reasoning_planning/) | Phase 34 reasoning/planning implementation and tests |\n| [PHASE35_51_VERIFICATION.md](./PHASE35_51_VERIFICATION.md) | Phase 35–51 verification record |
 | [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
 | [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
 | [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
@@ -536,6 +536,13 @@ For the Phase 53 evaluator:
 
 ```bash
 python -m pytest phase53_independent_eval -q
+```
+
+For the Phase 34 acceptance gate:
+
+```bash
+python -m phase34_reasoning_planning.run_phase34_gate
+python -m pytest phase34_reasoning_planning/test_phase34.py -q
 ```
 
 For the Phase 32 acceptance gate:
