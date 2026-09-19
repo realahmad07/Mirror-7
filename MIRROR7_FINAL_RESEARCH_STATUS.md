@@ -78,6 +78,15 @@
 - Current runtime cannot observe the new GitHub Actions result, so these phases remain recorded as implemented/CI-pending rather than falsely reported as green.
 - Scientific boundary: these are bounded, inspectable capability adapters; they do not make Mirror 7 equivalent to a frontier foundation model.
 
+### Production Self-Modification Sandbox — Phases 315–318
+- Phase 315: fail-closed Docker sandbox for untrusted candidate execution.
+- Phase 316: production sealed evaluator using the hardened sandbox with no legacy fallback.
+- Phase 317: production self-redesign controller routed through the sandbox and existing promotion/rollback gate.
+- Phase 318: dedicated acceptance workflow .github/workflows/phases-315-318.yml.
+- Sandbox controls include disabled networking, read-only root and workspace, dropped capabilities, no-new-privileges, non-root execution, bounded memory/CPU/PIDs/output/time, and bounded writable /tmp.
+- Verification status: implemented; dedicated Actions result not independently observed in this runtime.
+- Scientific/security boundary: hardened application/container isolation, not a proof against host-kernel or container-runtime vulnerabilities. Production deployment should use a trusted pinned image and hardened/rootless Docker host where practical.
+
 ## Bounded / Experimental Boundaries
 - **Phase 231–240:** simulated compute and memory bounds; not hardware scaling evidence.
 - **Phase 241–250:** deterministic mock embodied environment; later Phase 274 adds a richer stochastic/delayed simulator, but neither is physical embodiment.
