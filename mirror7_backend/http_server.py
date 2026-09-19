@@ -14,15 +14,17 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
     service: BackendService | None = None
     server_version = "Mirror7HTTP/1.1"
     max_body_bytes = 1_048_576
+    cors_origin = "*"
 
     def _send(self, status: int, payload: dict[str, Any]) -> None:
         body = json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", self.cors_origin)
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+        self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(body)
 
@@ -65,6 +67,9 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/status":
             self._send(200, dict(service.status()))
+            return
+        if path == "/api/sessions":
+            self._send(200, {"ok": True, "sessions": service.list_sessions()})
             return
         self._send(404, {"ok": False, "error": "not found"})
 
@@ -126,8 +131,8 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             self._send(409, {"ok": False, "error": str(exc)})
         except RuntimeError as exc:
             self._send(409, {"ok": False, "error": str(exc)})
-        except Exception as exc:
-            self._send(500, {"ok": False, "error": str(exc)})
+        except Exception:
+            self._send(500, {"ok": False, "error": "internal server error"})
 
     def do_DELETE(self) -> None:
         service = self.service
@@ -147,8 +152,8 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             self._send(404, {"ok": False, "error": str(exc)})
         except ValueError as exc:
             self._send(400, {"ok": False, "error": str(exc)})
-        except Exception as exc:
-            self._send(500, {"ok": False, "error": str(exc)})
+        except Exception:
+            self._send(500, {"ok": False, "error": "internal server error"})
 
     def log_message(self, format: str, *args: Any) -> None:
         return
@@ -158,8 +163,12 @@ def create_server(
     host: str = "127.0.0.1",
     port: int = 8787,
     service: BackendService | None = None,
+    cors_origin: str = "*",
 ):
+    if not cors_origin or "\n" in cors_origin or "\r" in cors_origin:
+        raise ValueError("invalid cors_origin")
     MirrorAPIHandler.service = service or BackendService()
+    MirrorAPIHandler.cors_origin = cors_origin
     return ThreadingHTTPServer((host, port), MirrorAPIHandler)
 
 
