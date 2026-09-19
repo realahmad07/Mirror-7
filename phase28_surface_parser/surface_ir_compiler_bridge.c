@@ -17,8 +17,13 @@ typedef struct {
     int has_else;
 } mirror7_flow_t;
 
-static int patch_u16_at(dict_t *d, size_t at, uint16_t value) {
+static int patch_u16_at(dict_t *d, size_t at, uint16_t target) {
     if (at + 1 >= d->n) return 0;
+    /* JZ/JMP operands are signed relative displacements from the byte after
+       the two-byte operand, matching the restored Nucleus runtime. */
+    int32_t rel = (int32_t)target - (int32_t)(at + 2);
+    if (rel < -32768 || rel > 32767) return 0;
+    uint16_t value = (uint16_t)(int16_t)rel;
     d->code[at] = (uint8_t)value;
     d->code[at + 1] = (uint8_t)(value >> 8);
     return 1;
