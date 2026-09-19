@@ -1,0 +1,20 @@
+name: Mirror 7 phases 221-230 language grounding
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  language:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Phase 221-230 focused gate
+        run: python -m pytest -q phase221_230_language_grounding/test_phase221_230.py
