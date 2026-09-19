@@ -1,9 +1,7 @@
 from dataclasses import dataclass
-
 @dataclass(frozen=True)
 class SkillBinding:
     concept:str; skill:str; confidence:float
-
 class ConceptSkillBridge:
     def __init__(self): self.bindings={}
     def bind(self,concept,skill,confidence,verified):
