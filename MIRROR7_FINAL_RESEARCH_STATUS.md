@@ -26,6 +26,19 @@
 - Dedicated CI workflow: .github/workflows/phases-279-282.yml added to run the complete gate on main.
 - Boundary: this is bounded behavioral self-improvement over an explicit finite variant space. It is not evidence of unrestricted self-rewriting, architecture invention, open-world lifelong learning, or AGI.
 
+### Algorithm Self-Improvement — Phases 283–290
+- Phase 283: allow-listed declarative algorithm variant space; implementation committed.
+- Phase 284: bounded algorithm mutation; implementation committed.
+- Phase 285: independent hidden-target evaluator with held-out/regression gates; implementation committed.
+- Phase 286: autonomous algorithm-level mutation/evaluation/promotion/rollback engine; implementation committed.
+- Phase 287: deterministic self-generated hidden-target task families; implementation committed.
+- Phase 288: resource-aware candidate utility and ranking; implementation committed.
+- Phase 289: improvement fingerprint memory with verified-status upgrade; implementation committed.
+- Phase 290: unified bounded meta-improvement loop combining mutation, memory, evaluation, selection, and promotion; implementation committed.
+- Dedicated CI workflow: `.github/workflows/phases-283-290.yml` runs the eight phase test suites on `main`.
+- Verification boundary: because this runtime cannot reach GitHub's Actions API or clone the repository through outbound DNS, the new 283–290 CI result is not independently observed here. The code path was reviewed and the Phase 283–286 core behavior was executed offline in this runtime.
+- Scientific boundary: the new block demonstrates bounded algorithm-variant search, not unrestricted self-rewriting, autonomous architecture invention, or AGI.
+
 ## Bounded / Experimental Boundaries
 - **Phase 231–240:** simulated compute and memory bounds; not hardware scaling evidence.
 - **Phase 241–250:** deterministic mock embodied environment; later Phase 274 adds a richer stochastic/delayed simulator, but neither is physical embodiment.
