@@ -1118,3 +1118,44 @@ These phases remain bounded mechanisms. They do not establish unrestricted intel
 | 100 | Integrated final boundary across phases 94–99 | Implemented |
 
 Focused execution of the new phase mechanisms: **9/9 checks passed** after fixing a Phase 97 uncertainty-selection defect. Phase 100 is a final engineering/evaluation boundary, not an AGI claim. See [PHASE95_100_ACCEPTANCE.md](./PHASE95_100_ACCEPTANCE.md).
+
+
+## 🧩 Phases 101–107 — Controlled Learning & Safe Self-Improvement
+
+The next research frontier adds explicit mechanisms for the behavior defined after Phase 100:
+
+```text
+missing / conflicting context
+        ↓
+ask for useful context
+        ↓
+track evidence + provenance
+        ↓
+require corroboration
+        ↓
+detect recurring failures
+        ↓
+propose improvement
+        ↓
+held-out + regression + resource gate
+        ↓
+adopt only validated changes
+        ↓
+bounded memory / computation
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 101 | Context inquiry instead of unsupported guessing | ✅ 4/4 |
+| 102 | Provenance-aware evidence ledger and conflict detection | ✅ 4/4 |
+| 103 | Corroborated learning with contradiction resistance | ✅ 4/4 |
+| 104 | Recurring-failure improvement proposals | ✅ 4/4 |
+| 105 | Safe self-improvement adoption gate | ✅ 4/4 |
+| 106 | Hard memory / step resource governance | ✅ 4/4 |
+| 107 | Integrated controlled self-improving loop | ✅ 5/5 |
+
+Focused acceptance: **29/29**, repeated with three deterministic Python hash seeds: **29/29 each**.
+
+See [Phase 101–107 acceptance](./PHASE101_107_ACCEPTANCE.md).
+
+**Boundary:** these phases demonstrate controlled mechanisms for clarification, evidence management, conservative learning, improvement proposals, adoption gates, and resource bounds. They do not establish human-level intelligence, unrestricted self-improvement, or AGI.
