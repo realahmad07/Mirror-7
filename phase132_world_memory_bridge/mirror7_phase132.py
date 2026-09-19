@@ -1,5 +1,4 @@
 class WorldMemoryBridge:
-    """Keeps persistent facts aligned with predictive world-model rules."""
     def __init__(self): self.facts={}; self.rules=[]
     def remember_fact(self,key,value,confidence=.8): self.facts[key]=(value,float(confidence))
     def absorb_rule(self,condition,action,effect,confidence=.8): self.rules.append((condition,action,effect,float(confidence)))
