@@ -35,6 +35,10 @@ def goal_cost(state: State, goal: State) -> float:
     return cost
 
 
+# Backward-compatible public name used by the existing Phase 52 tests.
+goal_distance = goal_cost
+
+
 @dataclass
 class TransitionSample:
     action: str
