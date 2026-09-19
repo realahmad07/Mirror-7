@@ -1,0 +1,20 @@
+name: Mirror 7 phases 181-190 multimodal grounding
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  grounding:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Phase 181-190 focused gate
+        run: python -m pytest -q phase181_190_multimodal_grounding/test_phase181_190.py
