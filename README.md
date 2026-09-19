@@ -1389,3 +1389,22 @@ See [PHASE161_170_ACCEPTANCE.md](./PHASE161_170_ACCEPTANCE.md).
 
 **Boundary:** this is a bounded raw-byte/black-box evaluation. It does not establish arbitrary real-world perception, unrestricted action-space discovery, unrestricted cross-domain transfer, or AGI.
 
+## 🌍 Phases 171–180 — External Evaluation Foundation
+
+The next boundary separates Mirror 7 from repository-internal benchmark design by introducing a transport-neutral external task-pack protocol and a separate evaluator process.
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 171 | External task-pack protocol | ✅ |
+| 172 | Sealed per-episode agent view | ✅ |
+| 173 | Evaluator-field contamination rejection | ✅ |
+| 174 | Deterministic public task fingerprint | ✅ |
+| 175 | Separate evaluator process with no Mirror 7 runtime import | ✅ |
+| 176 | Evaluator negative-control enforcement | ✅ |
+| 177–180 | Real external datasets / external task families | ⏳ |
+
+Verification: the new foundation gate re-runs phases 141–152, 153–160, and 161–170, plus independent evaluator positive/negative controls.
+
+See [PHASE171_180_ACCEPTANCE.md](./PHASE171_180_ACCEPTANCE.md).
+
+**Boundary:** these phases harden the external evaluation boundary; they are not evidence of unrestricted external generalization. Real external task packs/datasets are still required for 177–180.
