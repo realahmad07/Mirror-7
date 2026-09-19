@@ -1,0 +1,9 @@
+services:
+  mirror7-backend:
+    build: .
+    ports:
+      - "8787:8787"
+    environment:
+      MIRROR7_HOST: "0.0.0.0"
+      MIRROR7_PORT: "8787"
+    restart: unless-stopped
