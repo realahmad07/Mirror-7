@@ -650,3 +650,26 @@ bounded resource use
 Acceptance: **29/29**, repeated with PYTHONHASHSEED=0,1,2.
 
 Boundary: this is a controlled mechanism layer. It does not prove unrestricted self-improvement, human-level intelligence, or AGI.
+
+
+## Phases 108–114 — Grounded Agent Capability Layer
+
+The next capability layer after controlled self-improvement focuses on practical grounded operation:
+
+```text
+context → clarify → validate knowledge → plan → use tools → verify → monitor → remember
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 108 | Grounded dialogue and targeted clarification | ✅ 4/4 |
+| 109 | Validated knowledge ingestion and conflict protection | ✅ 4/4 |
+| 110 | Guarded tool execution and result verification | ✅ 4/4 |
+| 111 | Dependency-safe long-horizon task decomposition | ✅ 4/4 |
+| 112 | Confidence self-monitoring and caution trigger | ✅ 4/4 |
+| 113 | Bounded continual agent memory | ✅ 4/4 |
+| 114 | Integrated grounded/tool/task/monitor/memory agent | ✅ 6/6 |
+
+Acceptance: **30/30**, repeated with `PYTHONHASHSEED=0,1,2`.
+
+Boundary: bounded grounded-agent behavior, not unrestricted general intelligence or AGI.
