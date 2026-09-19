@@ -813,3 +813,19 @@ Verified on main with 30/30 phase-seed checks, 13/13 pytest checks, successful 1
 
 Boundary: bounded raw-byte/black-box evaluation only; unrestricted real-world perception, arbitrary action-space discovery, unrestricted transfer, and AGI remain unproven research questions.
 
+## Phase 171–180 — External Evaluation Foundation
+
+The post-170 boundary removes repository-internal evaluator assumptions by defining a transport-neutral task-pack and independent evaluator contract.
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 171 | External task-pack protocol | ✅ |
+| 172 | Sealed per-episode agent view | ✅ |
+| 173 | Evaluator-field contamination rejection | ✅ |
+| 174 | Deterministic public task fingerprint | ✅ |
+| 175 | Separate evaluator process without Mirror 7 runtime import | ✅ |
+| 176 | Evaluator negative-control enforcement | ✅ |
+| 177–180 | External datasets, unseen task families, independent external reproduction | ⏳ |
+
+Boundary: 171–176 are infrastructure/validation hardening. They establish the interface needed for genuinely external evaluation; they do not themselves demonstrate unrestricted generalization.
+
