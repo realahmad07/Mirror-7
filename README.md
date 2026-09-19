@@ -255,6 +255,29 @@ The evaluator remained unchanged while the learner was fixed.
 
 See [Phase 54 evaluation](./INDEPENDENT_EVALUATION_2026-09-19.md).
 
+### 7. Phase 55 representation independence
+
+Phase 55 tests whether the same bounded relational structure survives three substantially different byte encodings:
+
+```text
+edge list ↔ neighbor map ↔ binary adjacency matrix
+                 ↓
+       canonical unlabeled graph
+                 ↓
+          same fingerprint
+```
+
+Result:
+
+```text
+Progressive: 27 / 27
+Held-out:     2 / 2
+Adversarial:   6 / 6
+Pytest:       11 passed
+```
+
+See [Phase 55 acceptance](./PHASE55_ACCEPTANCE.md).
+
 ---
 
 ## 🔁 The Core Learning Loop
@@ -394,6 +417,23 @@ See [full Phase 35–51 verification](./PHASE35_51_VERIFICATION.md).
 | Phase 54 held-out | ✅ 9/9 |
 | Phase 54 invalid actions | ✅ 0 |
 
+See [Phase 53 report](./PHASE53_REPORT.md) and [Phase 54 evaluation](./INDEPENDENT_EVALUATION_2026-09-19.md).
+
+</details>
+
+<details>
+<summary><strong>Phase 55 — Representation Independence</strong></summary>
+
+| Gate | Result |
+|---|:---:|
+| Progressive cross-representation comparisons | ✅ 27/27 |
+| Held-out graph families | ✅ 2/2 |
+| Adversarial controls | ✅ 6/6 |
+| Pytest | ✅ 11 passed |
+| Determinism / invariance | ✅ |
+
+See [Phase 55 acceptance](./PHASE55_ACCEPTANCE.md).
+
 </details>
 
 ---
@@ -404,9 +444,9 @@ Passing the current gates does **not** mean the project has reached AGI.
 
 The major open research problems are:
 
-### Representation independence
+### Raw-world concept acquisition
 
-Can Mirror 7 discover useful structure when the observation encoding changes substantially?
+Can Mirror 7 discover entities, relations, events, and useful state from raw mixed-modality input without developers hand-defining the ontology?
 
 ### Raw-world concept acquisition
 
