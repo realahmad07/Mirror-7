@@ -49,11 +49,23 @@ def test_three_seed_runs_are_deterministic():
         assert e.registry.current["window"] == 2
 
 def test_held_out_evidence_is_required():
-    def bad_factory(config):
-        return lambda public: public["v"][-1] + 2
+    def overfit_factory(config):
+        if int(config["window"]) == 2:
+            def solve(public):
+                v = public["v"]
+                if v[0] in (0, 3, 10):
+                    return v[-1] + (v[-1] - v[-2])
+                return 0
+            return solve
+        return solver_factory(config)
     e = SelfImprovementEngine({"window": 1})
-    reports = e.run_until_stable(capability="x", pack=pack(), parameter_space={"window": [2]}, solver_factory=bad_factory)
-    assert not reports[0].promoted
+    reports = e.run_until_stable(
+        capability="sequence extrapolation",
+        pack=pack(),
+        parameter_space={"window": [2]},
+        solver_factory=overfit_factory,
+    )
+    assert reports[0].gap_detected and not reports[0].promoted
     assert e.registry.current["window"] == 1
 
 def test_regression_prevents_promotion():
