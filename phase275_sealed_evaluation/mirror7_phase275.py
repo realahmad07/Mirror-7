@@ -23,7 +23,7 @@ class SealedEvaluator:
             expected.append(t["target"])
         proc=subprocess.run(
             [sys.executable, "-I", agent_script],
-            input="\\n".join(lines)+"\\n",
+            input="\n".join(lines)+"\n",
             text=True,capture_output=True,check=False,timeout=10,
         )
         if proc.returncode!=0:
