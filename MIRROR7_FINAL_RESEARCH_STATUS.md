@@ -113,3 +113,15 @@ Phase 13 is legacy reference material and remains skipped when its unbundled V12
 
 ## Scientific Status
 The system demonstrates a growing set of explicit, inspectable, deterministic mechanisms for representation, prediction, causal/control reasoning, planning, memory, grounding, evaluation, and bounded adaptation. None of these results alone establishes unrestricted general intelligence. Independent external evaluation, richer representations, broader language grounding, real embodied interaction, scaling studies, and open-world generalization remain open research problems.
+
+
+### Production Multi-Capability Autonomous Upgrade Integration — Phase 319
+- Phase 319 integrates the Phase 307–314 four-capability frontier with the Phase 315–318 production sandbox.
+- Planning, compositional-language, symbolic-reasoning, and sequence adapters are registered under one shared frontier.
+- The sequence source-redesign adapter is forced through `ProductionSelfRedesign` and therefore the Phase 315 Docker-backed sealed evaluator.
+- The Phase 303 cross-capability regression guard remains the outer promotion gate.
+- If a changed production adapter is rejected by the outer gate, the source adapter rolls back its promoted source.
+- Dedicated workflow: `.github/workflows/phases-319-production-upgrade-integration.yml`.
+- Verification status: implementation pushed to `main`; dedicated CI result must be checked before recording Phase 319 as verified.
+
+Scientific boundary: Phase 319 demonstrates an integrated, bounded production upgrade pipeline. It does not establish unrestricted self-improvement, autonomous architecture invention, frontier-model equivalence, or AGI.

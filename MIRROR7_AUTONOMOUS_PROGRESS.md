@@ -87,3 +87,11 @@ Internal regression excluding network-backed UCI suites: **630 passed, 1 skipped
 UCI external suites 177–180 could not be promoted in this environment because `archive.ics.uci.edu` was not DNS-resolvable.
 
 Mirror 7 remains a bounded research architecture. No AGI claim is made.
+
+
+| 319 | IMPLEMENTED / CI PENDING | Production multi-capability upgrade integration: shared four-capability frontier, mandatory Docker-backed source redesign, sealed evaluation, cross-capability regression gate, and rollback | Broader production adapters and independent external task families |
+
+### Production multi-capability integration boundary
+Phase 319 connects the Phase 307–314 multi-capability frontier to the Phase 315–318 production self-modification boundary. The planning, compositional-language, symbolic-reasoning, and sequence adapters remain bounded. The source-changing sequence path is now evaluated through the production Docker sandbox before the shared cross-capability guard accepts the frontier update. A rejected outer promotion rolls the source adapter back.
+
+This establishes an end-to-end bounded production upgrade pipeline; it does not demonstrate unrestricted self-improvement, autonomous architecture invention, or AGI.

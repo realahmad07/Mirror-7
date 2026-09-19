@@ -1,0 +1,33 @@
+name: Mirror 7 phase-319 production upgrade integration
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  production-upgrade-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest
+      - run: docker --version
+      - run: docker pull python:3.11.16-alpine3.24
+      - run: >
+          python -m pytest -q
+          phase307_capability_adapter_contract/test_phase307.py
+          phase308_planning_frontier_adapter/test_phase308.py
+          phase309_language_frontier_adapter/test_phase309.py
+          phase310_reasoning_frontier_adapter/test_phase310.py
+          phase311_adapter_registry/test_phase311.py
+          phase312_multicapability_frontier/test_phase312.py
+          phase313_multi_capability_campaign/test_phase313.py
+          phase314_frontier_integration/test_phase314.py
+          phase315_production_sandbox/test_phase315.py
+          phase316_sandboxed_evaluator/test_phase316.py
+          phase317_production_self_redesign/test_phase317.py
+          phase318_sandbox_launch_gate/test_phase318.py
+          phase319_production_upgrade_integration/test_phase319.py
