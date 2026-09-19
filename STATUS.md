@@ -343,3 +343,22 @@ Evidence: [PHASE63_ACCEPTANCE.md](./PHASE63_ACCEPTANCE.md). Boundary: finite reg
 **Phase 64 COMPLETE — bounded unknown-regime discovery and autonomous experiment-sequence acceptance suite passes.**
 
 Evidence: [PHASE64_ACCEPTANCE.md](./PHASE64_ACCEPTANCE.md). Boundary: unlabeled regime construction from controlled transition-effect experiments; not unrestricted open-world hypothesis generation or autonomous science.
+
+## Phase 65 — Streaming Delayed/Stochastic Hidden-State Learning
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Delayed stochastic effect recovery | ☑ PASS | 3 effect families × 3 seeds; earliest significant delayed effect recovered at lag 2. |
+| Held-out regime invention | ☑ PASS | New unlabeled regime hypothesis created from streaming stochastic evidence. |
+| Hidden regime switch without reset | ☑ PASS | Sustained mismatch creates a new hypothesis while the stream continues. |
+| Autonomous experiment sequence selection | ☑ PASS | Predicted disagreement/uncertainty selects a focal action plus observation gaps. |
+| Partial/noisy observations | ☑ PASS | Sensor dropout and stochastic observation noise are handled without invalid model state. |
+| Same-regime stability | ☑ PASS | Repeated identical dynamics do not cause uncontrolled hypothesis proliferation. |
+| Experiment-budget bound | ☑ PASS | Experiment count remains within the configured hard budget. |
+| Malformed / fail-closed behavior | ☑ PASS | Invalid inputs reject; unsupported prediction/action paths fail closed. |
+| Continuous no-reset integration | ☑ PASS | `run_stream()` operates without calling `env.reset()`. |
+| Regression suite | ☑ PASS | 9 / 9 tests passed; gate repeated twice identically. |
+
+**Phase 65 COMPLETE — bounded streaming delayed/stochastic hidden-state learning acceptance suite passes.**
+
+Evidence: [PHASE65_ACCEPTANCE.md](./PHASE65_ACCEPTANCE.md). Boundary: bounded numeric observation streams with partial/noisy sensing, delayed effects, hidden regime changes, and unlabeled online hypothesis creation; not unrestricted belief-state inference, open-world science, or AGI.
