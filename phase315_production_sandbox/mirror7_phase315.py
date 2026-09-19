@@ -265,6 +265,7 @@ class ProductionSandbox:
             path = os.path.join(td, "probe.py")
             with open(path, "w", encoding="utf-8") as handle:
                 handle.write(source)
+            os.chmod(path, 0o644)
             name = f"mirror7-sbx-{uuid.uuid4().hex[:12]}"
             command = self._command(td, name, "/workspace/probe.py")
             return self._run(command)
@@ -306,8 +307,10 @@ class ProductionSandbox:
             harness = os.path.join(td, "harness.py")
             with open(candidate, "w", encoding="utf-8") as handle:
                 handle.write(source)
+            os.chmod(candidate, 0o644)
             with open(harness, "w", encoding="utf-8") as handle:
                 handle.write(self.HARNESS)
+            os.chmod(harness, 0o644)
             name = f"mirror7-sbx-{uuid.uuid4().hex[:12]}"
             command = self._command(td, name, "/workspace/harness.py")
             command.append("/workspace/candidate.py")
