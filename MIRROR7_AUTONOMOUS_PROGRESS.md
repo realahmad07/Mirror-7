@@ -32,6 +32,18 @@
 ### Self-improvement boundary
 Phase 282 demonstrates bounded behavioral self-improvement over an explicit finite parameter space: detect a measured gap, generate candidate variants, evaluate them without exposing hidden targets, require held-out/regression evidence, promote the verified variant, and repeat until stable. It does **not** demonstrate unrestricted self-rewriting, autonomous architecture invention, or AGI.
 
+| 283 | IMPLEMENTED / CI PENDING | Declarative algorithm variant space with allow-listed operation programs | Broader algorithm grammar |
+| 284 | IMPLEMENTED / CI PENDING | Bounded algorithm mutation with finite child budget | Richer mutation operators |
+| 285 | IMPLEMENTED / CI PENDING | Independent hidden-target algorithm evaluator with held-out/regression gates | External evaluator reproduction |
+| 286 | IMPLEMENTED / CI PENDING | Autonomous algorithm-level mutation -> evaluation -> promotion -> rollback loop | Broader algorithm invention |
+| 287 | IMPLEMENTED / CI PENDING | Deterministic self-generated hidden-target task families | More diverse task generators |
+| 288 | IMPLEMENTED / CI PENDING | Resource-aware evidence/complexity candidate selection | Empirical resource budgets |
+| 289 | IMPLEMENTED / CI PENDING | Improvement fingerprint memory with verified-status upgrade | Persistent cross-session provenance |
+| 290 | IMPLEMENTED / CI PENDING | Unified meta-improvement loop with mutation, memory, evaluation, selection, and promotion | Larger self-generated open-world search |
+
+### Algorithm self-improvement boundary
+Phases 283–290 extend self-improvement from scalar parameter changes to bounded declarative algorithm variants. Mirror 7 can generate finite algorithm alternatives, evaluate them against hidden targets, reject held-out/regression failures, account for explicit complexity costs, remember tested variants, and promote verified changes. This remains a constrained search space; it is not unrestricted source-code rewriting or proof of AGI.
+
 ## Audit summary
 
 Internal regression excluding network-backed UCI suites: **630 passed, 1 skipped**.
