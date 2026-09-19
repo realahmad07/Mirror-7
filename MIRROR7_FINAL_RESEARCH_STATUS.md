@@ -1,9 +1,15 @@
 # Mirror 7 — Final Research Status (Independent Audit)
 
 ## Verified
-- **Internal regression:** 630 passed, 1 skipped with UCI network suites excluded.
+- **Existing internal regression:** 630 passed, 1 skipped with UCI network suites excluded in the audited snapshot.
+- **Current main CI:** 42/42 check-runs green on commit `15568357dbad57e718e467ed6f24878cc1a38394`.
 - **Phases 66–69:** 24 focused tests passed in the audited snapshot.
 - **Phases 262–266:** 23 focused tests passed.
+- **Phases 267–270:** 24/24 focused tests passed in dedicated CI.
+- **Phases 271–274:** 24/24 focused tests passed in dedicated CI.
+- **Phases 275–278:** 24/24 focused tests passed in dedicated CI.
+- **Phases 178–180:** 3/3 external tests passed in network-enabled GitHub Actions.
+- **Phases 171–180 foundation:** 10/10 tests passed; sealed independent-evaluator positive/negative checks passed.
 - **Compileability:** Python `compileall` passed.
 - **Security sanity scan:** no common embedded credential patterns found.
 - **Phase 263:** bounded raw-byte motif discovery and conflict abstention.
@@ -11,19 +17,26 @@
 - **Phase 265:** bounded language/action association with ambiguity abstention and evidence-count affordances.
 - **Phase 266:** bounded environment-context memory with positive capacity validation and LRU eviction.
 
-## Partial / Experimental
+## Bounded / Experimental Boundaries
 - **Phase 231–240:** simulated compute and memory bounds; not hardware scaling evidence.
-- **Phase 241–250:** deterministic mock embodied environment; not physical or real-world embodiment.
+- **Phase 241–250:** deterministic mock embodied environment; later Phase 274 adds a richer stochastic/delayed simulator, but neither is physical embodiment.
 - **Phase 251–260:** structural safety/reproducibility controls; not generalized semantic safety.
 - **Phase 261+:** independent-evaluation/leakage-control harness; not a demonstrated broad-generalization capability.
-- **Phase 262:** sequence tasks are independently evaluated; causal tasks are presently generated but not independently scored in this bounded evaluator.
-- **Phase 263:** n-gram discovery is a limited representation primitive.
+- **Phase 262:** sequence tasks are independently evaluated; causal tasks remain bounded task-generation infrastructure.
+- **Phase 263:** motif/n-gram discovery is a limited representation primitive.
 - **Phase 264:** bounded integration proof using discovered motifs and a finite planner.
-- **Phase 265:** literal token/word association rather than compositional language semantics.
+- **Phase 265/268:** bounded language grounding and composition; not unrestricted natural-language semantics.
 - **Phase 266:** context-partitioned associative memory rather than unrestricted continual learning.
+- **Phase 271:** bounded intervention evidence rather than full causal discovery.
+- **Phase 272:** transfer is limited to observed invariant transition signatures.
+- **Phase 273:** bounded confidence/recency evidence fusion.
+- **Phase 275:** separate-process sealed evaluation protocol, not independent third-party deployment.
+- **Phase 276:** operation-count scaling rather than hardware performance evidence.
+- **Phase 277:** bounded end-to-end integration with finite state/action spaces.
+- **Phase 278:** procedural benchmark families; not proof of open-world generalization.
 
-## External Verification Not Completed Here
-Phases 177–180 depend on live UCI downloads. In this audit environment, `archive.ics.uci.edu` failed DNS resolution, yielding 4 setup errors and 3 test failures. These tests should run in network-enabled CI rather than being relabeled as passes.
+## External Verification
+Phases 178–180 now pass in network-enabled GitHub Actions: 3/3 external tests and 10/10 Phase 171–180 foundation tests. The sealed evaluator also reports successful positive and negative controls. This verifies the documented bounded external-task protocol; it does not establish unrestricted generalization.
 
 ## Historical / Legacy Boundary
 Phase 13 is legacy reference material and remains skipped when its unbundled V125 payload is absent. This is documented rather than falsely reported as a clean pass.
