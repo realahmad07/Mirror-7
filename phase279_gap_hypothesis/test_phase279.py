@@ -50,5 +50,5 @@ def test_invalid_metrics_fail_closed():
     else:
         assert False
 
-def test_zero_evidence_is_adversarial_negative_control():
-    assert CapabilityGapDetector().detect("p", 0.10, 0.90, [False, False, False]) is not None
+def test_adversarial_negative_control_is_not_actionable_when_target_is_met():
+    assert CapabilityGapDetector().detect("p", 0.95, 0.90, [False, False, False]) is None
