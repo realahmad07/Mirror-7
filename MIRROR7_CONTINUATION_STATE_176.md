@@ -2,7 +2,7 @@
 
 Repository: realahmad07/Mirror-7
 Branch: main
-Current frontier: Phases 178–180 implemented; Phases 181–190 implemented; empirical CI promotion remains pending.
+Current frontier: Phases 178–180, 181–190, and 191–200 implemented; empirical CI promotion remains pending.
 
 ## Phase ledger
 1–22: foundational intelligence algorithms, representation, discovery, causal and compositional reasoning.
@@ -24,6 +24,7 @@ Current frontier: Phases 178–180 implemented; Phases 181–190 implemented; em
 177: official UCI Iris external dataset ingestion, real-row task-pack construction, target non-leakage, and unchanged independent-evaluator boundary integration.
 178–180: UCI Wine/Wine Quality external-task adapter, noise robustness, and fail-closed cross-domain boundary.
 181–190: deterministic unstructured multimodal grounding layer: modality ingestion, canonicalization, alignment, concept evidence, binding, contradiction abstention, missing-view handling, temporal fusion, persistent memory, and integrated loop.
+191–200: opaque-action affordance discovery: effect/precondition evidence, failure tracking, safe exploration, goal-directed selection, bounded composition, and fail-closed behavior.
 
 ## Current architecture
 External/raw input → representation discovery → state/world model → prediction → discrepancy → causal reasoning + memory + uncertainty → goals/research → reasoning/program induction → planning/verification → action/tools/skills → environment → outcome → update/revise/learn.
@@ -38,11 +39,12 @@ Parallel controls: resource bounds, failure detection, self-debugging proposal g
 177: external-data ingestion/boundary gate implemented; this is not an agent-performance claim.
 178–180: implementation complete; empirical repository CI promotion pending.
 181–190: focused suite implemented with 13 checks; repository CI gate added. Not yet promoted to PASS until CI execution is observed.
+191–200: focused suite implemented with 11 checks; repository CI gate added. Not yet promoted to PASS until CI execution is observed.
 
 ## Next
 178–180: additional genuinely external task families and actual Mirror 7 agent-performance evaluation through the unchanged evaluator.
 181–190: unstructured multimodal grounding — implemented, CI pending.
-191–200: open action/affordance discovery.
+191–200: open action/affordance discovery — implemented, CI pending.
 191–200: open action/affordance discovery.
 201–210: lifelong persistent learning.
 211–220: scalable hierarchical reasoning.
