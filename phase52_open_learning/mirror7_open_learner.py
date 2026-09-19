@@ -119,6 +119,7 @@ class EpisodeMemory:
     goal: State
     actions: List[str]
     schemas: Dict[str, ActionSchema] = field(default_factory=dict)
+    attempted_at_state: Dict[StateKey, set[str]] = field(default_factory=dict)
     last_action: Optional[str] = None
 
     def schema(self, action: str) -> ActionSchema:
@@ -132,6 +133,13 @@ class EpisodeMemory:
 
     def known(self, action: str) -> bool:
         return action in self.schemas
+
+    def remember_attempt(self, action: str) -> None:
+        key = state_key(self.current)
+        self.attempted_at_state.setdefault(key, set()).add(action)
+
+    def attempted(self, action: str) -> bool:
+        return action in self.attempted_at_state.get(state_key(self.current), set())
 
 
 class OpenEndedLearner:
@@ -236,7 +244,18 @@ class OpenEndedLearner:
         if unknown:
             return unknown[0]
 
-        # 3. If no strict improvement exists, continue with the best learned
+        # 3. Explore a previously untried-at-this-state action. This permits
+        # state-dependent actions to reveal their local preconditions without
+        # abandoning a learned action that is already strictly improving.
+        state_unknown = [
+            action
+            for action in ep.actions
+            if not ep.attempted(action) and not ep.failed_at_current(action)
+        ]
+        if state_unknown:
+            return state_unknown[0]
+
+        # 4. If no strict improvement exists, continue with the best learned
         # successor that is not known to fail at this exact state.
         non_failing = [
             candidate for candidate in known
@@ -245,7 +264,7 @@ class OpenEndedLearner:
         if non_failing:
             return non_failing[0][2]
 
-        # 4. Every available action has failed at this exact state.
+        # 5. Every available action has failed at this exact state.
         #    Repeating an invalid action is never useful; choose the first
         #    legal action only as a deterministic terminal fallback.
         #    The environment/test harness remains responsible for declaring
@@ -263,5 +282,6 @@ class OpenEndedLearner:
 
         assert self.episode is not None
         action = self.choose_action()
+        self.episode.remember_attempt(action)
         self.episode.last_action = action
         return {"action": action}
