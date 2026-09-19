@@ -1293,3 +1293,35 @@ Focused local acceptance: **36/36**, repeated with `PYTHONHASHSEED=0,1,2`.
 See [PHASE129_140_ACCEPTANCE.md](./PHASE129_140_ACCEPTANCE.md).
 
 **Boundary:** this is a bounded integration layer. It does not establish unrestricted general intelligence or AGI.
+
+
+## 🧠 Phases 141–152 — 12-Algorithm Cognitive Integration
+
+The imported algorithm library is now connected through a canonical integration package:
+
+```text
+concepts → memory → grounding → world model → causal research
+        → reasoning → program induction → goals → self-debugging
+        → consolidation → workspace → unified cognition
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 141 | Algorithm adapter contract | ✅ |
+| 142 | Concept → memory bridge | ✅ |
+| 143 | Grounding → memory bridge | ✅ |
+| 144 | Memory → world-model bridge | ✅ |
+| 145 | Causal → research bridge | ✅ |
+| 146 | Reasoning → program bridge | ✅ |
+| 147 | Goal → research bridge | ✅ |
+| 148 | Failure → self-debugging bridge | ✅ |
+| 149 | Consolidation → memory bridge | ✅ |
+| 150 | Cognitive workspace coordination | ✅ |
+| 151 | End-to-end 12-algorithm runtime | ✅ |
+| 152 | Integration promotion gate | ✅ |
+
+Verification: **14/14 integration tests** on three deterministic hash seeds, plus **84/84** standalone tests from the imported 12-algorithm library.
+
+See [PHASE141_152_ACCEPTANCE.md](./PHASE141_152_ACCEPTANCE.md).
+
+**Boundary:** this demonstrates an integrated bounded architecture, not unrestricted general intelligence or AGI.
