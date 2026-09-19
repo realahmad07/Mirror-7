@@ -40,7 +40,7 @@ def test_frontier_starts_with_a_real_source_redesign_path():
 
 def test_single_step_is_bounded_and_accepts_a_real_upgrade():
     system = ProductionMultiCapabilityUpgrade()
-    event = system.step(seed=7, rounds=4, max_candidates=1)
+    event = system.step(seed=7, rounds=4, max_candidates=2)
     assert event is not None
     assert event.accepted
     assert 0.0 <= event.score <= 1.0
@@ -48,7 +48,7 @@ def test_single_step_is_bounded_and_accepts_a_real_upgrade():
 
 def test_end_to_end_campaign_reaches_production_sequence_adapter():
     system = ProductionMultiCapabilityUpgrade()
-    events = system.run(steps=4, rounds=4, max_candidates=1)
+    events = system.run(steps=4, rounds=4, max_candidates=2)
     assert len(events) == 4
     assert all(event.accepted for event in events)
     assert any(event.sandboxed for event in events)
@@ -57,7 +57,7 @@ def test_end_to_end_campaign_reaches_production_sequence_adapter():
 
 def test_campaign_scores_remain_bounded():
     system = ProductionMultiCapabilityUpgrade()
-    system.run(steps=4, rounds=4, max_candidates=1)
+    system.run(steps=4, rounds=4, max_candidates=2)
     assert all(0.0 <= score <= 1.0 for score in system.scores.values())
 
 

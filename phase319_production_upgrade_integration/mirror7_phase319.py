@@ -130,7 +130,7 @@ class ProductionMultiCapabilityUpgrade:
         self,
         seed: int = 7,
         rounds: int = 4,
-        max_candidates: int = 1,
+        max_candidates: int = 2,
     ) -> ProductionUpgradeEvent | None:
         if rounds < 1 or max_candidates < 1:
             raise ValueError("rounds and max_candidates must be positive")
@@ -171,7 +171,7 @@ class ProductionMultiCapabilityUpgrade:
         self,
         steps: int = 4,
         rounds: int = 4,
-        max_candidates: int = 1,
+        max_candidates: int = 2,
     ) -> list[ProductionUpgradeEvent]:
         if steps < 1:
             raise ValueError("steps must be positive")
