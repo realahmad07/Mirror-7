@@ -1602,7 +1602,7 @@ Passing internal phases is evidence about the tested mechanisms; it is not, by i
 
 ## Continuation point
 
-**Current repository frontier: Phase 177 complete (external-data boundary plumbing).**
+**Current repository frontier: Phases 178–180 implemented; empirical promotion is gated by CI.**
 
 **Next concrete implementation:** Phase 178 — add another genuinely external task family and begin measuring actual Mirror 7 agent performance through the unchanged evaluator.
 
