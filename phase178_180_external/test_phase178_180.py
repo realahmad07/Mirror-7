@@ -53,5 +53,5 @@ def test_180_cross_domain_transfer_does_not_claim_zero_shot_success():
     for row in quality.features[:attempted]:
         try: model.predict(row)
         except ValueError: rejected += 1
-    assert rejected == 0
+    assert rejected == attempted
     assert attempted == 24
