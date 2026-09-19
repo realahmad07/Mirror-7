@@ -2,7 +2,17 @@ import pathlib, subprocess, random, os
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 NU=ROOT/'nucleus'; WORDS=ROOT/'compiler_words.mirr'
 
+def ensure_nucleus():
+    if NU.exists(): return True
+    cc=os.environ.get('CC','cc')
+    c=ROOT/'nucleus.c'
+    if not c.exists(): return False
+    r=subprocess.run([cc,str(c),'-O2','-o',str(NU)],capture_output=True,timeout=20)
+    return r.returncode==0 and NU.exists()
+
 def run(src, word='main', timeout=3, exe=NU):
+    if not ensure_nucleus():
+        raise RuntimeError('no checked-in nucleus executable and no C compiler available')
     p=ROOT/'tmp.mirr'; p.write_text(src)
     try: return subprocess.run([str(exe), str(p), word], capture_output=True, timeout=timeout, env=os.environ.copy())
     finally: p.unlink(missing_ok=True)

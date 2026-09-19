@@ -1,7 +1,7 @@
 import math
 import random
 import pytest
-from mirror7_phase65 import Phase65Agent, StochasticEffectModel, StreamingRegimeBank
+from .mirror7_phase65 import Phase65Agent, StochasticEffectModel, StreamingRegimeBank
 
 
 class StreamingEnv:

@@ -1,6 +1,6 @@
 import random
 import pytest
-from mirror7_phase64 import UnknownRegimeAgent, UnknownRegimeBank, _effect
+from .mirror7_phase64 import UnknownRegimeAgent, UnknownRegimeBank, _effect
 
 
 class RegimeEnv:

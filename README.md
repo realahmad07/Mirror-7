@@ -292,6 +292,7 @@ Progressive: 27 / 27
 Held-out:     2 / 2
 Adversarial:   6 / 6
 Pytest:       11 passed
+Determinism / invariance: ✅
 ```
 
 See [Phase 55 acceptance](./PHASE55_ACCEPTANCE.md).
@@ -352,8 +353,6 @@ Pytest:      10 passed
 ```
 
 See [Phase 57 acceptance](./PHASE57_ACCEPTANCE.md).
-
----
 
 ### 10. Phase 58 hierarchical concept abstraction
 
@@ -437,7 +436,6 @@ Pytest:      8 passed
 
 See [Phase 60 acceptance](./PHASE60_ACCEPTANCE.md).
 
-
 ### 13. Phase 61 predictive closed-loop autonomy
 
 Phase 61 connects the Phase 58–60 mechanisms into an online goal-directed control loop:
@@ -475,8 +473,6 @@ Pytest:      9 passed
 
 See [Phase 61 acceptance](./PHASE61_ACCEPTANCE.md).
 
-
-
 ### 14. Phase 62 partial observability + active information
 
 Phase 62 removes the full-state visibility assumption:
@@ -509,7 +505,6 @@ Pytest:      9 passed
 
 See [Phase 62 acceptance](./PHASE62_ACCEPTANCE.md).
 
-
 ### 15. Phase 63 nonstationary world + autonomous experiment design
 
 Phase 63 removes the fixed-dynamics assumption:
@@ -541,7 +536,6 @@ Pytest:      9 passed
 ```
 
 See [Phase 63 acceptance](./PHASE63_ACCEPTANCE.md).
-
 
 ### 16. Phase 64 unknown-regime discovery + autonomous experiment sequences
 
@@ -577,9 +571,6 @@ Pytest:      9 passed
 
 See [Phase 64 acceptance](./PHASE64_ACCEPTANCE.md).
 
-
-
-
 ### 17. Phase 65 streaming delayed/stochastic hidden-state learning
 
 Phase 65 removes the controlled-reset assumption from Phase 64:
@@ -608,14 +599,14 @@ Result:
 
 ```text
 Progressive: 3 effect families × 3 seeds
-Held-out:     1 / 1
+Held-out:    1 / 1
 Controls:     4 / 4
 Integration:  continuous no-reset stream
 Pytest:       9 passed
 Gate:         PASS (repeated twice)
 ```
 
-See [Phase 65 acceptance](./PHASE65_ACCEPTANCE.md).
+See [PHASE65_ACCEPTANCE.md](./PHASE65_ACCEPTANCE.md).
 
 Boundary: bounded continuous-stream delayed/stochastic hidden-state learning. This is not a claim of unrestricted hidden-state inference, autonomous science, or AGI.
 
@@ -772,7 +763,7 @@ See [Phase 53 report](./PHASE53_REPORT.md) and [Phase 54 evaluation](./INDEPENDE
 | Pytest | ✅ 11 passed |
 | Determinism / invariance | ✅ |
 
-See [Phase 55 acceptance](./PHASE55_ACCEPTANCE.md).
+See [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md).
 
 </details>
 
@@ -781,877 +772,107 @@ See [Phase 55 acceptance](./PHASE55_ACCEPTANCE.md).
 
 | Gate | Result |
 |---|:---:|
-| Progressive concept families | ✅ 3 families × 3 seeds |
-| Held-out recombination | ✅ |
-| Held-out raw encoding change | ✅ |
-| Adversarial controls | ✅ 3/3 |
+| Progressive concept families | ✅ 3 × 3 seeds |
+| Held-out | ✅ 2/2 |
+| Adversarial | ✅ 3/3 |
 | Pytest | ✅ 7 passed |
-| Determinism | ✅ |
 
-See [Phase 56 acceptance](./PHASE56_ACCEPTANCE.md).
+See [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md).
 
 </details>
 
----
-
-## 🚧 What is still unsolved
-
-Passing the current gates does **not** mean the project has reached AGI.
-
-The major open research problems are:
-
-### Raw multimodal concept acquisition
-
-Can it discover entities, relations, events, and useful state from less regular raw observations, including modalities beyond byte streams, without developers hand-defining the ontology?
-
-### Scaling
-
-How does search and memory behave as:
-
-```text
-entities ↑
-hypotheses ↑
-state size ↑
-planning depth ↑
-distractors ↑
-```
-
-### Long-horizon autonomy
-
-Can the system maintain reliable model → plan → act → observe → revise loops across much longer tasks?
-
-### Strong abstraction
-
-Can a computational principle learned in one environment transfer to another environment where the surface semantics are substantially different?
-
-### Continual learning at scale
-
-Can it acquire large amounts of new knowledge without corrupting old knowledge?
-
-### Real-world grounding
-
-Can the mechanisms operate robustly with external language, tools, files, sensors, and dynamic environments?
-
-### Compute efficiency
-
-What is the actual runtime/memory/sample-efficiency profile compared with strong neural baselines?
-
-### Safety and reliability
-
-Can failure, uncertainty, bad actions, model corruption, and irreversible outcomes be detected and contained?
-
-### Independent reproduction
-
-Can an unrelated implementation/team reproduce the important results from the frozen repository?
-
----
-
-## 🎯 What Mirror 7 can do today
-
-At the demonstrated boundary, Mirror 7 can:
-
-```mermaid
-flowchart TD
-    A["Observe an environment"] --> B["Discover / represent structure"]
-    B --> C["Build a stable state"]
-    C --> D["Learn transitions"]
-    D --> E["Predict consequences"]
-    E --> F["Detect discrepancy"]
-    F --> G["Update memory / model"]
-    G --> H["Infer causal relationships"]
-    H --> I["Form and evaluate goals"]
-    I --> J["Plan"]
-    J --> K["Act"]
-    K --> L["Observe actual result"]
-    L --> G
-```
-
-It also has tested mechanisms for:
-
-- working and episodic memory;
-- world-model updates;
-- compositional reasoning;
-- hierarchical planning;
-- counterfactual simulation;
-- tool execution;
-- language-to-structure grounding;
-- continual learning;
-- epistemic bookkeeping and contradiction checks;
-- open-ended action-effect discovery;
-- generalization to unseen benchmark task families.
-
-The **scope statement** is important: these capabilities are demonstrated in bounded, structured research environments and should not be read as a claim that Mirror 7 already has unrestricted real-world intelligence.
-
----
-
-## 🧪 Research Boundaries & Known Caveats
-
-### Phase 34 source publication
-
-Phase 34 is now represented by a dedicated repository implementation under `phase34_reasoning_planning/`. Its executable acceptance gate covers 3 progressive task families × 3 seeds, 3 held-out cases, 3 adversarial controls, exact-plan validation, and 8/8 regression. The gate and pytest suite were repeated locally with the same result. This establishes the bounded reasoning/planning mechanism; it does not claim unrestricted planning or AGI.
-
-### Phase 51 benchmark caveat
-
-Several Phase 51 comparison values are synthetic/mock baseline values. The mechanism and executable gate are verified, but those values are not treated as independent scientific comparison results.
-
-### Phase 55 representation-independence boundary
-
-Phase 55 demonstrates representation invariance for bounded relational graphs across three generic byte encodings with opaque node identifiers and reordered serialization. The implementation uses exact canonicalization only within a bounded eight-node reference domain; this is not yet a claim of unrestricted multimodal representation learning.
-
-### Phase 56 raw-concept boundary
-
-Phase 56 demonstrates bounded unsupervised structural concept acquisition from raw byte streams. The discovered concepts are recurring structural motifs, while relations/events are derived from ordered concept co-occurrence. This is not yet semantic open-world grounding, multimodal perception, or unrestricted ontology induction.
-
-### Phase 54 independence caveat
-
-Phase 54 is an **independent-style** evaluation, not a third-party scientific replication. The evaluator was kept outside the learner implementation and remained locked, but both benchmark construction and learner development occurred within the same broader project workflow.
-
----
-
-## 📚 Where to go next
-
-| Document | Purpose |
-|---|---|
-| [STATUS.md](./STATUS.md) | Detailed acceptance board and evidence |
-| [ROADMAP.md](./ROADMAP.md) | Capability roadmap and remaining research gaps |
-| [BOOTSTRAP_PROGRESS.md](./BOOTSTRAP_PROGRESS.md) | Bootstrap / self-hosting chain |
-| [PHASE34_ACCEPTANCE.md](./PHASE34_ACCEPTANCE.md) | Phase 34 acceptance record |
-| [phase34_reasoning_planning/](./phase34_reasoning_planning/) | Phase 34 reasoning/planning implementation and tests |
-| [PHASE35_51_VERIFICATION.md](./PHASE35_51_VERIFICATION.md) | Phase 35–51 verification record |
-| [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md) | Phase 55 acceptance record |
-| [phase55_representation_independence/](./phase55_representation_independence/) | Phase 55 implementation and tests |
-| [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md) | Phase 56 acceptance record |
-| [phase56_raw_concept_acquisition/](./phase56_raw_concept_acquisition/) | Phase 56 implementation and tests |
-| [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md) | Phase 57 acceptance record |
-| [phase57_multiview_concept_acquisition/](./phase57_multiview_concept_acquisition/) | Phase 57 implementation and tests |
-| [PHASE58_ACCEPTANCE.md](./PHASE58_ACCEPTANCE.md) | Phase 58 acceptance record |
-| [phase58_hierarchical_abstraction/](./phase58_hierarchical_abstraction/) | Phase 58 implementation and tests |
-| [PHASE59_ACCEPTANCE.md](./PHASE59_ACCEPTANCE.md) | Phase 59 acceptance record |
-| [phase59_predictive_concepts/](./phase59_predictive_concepts/) | Phase 59 implementation and tests |
-| [PHASE60_ACCEPTANCE.md](./PHASE60_ACCEPTANCE.md) | Phase 60 acceptance record |
-| [phase60_long_horizon_world_model/](./phase60_long_horizon_world_model/) | Phase 60 implementation and tests |
-| [PHASE61_ACCEPTANCE.md](./PHASE61_ACCEPTANCE.md) | Phase 61 acceptance record |
-| [phase61_closed_loop_autonomy/](./phase61_closed_loop_autonomy/) | Phase 61 implementation and tests |
-| [PHASE62_ACCEPTANCE.md](./PHASE62_ACCEPTANCE.md) | Phase 62 acceptance record |
-| [phase62_active_information/](./phase62_active_information/) | Phase 62 implementation and tests |
-| [PHASE63_ACCEPTANCE.md](./PHASE63_ACCEPTANCE.md) | Phase 63 acceptance record |
-| [phase63_nonstationary_experiments/](./phase63_nonstationary_experiments/) | Phase 63 implementation and tests |
-| [PHASE64_ACCEPTANCE.md](./PHASE64_ACCEPTANCE.md) | Phase 64 acceptance record |
-| [phase64_unknown_regime_discovery/](./phase64_unknown_regime_discovery/) | Phase 64 implementation and tests |
-| [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
-| [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
-| [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
-| [phase53_independent_eval/](./phase53_independent_eval/) | Blind evaluator |
-| [LICENSE](./LICENSE) | Project license |
-
----
-
-## ▶️ Running the project
-
-The repository contains multiple phase-specific gates. Start with the relevant phase documentation rather than assuming one global command covers the entire project.
-
-For the open-ended learner:
-
-```bash
-python -m pytest phase52_open_learning -q
-```
-
-For the Phase 53 evaluator:
-
-```bash
-python -m pytest phase53_independent_eval -q
-```
-
-For the Phase 56 acceptance gate:
-
-```bash
-python -m phase56_raw_concept_acquisition.run_phase56_gate
-python -m pytest phase56_raw_concept_acquisition/test_phase56.py -q
-```
-
-For the Phase 57 acceptance gate:
-
-```bash
-python -m phase57_multiview_concept_acquisition.run_phase57_gate
-python -m pytest phase57_multiview_concept_acquisition/test_phase57.py -q
-```
-
-For the Phase 55 acceptance gate:
-
-```bash
-python -m phase55_representation_independence.run_phase55_gate
-python -m pytest phase55_representation_independence/test_phase55.py -q
-```
-
-For the Phase 34 acceptance gate:
-
-```bash
-python -m phase34_reasoning_planning.run_phase34_gate
-python -m pytest phase34_reasoning_planning/test_phase34.py -q
-```
-
-For the Phase 32 acceptance gate:
-
-```bash
-python phase32_prediction/test_phase32_gate.py
-```
-
-See the individual phase READMEs and [STATUS.md](./STATUS.md) for the authoritative verification boundary.
-
----
-
-## 🌱 Research Direction
-
-The next milestone should not simply be “more benchmark rows.”
-
-The strongest next question is:
-
-> **Can Mirror 7 discover useful concepts from increasingly unstructured observations while scaling the same mechanism without exploding search or memory costs?**
-
-That points toward three connected research tracks:
-
-```mermaid
-flowchart LR
-    A["Raw concept acquisition"] --> D["General abstraction"]
-    B["Scaling / computational analysis"] --> D
-    C["Independent reproduction"] --> D
-    D --> E["Broader real-world evaluation"]
-```
-
-Only after those experiments should the project commit to a specialized new runtime, language, compiler, or hardware substrate.
-
----
-
-## 🛡️ License
-
-Mirror 7 is released under the **Apache License 2.0**.
-
-The repository contains the full license text in [LICENSE](./LICENSE).
-
-Official license reference: https://www.apache.org/licenses/LICENSE-2.0
-
----
-
-## 📌 Project Principle
-
-```text
-DO NOT ASK:
-"How many features can we add?"
-
-ASK:
-"What general mechanism has actually been demonstrated?"
-```
-
-Mirror 7 is an ongoing research program.
-
-The repository should always make it easy to distinguish:
-
-```text
-implemented
-   ≠
-verified
-   ≠
-integrated
-   ≠
-generalized
-   ≠
-independently reproduced
-   ≠
-AGI
-```
-
-That distinction is part of the project itself.
-
-
-## Current implementation frontier — Phases 65–82
-
-Phases 65–79 extend the bounded research loop into continuous/no-reset learning, delayed and stochastic effects, hidden-regime discovery, transfer, unified world modeling, raw numeric representation, autonomous curriculum, integrated autonomous learning, cross-environment transfer, and long-horizon self-correction.
-
-Phases 80–82 add the next integration layer:
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 80 | Unified autonomous system: state → prediction → action → observation → discrepancy → revision | Implemented |
-| 81 | Persistent transfer memory with provenance, confidence, shape/distance rejection, and persistence | Implemented |
-| 82 | Fail-closed regression gate for promotion/invariant checks | Implemented |
-
-The 80–82 workflow runs the Phase 77–82 regression suite on pushes to main. These phases remain bounded numeric research mechanisms; they do not establish unrestricted perception, human-level intelligence, or AGI.
-
-
-## Current implementation frontier — Phases 83–87
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 83 | Self-model consistency / discrepancy verification | Implemented |
-| 84 | Compositional state graph | Implemented |
-| 85 | Integrated bounded agent loop | Implemented |
-| 86 | Bounded multi-step horizon planning | Implemented |
-| 87 | Autonomous curriculum / uncertainty memory | Implemented |
-
-Phases 85–87 connect the bounded state/action loop to multi-step planning and uncertainty/novelty-driven experiment selection. The implementation remains explicitly bounded, fail-closed, and numeric; these phases do not establish unrestricted intelligence or AGI.
-
-## Current implementation frontier — Phases 88–94
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 88 | Variable-length temporal event abstraction | Implemented |
-| 89 | Unlabeled hidden-state inference under partial observation | Implemented |
-| 90 | Overlapping delayed-effect attribution and composition | Implemented |
-| 91 | Online hypothesis creation, merging, revision, contradiction checks and abstention | Implemented |
-| 92 | Bounded autonomous multi-step experiment selection | Implemented |
-| 93 | Structural transfer with orientation-preserving permutation matching | Implemented |
-| 94 | Integrated phases 88–93 open-ended research loop | Implemented |
-
-Focused local acceptance for phases 88–94: **28/28 passed**.
-
-These phases remain bounded mechanisms. They do not establish unrestricted intelligence or AGI. See [PHASE88_94_ACCEPTANCE.md](./PHASE88_94_ACCEPTANCE.md).
-
-## Final implementation frontier — Phases 95–100
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 95 | Bounded associative memory and similarity retrieval | Implemented |
-| 96 | Continual evidence consolidation and contradiction resistance | Implemented |
-| 97 | Uncertainty-aware bounded planning | Implemented |
-| 98 | Mixed-view structural grounding | Implemented |
-| 99 | Frozen black-box independent-style evaluation harness | Implemented |
-| 100 | Integrated final boundary across phases 94–99 | Implemented |
-
-Focused execution of the new phase mechanisms: **9/9 checks passed** after fixing a Phase 97 uncertainty-selection defect. Phase 100 is a final engineering/evaluation boundary, not an AGI claim. See [PHASE95_100_ACCEPTANCE.md](./PHASE95_100_ACCEPTANCE.md).
-
-
-## 🧩 Phases 101–107 — Controlled Learning & Safe Self-Improvement
-
-The next research frontier adds explicit mechanisms for the behavior defined after Phase 100:
-
-```text
-missing / conflicting context
-        ↓
-ask for useful context
-        ↓
-track evidence + provenance
-        ↓
-require corroboration
-        ↓
-detect recurring failures
-        ↓
-propose improvement
-        ↓
-held-out + regression + resource gate
-        ↓
-adopt only validated changes
-        ↓
-bounded memory / computation
-```
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 101 | Context inquiry instead of unsupported guessing | ✅ 4/4 |
-| 102 | Provenance-aware evidence ledger and conflict detection | ✅ 4/4 |
-| 103 | Corroborated learning with contradiction resistance | ✅ 4/4 |
-| 104 | Recurring-failure improvement proposals | ✅ 4/4 |
-| 105 | Safe self-improvement adoption gate | ✅ 4/4 |
-| 106 | Hard memory / step resource governance | ✅ 4/4 |
-| 107 | Integrated controlled self-improving loop | ✅ 5/5 |
-
-Focused acceptance: **29/29**, repeated with three deterministic Python hash seeds: **29/29 each**.
-
-See [Phase 101–107 acceptance](./PHASE101_107_ACCEPTANCE.md).
-
-**Boundary:** these phases demonstrate controlled mechanisms for clarification, evidence management, conservative learning, improvement proposals, adoption gates, and resource bounds. They do not establish human-level intelligence, unrestricted self-improvement, or AGI.
-
-
-## 🧠 Phases 108–114 — Grounded Agent Capability Layer
-
-The post-107 frontier adds a practical agent layer:
-
-```text
-goal + context
-      ↓
-clarify missing information
-      ↓
-ingest validated knowledge
-      ↓
-decompose long-horizon task
-      ↓
-call guarded tools
-      ↓
-verify results
-      ↓
-monitor confidence
-      ↓
-remember within hard bounds
-      ↺
-```
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 108 | Grounded dialogue + targeted clarification | ✅ 4/4 |
-| 109 | Validated knowledge ingestion + conflict protection | ✅ 4/4 |
-| 110 | Guarded tool execution + result verification | ✅ 4/4 |
-| 111 | Dependency-safe task decomposition + hard budget | ✅ 4/4 |
-| 112 | Confidence self-monitoring + caution trigger | ✅ 4/4 |
-| 113 | Bounded continual agent memory | ✅ 4/4 |
-| 114 | Integrated grounded/tool/task/monitor/memory agent | ✅ 6/6 |
-
-Focused acceptance: **30/30**, repeated with `PYTHONHASHSEED=0,1,2`.
-
-See [PHASE108_114_ACCEPTANCE.md](./PHASE108_114_ACCEPTANCE.md).
-
-**Boundary:** these are bounded agent mechanisms. They do not establish unrestricted language understanding, open-world autonomy, or AGI.
-
-
-## ⚙️ Phases 115–121 — Reliable Autonomous Execution Layer
-
-The next layer after grounded agent capabilities focuses on executing plans reliably:
-
-```text
-action verification
-      ↓
-tool composition
-      ↓
-conflict resolution
-      ↓
-context-aware memory retrieval
-      ↓
-plan verification
-      ↓
-failure recovery
-      ↓
-autonomous task loop
-```
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 115 | Verified action execution with pre/postconditions | ✅ 4/4 |
-| 116 | Multi-tool composition with fail-closed propagation | ✅ 4/4 |
-| 117 | Weighted conflict resolution with abstention | ✅ 4/4 |
-| 118 | Context-aware bounded memory retrieval | ✅ 4/4 |
-| 119 | Bounded plan simulation and verification | ✅ 4/4 |
-| 120 | Bounded failure recovery and rollback | ✅ 4/4 |
-| 121 | Integrated autonomous task execution loop | ✅ 6/6 |
-
-Focused acceptance: **30/30** on three deterministic Python hash seeds.
-
-See [PHASE115_121_ACCEPTANCE.md](./PHASE115_121_ACCEPTANCE.md).
-
-**Boundary:** this is a bounded reliable-execution layer, not unrestricted autonomy or AGI.
-
-
-## 🧠 Phases 122–128 — Generalization & Skill Transfer Layer
-
-The post-121 frontier adds reusable skill abstraction and stronger cross-context generalization:
-
-```text
-verified skills → structural transfer → novelty → adaptive curriculum → checkpoints → generalization gate → integrated agent
-```
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 122 | Verified reusable skill library | ✅ 4/4 |
-| 123 | Structural cross-task transfer | ✅ 4/4 |
-| 124 | Novelty / out-of-distribution detection | ✅ 4/4 |
-| 125 | Adaptive curriculum selection | ✅ 4/4 |
-| 126 | Checkpointed long-horizon execution | ✅ 4/4 |
-| 127 | Cross-context generalization gate | ✅ 4/4 |
-| 128 | Integrated generalization agent | ✅ 6/6 |
-
-Focused acceptance: **30/30** on `PYTHONHASHSEED=0,1,2`.
-
-See [PHASE122_128_ACCEPTANCE.md](./PHASE122_128_ACCEPTANCE.md).
-
-**Boundary:** this is bounded transfer/generalization engineering, not proof of unrestricted general intelligence or AGI.
-
-
-## 🧠 Phases 129–140 — Integrated Cognitive Layer
-
-The post-128 frontier focuses on connecting explicit mechanisms into a bounded cognitive coordination layer:
-
-```text
-workspace → state fusion → concept/skill bridge → world/memory bridge
-→ safe program execution → goals → research selection → self-debug
-→ consolidation → abstract reasoning → multimodal grounding → unified runtime
-```
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 129 | Shared bounded cognitive workspace | ✅ 3/3 |
-| 130 | Confidence-weighted state fusion | ✅ 3/3 |
-| 131 | Concept-to-skill binding gate | ✅ 3/3 |
-| 132 | World-model / memory consistency bridge | ✅ 3/3 |
-| 133 | Bounded program execution sandbox | ✅ 3/3 |
-| 134 | Long-term goal management | ✅ 3/3 |
-| 135 | Autonomous research scheduling | ✅ 3/3 |
-| 136 | Self-debugging proposal/adoption gate | ✅ 3/3 |
-| 137 | Evidence consolidation | ✅ 3/3 |
-| 138 | Abstract relation/composition reasoning | ✅ 3/3 |
-| 139 | Cross-view grounding normalization | ✅ 3/3 |
-| 140 | Unified cognitive coordination runtime | ✅ 3/3 |
-
-Focused local acceptance: **36/36**, repeated with `PYTHONHASHSEED=0,1,2`.
-
-See [PHASE129_140_ACCEPTANCE.md](./PHASE129_140_ACCEPTANCE.md).
-
-**Boundary:** this is a bounded integration layer. It does not establish unrestricted general intelligence or AGI.
-
-
-## 🧠 Phases 141–152 — 12-Algorithm Cognitive Integration
-
-The imported algorithm library is now connected through a canonical integration package:
-
-```text
-concepts → memory → grounding → world model → causal research
-        → reasoning → program induction → goals → self-debugging
-        → consolidation → workspace → unified cognition
-```
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 141 | Algorithm adapter contract | ✅ |
-| 142 | Concept → memory bridge | ✅ |
-| 143 | Grounding → memory bridge | ✅ |
-| 144 | Memory → world-model bridge | ✅ |
-| 145 | Causal → research bridge | ✅ |
-| 146 | Reasoning → program bridge | ✅ |
-| 147 | Goal → research bridge | ✅ |
-| 148 | Failure → self-debugging bridge | ✅ |
-| 149 | Consolidation → memory bridge | ✅ |
-| 150 | Cognitive workspace coordination | ✅ |
-| 151 | End-to-end 12-algorithm runtime | ✅ |
-| 152 | Integration promotion gate | ✅ |
-
-Verification: **14/14 integration tests** on three deterministic hash seeds, plus **84/84** standalone tests from the imported 12-algorithm library.
-
-See [PHASE141_152_ACCEPTANCE.md](./PHASE141_152_ACCEPTANCE.md).
-
-**Boundary:** this demonstrates an integrated bounded architecture, not unrestricted general intelligence or AGI.
-
-## 🌐 Phases 153–160 — Sealed Open-World Evaluation
-
-The next boundary tests the combined cognitive runtime through a sealed interface rather than another isolated capability:
-
-```text
-opaque observation/state
-        ↓
-opaque action
-        ↓
-outcome
-        ↓
-prediction / memory / update
-        ↓
-held-out evaluation
-        ↓
-stress + independent acceptance
-```
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 153 | Sealed observation/state/action/outcome evaluation | ✅ |
-| 154 | Unseen environment + conservative uncertainty | ✅ |
-| 155 | Structural transfer across renamed entities | ✅ |
-| 156 | Noisy observations with irrelevant perturbations | ✅ |
-| 157 | 32-step long-horizon prediction replay | ✅ |
-| 158 | External independent-evaluator contract | ✅ |
-| 159 | Bounded stress evaluation | ✅ |
-| 160 | Cross-phase final gate | ✅ |
-
-Acceptance target: **all phases pass on seeds 0, 1, 2**, with explicit unknown-action abstention and resource bounds.
-
-See [PHASE153_160_ACCEPTANCE.md](./PHASE153_160_ACCEPTANCE.md).
-
-**Boundary:** this is a stricter bounded open-world evaluation of the existing architecture. It does not establish zero-shot arbitrary-environment generalization, unrestricted cross-domain transfer, scaling laws, or AGI.
-
-## 🔒 Phases 161–170 — Black-Box / Raw-Input Evaluation
-
-The next boundary removes more semantic scaffolding from the agent-facing interface:
-
-~~~text
-raw bytes → discovered representation → opaque action bytes
-→ raw outcome → discrepancy → update / replan
-~~~
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 161 | Black-box protocol | ✅ |
-| 162 | Raw representation discovery | ✅ |
-| 163 | Opaque action tokens + abstention | ✅ |
-| 164 | Multiple hidden domains | ✅ |
-| 165 | Hidden-goal action selection | ✅ |
-| 166 | Representation-independent policy transfer | ✅ |
-| 167 | Bounded irreversible long-horizon planning | ✅ |
-| 168 | Contamination controls | ✅ |
-| 169 | Scaling measurements | ✅ |
-| 170 | Final acceptance gate | ✅ |
-
-Verification: **30/30 phase-seed checks**, **13/13 pytest checks**, plus independent evaluator positive/negative controls. Phases 141–152 and 153–160 were re-run successfully in the same workflow.
-
-See [PHASE161_170_ACCEPTANCE.md](./PHASE161_170_ACCEPTANCE.md).
-
-**Boundary:** this is a bounded raw-byte/black-box evaluation. It does not establish arbitrary real-world perception, unrestricted action-space discovery, unrestricted cross-domain transfer, or AGI.
-
-## 🌍 Phases 171–180 — External Evaluation Foundation
-
-The next boundary separates Mirror 7 from repository-internal benchmark design by introducing a transport-neutral external task-pack protocol and a separate evaluator process.
-
-| Phase | Capability | State |
-|---|---|:---:|
-| 171 | External task-pack protocol | ✅ |
-| 172 | Sealed per-episode agent view | ✅ |
-| 173 | Evaluator-field contamination rejection | ✅ |
-| 174 | Deterministic public task fingerprint | ✅ |
-| 175 | Separate evaluator process with no Mirror 7 runtime import | ✅ |
-| 176 | Evaluator negative-control enforcement | ✅ |
-| 177 | Real external UCI Iris dataset ingestion + sealed evaluator boundary | ✅ |
-| 178–180 | Additional external task families + actual agent-performance evaluation | ⏳ |
-
-Verification: the new foundation gate re-runs phases 141–152, 153–160, and 161–170, plus independent evaluator positive/negative controls.
-
-See [PHASE171_180_ACCEPTANCE.md](./PHASE171_180_ACCEPTANCE.md).
-
-**Boundary:** these phases harden the external evaluation boundary; they are not evidence of unrestricted external generalization. Real external task packs/datasets are still required for 177–180.
----
-
-# Mirror 7 — Current Architecture and Future Research Flow
-
-## Complete phase position
-
-```text
-PHASES 1–22
-Foundational intelligence algorithms
-        ↓
-representation / discovery / causal / compositional reasoning
-        ↓
-PHASES 23–30
-Compiler, MIRR, bootstrap and self-rebuild foundations
-        ↓
-PHASES 31–52
-Core runtime, learning, memory, planning, tools and open-learning foundations
-        ↓
-PHASES 53–64
-Blind evaluation, representation independence and stronger open-world mechanisms
-        ↓
-PHASE 65
-Continuous / no-reset learning frontier
-        ↓
-PHASES 66–87
-Hidden-state inference, stochastic effects, delayed effects,
-autonomous experimentation, uncertainty and regression expansion
-        ↓
-PHASES 88–100
-Temporal abstraction, latent-state inference, hypothesis revision,
-active experimentation, structural transfer, memory and final bounded boundary
-        ↓
-PHASES 101–107
-Controlled learning + safe self-improvement
-        ↓
-PHASES 108–114
-Grounded agent, knowledge ingestion, tools, task decomposition,
-confidence monitoring and bounded continual memory
-        ↓
-PHASES 115–121
-Reliable execution, tool composition, conflict resolution,
-plan verification, recovery and autonomous task loop
-        ↓
-PHASES 122–128
-Skill library, transfer, novelty, curriculum, checkpoints and generalization
-        ↓
-PHASES 129–140
-Cognitive workspace, state fusion, concepts, memory/world bridges,
-goals, research, self-debugging, consolidation and unified runtime
-        ↓
-PHASES 141–152
-12-algorithm cognitive integration
-        ↓
-PHASES 153–160
-Sealed open-world evaluation, unseen environments,
-noise, long horizon, transfer and independent-style evaluation
-        ↓
-PHASES 161–170
-Black-box / raw-byte representation, opaque actions,
-hidden goals, multi-domain transfer, bounded long-horizon planning
-        ↓
-PHASES 171–176
-External evaluation infrastructure and contamination-safe evaluator
-        ↓
-CURRENT FRONTIER
-177–180: REAL EXTERNAL DATASETS / TASK FAMILIES / REPRODUCTION
-```
-
-## Current cognitive architecture
-
-```text
-                         EXTERNAL / REAL WORLD
-                                  │
-                                  ▼
-                    ┌──────────────────────────┐
-                    │ Observation / Raw Input  │
-                    │ text / bytes / sensors   │
-                    │ future image/audio/video │
-                    └────────────┬─────────────┘
-                                 ▼
-                    ┌──────────────────────────┐
-                    │ Representation Discovery │
-                    │ concepts / structure     │
-                    └────────────┬─────────────┘
-                                 ▼
-                    ┌──────────────────────────┐
-                    │ State + World Model       │
-                    │ prediction / dynamics    │
-                    └────────────┬─────────────┘
-                                 ▼
-              ┌──────────────────┼──────────────────┐
-              ▼                  ▼                  ▼
-        Causal Model        Memory System      Uncertainty
-        interventions      episodic/semantic     / confidence
-              │                  │                  │
-              └──────────────────┼──────────────────┘
-                                 ▼
-                    ┌──────────────────────────┐
-                    │ Goals / Research         │
-                    │ what to learn / achieve  │
-                    └────────────┬─────────────┘
-                                 ▼
-                    ┌──────────────────────────┐
-                    │ Reasoning / Program       │
-                    │ induction / abstraction   │
-                    └────────────┬─────────────┘
-                                 ▼
-                    ┌──────────────────────────┐
-                    │ Planning / Verification  │
-                    │ bounded search / replay  │
-                    └────────────┬─────────────┘
-                                 ▼
-                    ┌──────────────────────────┐
-                    │ Action / Tools / Skills  │
-                    │ affordances / execution  │
-                    └────────────┬─────────────┘
-                                 ▼
-                              WORLD
-                                 │
-                                 ▼
-                             OUTCOME
-                                 │
-                                 └──────────────► DISCREPANCY
-                                                     │
-                                                     ▼
-                                             update / revise / learn
-                                                     │
-                                                     └──────↺
-
-Parallel control plane
-────────────────────────────────────────────────────────────
-memory/resource bounds
-failure detection
-self-debugging proposals
-held-out validation
-regression gates
-contamination controls
-independent evaluation
-fail-closed behavior
-```
-
-## Future architecture
-
-```text
-177–180
-REAL EXTERNAL TASK PACKS
-        ↓
-independent unseen task families
-        ↓
-171–176 evaluator boundary
-        ↓
-Mirror 7
-        ↓
-181–190  unstructured multimodal grounding
-        ↓
-191–200  open action / affordance discovery
-        ↓
-201–210  lifelong persistent learning
-        ↓
-211–220  scalable hierarchical reasoning
-        ↓
-221–230  natural-language grounding
-        ↓
-231–240  compute / memory / scaling studies
-        ↓
-241–250  embodied / external environment interaction
-        ↓
-251–260  independent reproduction + safety validation
-        ↓
-261+     broad external generalization program
-        ↓
-independent human-level / AGI evaluation
-```
+<details>
+<summary><strong>Phase 57 — Cross-View Raw Concept Acquisition</strong></summary>
+
+| Gate | Result |
+|---|:---:|
+| Progressive concept families | ✅ 3 × 3 seeds |
+| Held-out | ✅ 2/2 |
+| Adversarial | ✅ 3/3 |
+| Scaling | ✅ 1/1 |
+| Pytest | ✅ 10 passed |
+
+See [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md).
+
+</details>
+
+<details>
+<summary><strong>Phases 58–61 — Hierarchy → Predictive World Model → Closed Loop</strong></summary>
+
+| Phase | Result |
+|---|:---:|
+| 58 | ✅ 8/8 |
+| 59 | ✅ 8/8 |
+| 60 | ✅ 8/8 |
+| 61 | ✅ 9/9 |
+
+See the phase acceptance documents.
+
+</details>
+
+<details>
+<summary><strong>Phases 62–64 — Partial Observability → Nonstationary → Unknown Regimes</strong></summary>
+
+| Phase | Result |
+|---|:---:|
+| 62 | ✅ 9/9 |
+| 63 | ✅ 9/9 |
+| 64 | ✅ 9/9 |
+
+See the phase acceptance documents.
+
+</details>
+
+<details>
+<summary><strong>Phase 65 — Streaming Delayed / Stochastic Hidden State</strong></summary>
+
+| Gate | Result |
+|---|:---:|
+| Focused suite | ✅ 9/9 |
+| 3 families × 3 seeds | ✅ |
+| Held-out | ✅ 1/1 |
+| Controls | ✅ 4/4 |
+| Continuous no-reset integration | ✅ |
+
+</details>
+
+## 🧭 Later Research Blocks
+
+The later phase blocks are bounded research/evaluation mechanisms rather than claims of general intelligence.
+
+| Block | State |
+|---|:---:|
+| 66–87 | ✅ Verified bounded |
+| 88–100 | ✅ Verified bounded |
+| 101–107 | ✅ Verified bounded |
+| 108–114 | ✅ Verified bounded |
+| 115–121 | ✅ Verified bounded |
+| 122–128 | ✅ Verified bounded |
+| 129–140 | ✅ Verified bounded |
+| 141–152 | ✅ Verified bounded |
+| 153–160 | ✅ Verified bounded |
+| 161–170 | ✅ Verified bounded |
+| 171–177 | ✅ Verified / external boundary |
+| 178–180 | 🟡 Network-bound external evaluation |
+| 181–190 | ✅ Bounded multimodal grounding |
+| 191–200 | ✅ Bounded affordance discovery |
+| 201–210 | ✅ Bounded lifelong memory |
+| 211–220 | ✅ Bounded hierarchical reasoning |
+| 221–230 | ✅ Bounded language grounding |
+| 231–240 | ✅ Bounded compute/memory scaling |
+| 241–250 | ✅ Bounded embodied interaction |
+| 251–260 | ✅ Bounded safety/reproducibility |
+| 261+ | 🧪 Experimental independent-evaluation boundary |
+| 262 | ✅ Bounded novel task generation |
+| 263 | ✅ Bounded raw representation |
+| 264 | ✅ Bounded cross-phase integration |
+| 265 | ✅ Bounded language/action grounding |
+| 266 | ✅ Bounded lifelong context memory |
+
+### Research boundary
+
+Passing internal tests demonstrates the tested mechanism. It does not establish unrestricted world intelligence, autonomous science, human-level performance, or AGI.
 
 ## Future Goal
 
-The remaining research program is organized as follows:
-
-| Phases | Area | Status |
-|---|---|---|
-| 178–180 | External datasets / task families / external evaluation | 🟡 Implemented, CI gate pending |
-| 181–190 | Unstructured multimodal grounding | ⏳ |
-| 191–200 | Open action & affordance discovery | ⏳ |
-| 201–210 | Lifelong persistent learning | ⏳ |
-| 211–220 | Scalable hierarchical reasoning | ⏳ |
-| 221–230 | Natural-language grounding | ⏳ |
-| 231–240 | Compute, memory & scaling studies | ⏳ |
-| 241–250 | Embodied / external environment interaction | ⏳ |
-| 251–260 | Independent reproduction + safety validation | ⏳ |
-| 261+ | Broad external generalization + independent human-level/AGI evaluation | ⏳ |
-
-### Research progression
-
-```
-177  External-data boundary
- ↓
-178–180  External task performance
- ↓
-181–190  Multimodal grounding
- ↓
-191–200  Open action discovery
- ↓
-201–210  Lifelong learning
- ↓
-211–220  Hierarchical reasoning
- ↓
-221–230  Language grounding
- ↓
-231–240  Scaling / efficiency
- ↓
-241–250  Real-world interaction
- ↓
-251–260  Independent reproduction + safety
- ↓
-261+     Broad independent generalization
- ↓
-Independent human-level / AGI evaluation
-```
-
-**Current research position: Phase 180 → next major block: Phases 181–190.**
-
-These phases are research and evaluation goals, not claims that Mirror 7 has already achieved AGI. Each phase remains subject to reproducible tests, external evaluation, and explicit failure analysis.
-
-## Remaining proof obligations
-
-```text
-[1] genuinely external datasets
-[2] genuinely unseen task families
-[3] unstructured multimodal input
-[4] open-ended action discovery
-[5] lifelong cross-session learning
-[6] broad language/world grounding
-[7] large-scale reasoning without brute-force explosion
-[8] real external/embodied interaction
-[9] independent reproduction
-[10] independent evaluation beyond Mirror 7's own benchmark design
-```
-
-Passing internal phases is evidence about the tested mechanisms; it is not, by itself, evidence that Mirror 7 is AGI.
-
-## Continuation point
-
-**Current repository frontier: Phases 178–180 implemented; empirical promotion is gated by CI.**
-
-**Next concrete implementation:** Phase 181 — begin unstructured multimodal grounding after the external classification gate is green.
-
+The research frontier after the audited snapshot is deliberately left open: broader raw representation discovery, compositional semantics, longer-horizon planning, external reproduction, independent unseen-task generation, richer embodiment, and empirical scaling. Each should get its own acceptance boundary before being called verified.
