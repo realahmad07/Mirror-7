@@ -673,3 +673,26 @@ context → clarify → validate knowledge → plan → use tools → verify →
 Acceptance: **30/30**, repeated with `PYTHONHASHSEED=0,1,2`.
 
 Boundary: bounded grounded-agent behavior, not unrestricted general intelligence or AGI.
+
+
+## Phases 115–121 — Reliable Autonomous Execution Layer
+
+The post-114 frontier focuses on turning planning into dependable execution:
+
+```text
+action verification → tool composition → conflict resolution → memory retrieval → plan verification → recovery → autonomous task loop
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 115 | Verified action execution | ✅ 4/4 |
+| 116 | Multi-tool composition | ✅ 4/4 |
+| 117 | Weighted conflict resolution with abstention | ✅ 4/4 |
+| 118 | Context-aware bounded memory retrieval | ✅ 4/4 |
+| 119 | Bounded plan verification | ✅ 4/4 |
+| 120 | Failure recovery and rollback | ✅ 4/4 |
+| 121 | Integrated autonomous task execution | ✅ 6/6 |
+
+Acceptance: **30/30** under three deterministic hash seeds.
+
+Boundary: bounded reliable task execution; independent reproduction and broader open-world generalization remain research requirements.
