@@ -1,0 +1,15 @@
+name: Mirror 7 phases-299-306
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  targeted-frontier-loop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest
+      - run: python -m pytest -q phase299_capability_frontier/test_phase299.py phase300_capability_curriculum/test_phase300.py phase301_upgrade_campaign/test_phase301.py phase302_improvement_history/test_phase302.py phase303_cross_capability_guard/test_phase303.py phase304_frontier_scheduler/test_phase304.py phase305_frontier_upgrade_loop/test_phase305.py phase306_sequence_frontier_adapter/test_phase306.py
