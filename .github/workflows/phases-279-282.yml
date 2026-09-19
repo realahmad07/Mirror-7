@@ -1,0 +1,15 @@
+name: Mirror 7 phases-279-282
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest
+      - run: python -m pytest -q phase279_gap_hypothesis/test_phase279.py phase280_sealed_candidate_eval/test_phase280.py phase281_promotion_rollback/test_phase281.py phase282_self_improvement_engine/test_phase282.py
