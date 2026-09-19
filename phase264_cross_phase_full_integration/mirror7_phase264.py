@@ -18,7 +18,9 @@ class EndToEndAgent:
 
     class _ModelAdapter:
         def __init__(self, owner): self.owner=owner
-        def predict_delta(self, action, state):
+
+        def predict(self, action, state):
+            """Return the unique evidence-derived delta expected by Phase 68."""
             matches=[]
             for before_raw,act,after_raw in self.owner.raw_history:
                 if act!=action: continue
@@ -30,7 +32,8 @@ class EndToEndAgent:
             return None
 
     def observe(self, raw_state: bytes, action: str, next_raw: bytes):
-        if not isinstance(raw_state,(bytes,bytearray)) or not isinstance(next_raw,(bytes,bytearray)): raise TypeError("raw states must be bytes")
+        if not isinstance(raw_state,(bytes,bytearray)) or not isinstance(next_raw,(bytes,bytearray)):
+            raise TypeError("raw states must be bytes")
         self.extractor.observe(bytes(raw_state)); self.extractor.observe(bytes(next_raw))
         self.raw_history.append((bytes(raw_state),action,bytes(next_raw)))
 

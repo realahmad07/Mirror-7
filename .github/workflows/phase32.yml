@@ -17,4 +17,4 @@ jobs:
         with:
           python-version: "3.11"
       - name: Run Phase 32 acceptance suite
-        run: python phase32_prediction/test_phase32.py
+        run: python -m pytest -q phase32_prediction/test_phase32.py
