@@ -31,6 +31,8 @@ Phase 62  PARTIAL OBSERVABILITY + ACTIVE INFORMATION ✅ COMPLETE
       ↓
 Phase 63  NONSTATIONARY WORLD + EXPERIMENT DESIGN ✅ COMPLETE
       ↓
+Phase 64  UNKNOWN-REGIME DISCOVERY + EXPERIMENT SEQUENCES ✅ COMPLETE
+      ↓
 Phase 35  ACT
       ↓
 Phase 36  CLOSED LOOP
@@ -408,6 +410,55 @@ regimes, richer experiment actions, delayed effects, stochastic observations,
 and autonomous experiment sequences whose objective is to reduce uncertainty
 while improving a real goal**.
 
+
+## Phase 64 — Unknown-Regime Discovery + Autonomous Experiment Sequences
+
+```text
+no regime labels
+       ↓
+controlled multi-action experiment
+       ↓
+transition-effect profile
+       ↓
+create / merge unlabeled hypothesis
+       ↓
+predict hypothesis prefixes
+       ↓
+select discriminating experiment
+       ↓
+identify active regime
+       ↓
+reuse model for goal planning
+```
+
+Acceptance evidence:
+
+- 3 unknown-regime families × 3 seeds;
+- held-out regime invention without supplied labels;
+- autonomous experiment selection by predicted disagreement;
+- same-regime cluster stability;
+- irrelevant-state negative control;
+- controlled regime-switch re-identification;
+- hard experiment budget;
+- Phase 63 state/goal contract;
+- 9/9 regression tests.
+
+See [PHASE64_ACCEPTANCE.md](./PHASE64_ACCEPTANCE.md).
+
+Boundary: bounded unlabeled regime discovery from controlled transition-effect experiments; not unrestricted open-world hypothesis generation.
+
+## Current research boundary after Phase 64
+
+Mirror 7 now has a verified chain from raw structural concepts through hierarchy,
+prediction, long-horizon modeling, closed-loop control, partial observation,
+active information, nonstationary adaptation, and **unlabeled regime discovery
+through autonomous controlled experiments**.
+
+The next boundary should remove controlled-reset assumptions and introduce
+**delayed effects, stochastic observations, hidden changing state, richer
+experiment sequences, and hypotheses that are generated and revised without a
+predefined state-transition template**.
+
 ## What remains
 
 Passing these phases is not equivalent to AGI.
@@ -417,7 +468,7 @@ The major research gaps are:
 1. broad, independent, unseen-environment evaluation;
 2. broader raw mixed-modality concept acquisition beyond the bounded 1-D/2-D structural views tested in Phase 57;
 3. scalable world modeling beyond hand-structured benchmark environments and beyond the bounded Phase 60 state/action model;
-4. reliable goal-directed autonomy under partial observability, nonstationary dynamics, delayed effects, stochastic observations, and autonomous experiment sequences;
+4. reliable goal-directed autonomy under partial observability, nonstationary dynamics, delayed effects, stochastic observations, and open-ended experiment design;
 5. stronger compositional and abstract reasoning;
 6. continual learning at realistic scale without knowledge corruption;
 7. externally grounded language and tool use;
@@ -427,7 +478,7 @@ The major research gaps are:
 
 ## Next research boundary
 
-Phase 63 closes the current bounded adaptation loop. The next boundary should expand experiment design beyond a finite known regime bank and test unknown regimes, delayed/stochastic effects, longer autonomous experiment sequences, and stronger independent evaluation.
+Phase 64 closes the current bounded unlabeled-regime discovery loop. The next boundary should remove controlled resets and known state-transition templates, add delayed/stochastic observations and hidden state changes, and require stronger independent evaluation.
 
 ---
 
