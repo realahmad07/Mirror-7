@@ -99,7 +99,7 @@ class ProductionSandbox:
         self.limits = limits or SandboxLimits()
         self.limits.validate()
         self.image = image or os.environ.get(
-            "MIRROR7_SANDBOX_IMAGE", "python:3.11-alpine"
+            "MIRROR7_SANDBOX_IMAGE", "python:3.11.16-alpine3.24"
         )
         self.allow_pull = bool(allow_pull)
 
