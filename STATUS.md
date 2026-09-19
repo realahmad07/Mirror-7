@@ -252,3 +252,25 @@ Combined pytest: 24 passed
 ```
 
 This three-phase regression was executed locally after the final Phase 60 fixes. It does not constitute a full-repository regression or an independent external reproduction.
+
+
+## Phase 61 — Predictive Closed-Loop Autonomy
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive goal-pursuit families | ☑ PASS | 3 families × 3 seeds |
+| Opaque held-out environment | ☑ PASS | Fresh action identities and held-out goal |
+| Multi-step composition / gate task | ☑ PASS | Agent discovers the required action composition online |
+| Discrepancy detection + replanning | ☑ PASS | Model/observation mismatch clears stale planning and increments replanning evidence |
+| Unknown-action exploration control | ☑ PASS | Unknown legal actions are probed without repeated same-state probing |
+| Phase 58 hierarchy integration | ☑ PASS | Successful traces form reusable hierarchical structure |
+| Phase 59 predictive-policy integration | ☑ PASS | Predictive concept model supplies a learned action prior |
+| Phase 60 world-model integration | ☑ PASS | Exact, factorized, and delta transition evidence drive decisions |
+| 32-step held-out long-horizon goal | ☑ PASS | Unseen start extrapolates learned transition deltas |
+| Invalid-action prevention | ☑ PASS | Agent selects only from supplied legal actions |
+| Malformed-input rejection | ☑ PASS | Invalid agent bounds / API inputs rejected |
+| Regression suite | ☑ PASS | 9 / 9 tests passed |
+
+**Phase 61 COMPLETE — bounded predictive closed-loop autonomy acceptance suite passes.**
+
+Evidence: [PHASE61_ACCEPTANCE.md](./PHASE61_ACCEPTANCE.md). Boundary: deterministic structured environments with state, goal, legal actions, and transition feedback; not unrestricted real-world autonomy.
