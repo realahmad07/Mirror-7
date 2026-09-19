@@ -794,3 +794,22 @@ See [PHASE153_160_ACCEPTANCE.md](./PHASE153_160_ACCEPTANCE.md).
 
 Boundary: this is a bounded sealed/open-world evaluation of the integrated architecture. It is not evidence of unrestricted zero-shot generalization, unrestricted cross-domain transfer, real-world autonomy, scaling laws, or AGI.
 
+## Phases 161–170 — Black-Box / Raw-Input Evaluation
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 161 | Black-box protocol | ✅ |
+| 162 | Raw representation discovery | ✅ |
+| 163 | Opaque action tokens + conservative abstention | ✅ |
+| 164 | Multiple hidden domains | ✅ |
+| 165 | Hidden-goal action selection | ✅ |
+| 166 | Representation-independent policy transfer | ✅ |
+| 167 | Bounded irreversible long-horizon planning | ✅ |
+| 168 | Contamination controls | ✅ |
+| 169 | Scaling measurements | ✅ |
+| 170 | Final acceptance gate | ✅ |
+
+Verified on main with 30/30 phase-seed checks, 13/13 pytest checks, successful 141–152 and 153–160 reruns, and independent evaluator positive/negative controls.
+
+Boundary: bounded raw-byte/black-box evaluation only; unrestricted real-world perception, arbitrary action-space discovery, unrestricted transfer, and AGI remain unproven research questions.
+
