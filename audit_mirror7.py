@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parent
-PRIMS = {'+','-','dup','drop','swap','@','!','emit','next','nextc','src-pos','src-len','word-count','word-name-len','word-name-char','word-code-len','word-code-byte','word-new','word-append','word-exec','src-set-pos','=','word-code-start','word-patch-u16','u16-add'}
+PRIMS = {'+','-','dup','drop','swap','@','!','emit','next','nextc','src-pos','src-len','word-count','word-name-len','word-name-char','word-code-len','word-code-byte','word-new','word-append','word-exec','src-set-pos','=','word-code-start','word-patch-u16','u16-add','u16-sub'}
 
 
 def run(cmd, *, cwd=None):
@@ -45,7 +45,7 @@ def audit_generated(generated):
     names=[n for n,_ in words]
     if len(names)!=len(set(names)):
         raise AssertionError('duplicate word definition')
-    if len(PRIMS) != 25:
+    if len(PRIMS) != 26:
         raise AssertionError(f'unexpected primitive count: {len(PRIMS)}')
     starts={}
     cur=2*len(PRIMS)
