@@ -1,0 +1,33 @@
+name: Mirror 7 phases 101-107 regression
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Run phases 101-107
+        run: >-
+          python -m pytest -q
+          phase101_context_inquiry
+          phase102_evidence_ledger
+          phase103_validated_learning
+          phase104_improvement_proposer
+          phase105_self_mod_gate
+          phase106_resource_governance
+          phase107_controlled_self_improving_loop
+      - name: Run phases 88-100 regression
+        run: >-
+          python -m pytest -q
+          phase88 phase89 phase90 phase91 phase92 phase93 phase94
+          phase95 phase96 phase97 phase98 phase99 phase100
