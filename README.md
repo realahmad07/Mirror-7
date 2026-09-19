@@ -1076,3 +1076,16 @@ Phases 80–82 add the next integration layer:
 | 82 | Fail-closed regression gate for promotion/invariant checks | Implemented |
 
 The 80–82 workflow runs the Phase 77–82 regression suite on pushes to main. These phases remain bounded numeric research mechanisms; they do not establish unrestricted perception, human-level intelligence, or AGI.
+
+
+## Current implementation frontier — Phases 83–87
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 83 | Self-model consistency / discrepancy verification | Implemented |
+| 84 | Compositional state graph | Implemented |
+| 85 | Integrated bounded agent loop | Implemented |
+| 86 | Bounded multi-step horizon planning | Implemented |
+| 87 | Autonomous curriculum / uncertainty memory | Implemented |
+
+Phases 85–87 connect the bounded state/action loop to multi-step planning and uncertainty/novelty-driven experiment selection. The implementation remains explicitly bounded, fail-closed, and numeric; these phases do not establish unrestricted intelligence or AGI.
