@@ -44,6 +44,18 @@ Phase 282 demonstrates bounded behavioral self-improvement over an explicit fini
 ### Algorithm self-improvement boundary
 Phases 283–290 extend self-improvement from scalar parameter changes to bounded declarative algorithm variants. Mirror 7 can generate finite algorithm alternatives, evaluate them against hidden targets, reject held-out/regression failures, account for explicit complexity costs, remember tested variants, and promote verified changes. This remains a constrained search space; it is not unrestricted source-code rewriting or proof of AGI.
 
+| 291 | IMPLEMENTED / CI PENDING | Bounded source patch representation | Finite patch grammar only |
+| 292 | IMPLEMENTED / CI PENDING | Pure AST/source validation | No imports, calls, attributes, or dynamic code |
+| 293 | IMPLEMENTED / CI PENDING | Exact bounded patch application | Ambiguous/missing matches fail closed |
+| 294 | IMPLEMENTED / CI PENDING | Sealed source evaluator | Separate isolated process and hidden targets |
+| 295 | IMPLEMENTED / CI PENDING | Finite source redesign hypotheses | No arbitrary source generation |
+| 296 | IMPLEMENTED / CI PENDING | Source promotion, fingerprinting, rollback | Verified candidates only |
+| 297 | IMPLEMENTED / CI PENDING | Autonomous source redesign loop | Bounded patch search and sealed evaluation |
+| 298 | IMPLEMENTED / CI PENDING | Self-generated-task integrated redesign | Bounded source-level behavioral self-improvement |
+
+### Source-redesign boundary
+Phases 291–298 extend Mirror 7 from bounded algorithm variants to bounded source-level behavioral redesign. The system can diagnose a measured deficit, generate finite patch hypotheses, validate candidate source, evaluate it in a separate process against hidden targets, promote verified improvements, and roll back. It remains a constrained pure-expression source subset and does not demonstrate unrestricted self-rewriting, autonomous architecture invention, or AGI.
+
 ## Audit summary
 
 Internal regression excluding network-backed UCI suites: **630 passed, 1 skipped**.
