@@ -14,6 +14,7 @@
 [![Phase 60](https://img.shields.io/badge/Phase%2060-PASS-2ea44f?style=for-the-badge)](./PHASE60_ACCEPTANCE.md)
 [![Phase 61](https://img.shields.io/badge/Phase%2061-PASS-2ea44f?style=for-the-badge)](./PHASE61_ACCEPTANCE.md)
 [![Phase 62](https://img.shields.io/badge/Phase%2062-PASS-2ea44f?style=for-the-badge)](./PHASE62_ACCEPTANCE.md)
+[![Phase 63](https://img.shields.io/badge/Phase%2063-PASS-2ea44f?style=for-the-badge)](./PHASE63_ACCEPTANCE.md)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
 
 ---
@@ -94,10 +95,11 @@ The project emphasizes **explicit, inspectable mechanisms** wherever the researc
 | Phase 60 long-horizon world model | ✅ PASS |
 | Phase 61 predictive closed-loop autonomy | ✅ PASS |
 | Phase 62 partial observability + active information | ✅ PASS |
+| Phase 63 nonstationary world + experiment design | ✅ PASS |
 
 ### Current frontier
 
-Phases 58–61 are now complete at their bounded acceptance boundaries: hierarchical abstraction **8/8**, predictive concept learning **8/8**, long-horizon world modeling **8/8**, and predictive closed-loop autonomy **9/9**. Phase 61 integrates the Phase 58 hierarchy, Phase 59 predictor, and Phase 60 world model inside an online goal-directed control loop. Phase 62 adds learned information-action discovery and goal-relevant sensing before full-state planning. The next research boundary is richer unseen environments, changing dynamics, longer horizons, and independent external evaluation.
+Phases 58–61 are now complete at their bounded acceptance boundaries: hierarchical abstraction **8/8**, predictive concept learning **8/8**, long-horizon world modeling **8/8**, and predictive closed-loop autonomy **9/9**. Phase 61 integrates the Phase 58 hierarchy, Phase 59 predictor, and Phase 60 world model inside an online goal-directed control loop. Phase 63 adds nonstationary-regime tracking, repeated-mismatch drift detection, and autonomous experiment selection from competing transition hypotheses. The next research boundary is open-ended experiment design, richer changing environments, longer unseen tasks, and independent external evaluation.
 
 ---
 
@@ -506,6 +508,39 @@ Pytest:      9 passed
 See [Phase 62 acceptance](./PHASE62_ACCEPTANCE.md).
 
 
+### 15. Phase 63 nonstationary world + autonomous experiment design
+
+Phase 63 removes the fixed-dynamics assumption:
+
+```text
+learn competing regimes
+        ↓
+predict
+        ↓
+detect repeated mismatch
+        ↓
+mark model stale
+        ↓
+design discriminating experiment
+        ↓
+identify active regime
+        ↓
+continue goal-directed control
+```
+
+Result:
+
+```text
+Progressive: 3 change levels × 3 seeds
+Held-out:     2 / 2
+Adversarial: 3 / 3
+Integration: Phase 62 handoff contract
+Pytest:      9 passed
+```
+
+See [Phase 63 acceptance](./PHASE63_ACCEPTANCE.md).
+
+
 
 ## 🔁 The Core Learning Loop
 
@@ -821,6 +856,8 @@ Phase 54 is an **independent-style** evaluation, not a third-party scientific re
 | [phase61_closed_loop_autonomy/](./phase61_closed_loop_autonomy/) | Phase 61 implementation and tests |
 | [PHASE62_ACCEPTANCE.md](./PHASE62_ACCEPTANCE.md) | Phase 62 acceptance record |
 | [phase62_active_information/](./phase62_active_information/) | Phase 62 implementation and tests |
+| [PHASE63_ACCEPTANCE.md](./PHASE63_ACCEPTANCE.md) | Phase 63 acceptance record |
+| [phase63_nonstationary_experiments/](./phase63_nonstationary_experiments/) | Phase 63 implementation and tests |
 | [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
 | [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
 | [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
