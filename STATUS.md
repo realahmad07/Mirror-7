@@ -274,3 +274,32 @@ This three-phase regression was executed locally after the final Phase 60 fixes.
 **Phase 61 COMPLETE — bounded predictive closed-loop autonomy acceptance suite passes.**
 
 Evidence: [PHASE61_ACCEPTANCE.md](./PHASE61_ACCEPTANCE.md). Boundary: deterministic structured environments with state, goal, legal actions, and transition feedback; not unrestricted real-world autonomy.
+
+
+## Phase 62 — Partial Observability + Active Information Seeking
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive partial-observation families | ☑ PASS | 3 families × 3 seeds |
+| Opaque held-out hidden configuration | ☑ PASS | Fresh hidden-state configuration under randomized action order |
+| Goal-relevant information selection | ☑ PASS | Learned sensor profiles are ranked by relevance to unresolved goal fields and information gain |
+| Sensor / information-path dropout | ☑ PASS | Agent fails closed without inventing hidden state |
+| Contradictory model evidence | ☑ PASS | Prior prediction is compared before incorporating contradictory feedback; replanning evidence increments |
+| Unknown-action repeat control | ☑ PASS | Previously unprofiled legal actions are bounded-probed and not repeated at the same partial state |
+| Full-state transition learning after reveal | ☑ PASS | Repeated revealed transitions are promoted into the partial world model |
+| Phase 61 handoff contract | ☑ PASS | Phase 62 exposes a verified fully revealed state compatible with Phase 61 state/goal control |
+| Malformed-input rejection | ☑ PASS | Invalid bounds, dimensions, and step limits rejected |
+| Regression suite | ☑ PASS | 9 / 9 tests passed |
+
+**Phase 62 COMPLETE — bounded partial-observation and active-information acceptance suite passes.**
+
+Evidence: [PHASE62_ACCEPTANCE.md](./PHASE62_ACCEPTANCE.md). Boundary: deterministic structured environments with partial observations and inferred information actions; not unrestricted belief-state inference or real-world sensing.
+
+### Phase 62 local verification
+
+```text
+Phase 62 gate: PASS
+pytest: 9 passed
+```
+
+This local verification covers the Phase 62 acceptance suite. It does not constitute a full-repository regression or independent external reproduction.
