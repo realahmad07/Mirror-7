@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
@@ -206,9 +207,11 @@ def create_server(
     return ThreadingHTTPServer((host, port), MirrorAPIHandler)
 
 
-def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
-    server = create_server(host, port)
-    print(f"Mirror 7 API listening on http://{host}:{port}")
+def serve(host: str | None = None, port: int | None = None) -> None:
+    resolved_host = host if host is not None else os.getenv("MIRROR7_HOST", "127.0.0.1")
+    resolved_port = port if port is not None else int(os.getenv("MIRROR7_PORT", "8787"))
+    server = create_server(resolved_host, resolved_port)
+    print(f"Mirror 7 API listening on http://{resolved_host}:{resolved_port}")
     try:
         server.serve_forever()
     finally:
