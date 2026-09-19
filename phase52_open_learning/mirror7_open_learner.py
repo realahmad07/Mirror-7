@@ -169,7 +169,7 @@ class OpenEndedLearner:
         # When no learned action improves, probe one previously untried action.
         # The evaluator provides only legal actions; the learner has no
         # access to hidden preconditions or family labels.
-        unknown = [a for a in ep.actions if not ep.tried(a)]
+        unknown = [a for a in ep.actions if a not in ep.schemas]
         if unknown:
             return unknown[0]
 
