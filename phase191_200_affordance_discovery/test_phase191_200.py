@@ -44,7 +44,7 @@ def test_199_composition():
     a=AffordanceLearner()
     a.observe(h(b"a",[0],[1]))
     a.observe(h(b"b",[1],[2]))
-    assert compose_actions(a,[b"a",b"b"],[0])[-1]==(0,)
+    assert compose_actions(a,[b"a",b"b"],[0])[-1]==(2,)
 
 def test_200_fail_closed_composition():
     a=AffordanceLearner()
