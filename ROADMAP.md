@@ -25,6 +25,8 @@ Phase 59  PREDICTIVE CONCEPT LEARNING ✅ COMPLETE
       ↓
 Phase 60  LONG-HORIZON WORLD MODEL ✅ COMPLETE
       ↓
+Phase 61  PREDICTIVE CLOSED-LOOP AUTONOMY ✅ COMPLETE
+      ↓
 Phase 35  ACT
       ↓
 Phase 36  CLOSED LOOP
@@ -277,6 +279,42 @@ PREDICTION-DRIVEN ACTION / AUTONOMY
 
 The next phase should connect these mechanisms to **goal-directed closed-loop autonomy** under progressively longer unseen tasks, while removing benchmark scaffolding and measuring compute/sample efficiency.
 
+
+## Phase 61 — Predictive Closed-Loop Autonomy
+
+```text
+Phase 58  HIERARCHICAL ABSTRACTION
+              ↓
+Phase 59  PREDICTIVE CONCEPTS
+              ↓
+Phase 60  LONG-HORIZON WORLD MODEL
+              ↓
+Phase 61  GOAL-DIRECTED CLOSED LOOP
+              ↓
+observe → predict → plan → act → observe → revise
+```
+
+Acceptance evidence:
+
+- 3 progressive task families × 3 seeds;
+- 2 held-out controls;
+- 3 adversarial/control cases;
+- 32-step held-out long-horizon goal;
+- discrepancy-triggered replanning;
+- legal-action enforcement;
+- 58 + 59 + 60 integration;
+- 9/9 regression tests.
+
+See [PHASE61_ACCEPTANCE.md](./PHASE61_ACCEPTANCE.md).
+
+Boundary: bounded predictive closed-loop autonomy in structured environments, not unrestricted real-world autonomy.
+
+## Current research boundary after Phase 61
+
+Mirror 7 now has a tested chain from discovered raw structural concepts through hierarchy, prediction, structured long-horizon modeling, and online goal-directed control.
+
+The next boundary should remove more scaffolding by introducing **richer unseen environments, partial observability, changing action semantics, longer horizons, and autonomous information-seeking**, while keeping strict fail-closed behavior.
+
 ## What remains
 
 Passing these phases is not equivalent to AGI.
@@ -286,7 +324,7 @@ The major research gaps are:
 1. broad, independent, unseen-environment evaluation;
 2. broader raw mixed-modality concept acquisition beyond the bounded 1-D/2-D structural views tested in Phase 57;
 3. scalable world modeling beyond hand-structured benchmark environments and beyond the bounded Phase 60 state/action model;
-4. reliable goal-directed long-horizon autonomy integrating perception, prediction, planning, action, and revision;
+4. reliable goal-directed autonomy under partial observability, changing dynamics, longer horizons, and autonomous information-seeking;
 5. stronger compositional and abstract reasoning;
 6. continual learning at realistic scale without knowledge corruption;
 7. externally grounded language and tool use;
@@ -296,7 +334,7 @@ The major research gaps are:
 
 ## Next research boundary
 
-Phase 60 closes the current bounded chain from cross-view concepts through hierarchy, concept prediction, and structured long-horizon rollout. The next boundary should connect this chain to open-ended goal-directed autonomy while removing task scaffolding and adding stronger independent evaluation.
+Phase 61 closes the current bounded prediction-to-action loop. The next boundary should remove more environment scaffolding: partial observability, nonstationary dynamics, self-directed information gathering, longer unseen tasks, and stronger independent evaluation.
 
 ---
 
