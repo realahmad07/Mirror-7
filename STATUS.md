@@ -168,3 +168,23 @@ Evidence: [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md). Boundary: bounded re
 **Phase 56 COMPLETE — bounded raw structural concept-acquisition acceptance suite passes.**
 
 Evidence: [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md). Boundary: recurring structural motifs and ordered concept relations/events in undifferentiated byte streams; not semantic open-world grounding.
+
+## Phase 57 — Cross-View Raw Concept Acquisition
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive concept family 1 | ☑ PASS | 3 seeds |
+| Progressive concept family 2 | ☑ PASS | 3 seeds |
+| Progressive concept family 3 | ☑ PASS | 3 seeds |
+| Held-out view permutation + re-encoding | ☑ PASS | Concept identities remain stable under view-order change and raw-value re-encoding. |
+| Held-out cross-geometry transfer | ☑ PASS | Discovered concepts are recognized from a 2-D-only held-out view. |
+| Noise-only false concept rejection | ☑ PASS | Cross-view support plus deterministic permutation-null enrichment rejects noise motifs. |
+| Relation-structure mutation | ☑ PASS | Relation/event structure changes under a controlled latent reordering. |
+| View-dropout resilience | ☑ PASS | Surviving raw views retain learned structural events/relations. |
+| Determinism | ☑ PASS | Repeat run produces identical concept records. |
+| Scaling guard | ☑ PASS | Larger repeated episodes remain within the bounded runtime envelope. |
+| Regression suite | ☑ PASS | 10 / 10 tests passed. |
+
+**Phase 57 COMPLETE — bounded cross-view raw structural concept-acquisition acceptance suite passes.**
+
+Evidence: [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md). Boundary: unlabeled 1-D/2-D raw views, relational canonicalization, cross-view support, empirical permutation-null filtering, and bounded relation/event graph construction; not semantic open-world multimodal grounding.
