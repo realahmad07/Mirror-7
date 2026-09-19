@@ -719,3 +719,25 @@ verified skill → structural transfer → novelty detection → adaptive curric
 Acceptance: **30/30** on three deterministic hash seeds.
 
 Boundary: bounded transfer and generalization mechanisms; broad independent evaluation and open-world generalization remain research requirements.
+
+
+## Phases 129–140 — Integrated Cognitive Layer
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 129 | Shared bounded cognitive workspace | ✅ 3/3 |
+| 130 | Confidence-weighted state fusion | ✅ 3/3 |
+| 131 | Concept-to-skill binding gate | ✅ 3/3 |
+| 132 | World-model / memory consistency bridge | ✅ 3/3 |
+| 133 | Bounded program execution sandbox | ✅ 3/3 |
+| 134 | Long-term goal management | ✅ 3/3 |
+| 135 | Autonomous research scheduling | ✅ 3/3 |
+| 136 | Self-debugging proposal/adoption gate | ✅ 3/3 |
+| 137 | Evidence consolidation | ✅ 3/3 |
+| 138 | Abstract relation/composition reasoning | ✅ 3/3 |
+| 139 | Cross-view grounding normalization | ✅ 3/3 |
+| 140 | Unified cognitive coordination runtime | ✅ 3/3 |
+
+Acceptance: **36/36** under three deterministic hash seeds.
+
+Boundary: bounded cognitive integration, not proof of open-world general intelligence. The next requirement is deeper integration with the imported 12-algorithm library and broader unseen-environment evaluation.
