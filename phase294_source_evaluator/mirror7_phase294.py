@@ -10,7 +10,12 @@ class SourceEvaluation:
     total_cases: int
 
 class SealedSourceEvaluator:
-    """Evaluates a validated solve(values) candidate in a separate isolated Python process."""
+    """Evaluates a validated solve(values) candidate in a separate isolated Python process.
+
+    An optional sandbox object may supply a stronger execution backend through
+    run_candidate(source, cases, validator=...). The legacy subprocess path
+    remains available for bounded internal regression tests.
+    """
     HARNESS=textwrap.dedent("""
         import json, runpy, sys
         env=runpy.run_path(sys.argv[1], run_name="__candidate__")
@@ -23,6 +28,9 @@ class SealedSourceEvaluator:
             print(json.dumps(answer,separators=(",",":")))
     """).strip()
 
+    def __init__(self, sandbox=None):
+        self.sandbox = sandbox
+
     def _score(self,source,tasks):
         cases=list(tasks)
         validation=PatchValidator().validate_source(source)
@@ -30,29 +38,35 @@ class SealedSourceEvaluator:
             return 0,len(cases)
         if not cases:
             return 0,0
-        with tempfile.TemporaryDirectory() as td:
-            candidate=os.path.join(td,"candidate.py")
-            with open(candidate,"w",encoding="utf-8") as f:
-                f.write(source)
-            payload="".join(json.dumps({"values":t["public"]["values"]})+"\n" for t in cases)
-            try:
-                proc=subprocess.run([sys.executable,"-I","-c",self.HARNESS,candidate],input=payload,text=True,capture_output=True,timeout=5,check=False)
-            except (subprocess.TimeoutExpired,OSError):
+        if self.sandbox is not None:
+            result=self.sandbox.run_candidate(source,cases,validator=PatchValidator())
+            if not result.accepted:
                 return 0,len(cases)
-            if proc.returncode!=0:
-                return 0,len(cases)
-            outputs=[x.strip() for x in proc.stdout.splitlines() if x.strip()]
-            if len(outputs)!=len(cases):
-                return 0,len(cases)
-            good=0
-            for raw,task in zip(outputs,cases):
+            outputs=list(result.lines)
+        else:
+            with tempfile.TemporaryDirectory() as td:
+                candidate=os.path.join(td,"candidate.py")
+                with open(candidate,"w",encoding="utf-8") as f:
+                    f.write(source)
+                payload="".join(json.dumps({"values":t["public"]["values"]})+"\n" for t in cases)
                 try:
-                    answer=json.loads(raw)
-                except json.JSONDecodeError:
-                    continue
-                if answer==task["target"]:
-                    good+=1
-            return good,len(cases)
+                    proc=subprocess.run([sys.executable,"-I","-c",self.HARNESS,candidate],input=payload,text=True,capture_output=True,timeout=5,check=False)
+                except (subprocess.TimeoutExpired,OSError):
+                    return 0,len(cases)
+                if proc.returncode!=0:
+                    return 0,len(cases)
+                outputs=[x.strip() for x in proc.stdout.splitlines() if x.strip()]
+        if len(outputs)!=len(cases):
+            return 0,len(cases)
+        good=0
+        for raw,task in zip(outputs,cases):
+            try:
+                answer=json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            if answer==task["target"]:
+                good+=1
+        return good,len(cases)
 
     def evaluate(self,source,pack)->SourceEvaluation:
         tg,tt=self._score(source,pack.train)
