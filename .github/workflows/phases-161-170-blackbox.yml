@@ -1,0 +1,35 @@
+name: Mirror 7 phases 161-170 black-box regression
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  black-box:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Re-run 141-152 integration gate
+        run: python -m pytest -q phase141_152_integration/test_phase141_152.py
+      - name: Re-run 153-160 gate
+        run: python -m pytest -q phase153_160_open_world/test_phase153_160.py
+      - name: Run 161-170 black-box gate
+        run: python -m pytest -q phase161_170_blackbox/test_phase161_170.py
+      - name: External evaluator controls
+        shell: bash
+        run: |
+          set -e
+          printf '%s\n' '{"raw_representation_accuracy":1.0,"opaque_action_accuracy":1.0,"goal_success":1.0,"contamination_detected":true,"max_memory":512}' |
+            python phase161_170_blackbox/independent_evaluator.py
+          if printf '%s\n' '{"raw_representation_accuracy":0.4,"opaque_action_accuracy":0.3,"goal_success":0.2,"contamination_detected":false,"max_memory":5000}' |
+            python phase161_170_blackbox/independent_evaluator.py; then
+            echo "Negative control unexpectedly passed"
+            exit 1
+          fi
