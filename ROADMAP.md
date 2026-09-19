@@ -741,3 +741,34 @@ Boundary: bounded transfer and generalization mechanisms; broad independent eval
 Acceptance: **36/36** under three deterministic hash seeds.
 
 Boundary: bounded cognitive integration, not proof of open-world general intelligence. The next requirement is deeper integration with the imported 12-algorithm library and broader unseen-environment evaluation.
+
+
+## Phases 141–152 — 12-Algorithm Cognitive Integration
+
+The imported 12-algorithm library is now connected through one canonical runtime:
+
+```text
+concept discovery → semantic memory → grounding → world model
+→ causal experiment → abstract reasoning → program induction
+→ goals → research → self-debugging → consolidation → workspace
+→ unified cognition
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 141 | Algorithm adapter contract | ✅ |
+| 142 | Concept → memory bridge | ✅ |
+| 143 | Grounding → memory bridge | ✅ |
+| 144 | Memory → world-model bridge | ✅ |
+| 145 | Causal → research bridge | ✅ |
+| 146 | Reasoning → program bridge | ✅ |
+| 147 | Goal → research bridge | ✅ |
+| 148 | Failure → self-debugging bridge | ✅ |
+| 149 | Consolidation → memory bridge | ✅ |
+| 150 | Workspace coordination | ✅ |
+| 151 | End-to-end 12-algorithm runtime | ✅ |
+| 152 | Integration promotion gate | ✅ |
+
+Acceptance: **14/14** integrated tests under seeds 0, 1, and 2; **84/84** standalone imported-algorithm tests.
+
+The next research boundary is broader open-world evaluation of this combined system, not simply adding more isolated mechanisms.
