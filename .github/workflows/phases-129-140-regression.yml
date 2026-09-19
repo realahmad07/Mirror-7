@@ -1,0 +1,48 @@
+name: Mirror 7 phases 129-140 regression
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Run phases 129-140
+        run: >-
+          python -m pytest -q
+          phase129_cognitive_workspace
+          phase130_state_fusion
+          phase131_concept_skill_bridge
+          phase132_world_memory_bridge
+          phase133_program_sandbox
+          phase134_goal_manager
+          phase135_research_scheduler
+          phase136_self_debugger
+          phase137_consolidation_engine
+          phase138_abstract_reasoner
+          phase139_multimodal_grounder
+          phase140_unified_cognitive_runtime
+      - name: Run previous integration frontier
+        run: >-
+          python -m pytest -q
+          phase108_grounded_dialogue phase109_knowledge_ingestion
+          phase110_tool_guard phase111_task_decomposition
+          phase112_self_monitor phase113_continual_agent_memory
+          phase114_integrated_agent
+          phase115_action_executor phase116_tool_composition
+          phase117_conflict_resolution phase118_memory_retrieval
+          phase119_plan_verifier phase120_failure_recovery
+          phase121_autonomous_task_loop
+          phase122_skill_library phase123_structural_transfer
+          phase124_novelty_detection phase125_adaptive_curriculum
+          phase126_checkpoint_executor phase127_generalization_gate
+          phase128_generalization_agent
