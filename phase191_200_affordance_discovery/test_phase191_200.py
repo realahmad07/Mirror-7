@@ -57,5 +57,7 @@ def test_action_type_fail_closed():
     else: assert False
 
 def test_deterministic_action_identity():
-    assert _action_key(b"x")==_action_key(b"x")
-    assert _action_key(b"x")!=_action_key(b"y")
+    a=AffordanceLearner()
+    a.observe(h(b"x",[0],[1]))
+    a.observe(h(b"y",[0],[2]))
+    assert set(a.candidate_actions())=={b"x",b"y"}
