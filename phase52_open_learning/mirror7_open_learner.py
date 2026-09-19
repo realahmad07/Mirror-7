@@ -90,6 +90,12 @@ class ActionSchema:
         if not self.successful or not self.last_effect:
             return None
 
+        # Prediction error invalidation / exact memory fallback
+        state_key_now = state_key(state)
+        for sample in reversed(self.samples):
+            if sample.ok and sample.before_key == state_key_now:
+                return dict(sample.after)
+
         result = dict(state)
         for key, (old, new) in self.last_effect.items():
             if key not in state:
@@ -132,7 +138,8 @@ class EpisodeMemory:
         return bool(schema and schema.failed_at(self.current))
 
     def known(self, action: str) -> bool:
-        return action in self.schemas
+        schema = self.schemas.get(action)
+        return bool(schema and schema.successful)
 
     def remember_attempt(self, action: str) -> None:
         key = state_key(self.current)
@@ -165,6 +172,7 @@ class OpenEndedLearner:
         before = dict(ep.current)
         after = dict(msg["observation"])
         action = ep.last_action
+        changed = dict(msg.get("changed", {}))
 
         if action is not None:
             sample = TransitionSample(
@@ -172,7 +180,7 @@ class OpenEndedLearner:
                 before=before,
                 after=after,
                 ok=bool(msg.get("ok", False)),
-                changed=dict(msg.get("changed", {})),
+                changed=changed,
             )
             # Record BOTH success and failure. Failure is knowledge.
             ep.schema(action).observe(sample)
