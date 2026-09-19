@@ -13,31 +13,31 @@ def test_large_replacement_rejected():
     assert not PatchValidator().validate_plan(p).accepted
 
 def test_valid_source_passes():
-    r=PatchValidator().validate_source("def f(x):\n    return x+1\n")
+    r=PatchValidator().validate_source("def solve(x):\n    return x+1\n")
     assert r.accepted
 
 def test_syntax_error_rejected():
-    assert not PatchValidator().validate_source("def f(:").accepted
+    assert not PatchValidator().validate_source("def solve(:").accepted
 
 def test_import_rejected():
-    assert not PatchValidator().validate_source("import os\ndef f():\n return 1\n").accepted
+    assert not PatchValidator().validate_source("import os\ndef solve():\n return 1\n").accepted
 
 def test_eval_rejected():
-    assert not PatchValidator().validate_source("def f(x):\n return eval(x)\n").accepted
+    assert not PatchValidator().validate_source("def solve(x):\n return eval(x)\n").accepted
 
 def test_three_seed_validation_stable():
     for _ in (2,5,8):
-        assert PatchValidator().validate_source("def f(x):\n return x+1\n").accepted
+        assert PatchValidator().validate_source("def solve(x):\n return x+1\n").accepted
 
 def test_empty_plan_rejected():
     p=PatchPlan("solver.py",(),"x")
     assert not PatchValidator().validate_plan(p).accepted
 
 def test_import_from_rejected():
-    assert not PatchValidator().validate_source("from os import path\n\ndef f():\n return 1\n").accepted
+    assert not PatchValidator().validate_source("from os import path\n\ndef solve():\n return 1\n").accepted
 
 def test_compile_call_rejected():
-    assert not PatchValidator().validate_source("def f(x):\n return compile(x,'','exec')\n").accepted
+    assert not PatchValidator().validate_source("def solve(x):\n return compile(x,'','exec')\n").accepted
 
 def test_while_loop_rejected():
     assert not PatchValidator().validate_source("def solve(x):\n    while x:\n        x=x-1\n    return x\n").accepted
