@@ -38,3 +38,12 @@ def test_import_from_rejected():
 
 def test_compile_call_rejected():
     assert not PatchValidator().validate_source("def f(x):\n return compile(x,'','exec')\n").accepted
+
+def test_while_loop_rejected():
+    assert not PatchValidator().validate_source("def solve(x):\n    while x:\n        x=x-1\n    return x\n").accepted
+
+def test_attribute_access_rejected():
+    assert not PatchValidator().validate_source("def solve(x):\n    return x.real\n").accepted
+
+def test_if_expression_control_is_allowed():
+    assert PatchValidator().validate_source("def solve(x):\n    if x[0] > 0:\n        return x[0]\n    return 0\n").accepted
