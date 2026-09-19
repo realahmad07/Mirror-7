@@ -1,0 +1,15 @@
+name: phases-83-84-regression
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest
+      - run: python -m pytest -q phase83_self_model_consistency phase84_compositional_state_graph phase80_unified_autonomous_system phase81_persistent_transfer_memory phase82_autonomous_regression_gate
