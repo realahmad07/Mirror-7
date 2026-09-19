@@ -25,7 +25,8 @@ class PatchValidator:
             tree=ast.parse(source)
         except SyntaxError as exc:
             return ValidationReport(False,(f"syntax error: {exc.msg}",))
-        banned=(ast.Import,ast.ImportFrom,ast.Exec)
+        # Python 3 has no ast.Exec node; imports are blocked explicitly below
+        banned=(ast.Import,ast.ImportFrom)
         for node in ast.walk(tree):
             if isinstance(node,banned):
                 return ValidationReport(False,("imports are not allowed in candidate source",))
