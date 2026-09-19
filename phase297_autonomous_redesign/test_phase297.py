@@ -62,3 +62,13 @@ def test_invalid_bounds_rejected():
     try: e.run_until_stable(PACK,"solver.py",["sequence"],max_rounds=0)
     except ValueError: pass
     else: assert False
+
+
+def test_invalid_candidate_budget_rejected():
+    e=AutonomousRedesignEngine(BASE)
+    try:
+        e.run_round(PACK,"solver.py",["sequence failure"],1,max_candidates=0)
+    except ValueError:
+        pass
+    else:
+        assert False
