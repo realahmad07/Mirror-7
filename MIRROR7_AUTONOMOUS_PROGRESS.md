@@ -56,6 +56,18 @@ Phases 283–290 extend self-improvement from scalar parameter changes to bounde
 ### Source-redesign boundary
 Phases 291–298 extend Mirror 7 from bounded algorithm variants to bounded source-level behavioral redesign. The system can diagnose a measured deficit, generate finite patch hypotheses, validate candidate source, evaluate it in a separate process against hidden targets, promote verified improvements, and roll back. It remains a constrained pure-expression source subset and does not demonstrate unrestricted self-rewriting, autonomous architecture invention, or AGI.
 
+| 299 | IMPLEMENTED / CI PENDING | Capability frontier with weighted gap tracking | Larger target profiles and external capability scores |
+| 300 | IMPLEMENTED / CI PENDING | Fresh capability-specific train/held-out/regression curriculum | Broader task families |
+| 301 | IMPLEMENTED / CI PENDING | Bounded upgrade campaigns | Per-capability improvement strategies |
+| 302 | IMPLEMENTED / CI PENDING | Improvement history and stagnation detection | Durable cross-session learning memory |
+| 303 | IMPLEMENTED / CI PENDING | Cross-capability regression guard | Broader protected capability suites |
+| 304 | IMPLEMENTED / CI PENDING | Frontier scheduler with rotating evaluation seeds | More independent task generators |
+| 305 | IMPLEMENTED / CI PENDING | Continuous frontier upgrade controller | More capability adapters |
+| 306 | IMPLEMENTED / CI PENDING | Real adapter connecting frontier loop to source redesign | Additional language/reasoning/planning adapters |
+
+### Targeted upgrade boundary
+Phases 299–306 change self-improvement from a one-off campaign into a persistent capability-target loop: measure gaps, prioritize the frontier, create fresh evaluation material, launch bounded upgrades, protect other capabilities, promote verified gains, and repeat. Phase 306 connects that controller to an actual source-redesign path for sequence extrapolation. The architecture is still bounded by its available adapters, benchmark families, and promotion gates.
+
 ## Audit summary
 
 Internal regression excluding network-backed UCI suites: **630 passed, 1 skipped**.
