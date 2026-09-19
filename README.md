@@ -579,6 +579,47 @@ See [Phase 64 acceptance](./PHASE64_ACCEPTANCE.md).
 
 
 
+
+### 17. Phase 65 streaming delayed/stochastic hidden-state learning
+
+Phase 65 removes the controlled-reset assumption from Phase 64:
+
+```text
+continuous stream
+       ↓
+partial / noisy observations
+       ↓
+delayed action evidence
+       ↓
+stochastic effect statistics
+       ↓
+rolling regime comparison
+       ↓
+sustained mismatch
+       ↓
+new unlabeled hypothesis
+       ↓
+autonomous pulse + gap experiment
+       ↓
+goal-directed reuse
+```
+
+Result:
+
+```text
+Progressive: 3 effect families × 3 seeds
+Held-out:     1 / 1
+Controls:     4 / 4
+Integration:  continuous no-reset stream
+Pytest:       9 passed
+Gate:         PASS (repeated twice)
+```
+
+See [Phase 65 acceptance](./PHASE65_ACCEPTANCE.md).
+
+Boundary: bounded continuous-stream delayed/stochastic hidden-state learning. This is not a claim of unrestricted hidden-state inference, autonomous science, or AGI.
+
+
 ## 🔁 The Core Learning Loop
 
 ```mermaid
