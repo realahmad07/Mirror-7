@@ -53,6 +53,19 @@
 - Current runtime cannot observe GitHub Actions results through the available connector, so CI success for this newest block is not independently claimed.
 - Boundary: bounded sandboxed source-level behavioral redesign, not unrestricted self-rewriting, architecture invention, open-world lifelong self-improvement, or AGI.
 
+### Targeted Continuous Upgrade Loop — Phases 299–306
+- Phase 299: capability frontier and weighted gap tracking.
+- Phase 300: capability-specific fresh train/held-out/regression curriculum.
+- Phase 301: bounded upgrade campaigns.
+- Phase 302: improvement history and stagnation detection.
+- Phase 303: cross-capability regression guard.
+- Phase 304: frontier scheduler with rotating seeds.
+- Phase 305: continuous frontier upgrade controller.
+- Phase 306: real sequence-capability adapter connected to the existing source-redesign engine.
+- Dedicated CI workflow: `.github/workflows/phases-299-306.yml`.
+- Current runtime cannot observe the resulting Actions status, so this newest block is documented as implemented/CI-pending rather than falsely reported as green.
+- Scientific boundary: this is a persistent targeted-improvement controller with one concrete source-redesign adapter. It does not establish automatic convergence to frontier-model or AGI capability.
+
 ## Bounded / Experimental Boundaries
 - **Phase 231–240:** simulated compute and memory bounds; not hardware scaling evidence.
 - **Phase 241–250:** deterministic mock embodied environment; later Phase 274 adds a richer stochastic/delayed simulator, but neither is physical embodiment.
