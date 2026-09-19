@@ -3,21 +3,13 @@ from __future__ import annotations
 """
 Phase 52: open-ended black-box learner.
 
-The learner receives only:
-- observations
-- goals
-- legal actions
-- transition feedback
-
-It does not receive task-family labels, hidden parameters, or expected transitions.
-
-It learns action consequences online, detects reversible/harmful actions,
-reuses learned transition schemas, and performs goal-directed planning.
+The learner receives only observations, goals, legal actions, and transition
+feedback. It discovers action consequences online and replans from its
+learned transition model without task-family labels or hidden parameters.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Any
-
+from typing import Any, Dict, List, Optional, Tuple
 
 State = Dict[str, Any]
 
@@ -26,14 +18,16 @@ def state_key(state: State) -> Tuple[Tuple[str, Any], ...]:
     return tuple(sorted(state.items(), key=lambda x: x[0]))
 
 
-def goal_distance(state: State, goal: State) -> int:
-    return sum(state.get(k) != v for k, v in goal.items())
-
-
-def signed_progress(before: State, after: State, goal: State) -> int:
-    b = goal_distance(before, goal)
-    a = goal_distance(after, goal)
-    return b - a
+def goal_cost(state: State, goal: State) -> float:
+    """Numerical closeness when possible, exact mismatch otherwise."""
+    cost = 0.0
+    for key, target in goal.items():
+        actual = state.get(key)
+        if isinstance(actual, (int, float)) and isinstance(target, (int, float)):
+            cost += abs(actual - target)
+        else:
+            cost += 0.0 if actual == target else 1.0
+    return cost
 
 
 @dataclass
@@ -59,20 +53,12 @@ class ActionSchema:
         if not self.samples:
             return None
 
-        # Infer a reusable transformation from the latest successful sample.
-        # Each observed change is represented as a typed delta/swap/toggle.
         result = dict(state)
         for key, (old, new) in self.last_effect.items():
             if key not in state:
                 return None
-            if isinstance(old, bool) and isinstance(new, bool):
-                result[key] = new if state[key] == old else old
-            elif isinstance(old, int) and isinstance(new, int):
-                delta = new - old
-                if delta == 0:
-                    result[key] = state[key]
-                else:
-                    result[key] = state[key] + delta
+            if isinstance(old, (int, float)) and isinstance(new, (int, float)):
+                result[key] = state[key] + (new - old)
             else:
                 result[key] = new if state[key] == old else old
         return result
@@ -86,7 +72,6 @@ class EpisodeMemory:
     schemas: Dict[str, ActionSchema] = field(default_factory=dict)
     tried_at_state: Dict[Tuple[Tuple[str, Any], ...], List[str]] = field(default_factory=dict)
     last_action: Optional[str] = None
-    previous_state: Optional[State] = None
 
     def schema(self, action: str) -> ActionSchema:
         if action not in self.schemas:
@@ -102,24 +87,12 @@ class EpisodeMemory:
 
 
 class OpenEndedLearner:
-    """
-    Generic adaptive controller.
-
-    Strategy:
-      1. observe one action consequence;
-      2. infer a reusable local transformation;
-      3. predict each known action at the current state;
-      4. select the action with maximum goal progress while avoiding
-         predicted regressions;
-      5. explore one previously untried legal action only when no known
-         action improves the goal;
-      6. preserve experience across episodes as structural statistics.
-    """
+    """General adaptive state/action learner used by the Phase 53 protocol."""
 
     def __init__(self) -> None:
         self.episodes_seen = 0
         self.successes = 0
-        self.global_effect_stats: Dict[str, List[Dict[str, Tuple[Any, Any]]]] = {}
+        self.global_effect_stats: List[Dict[str, Any]] = []
         self.episode: Optional[EpisodeMemory] = None
 
     def _start(self, msg: dict) -> None:
@@ -136,6 +109,7 @@ class OpenEndedLearner:
         before = dict(ep.current)
         after = dict(msg["observation"])
         action = ep.last_action
+
         if action is not None:
             changed = dict(msg.get("changed", {}))
             sample = TransitionSample(
@@ -147,63 +121,69 @@ class OpenEndedLearner:
             )
             if sample.ok:
                 ep.schema(action).observe(sample)
-                self.global_effect_stats.setdefault(action, []).append(changed)
+                self.global_effect_stats.append(changed)
+
         ep.current = after
 
-    def _predicted_candidates(self) -> List[Tuple[int, int, str, State]]:
+    def _known_predictions(self) -> List[Tuple[float, int, str, State]]:
         assert self.episode is not None
         ep = self.episode
-        out = []
-        current_distance = goal_distance(ep.current, ep.goal)
-        for idx, action in enumerate(ep.actions):
+        candidates: List[Tuple[float, int, str, State]] = []
+
+        for index, action in enumerate(ep.actions):
             schema = ep.schemas.get(action)
             if schema is None or not schema.samples:
                 continue
             predicted = schema.predict(ep.current)
             if predicted is None:
                 continue
-            delta = current_distance - goal_distance(predicted, ep.goal)
-            out.append((delta, -idx, action, predicted))
-        return out
+            candidates.append((
+                goal_cost(predicted, ep.goal),
+                -index,
+                action,
+                predicted,
+            ))
+
+        candidates.sort(key=lambda item: (item[0], item[1]))
+        return candidates
 
     def choose_action(self) -> str:
         assert self.episode is not None
         ep = self.episode
+        current_cost = goal_cost(ep.current, ep.goal)
+        known = self._known_predictions()
 
-        candidates = self._predicted_candidates()
-        improving = [c for c in candidates if c[0] > 0]
+        # Prefer a learned action that strictly improves the goal cost.
+        improving = [c for c in known if c[0] < current_cost]
         if improving:
-            improving.sort(reverse=True)
             return improving[0][2]
 
-        # An action that is already known but would worsen the goal is avoided.
-        # Explore an unknown action only when all known actions fail to help.
+        # When no learned action improves, probe one previously untried action.
+        # The evaluator provides only legal actions; the learner has no
+        # access to hidden preconditions or family labels.
         unknown = [a for a in ep.actions if not ep.tried(a)]
         if unknown:
-            # The first unknown action is used first. Once its effect is known,
-            # later choices are model-based. This stays task-family agnostic.
             return unknown[0]
 
-        if candidates:
-            neutral = [c for c in candidates if c[0] == 0]
-            if neutral:
-                neutral.sort(reverse=True)
-                return neutral[0][2]
+        # If everything is known, take the least-cost predicted successor,
+        # even when currently neutral. This permits state-dependent rules
+        # to reveal a new direction after replanning.
+        if known:
+            return known[0][2]
 
-        # Last deterministic fallback. This should be reached only on
-        # environments where no observed action can make further progress.
         return ep.actions[0]
 
     def handle(self, msg: dict) -> dict:
-        if msg.get("type") == "episode_start":
+        kind = msg.get("type")
+        if kind == "episode_start":
             self._start(msg)
-        elif msg.get("type") == "transition":
+        elif kind == "transition":
             self._observe(msg)
         else:
-            raise ValueError(f"Unsupported protocol message: {msg.get('type')!r}")
+            raise ValueError(f"Unsupported protocol message: {kind!r}")
 
+        assert self.episode is not None
         action = self.choose_action()
         self.episode.remember_try(action)
-        self.episode.previous_state = dict(self.episode.current)
         self.episode.last_action = action
         return {"action": action}
