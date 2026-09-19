@@ -1,0 +1,21 @@
+name: Mirror 7 HTTP bridge
+
+on:
+  push:
+    paths:
+      - "mirror7_backend/http_server.py"
+      - "mirror7_backend/test_http_server.py"
+  pull_request:
+    paths:
+      - "mirror7_backend/http_server.py"
+      - "mirror7_backend/test_http_server.py"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pytest -q mirror7_backend/test_http_server.py
