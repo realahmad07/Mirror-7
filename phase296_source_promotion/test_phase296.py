@@ -53,4 +53,4 @@ def test_second_rollback_does_not_target_rollback_record():
     r.promote(GOOD,s(.2,.2),s(.8,.8))
     r.rollback()
     rec=r.rollback()
-    assert rec.accepted and r.source==GOOD
+    assert rec.accepted and r.source==BASE
