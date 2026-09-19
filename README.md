@@ -1325,3 +1325,39 @@ Verification: **14/14 integration tests** on three deterministic hash seeds, plu
 See [PHASE141_152_ACCEPTANCE.md](./PHASE141_152_ACCEPTANCE.md).
 
 **Boundary:** this demonstrates an integrated bounded architecture, not unrestricted general intelligence or AGI.
+
+## 🌐 Phases 153–160 — Sealed Open-World Evaluation
+
+The next boundary tests the combined cognitive runtime through a sealed interface rather than another isolated capability:
+
+```text
+opaque observation/state
+        ↓
+opaque action
+        ↓
+outcome
+        ↓
+prediction / memory / update
+        ↓
+held-out evaluation
+        ↓
+stress + independent acceptance
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 153 | Sealed observation/state/action/outcome evaluation | ✅ |
+| 154 | Unseen environment + conservative uncertainty | ✅ |
+| 155 | Structural transfer across renamed entities | ✅ |
+| 156 | Noisy observations with irrelevant perturbations | ✅ |
+| 157 | 32-step long-horizon prediction replay | ✅ |
+| 158 | External independent-evaluator contract | ✅ |
+| 159 | Bounded stress evaluation | ✅ |
+| 160 | Cross-phase final gate | ✅ |
+
+Acceptance target: **all phases pass on seeds 0, 1, 2**, with explicit unknown-action abstention and resource bounds.
+
+See [PHASE153_160_ACCEPTANCE.md](./PHASE153_160_ACCEPTANCE.md).
+
+**Boundary:** this is a stricter bounded open-world evaluation of the existing architecture. It does not establish zero-shot arbitrary-environment generalization, unrestricted cross-domain transfer, scaling laws, or AGI.
+
