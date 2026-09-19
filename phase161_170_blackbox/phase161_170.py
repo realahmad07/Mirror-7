@@ -5,6 +5,7 @@ raw observation bytes, opaque action bytes, raw outcome bytes, optional raw targ
 """
 from __future__ import annotations
 from dataclasses import dataclass
+from collections import deque
 from typing import Dict, Iterable, List, Optional, Tuple
 import random
 import time
