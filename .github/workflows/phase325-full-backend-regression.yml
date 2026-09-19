@@ -1,0 +1,19 @@
+name: Mirror 7 phase-325 full backend regression
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  backend-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip pytest
+      - run: python -m compileall -q .
+      - run: python audit_mirror7.py
+      - run: python -m pytest -q --ignore=ui --ignore=phase13_heritage --ignore=phase19_heritage
