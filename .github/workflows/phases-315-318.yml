@@ -1,0 +1,19 @@
+name: Mirror 7 phases-315-318 / production-sandbox
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  production-sandbox:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest
+      - run: docker pull python:3.11-alpine
+      - run: docker info
+      - run: python -m pytest -q phase315_production_sandbox/test_phase315.py phase316_sandboxed_evaluator/test_phase316.py phase317_production_self_redesign/test_phase317.py phase318_sandbox_launch_gate/test_phase318.py
