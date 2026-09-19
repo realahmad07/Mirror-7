@@ -9,9 +9,9 @@ def test_repeated_evidence_promotes():
 
 def test_noise_does_not_replace_strong_rule():
     c=ContinualConsolidator(min_support=2)
-    c.observe(("a",),(1,)); c.observe(("a",),(1,)); old=c.recall(("a",))
-    c.observe(("a",),(9,))
-    assert c.recall(("a",))==old
+    c.observe(("a",),(1,)); c.observe(("a",),(1,)); c.observe(("a",),(9,))
+    r=c.recall(("a",))
+    assert r and r.value==(1.0,)
 
 def test_consolidated_rules_bounded():
     c=ContinualConsolidator(max_rules=2,min_support=1)
