@@ -22,7 +22,10 @@ class Mirror7EndToEnd:
 
     def plan(self,start:Tuple[int,...],instruction:str,goal:Callable[[Tuple[int,...]],bool],
              max_depth:int=12)->Optional[List[str]]:
-        expr=self.language.parse(instruction)
+        try:
+            expr=self.language.parse(instruction)
+        except ValueError:
+            return None
         allowed=self.language.execute_plan(expr)
         actions=list(dict.fromkeys(allowed))
         if not actions:

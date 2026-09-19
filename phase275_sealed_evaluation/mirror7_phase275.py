@@ -22,7 +22,7 @@ class SealedEvaluator:
             lines.append(json.dumps(public,sort_keys=True))
             expected.append(t["target"])
         proc=subprocess.run(
-            [sys.executable, agent_script],
+            [sys.executable, "-I", agent_script],
             input="\\n".join(lines)+"\\n",
             text=True,capture_output=True,check=False,timeout=10,
         )
