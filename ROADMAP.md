@@ -459,6 +459,52 @@ The next boundary should remove controlled-reset assumptions and introduce
 experiment sequences, and hypotheses that are generated and revised without a
 predefined state-transition template**.
 
+
+## Phase 65 — Streaming Delayed/Stochastic Hidden-State Learning
+
+```text
+continuous stream
+      ↓
+partial / noisy observations
+      ↓
+delayed action evidence
+      ↓
+stochastic effect estimates
+      ↓
+rolling regime evidence
+      ↓
+sustained mismatch
+      ↓
+new unlabeled hypothesis
+      ↓
+autonomous pulse + gap experiment
+      ↓
+goal-directed model reuse
+```
+
+Acceptance evidence:
+
+- 3 effect families × 3 seeds;
+- held-out unlabeled regime invention;
+- hidden regime switch without reset;
+- disagreement/uncertainty-driven experiment sequence selection;
+- noisy/partial observation control;
+- same-regime cluster-stability control;
+- hard experiment budget;
+- malformed/fail-closed controls;
+- continuous no-reset stream integration;
+- 9/9 regression tests, repeated twice with identical results.
+
+See [PHASE65_ACCEPTANCE.md](./PHASE65_ACCEPTANCE.md).
+
+Boundary: bounded continuous-stream delayed/stochastic learning. The phase does not establish unrestricted belief-state inference, open-world scientific discovery, arbitrary multimodal grounding, or AGI.
+
+## Current research boundary after Phase 65
+
+Mirror 7 now has a verified bounded chain through raw structural concept acquisition, abstraction, prediction, long-horizon modeling, closed-loop control, partial observation, nonstationary adaptation, unknown-regime discovery, and continuous delayed/stochastic regime learning.
+
+The next boundary should increase observational and action complexity without replacing the mechanism with benchmark-specific templates: richer hidden-state inference, multi-dimensional observations, overlapping delayed effects, stochastic transitions beyond additive numeric effects, longer autonomous experiments, stronger cross-environment transfer, and external reproduction.
+
 ## What remains
 
 Passing these phases is not equivalent to AGI.
