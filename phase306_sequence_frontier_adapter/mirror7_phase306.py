@@ -8,6 +8,7 @@ from phase305_frontier_upgrade_loop import FrontierUpgradeLoop, UpgradeOutcome
 
 class SequenceFrontierAdapter:
     """Connects the existing source-redesign engine to the capability frontier."""
+    name="sequence_extrapolation"
 
     def __init__(self):
         self.engine = AutonomousRedesignEngine(
