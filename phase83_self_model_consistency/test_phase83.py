@@ -4,7 +4,9 @@ def test_consistent():
     assert SelfModelConsistency(.1).evaluate((1,2),(1.05,2)).consistent
 
 def test_inconsistent():
-    r=SelfModelConsistency(.1).evaluate((1,2),(1.2,2)); assert not r.consistent and r.discrepancy==.2
+    r=SelfModelConsistency(.1).evaluate((1,2),(1.2,2))
+    assert not r.consistent
+    assert abs(r.discrepancy - .2) < 1e-12
 
 def test_fail_closed():
     m=SelfModelConsistency()
