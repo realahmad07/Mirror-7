@@ -68,6 +68,9 @@ Phases 291–298 extend Mirror 7 from bounded algorithm variants to bounded sour
 ### Targeted upgrade boundary
 Phases 299–306 change self-improvement from a one-off campaign into a persistent capability-target loop: measure gaps, prioritize the frontier, create fresh evaluation material, launch bounded upgrades, protect other capabilities, promote verified gains, and repeat. Phase 306 connects that controller to an actual source-redesign path for sequence extrapolation. The architecture is still bounded by its available adapters, benchmark families, and promotion gates.
 
+### Production multi-capability integration — verified
+Phase 319 now runs the four-capability frontier through the production source-redesign boundary. The dedicated GitHub Actions gate passed **64 tests** across Phases 307–319, including the Docker-backed production sandbox and Phase 319 end-to-end campaign.
+
 | 307 | IMPLEMENTED / CI PENDING | Common capability-adapter contract | More adapters |
 | 308 | IMPLEMENTED / CI PENDING | Planning frontier adapter | Broader planning tasks |
 | 309 | IMPLEMENTED / CI PENDING | Compositional-language frontier adapter | Broader language grounding |
@@ -89,7 +92,7 @@ UCI external suites 177–180 could not be promoted in this environment because 
 Mirror 7 remains a bounded research architecture. No AGI claim is made.
 
 
-| 319 | IMPLEMENTED / CI PENDING | Production multi-capability upgrade integration: shared four-capability frontier, mandatory Docker-backed source redesign, sealed evaluation, cross-capability regression gate, and rollback | Broader production adapters and independent external task families |
+| 319 | VERIFIED BOUNDED | Production multi-capability upgrade integration: shared four-capability frontier, mandatory Docker-backed source redesign, sealed evaluation, cross-capability regression gate, and rollback | Broader production adapters and independent external task families |
 
 ### Production multi-capability integration boundary
 Phase 319 connects the Phase 307–314 multi-capability frontier to the Phase 315–318 production self-modification boundary. The planning, compositional-language, symbolic-reasoning, and sequence adapters remain bounded. The source-changing sequence path is now evaluated through the production Docker sandbox before the shared cross-capability guard accepts the frontier update. A rejected outer promotion rolls the source adapter back.
