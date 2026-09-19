@@ -17,6 +17,15 @@
 - **Phase 265:** bounded language/action association with ambiguity abstention and evidence-count affordances.
 - **Phase 266:** bounded environment-context memory with positive capacity validation and LRU eviction.
 
+### Self-Improvement Engine — Phases 279–282
+- Phase 279: capability-gap detection and deterministic bounded improvement-hypothesis generation; 9/9 local tests.
+- Phase 280: sealed candidate evaluation with hidden targets, held-out evidence, and regression blocking; 9/9 local tests.
+- Phase 281: atomic promotion, rejection without mutation, rollback, and improvement journal; 9/9 local tests.
+- Phase 282: bounded autonomous loop from measured gap -> candidate generation -> sealed evaluation -> promotion -> repeat-until-stable; 10/10 phase tests.
+- Combined local verification: 37/37 tests across phases 279–282.
+- Dedicated CI workflow: .github/workflows/phases-279-282.yml added to run the complete gate on main.
+- Boundary: this is bounded behavioral self-improvement over an explicit finite variant space. It is not evidence of unrestricted self-rewriting, architecture invention, open-world lifelong learning, or AGI.
+
 ## Bounded / Experimental Boundaries
 - **Phase 231–240:** simulated compute and memory bounds; not hardware scaling evidence.
 - **Phase 241–250:** deterministic mock embodied environment; later Phase 274 adds a richer stochastic/delayed simulator, but neither is physical embodiment.
