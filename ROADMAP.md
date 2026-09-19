@@ -17,6 +17,8 @@ Phase 55  REPRESENTATION INDEPENDENCE ✅ COMPLETE
       ↓
 Phase 56  RAW CONCEPT ACQUISITION ✅ COMPLETE
       ↓
+Phase 57  CROSS-VIEW RAW CONCEPT ACQUISITION ✅ COMPLETE
+      ↓
 Phase 35  ACT
       ↓
 Phase 36  CLOSED LOOP
@@ -144,6 +146,38 @@ Acceptance evidence:
 
 See [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md).
 
+
+## Phase 57 — Cross-View Raw Concept Acquisition
+
+Phase 57 removes the single-byte-stream restriction from Phase 56.
+
+```text
+unlabeled raw views
+      ↓
+1-D / 2-D relational atoms
+      ↓
+cross-view support
+      ↓
+permutation-null background filtering
+      ↓
+compact concept vocabulary
+      ↓
+view-invariant relations / within-view events
+```
+
+Acceptance evidence:
+
+- 3 progressive concept families × 3 seeds;
+- 2 held-out cases;
+- 3 adversarial controls;
+- scaling guard;
+- deterministic regression;
+- 10/10 tests passed.
+
+See [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md).
+
+Boundary: this is bounded structural cross-view concept acquisition, not semantic multimodal understanding or AGI.
+
 ## What remains
 
 Passing these phases is not equivalent to AGI.
@@ -151,7 +185,7 @@ Passing these phases is not equivalent to AGI.
 The major research gaps are:
 
 1. broad, independent, unseen-environment evaluation;
-2. raw mixed-modality concept acquisition beyond byte streams;
+2. broader raw mixed-modality concept acquisition beyond the bounded 1-D/2-D structural views tested in Phase 57;
 3. scalable world modeling beyond hand-structured benchmark environments;
 4. reliable long-horizon autonomy;
 5. stronger compositional and abstract reasoning;
@@ -163,7 +197,7 @@ The major research gaps are:
 
 ## Next research boundary
 
-Phase 56 closes the bounded raw byte-stream concept-acquisition question. The next boundary should remove more structural scaffolding: mixed-modality/raw observations, stronger concept abstraction, and scaling under larger concept/relation spaces.
+Phase 57 closes the bounded cross-view structural concept-acquisition question. The next boundary should remove more scaffolding: richer raw modalities, learned hierarchical abstraction, prediction-driven concepts, long-horizon tasks, and stronger independent evaluation.
 
 ---
 
