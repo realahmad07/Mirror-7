@@ -39,7 +39,7 @@ def test_failed_action_does_not_override_successful_model_at_other_states():
         "step_limit": 8,
     })
 
-    learner.handle({
+    next_action = learner.handle({
         "type": "transition",
         "ok": True,
         "observation": {"x": 1},
@@ -48,9 +48,10 @@ def test_failed_action_does_not_override_successful_model_at_other_states():
         "reward": 0,
         "steps": 1,
     })
+    assert next_action["action"] == "other"
 
-    # At x=1 the same action fails; it becomes a state-local negative fact.
-    next_action = learner.handle({
+    # The next transition is now for the action actually returned above.
+    retry = learner.handle({
         "type": "transition",
         "ok": False,
         "observation": {"x": 1},
@@ -59,6 +60,7 @@ def test_failed_action_does_not_override_successful_model_at_other_states():
         "reward": 0,
         "steps": 2,
     })
+    assert retry["action"] == "advance"
 
     assert next_action["action"] == "other"
 
