@@ -9,8 +9,8 @@ def test_different_algorithms_differ():
 def test_seen_after_record():
     m=ImprovementMemory(); m.add(["last"],False,0,"bad"); assert m.seen(["last"])
 
-def test_duplicate_record_suppressed():
-    m=ImprovementMemory(); m.add(["last"],False,0,"bad"); m.add(["last"],True,1,"good"); assert len(m.records)==1
+def test_duplicate_record_suppressed_but_verified_status_upgrades():
+    m=ImprovementMemory(); m.add(["last"],False,0,"bad"); m.add(["last"],True,1,"good"); assert len(m.records)==1 and m.successful()[0].score==1
 
 def test_three_variants_retained():
     m=ImprovementMemory()
