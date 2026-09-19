@@ -41,7 +41,7 @@ class SourcePromotionRegistry:
         return rec
 
     def rollback(self,version:int|None=None)->SourceRecord:
-        promoted=[r for r in self._history if r.accepted]
+        promoted=[r for r in self._history if r.accepted and r.reason=="promoted"]
         if not promoted:
             return SourceRecord(self._version,self.fingerprint(self._source),self._source,self._source,False,0,0,False,"no promoted version")
         if version is None:
