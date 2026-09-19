@@ -98,3 +98,19 @@ The supplied ZIP has no dedicated Phase 34 source directory. Phase 34 is therefo
 | Mirror 7 independent generalization | ⛔ NOT PASSED | No qualifying open-ended learner/runtime is currently available behind the blind protocol. |
 
 **Phase 53 benchmark status: ☑ PASS.** Phase 52 solves 21/21 benchmark episodes with 0 invalid actions. This is a project-internal benchmark result, not independent external proof.
+
+
+---
+
+## Phase 54 — Independent-Style Generalization Evaluation
+
+| Gate | State | Evidence |
+|---|:---:|---|
+| Fresh evaluator locked before publication | ☑ PASS | Evaluator SHA-256 recorded in INDEPENDENT_EVALUATION_2026-09-19.md. |
+| Fresh task families | ☑ PASS | Six task families not used by Phase 53. |
+| Black-box protocol | ☑ PASS | Only observation, goal, legal actions, step limit, and feedback exposed. |
+| Independent-style generalization result | ⛔ FAIL | 14/18 solved; 9/9 held-out; 184 invalid actions. |
+
+**STOP RULE ACTIVE:** no learner changes were made after this evaluation. A new fix must first pass its own regression and then rerun the locked evaluation.
+
+This is independent-style rather than third-party evaluation; a genuinely independent external team is still required for an external scientific claim.
