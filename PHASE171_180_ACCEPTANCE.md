@@ -10,6 +10,7 @@ This block begins the transition from repository-internal benchmark families to 
 - 174 deterministic public task fingerprint
 - 175 evaluator as a separate process with no Mirror 7 runtime import
 - 176 evaluator negative-control enforcement
+- 177 real external UCI Iris dataset ingestion + sealed evaluator-boundary integration
 
 ## Verification
 
@@ -19,7 +20,7 @@ No existing acceptance threshold was weakened.
 
 ## Boundary
 
-This is infrastructure and validation hardening, not evidence of unrestricted external generalization. Real external datasets and externally supplied task packs are still required for the next research step.
+This is infrastructure and validation hardening, not evidence of unrestricted external generalization. Phase 177 now consumes the official UCI Iris dataset through the boundary. Additional external task families and actual agent-performance evaluation remain required for phases 178–180.
 
 ## Intended flow
 
