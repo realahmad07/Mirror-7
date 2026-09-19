@@ -36,7 +36,7 @@ def test_overlapping_delayed_effects_are_retained():
 def test_stochastic_transition_variance_is_preserved():
     a=Phase66Agent(min_samples=4)
     for x in (0.0,1.0,2.0,3.0,4.0,5.0):
-        a.observe_effect("pulse",(0,),(x,))
+        a.observe_effect("pulse",(0,),(x,),1)
     e=a.distribution("pulse",1,0)
     assert e and e.std>1.0 and e.samples==6
 
