@@ -15,6 +15,8 @@ Phase 34  REASON / PLAN        ✅ COMPLETE
       ↓
 Phase 55  REPRESENTATION INDEPENDENCE ✅ COMPLETE
       ↓
+Phase 56  RAW CONCEPT ACQUISITION ✅ COMPLETE
+      ↓
 Phase 35  ACT
       ↓
 Phase 36  CLOSED LOOP
@@ -117,6 +119,31 @@ Acceptance evidence:
 
 See [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md).
 
+## Phase 56 — Raw Concept Acquisition
+
+Phase 56 is complete at its bounded acceptance boundary.
+
+```text
+raw byte streams
+      ↓
+recurring structural motifs
+      ↓
+cross-episode support
+      ↓
+reusable concepts
+      ↓
+ordered relations / transition-events
+```
+
+Acceptance evidence:
+
+- 3 progressive concept families × 3 seeds;
+- 2 held-out cases;
+- 3 adversarial controls;
+- 7/7 regression tests.
+
+See [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md).
+
 ## What remains
 
 Passing these phases is not equivalent to AGI.
@@ -124,7 +151,7 @@ Passing these phases is not equivalent to AGI.
 The major research gaps are:
 
 1. broad, independent, unseen-environment evaluation;
-2. general concept acquisition from raw, mixed-modality observations;
+2. raw mixed-modality concept acquisition beyond byte streams;
 3. scalable world modeling beyond hand-structured benchmark environments;
 4. reliable long-horizon autonomy;
 5. stronger compositional and abstract reasoning;
@@ -136,7 +163,7 @@ The major research gaps are:
 
 ## Next research boundary
 
-Phase 55 closes the bounded representation-independence question. The next boundary should attack **raw concept acquisition**: discovering useful entities, relations, events, and state from raw or weakly structured observations without developer-defined ontology assumptions.
+Phase 56 closes the bounded raw byte-stream concept-acquisition question. The next boundary should remove more structural scaffolding: mixed-modality/raw observations, stronger concept abstraction, and scaling under larger concept/relation spaces.
 
 ---
 
