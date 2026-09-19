@@ -7,6 +7,7 @@
 [![Phase 32](https://img.shields.io/badge/Phase%2032-PASS-2ea44f?style=for-the-badge)](./phase32_prediction)
 [![Phase 54](https://img.shields.io/badge/Phase%2054-18%2F18%20PASS-2ea44f?style=for-the-badge)](./INDEPENDENT_EVALUATION_2026-09-19.md)
 [![Phase 55](https://img.shields.io/badge/Phase%2055-27%2F27%20PASS-2ea44f?style=for-the-badge)](./PHASE55_ACCEPTANCE.md)
+[![Phase 56](https://img.shields.io/badge/Phase%2056-PASS-2ea44f?style=for-the-badge)](./PHASE56_ACCEPTANCE.md)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
 
 ---
@@ -80,10 +81,11 @@ The project emphasizes **explicit, inspectable mechanisms** wherever the researc
 | Phase 54 held-out | ✅ 9/9 |
 | Phase 54 invalid actions | ✅ 0 |
 | Phase 55 representation independence | ✅ 27/27 |
+| Phase 56 raw concept acquisition | ✅ PASS |
 
 ### Current frontier
 
-Phase 55 representation independence is complete: **27/27** progressive cross-representation comparisons, **2/2** held-out graph families, and **6/6** adversarial controls passed. The next research boundary should be chosen from the remaining unresolved scientific gaps.
+Phase 56 raw concept acquisition is complete at its bounded acceptance boundary: **7/7 tests**, 3 progressive families × 3 seeds, 2 held-out cases, and 3 adversarial controls passed. The next research boundary should attack the remaining raw-world and scaling gaps.
 
 ---
 
@@ -278,6 +280,33 @@ Pytest:       11 passed
 
 See [Phase 55 acceptance](./PHASE55_ACCEPTANCE.md).
 
+### 8. Phase 56 raw concept acquisition
+
+Phase 56 extends representation work into bounded concept discovery from undifferentiated byte streams:
+
+```text
+raw bytes
+   ↓
+canonical recurring motifs
+   ↓
+cross-episode support
+   ↓
+reusable concepts
+   ↓
+ordered relations / transition-events
+```
+
+Result:
+
+```text
+Progressive: 3 families × 3 seeds
+Held-out:    2 / 2
+Adversarial: 3 / 3
+Pytest:      7 passed
+```
+
+See [Phase 56 acceptance](./PHASE56_ACCEPTANCE.md).
+
 ---
 
 ## 🔁 The Core Learning Loop
@@ -436,6 +465,22 @@ See [Phase 55 acceptance](./PHASE55_ACCEPTANCE.md).
 
 </details>
 
+<details>
+<summary><strong>Phase 56 — Raw Concept Acquisition</strong></summary>
+
+| Gate | Result |
+|---|:---:|
+| Progressive concept families | ✅ 3 families × 3 seeds |
+| Held-out recombination | ✅ |
+| Held-out raw encoding change | ✅ |
+| Adversarial controls | ✅ 3/3 |
+| Pytest | ✅ 7 passed |
+| Determinism | ✅ |
+
+See [Phase 56 acceptance](./PHASE56_ACCEPTANCE.md).
+
+</details>
+
 ---
 
 ## 🚧 What is still unsolved
@@ -444,13 +489,9 @@ Passing the current gates does **not** mean the project has reached AGI.
 
 The major open research problems are:
 
-### Raw-world concept acquisition
+### Raw multimodal concept acquisition
 
-Can Mirror 7 discover entities, relations, events, and useful state from raw mixed-modality input without developers hand-defining the ontology?
-
-### Raw-world concept acquisition
-
-Can it discover entities, relations, events, and useful state from raw mixed-modality input without developers hand-defining the ontology?
+Can it discover entities, relations, events, and useful state from less regular raw observations, including modalities beyond byte streams, without developers hand-defining the ontology?
 
 ### Scaling
 
@@ -546,6 +587,10 @@ Several Phase 51 comparison values are synthetic/mock baseline values. The mecha
 
 Phase 55 demonstrates representation invariance for bounded relational graphs across three generic byte encodings with opaque node identifiers and reordered serialization. The implementation uses exact canonicalization only within a bounded eight-node reference domain; this is not yet a claim of unrestricted multimodal representation learning.
 
+### Phase 56 raw-concept boundary
+
+Phase 56 demonstrates bounded unsupervised structural concept acquisition from raw byte streams. The discovered concepts are recurring structural motifs, while relations/events are derived from ordered concept co-occurrence. This is not yet semantic open-world grounding, multimodal perception, or unrestricted ontology induction.
+
 ### Phase 54 independence caveat
 
 Phase 54 is an **independent-style** evaluation, not a third-party scientific replication. The evaluator was kept outside the learner implementation and remained locked, but both benchmark construction and learner development occurred within the same broader project workflow.
@@ -564,6 +609,8 @@ Phase 54 is an **independent-style** evaluation, not a third-party scientific re
 | [PHASE35_51_VERIFICATION.md](./PHASE35_51_VERIFICATION.md) | Phase 35–51 verification record |
 | [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md) | Phase 55 acceptance record |
 | [phase55_representation_independence/](./phase55_representation_independence/) | Phase 55 implementation and tests |
+| [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md) | Phase 56 acceptance record |
+| [phase56_raw_concept_acquisition/](./phase56_raw_concept_acquisition/) | Phase 56 implementation and tests |
 | [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
 | [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
 | [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
@@ -586,6 +633,13 @@ For the Phase 53 evaluator:
 
 ```bash
 python -m pytest phase53_independent_eval -q
+```
+
+For the Phase 56 acceptance gate:
+
+```bash
+python -m phase56_raw_concept_acquisition.run_phase56_gate
+python -m pytest phase56_raw_concept_acquisition/test_phase56.py -q
 ```
 
 For the Phase 55 acceptance gate:
@@ -618,7 +672,7 @@ The next milestone should not simply be “more benchmark rows.”
 
 The strongest next question is:
 
-> **Can Mirror 7 acquire useful concepts from raw observations without developer-defined entities and relations, while preserving the learned structure under distribution and representation change?**
+> **Can Mirror 7 discover useful concepts from increasingly unstructured observations while scaling the same mechanism without exploding search or memory costs?**
 
 That points toward three connected research tracks:
 
