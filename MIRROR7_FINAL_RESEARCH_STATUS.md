@@ -132,3 +132,8 @@ Phases 320–324 add the UI-independent backend boundary: thread-safe session ex
 
 Scientific boundary: this is backend infrastructure and verification hardening. It does not change the bounded intelligence claims or establish AGI.
 
+
+### Backend full-regression boundary — verified
+Phase 325 closes the UI-independent backend verification gate. The full repository Python regression (excluding only UI and preserved heritage test directories) passed **1049 tests**, with the deep static audit and full-tree Python compilation also passing. The regression includes the production Docker sandbox after provisioning the pinned sandbox image. Historical Phase 66–69 compatibility failures and the external Phase 177 action-label sealing leak were repaired at their concrete boundaries; no evaluator was weakened to obtain the green result.
+
+Scientific boundary: backend verification is complete for the current repository boundary. It does not establish unrestricted world competence or AGI.
