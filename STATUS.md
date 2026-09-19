@@ -49,3 +49,39 @@ Bootstrap completion establishes a reproducible self-hosting computational subst
 | Phase 31.6 — full acceptance gate | ☑ PASS | 37 / 37 Phase 31 tests passed. |
 
 **Phase 31 COMPLETE — verified executable acceptance suite.**
+
+
+
+---
+
+## Phase 35–51 verification boundary
+
+| Phase | Capability | State | Evidence |
+|---|---|:---:|---|
+| 35 | Action model | ☑ PASS | 53 tests passed from supplied artifact |
+| 36 | Closed-loop agent | ☑ PASS | 17 tests passed |
+| 37 | Working memory | ☑ PASS | 10 tests passed |
+| 38 | Episodic memory | ☑ PASS | 6 tests passed |
+| 39 | World model | ☑ PASS | 5 tests passed |
+| 40 | Composition | ☑ PASS | 6 tests passed |
+| 41 | Hierarchical planning | ☑ PASS | 2 tests passed |
+| 42 | Tool use | ☑ PASS | 3 tests passed |
+| 43 | Language grounding | ☑ PASS | 3 tests passed |
+| 44 | Counterfactual simulation | ☑ PASS | 3 tests passed |
+| 45 | Continual learning | ☑ PASS | 3 tests passed |
+| 46 | Meta-reasoning | ☑ PASS | 2 tests passed |
+| 47 | Efficiency | ☑ PASS | 2 tests passed |
+| 48 | Robustness | ☑ PASS | 2 tests passed |
+| 49 | Transfer | ☑ PASS | 3 tests passed |
+| 50 | Complete integration | ☑ PASS | 2/2 acceptance criteria passed |
+| 51 | Advanced reasoning | ☑ PASS | 5 tests; 4/4 gate criteria passed |
+
+### Phase 51 interpretation
+
+The advanced-reasoning gate passes explicit epistemic categorization, contradiction detection, self-checking, and the benchmark interface.
+
+The current benchmark still contains synthetic baseline values for several comparison metrics. This is documented as a limitation rather than promoted as independent empirical evidence.
+
+### Artifact boundary
+
+The supplied ZIP has no dedicated Phase 34 source directory. Phase 34 is therefore not represented here as a repository source-code PASS; it remains a separately reported verification boundary until its implementation artifact is published.
