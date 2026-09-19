@@ -7,9 +7,11 @@ replace or weaken the research mechanisms.
 from .runtime import BackendSession, BackendResult
 from .persistence import CheckpointStore, CheckpointError
 from .actions import ActionGateway, ActionPolicy, ActionDenied
+from .service import BackendService
 
 __all__ = [
     "BackendSession", "BackendResult",
     "CheckpointStore", "CheckpointError",
     "ActionGateway", "ActionPolicy", "ActionDenied",
+    "BackendService",
 ]
