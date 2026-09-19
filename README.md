@@ -1361,3 +1361,31 @@ See [PHASE153_160_ACCEPTANCE.md](./PHASE153_160_ACCEPTANCE.md).
 
 **Boundary:** this is a stricter bounded open-world evaluation of the existing architecture. It does not establish zero-shot arbitrary-environment generalization, unrestricted cross-domain transfer, scaling laws, or AGI.
 
+## 🔒 Phases 161–170 — Black-Box / Raw-Input Evaluation
+
+The next boundary removes more semantic scaffolding from the agent-facing interface:
+
+~~~text
+raw bytes → discovered representation → opaque action bytes
+→ raw outcome → discrepancy → update / replan
+~~~
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 161 | Black-box protocol | ✅ |
+| 162 | Raw representation discovery | ✅ |
+| 163 | Opaque action tokens + abstention | ✅ |
+| 164 | Multiple hidden domains | ✅ |
+| 165 | Hidden-goal action selection | ✅ |
+| 166 | Representation-independent policy transfer | ✅ |
+| 167 | Bounded irreversible long-horizon planning | ✅ |
+| 168 | Contamination controls | ✅ |
+| 169 | Scaling measurements | ✅ |
+| 170 | Final acceptance gate | ✅ |
+
+Verification: **30/30 phase-seed checks**, **13/13 pytest checks**, plus independent evaluator positive/negative controls. Phases 141–152 and 153–160 were re-run successfully in the same workflow.
+
+See [PHASE161_170_ACCEPTANCE.md](./PHASE161_170_ACCEPTANCE.md).
+
+**Boundary:** this is a bounded raw-byte/black-box evaluation. It does not establish arbitrary real-world perception, unrestricted action-space discovery, unrestricted cross-domain transfer, or AGI.
+
