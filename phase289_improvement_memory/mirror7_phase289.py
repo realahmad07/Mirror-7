@@ -10,7 +10,7 @@ class MemoryRecord:
     reason:str
 
 class ImprovementMemory:
-    """Remembers evaluated algorithm fingerprints and avoids identical repeats."""
+    """Remembers evaluated algorithm fingerprints and allows verified status upgrades."""
     def __init__(self): self._records:List[MemoryRecord]=[]
 
     @staticmethod
@@ -23,8 +23,12 @@ class ImprovementMemory:
 
     def add(self,operations:Iterable[str],accepted:bool,score:float,reason:str):
         fp=self.fingerprint(operations)
-        if not any(r.fingerprint==fp for r in self._records):
-            self._records.append(MemoryRecord(fp,bool(accepted),float(score),reason))
+        existing=next((i for i,r in enumerate(self._records) if r.fingerprint==fp),None)
+        record=MemoryRecord(fp,bool(accepted),float(score),reason)
+        if existing is None:
+            self._records.append(record)
+        elif accepted and not self._records[existing].accepted:
+            self._records[existing]=record
 
     @property
     def records(self)->tuple[MemoryRecord,...]: return tuple(self._records)
