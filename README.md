@@ -1199,3 +1199,40 @@ Focused acceptance: **30/30**, repeated with `PYTHONHASHSEED=0,1,2`.
 See [PHASE108_114_ACCEPTANCE.md](./PHASE108_114_ACCEPTANCE.md).
 
 **Boundary:** these are bounded agent mechanisms. They do not establish unrestricted language understanding, open-world autonomy, or AGI.
+
+
+## ⚙️ Phases 115–121 — Reliable Autonomous Execution Layer
+
+The next layer after grounded agent capabilities focuses on executing plans reliably:
+
+```text
+action verification
+      ↓
+tool composition
+      ↓
+conflict resolution
+      ↓
+context-aware memory retrieval
+      ↓
+plan verification
+      ↓
+failure recovery
+      ↓
+autonomous task loop
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 115 | Verified action execution with pre/postconditions | ✅ 4/4 |
+| 116 | Multi-tool composition with fail-closed propagation | ✅ 4/4 |
+| 117 | Weighted conflict resolution with abstention | ✅ 4/4 |
+| 118 | Context-aware bounded memory retrieval | ✅ 4/4 |
+| 119 | Bounded plan simulation and verification | ✅ 4/4 |
+| 120 | Bounded failure recovery and rollback | ✅ 4/4 |
+| 121 | Integrated autonomous task execution loop | ✅ 6/6 |
+
+Focused acceptance: **30/30** on three deterministic Python hash seeds.
+
+See [PHASE115_121_ACCEPTANCE.md](./PHASE115_121_ACCEPTANCE.md).
+
+**Boundary:** this is a bounded reliable-execution layer, not unrestricted autonomy or AGI.
