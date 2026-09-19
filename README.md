@@ -12,6 +12,7 @@
 [![Phase 58](https://img.shields.io/badge/Phase%2058-PASS-2ea44f?style=for-the-badge)](./PHASE58_ACCEPTANCE.md)
 [![Phase 59](https://img.shields.io/badge/Phase%2059-PASS-2ea44f?style=for-the-badge)](./PHASE59_ACCEPTANCE.md)
 [![Phase 60](https://img.shields.io/badge/Phase%2060-PASS-2ea44f?style=for-the-badge)](./PHASE60_ACCEPTANCE.md)
+[![Phase 61](https://img.shields.io/badge/Phase%2061-PASS-2ea44f?style=for-the-badge)](./PHASE61_ACCEPTANCE.md)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
 
 ---
@@ -90,10 +91,11 @@ The project emphasizes **explicit, inspectable mechanisms** wherever the researc
 | Phase 58 hierarchical concept abstraction | ✅ PASS |
 | Phase 59 predictive concept learning | ✅ PASS |
 | Phase 60 long-horizon world model | ✅ PASS |
+| Phase 61 predictive closed-loop autonomy | ✅ PASS |
 
 ### Current frontier
 
-Phases 58–60 are now complete at their bounded acceptance boundaries: hierarchical abstraction **8/8**, predictive concept learning **8/8**, and long-horizon world modeling **8/8**. The three-phase local regression is **24/24**, with Phase 60 explicitly integrating the Phase 58 hierarchy with the Phase 59 predictor. The next research boundary is richer raw modalities, prediction-driven abstraction, longer-horizon autonomy, and independent external evaluation.
+Phases 58–61 are now complete at their bounded acceptance boundaries: hierarchical abstraction **8/8**, predictive concept learning **8/8**, long-horizon world modeling **8/8**, and predictive closed-loop autonomy **9/9**. Phase 61 integrates the Phase 58 hierarchy, Phase 59 predictor, and Phase 60 world model inside an online goal-directed control loop. The next research boundary is broader raw-world grounding, longer unseen tasks, and stronger independent external evaluation.
 
 ---
 
@@ -430,6 +432,45 @@ Pytest:      8 passed
 See [Phase 60 acceptance](./PHASE60_ACCEPTANCE.md).
 
 
+### 13. Phase 61 predictive closed-loop autonomy
+
+Phase 61 connects the Phase 58–60 mechanisms into an online goal-directed control loop:
+
+```text
+observe
+  ↓
+predict supported consequences
+  ↓
+bounded model-based plan
+  ↓
+goal-improving action
+  ↓
+safe exploration of unknown legal action
+  ↓
+observe result
+  ↓
+discrepancy detection
+  ↓
+replan / update
+  ↺
+```
+
+Successful traces are also compressed through the hierarchy and used by the predictive concept model as a policy prior.
+
+Result:
+
+```text
+Progressive: 3 families × 3 seeds
+Held-out:     2 / 2
+Adversarial: 3 / 3
+Integration: Phase 58 + 59 + 60
+Pytest:      9 passed
+```
+
+See [Phase 61 acceptance](./PHASE61_ACCEPTANCE.md).
+
+
+
 
 ## 🔁 The Core Learning Loop
 
@@ -741,6 +782,8 @@ Phase 54 is an **independent-style** evaluation, not a third-party scientific re
 | [phase59_predictive_concepts/](./phase59_predictive_concepts/) | Phase 59 implementation and tests |
 | [PHASE60_ACCEPTANCE.md](./PHASE60_ACCEPTANCE.md) | Phase 60 acceptance record |
 | [phase60_long_horizon_world_model/](./phase60_long_horizon_world_model/) | Phase 60 implementation and tests |
+| [PHASE61_ACCEPTANCE.md](./PHASE61_ACCEPTANCE.md) | Phase 61 acceptance record |
+| [phase61_closed_loop_autonomy/](./phase61_closed_loop_autonomy/) | Phase 61 implementation and tests |
 | [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
 | [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
 | [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
