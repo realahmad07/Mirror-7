@@ -134,7 +134,7 @@ def test_empty_and_minimal_input():
     assert s_empty.vocab_size == 0
     assert s_empty.num_runs == 0
 
-    s_single = extract_state(discover_representation(b"ÿ"))
+    s_single = extract_state(discover_representation(bytes([0xFF])))
     assert s_single.length == 1
     assert s_single.vocab_size == 1
     assert s_single.num_runs == 1
