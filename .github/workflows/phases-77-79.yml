@@ -1,0 +1,15 @@
+name: phases-77-79-regression
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run phases 77-79
+        run: python -m pytest -q phase77_integrated_autonomous_loop phase78_cross_regime_environment_learning phase79_long_horizon_self_correction
