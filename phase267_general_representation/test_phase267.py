@@ -20,7 +20,7 @@ def test_noise_does_not_destroy_known_motif():
     assert len(r.segments) >= 2
 
 def test_adversarial_singleton_is_not_promoted():
-    g = GeneralRepresentation(min_support=3)
+    g = GeneralRepresentation(min_support=2)
     r = g.discover_batch([b"RARE1", b"COMMON", b"COMMON"])
     assert b"RARE1" not in r[0].motifs
     assert b"COMMON" in r[0].motifs
