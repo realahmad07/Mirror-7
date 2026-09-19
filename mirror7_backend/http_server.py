@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 from urllib.parse import unquote, urlparse
 
+from .actions import ActionDenied
 from .persistence import CheckpointError
 from .service import BackendService
 
@@ -71,6 +72,11 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         if path == "/api/sessions":
             self._send(200, {"ok": True, "sessions": service.list_sessions()})
             return
+        parts = [p for p in path.split("/") if p]
+        if len(parts) == 3 and parts[:2] == ["api", "sessions"]:
+            session_id = self._session_id(parts[2])
+            self._send(200, {"ok": True, "snapshot": service.session_snapshot(session_id)})
+            return
         self._send(404, {"ok": False, "error": "not found"})
 
     def do_POST(self) -> None:
@@ -116,6 +122,21 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 self._send(200, {"ok": True, "session_id": session_id, "checkpoint": str(path)})
                 return
 
+            if len(parts) == 4 and parts[:2] == ["api", "sessions"] and parts[3] == "action":
+                session_id = self._session_id(parts[2])
+                name = payload.get("name")
+                args = payload.get("args", [])
+                kwargs = payload.get("kwargs", {})
+                if not isinstance(name, str) or not name:
+                    raise ValueError("action name must be a non-empty string")
+                if not isinstance(args, list):
+                    raise ValueError("action args must be a JSON array")
+                if not isinstance(kwargs, dict):
+                    raise ValueError("action kwargs must be a JSON object")
+                result = service.execute_action(name, *args, **kwargs)
+                self._send(200, {"ok": True, "session_id": session_id, "result": result})
+                return
+
             if len(parts) == 4 and parts[:2] == ["api", "sessions"] and parts[3] == "restore":
                 session_id = self._session_id(parts[2])
                 session = service.restore(session_id)
@@ -127,6 +148,8 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             self._send(404, {"ok": False, "error": str(exc)})
         except ValueError as exc:
             self._send(400, {"ok": False, "error": str(exc)})
+        except ActionDenied as exc:
+            self._send(403, {"ok": False, "error": str(exc)})
         except CheckpointError as exc:
             self._send(409, {"ok": False, "error": str(exc)})
         except RuntimeError as exc:
@@ -142,6 +165,12 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         try:
             path = urlparse(self.path).path
             parts = [p for p in path.split("/") if p]
+            if len(parts) == 4 and parts[:2] == ["api", "sessions"] and parts[3] == "checkpoint":
+                session_id = self._session_id(parts[2])
+                deleted = service.has_checkpoint(session_id)
+                service.delete_checkpoint(session_id)
+                self._send(200, {"ok": True, "session_id": session_id, "deleted": deleted})
+                return
             if len(parts) == 3 and parts[:2] == ["api", "sessions"]:
                 session_id = self._session_id(parts[2])
                 service.close_session(session_id)
