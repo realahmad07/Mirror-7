@@ -1,0 +1,18 @@
+name: Mirror 7 phase-333 reliability
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  phase333:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip pytest
+      - run: python -m compileall -q mirror7_backend phase140_unified_cognitive_runtime phase329_backend_integration phase330_backend_api phase331_backend_e2e phase332_backend_finalization phase333_backend_reliability
+      - run: python -m pytest -q phase333_backend_reliability/test_phase333.py phase332_backend_finalization/test_phase332.py phase331_backend_e2e/test_phase331.py phase330_backend_api/test_phase330.py phase329_backend_integration/test_phase329.py mirror7_backend/test_http_server.py
