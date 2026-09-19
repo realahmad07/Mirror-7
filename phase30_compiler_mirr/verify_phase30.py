@@ -6,7 +6,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'phase27_unfinished' / 'compiler_phase27.mirr'
 NUCLEUS = ROOT / 'phase25_26' / 'nucleus.c'
-PRIMS = {'+','-','dup','drop','swap','@','!','emit','next','nextc','src-pos','src-len','word-count','word-name-len','word-name-char','word-code-len','word-code-byte','word-new','word-append','word-exec','src-set-pos','=','word-code-start','word-patch-u16','u16-add'}
+PRIMS = {'+','-','dup','drop','swap','@','!','emit','next','nextc','src-pos','src-len','word-count','word-name-len','word-name-char','word-code-len','word-code-byte','word-new','word-append','word-exec','src-set-pos','=','word-code-start','word-patch-u16','u16-add','u16-sub'}
 WORD_RE = re.compile(r'^:\s+([^\s]+)\s+(.*?)\s*;\s*$', re.S)
 TOKEN_RE = re.compile(r'\S+')
 REQUIRED = {'space?','seek-marker','scan-token','find-word','probe','tok-colon','tok-semi','digit-first?','parse-number','set-marker-pos','mark-pos','emit-byte','create-pass','compile-pass','tok-if','tok-else','tok-then','current-end','current-len','patch-at','if-open','else-open','then-close','compile-structured','run-alpha'}

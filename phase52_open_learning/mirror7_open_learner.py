@@ -35,6 +35,10 @@ def goal_cost(state: State, goal: State) -> float:
     return cost
 
 
+# Backward-compatible public name used by the existing Phase 52 tests.
+goal_distance = goal_cost
+
+
 @dataclass
 class TransitionSample:
     action: str
@@ -56,7 +60,7 @@ class ActionSchema:
 
     def observe(self, sample: TransitionSample) -> None:
         self.samples.append(sample)
-        if sample.ok:
+        if sample.ok and sample.changed:
             self.last_effect = dict(sample.changed)
 
     @property
@@ -71,8 +75,19 @@ class ActionSchema:
         key = state_key(state)
         return any(not sample.ok and sample.before_key == key for sample in self.samples)
 
+    def _confirmed_toggle(self, key: str) -> bool:
+        transitions = [
+            sample.changed[key]
+            for sample in self.samples
+            if sample.ok and key in sample.changed
+        ]
+        if not transitions:
+            return False
+        observed = {(old, new) for old, new in transitions}
+        return (0, 1) in observed and (1, 0) in observed
+
     def predict(self, state: State) -> Optional[State]:
-        if not self.successful:
+        if not self.successful or not self.last_effect:
             return None
 
         result = dict(state)
@@ -85,8 +100,10 @@ class ActionSchema:
                 and isinstance(new, int)
                 and {old, new} == {0, 1}
                 and state[key] in {0, 1}
+                and self._confirmed_toggle(key)
             ):
-                # Infer a true binary toggle rather than treating 0 -> 1 as +1.
+                # A single 0 -> 1 sample is ambiguous between +1 and toggle.
+                # Confirm toggle semantics only after observing both directions.
                 result[key] = 1 - state[key]
             elif isinstance(old, (int, float)) and isinstance(new, (int, float)):
                 result[key] = state[key] + (new - old)
@@ -102,6 +119,7 @@ class EpisodeMemory:
     goal: State
     actions: List[str]
     schemas: Dict[str, ActionSchema] = field(default_factory=dict)
+    attempted_at_state: Dict[StateKey, set[str]] = field(default_factory=dict)
     last_action: Optional[str] = None
 
     def schema(self, action: str) -> ActionSchema:
@@ -115,6 +133,13 @@ class EpisodeMemory:
 
     def known(self, action: str) -> bool:
         return action in self.schemas
+
+    def remember_attempt(self, action: str) -> None:
+        key = state_key(self.current)
+        self.attempted_at_state.setdefault(key, set()).add(action)
+
+    def attempted(self, action: str) -> bool:
+        return action in self.attempted_at_state.get(state_key(self.current), set())
 
 
 class OpenEndedLearner:
@@ -219,21 +244,27 @@ class OpenEndedLearner:
         if unknown:
             return unknown[0]
 
-        # 3. Use a known safe action if it can still contribute.
-        safe_known = self._safe_known_actions()
-        if safe_known:
-            safe_known.sort(
-                key=lambda action: (
-                    goal_cost(
-                        ep.schemas[action].predict(ep.current) or ep.current,
-                        ep.goal,
-                    ),
-                    ep.actions.index(action),
-                )
-            )
-            return safe_known[0]
+        # 3. Explore a previously untried-at-this-state action. This permits
+        # state-dependent actions to reveal their local preconditions without
+        # abandoning a learned action that is already strictly improving.
+        state_unknown = [
+            action
+            for action in ep.actions
+            if not ep.attempted(action) and not ep.failed_at_current(action)
+        ]
+        if state_unknown:
+            return state_unknown[0]
 
-        # 4. Every available action has failed at this exact state.
+        # 4. If no strict improvement exists, continue with the best learned
+        # successor that is not known to fail at this exact state.
+        non_failing = [
+            candidate for candidate in known
+            if not ep.failed_at_current(candidate[2])
+        ]
+        if non_failing:
+            return non_failing[0][2]
+
+        # 5. Every available action has failed at this exact state.
         #    Repeating an invalid action is never useful; choose the first
         #    legal action only as a deterministic terminal fallback.
         #    The environment/test harness remains responsible for declaring
@@ -251,5 +282,6 @@ class OpenEndedLearner:
 
         assert self.episode is not None
         action = self.choose_action()
+        self.episode.remember_attempt(action)
         self.episode.last_action = action
         return {"action": action}

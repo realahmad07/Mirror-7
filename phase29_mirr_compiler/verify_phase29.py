@@ -10,7 +10,7 @@ WORDS = ROOT / "phase27_unfinished" / "compiler_phase27_words.mirr"
 BUILDER = ROOT / "phase27_unfinished" / "build_phase27.py"
 NUCLEUS = ROOT / "phase25_26" / "nucleus.c"
 INTEGRATION = ROOT / "phase28_surface_parser" / "verify_phase28.py"
-PRIMS = {'+','-','dup','drop','swap','@','!','emit','next','nextc','src-pos','src-len','word-count','word-name-len','word-name-char','word-code-len','word-code-byte','word-new','word-append','word-exec','src-set-pos','word-code-start','word-patch-u16','u16-add','='}
+PRIMS = {'+','-','dup','drop','swap','@','!','emit','next','nextc','src-pos','src-len','word-count','word-name-len','word-name-char','word-code-len','word-code-byte','word-new','word-append','word-exec','src-set-pos','word-code-start','word-patch-u16','u16-add','u16-sub','='}
 TOKEN_RE = re.compile(r'\S+')
 WORD_RE = re.compile(r'^:\s+([^\s]+)\s+(.*?)\s*;\s*$', re.S)
 
