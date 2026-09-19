@@ -14,7 +14,12 @@ class Phase68Planner:
     def __init__(self,model,max_depth=6,beam_width=8,uncertainty_penalty=.25):
         self.model=model; self.max_depth=max_depth; self.beam_width=beam_width; self.uncertainty_penalty=uncertainty_penalty
     def _step(self,state,action):
-        delta=self.model.predict(action,state)
+        predictor=getattr(self.model,"predict",None)
+        if predictor is None:
+            predictor=getattr(self.model,"predict_delta",None)
+        if predictor is None:
+            return None,1.0
+        delta=predictor(action,state)
         if delta is None: return None,1.0
         out=[]
         for x,d in zip(state,delta):
