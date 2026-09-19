@@ -696,3 +696,26 @@ action verification → tool composition → conflict resolution → memory retr
 Acceptance: **30/30** under three deterministic hash seeds.
 
 Boundary: bounded reliable task execution; independent reproduction and broader open-world generalization remain research requirements.
+
+
+## Phases 122–128 — Generalization & Skill Transfer Layer
+
+The post-121 frontier focuses on making learned capability reusable across contexts instead of rebuilding every task from scratch:
+
+```text
+verified skill → structural transfer → novelty detection → adaptive curriculum → checkpointed execution → unseen-context gate → integrated generalization
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 122 | Verified reusable skill library | ✅ 4/4 |
+| 123 | Structural cross-task transfer | ✅ 4/4 |
+| 124 | Novelty / OOD detection | ✅ 4/4 |
+| 125 | Adaptive curriculum | ✅ 4/4 |
+| 126 | Checkpointed long-horizon execution | ✅ 4/4 |
+| 127 | Cross-context generalization gate | ✅ 4/4 |
+| 128 | Integrated generalization agent | ✅ 6/6 |
+
+Acceptance: **30/30** on three deterministic hash seeds.
+
+Boundary: bounded transfer and generalization mechanisms; broad independent evaluation and open-world generalization remain research requirements.
