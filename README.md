@@ -20,6 +20,32 @@
 
 ---
 
+## 🚀 Backend Runtime / Deployment
+
+The UI-independent backend boundary is packaged for local and container deployment.
+
+```text
+HTTP client
+   ↓
+Mirror 7 HTTP boundary
+   ↓
+BackendService
+   ├── session lifecycle
+   ├── checkpoint persistence
+   ├── allow-listed actions
+   └── injected Mirror runtime
+```
+
+Local: `python -m mirror7_backend.http_server`
+
+Container: `docker build -t mirror7-backend . && docker run --rm -p 8787:8787 mirror7-backend`
+
+See [BACKEND_RELEASE.md](./BACKEND_RELEASE.md) for the API surface and deployment notes.
+
+**Boundary:** backend packaging and API verification do not constitute AGI evidence.
+
+---
+
 ## 🧭 What is Mirror 7?
 
 Mirror 7 is a research project exploring an alternative route toward machine intelligence:
