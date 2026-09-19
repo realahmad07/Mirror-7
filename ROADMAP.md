@@ -593,3 +593,20 @@ The engineering target of robustness across mixed action semantics and eliminati
 Focused local acceptance for phases 88–94: 28/28 passed.
 
 The boundary remains bounded: temporal abstraction, latent-state prototypes, delayed effects, hypothesis revision, active experiments, and structural transfer. Independent reproduction, broader real-world grounding, scaling, and unrestricted generalization remain open.
+
+## Phases 95–100 — Final Expected Boundary
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 95 | Bounded associative memory and similarity retrieval | Implemented |
+| 96 | Continual evidence consolidation and contradiction resistance | Implemented |
+| 97 | Uncertainty-aware bounded planning | Implemented |
+| 98 | Mixed-view structural grounding | Implemented |
+| 99 | Frozen black-box independent-style evaluation harness | Implemented |
+| 100 | Integrated final boundary across phases 94–99 | Implemented |
+
+The focused new-phase verification passed **9/9** after correcting Phase 97 so competing actions are fully compared before an exact-goal early return. The Phase 88–100 regression workflow is now the repository's final expected-phase workflow.
+
+### Boundary statement
+
+Phase 100 is the end of the **expected 100-phase engineering/research roadmap**, not a proof that Mirror 7 is AGI. Remaining questions are empirical: independent reproduction, broader unseen environments, scale, real-world grounding, safety, compute efficiency, and whether the mechanisms generalize beyond the bounded tests.
