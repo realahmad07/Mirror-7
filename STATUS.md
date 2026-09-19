@@ -129,3 +129,23 @@ The supplied Phase 35–51 ZIP did not contain the Phase 34 source artifact. The
 | Independent-style generalization result | 🟢 PASS | 18/18 solved; 9/9 held-out; 0 invalid actions on the unchanged locked evaluator. |
 
 **STOP RULE INACTIVE:** Phase 54 passes its locked independent-style gate with unchanged evaluator tasks and evaluator SHA. State-local failure memory plus prediction-error invalidation (exact memory fallback) closed the reset+add failures. This is independent-style rather than third-party evaluation; a genuinely independent external team is still required for an external scientific claim.
+
+
+---
+
+## Phase 55 — Representation Independence
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive path family | ☑ PASS | Sizes 4/5/6 × 3 seeds = 9/9 |
+| Progressive star family | ☑ PASS | Sizes 4/5/6 × 3 seeds = 9/9 |
+| Progressive cycle family | ☑ PASS | Sizes 4/5/6 × 3 seeds = 9/9 |
+| Cross-encoding equivalence | ☑ PASS | Edge list, neighbor map, and binary matrix recover one canonical unlabeled graph fingerprint. |
+| Held-out graph families | ☑ PASS | 2/2 unseen families |
+| Adversarial controls | ☑ PASS | Structural mutation + 5 malformed inputs = 6/6 |
+| Determinism / invariance regression | ☑ PASS | 20 seeds + repeated encoding checks |
+| Pytest regression | ☑ PASS | 11 tests passed |
+
+**Phase 55 COMPLETE — representation-independence acceptance suite passes.**
+
+Evidence: [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md). Boundary: bounded relational structures, three generic byte encodings, exact canonicalization for ≤8 nodes.
