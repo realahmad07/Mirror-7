@@ -280,3 +280,75 @@ Every promoted phase must have executable evidence in its repository tests and m
 - research hypothesis still unproven
 
 That distinction is part of the engineering design of Mirror 7.
+
+
+---
+
+# 🚀 Phase 35–51 Capability Expansion
+
+The supplied Phase 35–51 artifact has now been locally exercised. The verification record is in [PHASE35_51_VERIFICATION.md](./PHASE35_51_VERIFICATION.md), and the forward capability map is in [ROADMAP.md](./ROADMAP.md).
+
+### Verified capability progression
+
+| Phase | Capability | Status |
+|---|---|:---:|
+| 33 | Causal structure & interventions | ✅ |
+| 34 | Goal-directed reasoning / planning | ⚠️ verification reported; dedicated source artifact not present in supplied ZIP |
+| 35 | Action model | ✅ |
+| 36 | Closed-loop agent | ✅ |
+| 37 | Working memory | ✅ |
+| 38 | Episodic memory | ✅ |
+| 39 | World model | ✅ |
+| 40 | Compositional abstraction | ✅ |
+| 41 | Hierarchical planning | ✅ |
+| 42 | Tool use | ✅ |
+| 43 | Language grounding | ✅ |
+| 44 | Counterfactual simulation | ✅ |
+| 45 | Continual learning | ✅ |
+| 46 | Meta-reasoning | ✅ |
+| 47 | Efficiency mechanisms | ✅ |
+| 48 | Robustness | ✅ |
+| 49 | Transfer / unseen environments | ✅ |
+| 50 | Full integration | ✅ |
+| 51 | Advanced logical / epistemic reasoning | ✅ |
+
+### End-to-end direction
+
+```text
+OBSERVE
+  ↓
+REPRESENT
+  ↓
+STATE
+  ↓
+REMEMBER
+  ↓
+PREDICT
+  ↓
+CAUSE
+  ↓
+GOAL
+  ↓
+REASON
+  ↓
+PLAN
+  ↓
+ACT
+  ↓
+OBSERVE RESULT
+  ↓
+DISCREPANCY
+  ↓
+LEARN
+  ↓
+UPDATE WORLD MODEL
+  ↺
+```
+
+### Efficiency / logical reasoning upgrade
+
+Phase 51 adds explicit epistemic categories, evidence and assumption ledgers, contradiction checks, self-checking, failure attribution, early termination, and a benchmark interface for measuring reasoning cost.
+
+**Important:** some Phase 51 baseline efficiency/reliability values are synthetic comparison values in the benchmark implementation. They are tracked honestly as a validation limitation rather than treated as independent scientific evidence.
+
+The next research boundary is therefore not simply "add more features": Phase 52 should build an independently evaluated integrated runtime and test the architecture on genuinely new tasks and environments.
