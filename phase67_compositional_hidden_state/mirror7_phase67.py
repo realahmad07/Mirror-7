@@ -46,7 +46,7 @@ class CompositionModel:
             else:
                 baseline=self.base[(action,d)].mean if self.base[(action,d)].n else 0.0
                 for c in active:
-                    if c!=d: self.interaction[(action,d,c)].add(delta-baseline)
+                    self.interaction[(action,d,c)].add(delta-baseline)
     def _base(self,action,d):
         s=self.base.get((action,d)); return s.mean if s and s.n>=self.min_samples else None
     def predict_delta(self,action,state):
@@ -57,7 +57,6 @@ class CompositionModel:
             b=self._base(action,d)
             contextual=[]
             for c in active:
-                if c==d: continue
                 q=self.interaction.get((action,d,c))
                 if q and q.n>=self.min_samples:
                     contextual.append(q.mean)
