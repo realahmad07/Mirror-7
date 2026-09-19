@@ -1,4 +1,4 @@
-"""Mirror 7 Phase 32 acceptance tests against the current predictor/memory API."""
+"""Mirror 7 Phase 32 acceptance tests using structurally distinct states."""
 from __future__ import annotations
 import random, sys
 from pathlib import Path
@@ -15,14 +15,14 @@ def states(raws):
 
 
 def test_basic_prediction():
-    a,b,c=states([b"AAAA",b"BBBB",b"CCCC"])
+    a,b,c=states([b"A",b"AA",b"AAA"])
     p=TransitionPredictor(); p.online_update(a,b)
     assert p.predict_next(a).predicted_state_id==b.state_id
     assert p.predict_next(c).status==PredictionStatus.UNKNOWN
 
 
 def test_ambiguous_successors():
-    a,b,c=states([b"AA",b"BB",b"CC"])
+    a,b,c=states([b"A",b"AA",b"AAA"])
     m=TransitionMemory(); m.record_transition(a,b); m.record_transition(a,c)
     r=TransitionPredictor(m).predict_next(a)
     assert r.status==PredictionStatus.AMBIGUOUS and r.predicted_state_id is None
@@ -30,28 +30,28 @@ def test_ambiguous_successors():
 
 
 def test_support_accumulates():
-    a,b,c=states([b"AA",b"BB",b"CC"])
+    a,b,c=states([b"A",b"AA",b"AAA"])
     m=TransitionMemory(); m.record_transition(a,b); m.record_transition(a,b); m.record_transition(a,c)
     s={x.to_state_id:x.observation_count for x in m.get_successors(a)}
     assert s[b.state_id]==2 and s[c.state_id]==1
 
 
 def test_held_out_sequence():
-    train=states([bytes([1])*2,bytes([2])*2,bytes([3])*2,bytes([4])*2])
+    train=states([b"A",b"AA",b"AAA",b"AAAA"])
     p=TransitionPredictor()
     for x,y in zip(train,train[1:]): p.online_update(x,y)
-    test=states([bytes([1])*2,bytes([2])*2,bytes([3])*2,bytes([4])*2])
+    test=states([b"A",b"AA",b"AAA",b"AAAA"])
     for x,y in zip(test,test[1:]):
         assert p.predict_next(x).predicted_state_id==y.state_id
 
 
 def test_unseen_unknown():
-    a,b,u=states([b"AA",b"BB",b"CD"]); p=TransitionPredictor(); p.online_update(a,b)
+    a,b,u=states([b"A",b"AA",b"AAAAA"]); p=TransitionPredictor(); p.online_update(a,b)
     assert p.predict_next(u).status==PredictionStatus.UNKNOWN
 
 
 def test_discrepancy_online_update():
-    a,b,c=states([b"AA",b"BB",b"CC"]); p=TransitionPredictor(); p.online_update(a,b)
+    a,b,c=states([b"A",b"AA",b"AAA"]); p=TransitionPredictor(); p.online_update(a,b)
     pred=p.predict_next(a); d=p.evaluate_prediction(pred,c)
     assert d.is_correct is False and d.actual_state_id==c.state_id
     p.online_update(a,c)
@@ -59,7 +59,7 @@ def test_discrepancy_online_update():
 
 
 def test_multistep_rollout():
-    a,b,c,d=states([b"AA",b"BB",b"CC",b"DD"]); p=TransitionPredictor()
+    a,b,c,d=states([b"A",b"AA",b"AAA",b"AAAA"]); p=TransitionPredictor()
     for x,y in zip((a,b,c,d),(b,c,d)): p.online_update(x,y)
     preds=p.predict_sequence(a,3)
     assert tuple(r.predicted_state_id for r in preds)==(b.state_id,c.state_id,d.state_id)
@@ -67,28 +67,31 @@ def test_multistep_rollout():
 
 def test_three_seeds_and_negative():
     for seed in (11,22,33):
-        rng=random.Random(seed); alphabet=rng.sample(range(1,255),4); ss=states([bytes([x,x]) for x in alphabet])
-        p=TransitionPredictor()
+        rng=random.Random(seed); lengths=[1+rng.randint(0,2) for _ in range(4)]
+        lengths=list(dict.fromkeys(lengths))
+        while len(lengths)<4: lengths.append(len(lengths)+1)
+        raws=[bytes([7])*n for n in lengths[:4]]
+        ss=states(raws); p=TransitionPredictor()
         for x,y in zip(ss,ss[1:]): p.online_update(x,y)
         assert p.predict_next(ss[0]).predicted_state_id==ss[1].state_id
-        negative=raw_to_state(bytes([alphabet[0],alphabet[2]]))
+        negative=raw_to_state(bytes([9])*7)
         assert p.predict_next(negative).status==PredictionStatus.UNKNOWN
 
 
 def test_serialization():
-    a,b,c=states([b"AA",b"BB",b"CC"]); p=TransitionPredictor(); p.online_update(a,b); p.online_update(b,c)
+    a,b,c=states([b"A",b"AA",b"AAA"]); p=TransitionPredictor(); p.online_update(a,b); p.online_update(b,c)
     restored=TransitionMemory.from_json(p.memory.to_json())
     assert restored.to_json()==p.memory.to_json()
     assert TransitionPredictor(restored).predict_next(a).predicted_state_id==b.state_id
 
 
 def test_phase31_regression():
-    a,b,c=states([b"AA",b"BB",b"CC"]); t=TemporalStateTracker()
+    a,b,c=states([b"A",b"AA",b"AAA"]); t=TemporalStateTracker()
     assert t.step(a).to_state_id==a.state_id and t.step(b).to_state_id==b.state_id and t.step(c).to_state_id==c.state_id
 
 
 def test_end_to_end():
-    p=TransitionPredictor(); train=states([b"AA",b"BB",b"CC",b"DD"])
+    p=TransitionPredictor(); train=states([b"A",b"AA",b"AAA",b"AAAA"])
     for x,y in zip(train,train[1:]): p.online_update(x,y)
     for x,y in zip(train,train[1:]): assert p.predict_next(x).predicted_state_id==y.state_id
 
