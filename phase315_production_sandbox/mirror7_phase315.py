@@ -262,6 +262,7 @@ class ProductionSandbox:
             return SandboxResult(False, None, "", "", "source exceeds sandbox limit")
 
         with tempfile.TemporaryDirectory(prefix="mirror7-sbx-") as td:
+            os.chmod(td, 0o755)
             path = os.path.join(td, "probe.py")
             with open(path, "w", encoding="utf-8") as handle:
                 handle.write(source)
@@ -303,6 +304,7 @@ class ProductionSandbox:
         )
 
         with tempfile.TemporaryDirectory(prefix="mirror7-sbx-") as td:
+            os.chmod(td, 0o755)
             candidate = os.path.join(td, "candidate.py")
             harness = os.path.join(td, "harness.py")
             with open(candidate, "w", encoding="utf-8") as handle:
