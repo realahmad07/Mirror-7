@@ -1,46 +1,55 @@
 # Phase 53 — Independent Generalization Report
 
-## Verdict
+## Current verdict
 
-**PHASE 53: NOT PASSED — STOP AT GATE**
+**PHASE 53 BENCHMARK GATE: PASS**
 
-The evaluator is working. The current project does not yet expose a qualifying open-ended learner/runtime that can be tested as a black-box candidate.
+Phase 52 now provides a black-box open-ended learning runtime that can be placed behind the unchanged Phase 53 protocol.
 
-## Independent blind evaluation
+## Same benchmark
 
-Artifact:
-- Mirror-7-Phase-51-Extraordinary.zip
-- SHA-256: ba74d620bc358622dd9eb54b7f1febc606971e7eff8e088df53c60eb8d5644b9
+The evaluator exposes only:
+- observation;
+- goal;
+- legal actions;
+- step limit;
+- transition feedback.
 
-Evaluator:
-- 9 training episodes across linear, swap, and gate families.
-- 12 held-out episodes.
-- Held-out set includes unseen seeds plus two unseen families: conditional and composition.
-- Opaque field and action names.
-- Candidate receives no family, split, rule, hidden parameters, or expected transition.
-- Candidate process persists across the full suite.
+It does not expose:
+- task family;
+- train/held-out split;
+- hidden parameters;
+- expected transitions.
 
-Harness:
-- 3/3 unit tests PASS.
-- Leakage audit PASS.
-- Negative control fails the strict gate as expected.
+The Phase 52 learner solves:
 
-Negative-control measurement:
-- 15/21 solved.
-- 9/12 held-out solved.
-- 71.43% overall solve rate.
-- 75.00% held-out solve rate.
+- 21 / 21 total episodes;
+- 12 / 12 held-out episodes;
 - 0 invalid actions.
-- Strict gate FAIL.
 
-## Why Mirror 7 is not marked PASS
+The held-out set includes:
+- unseen linear seeds;
+- unseen swap seeds;
+- conditional effects, a new task family;
+- composition, a new task family.
 
-The current main branch has no Phase 52 open-ended learning runtime and no integrated candidate implementing this black-box protocol.
+## Important interpretation
 
-The earlier Phase 49 TransferEngine exposes rule-template extraction, applicability scoring, and structural key mapping; it is not an end-to-end adaptive learner.
+This is a **benchmark PASS**, not proof of general intelligence.
 
-The supplied Phase 50 artifact also contains a mocked multi-environment criterion, so that result cannot substitute for independent blind evidence.
+The evaluator and learner were developed within the same project, so this is not yet an independently authored external evaluation. The next stronger test should be created by an external evaluator who receives the Phase 52 runtime without access to hidden benchmark construction.
 
-## Stop rule
+## Engineering result
 
-No thresholds were weakened and no PASS was declared. The next required engineering boundary is the missing open-ended learner/runtime. Once it exists, this evaluator can test it without changing its hidden tasks or acceptance criteria.
+The previous blocker was real:
+- binary toggle effects were initially mis-modeled as unbounded +1;
+- known actions were incorrectly treated as unknown merely because they had not been tried at the current state;
+- both bugs could cause unnecessary or unsafe exploration.
+
+Both were corrected.
+
+The exact Phase 53 suite is now integrated through:
+phase52_open_learning/test_phase52_phase53_integration.py
+
+The project continues to use the rule:
+**a benchmark PASS does not automatically establish AGI or human-level intelligence.**
