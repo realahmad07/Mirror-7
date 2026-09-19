@@ -21,8 +21,10 @@ class Phase69Transfer:
     def learn_map(self,source_effect,target_effect):
         s=tuple(float(x) for x in source_effect); t=tuple(float(x) for x in target_effect)
         if len(s)!=len(t) or not s or len(s)>8: return None
+        s_sig=self._signature(s)
+        t_sig=self._signature(t)
         def err_for(p):
-            return sum(abs(abs(s[i])-abs(t[p[i]]))/(1+abs(s[i])+abs(t[p[i]])) for i in range(len(s)))/len(s)
+            return sum(abs(s_sig[i]-t_sig[p[i]]) for i in range(len(s)))/len(s)
         p=min(permutations(range(len(t))),key=err_for)
         err=err_for(p)
         scales=tuple(1.0 if abs(s[i])<1e-12 or abs(t[p[i]])<1e-12 else abs(t[p[i]]/s[i]) for i in range(len(s)))
