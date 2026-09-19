@@ -137,8 +137,27 @@ class BlackBoxMirrorAgent:
         return self.rep.encode_like(tuple(latent), observation), min(1.0, self.rep.confidence())
 
     def choose_action(self, observation: bytes, target: bytes, actions: Iterable[bytes]) -> Optional[bytes]:
-        plan = self.plan_to_target(observation, target, actions, max_depth=1)
-        return plan[0] if plan else None
+        state = self.rep.decode(observation)
+        goal = self.rep.decode(target)
+        if not state or not goal or not self.rep.action_effects:
+            return None
+        positions = sorted(self.rep.value_positions)
+        best = None
+        best_distance = None
+        for action in actions:
+            effect = self.rep.action_effects.get(action)
+            if effect is None:
+                continue
+            pos, delta = effect
+            if pos not in positions:
+                continue
+            idx = positions.index(pos)
+            candidate = list(state)
+            candidate[idx] = max(-40, min(40, candidate[idx] + delta))
+            distance = sum(abs(a - b) for a, b in zip(candidate, goal))
+            if best_distance is None or distance < best_distance:
+                best_distance, best = distance, action
+        return best
 
     def plan_to_target(self, observation: bytes, target: bytes, actions: Iterable[bytes], max_depth: int = 12) -> List[bytes]:
         start = self.rep.decode(observation)
