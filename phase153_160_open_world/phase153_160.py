@@ -52,6 +52,10 @@ class SealedMirrorAgent:
     """
     def __init__(self) -> None:
         self._runtime = IntegratedCognition()
+        # Phase 157 requires a bounded 32-transition replay; the runtime's
+        # default world-model rule budget is 20. Increase only the evaluation
+        # configuration, without changing the learning/prediction algorithm.
+        self._runtime.world.max_rules = 64
 
     def learn(self, observation: Dict[str, Any], state: Dict[str, Any], action: str, outcome: Dict[str, Any]) -> Any:
         return self._runtime.step(observation, state, action, outcome)
