@@ -29,6 +29,8 @@ Phase 61  PREDICTIVE CLOSED-LOOP AUTONOMY ✅ COMPLETE
       ↓
 Phase 62  PARTIAL OBSERVABILITY + ACTIVE INFORMATION ✅ COMPLETE
       ↓
+Phase 63  NONSTATIONARY WORLD + EXPERIMENT DESIGN ✅ COMPLETE
+      ↓
 Phase 35  ACT
       ↓
 Phase 36  CLOSED LOOP
@@ -361,6 +363,51 @@ The next boundary should remove more scaffolding with **nonstationary
 environments, hidden state that changes over time, richer observation actions,
 autonomous experiment design, and longer unseen tasks**.
 
+
+## Phase 63 — Nonstationary World + Autonomous Experiment Design
+
+```text
+competing regime hypotheses
+          ↓
+transition prediction
+          ↓
+repeated mismatch
+          ↓
+drift / stale-model detection
+          ↓
+experiment selection by outcome disagreement
+          ↓
+regime identification
+          ↓
+goal-directed control resumes
+```
+
+Acceptance evidence:
+
+- 3 progressive change levels × 3 seeds;
+- held-out regime identification;
+- experiment selection by predicted disagreement;
+- repeated-mismatch drift detection;
+- false-drift negative control;
+- bounded experiment budget;
+- Phase 62 handoff contract;
+- 9/9 regression tests.
+
+See [PHASE63_ACCEPTANCE.md](./PHASE63_ACCEPTANCE.md).
+
+Boundary: bounded nonstationary-regime tracking and active experiment selection, not unrestricted scientific discovery.
+
+## Current research boundary after Phase 63
+
+Mirror 7 now has a verified chain from raw structural concepts through hierarchy,
+prediction, long-horizon modeling, closed-loop control, partial observation,
+active information acquisition, and adaptation to detected dynamics changes.
+
+The next boundary should remove more scaffolding by introducing **unknown
+regimes, richer experiment actions, delayed effects, stochastic observations,
+and autonomous experiment sequences whose objective is to reduce uncertainty
+while improving a real goal**.
+
 ## What remains
 
 Passing these phases is not equivalent to AGI.
@@ -370,7 +417,7 @@ The major research gaps are:
 1. broad, independent, unseen-environment evaluation;
 2. broader raw mixed-modality concept acquisition beyond the bounded 1-D/2-D structural views tested in Phase 57;
 3. scalable world modeling beyond hand-structured benchmark environments and beyond the bounded Phase 60 state/action model;
-4. reliable goal-directed autonomy under partial observability, nonstationary dynamics, longer horizons, and autonomous experiment design;
+4. reliable goal-directed autonomy under partial observability, nonstationary dynamics, delayed effects, stochastic observations, and autonomous experiment sequences;
 5. stronger compositional and abstract reasoning;
 6. continual learning at realistic scale without knowledge corruption;
 7. externally grounded language and tool use;
@@ -380,7 +427,7 @@ The major research gaps are:
 
 ## Next research boundary
 
-Phase 62 closes the current bounded partial-observation and information-seeking loop. The next boundary should introduce hidden state changes, nonstationarity, autonomous experiment design, richer observation actions, longer unseen tasks, and stronger independent evaluation.
+Phase 63 closes the current bounded adaptation loop. The next boundary should expand experiment design beyond a finite known regime bank and test unknown regimes, delayed/stochastic effects, longer autonomous experiment sequences, and stronger independent evaluation.
 
 ---
 
