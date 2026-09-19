@@ -303,3 +303,23 @@ pytest: 9 passed
 ```
 
 This local verification covers the Phase 62 acceptance suite. It does not constitute a full-repository regression or independent external reproduction.
+
+
+## Phase 63 — Nonstationary World + Autonomous Experiment Design
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive nonstationary change | ☑ PASS | 3 change levels × 3 seeds |
+| Experiment selection by predicted disagreement | ☑ PASS | Chooses an action whose regime-specific outcomes distinguish competing hypotheses |
+| Repeated-mismatch drift detection | ☑ PASS | Drift becomes stale after the configured repeated-mismatch threshold |
+| False-drift negative control | ☑ PASS | Consistent transitions do not trigger stale-model state |
+| Regime identification after experiment | ☑ PASS | Observed experiment outcome uniquely identifies the matching regime |
+| Goal reuse after regime change | ☑ PASS | Correct action policy resumes after regime identification |
+| Experiment-budget bound | ☑ PASS | Experiment count never exceeds configured budget |
+| Phase 62 handoff contract | ☑ PASS | Phase 63 consumes the established state/goal partial-observation contract |
+| Malformed-input rejection | ☑ PASS | Invalid bounds and empty states rejected |
+| Regression suite | ☑ PASS | 9 / 9 tests passed |
+
+**Phase 63 COMPLETE — bounded nonstationary world handling and autonomous experiment-selection acceptance suite passes.**
+
+Evidence: [PHASE63_ACCEPTANCE.md](./PHASE63_ACCEPTANCE.md). Boundary: finite regime-hypothesis tracking and discriminating experiments; not unrestricted nonstationary-world understanding or general autonomous science.
