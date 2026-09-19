@@ -49,15 +49,16 @@ No family labels, hidden parameters, or expected effects were provided.
 
 | Group | Solved | Total | Result |
 |---|---:|---:|:---:|
-| Training | 5 | 9 | FAIL |
+| Training | 7 | 9 | FAIL |
 | Held-out | 9 | 9 | PASS |
-| Overall | 14 | 18 | FAIL |
+| Overall | 16 | 18 | FAIL |
 
-Invalid actions: **184**
+Invalid actions: **8**
 
 Failed cases:
-- reset + additive: 3/3 failed
-- capped increment: 1/3 failed
+- reset + additive: 2/3 failed
+- copy relation: 0/3 failed
+- capped increment: 0/3 failed
 
 The held-out families happened to solve 9/9, but the strict overall gate requires every evaluated episode to pass.
 
@@ -66,8 +67,9 @@ The held-out families happened to solve 9/9, but the strict overall gate require
 This evaluation exposes a concrete limitation in the current learner:
 
 - it can transfer several observed transformation patterns to unseen task families;
-- it is not yet a robust open-ended learner across mixed action semantics;
-- repeated invalid actions show poor handling of actions whose effects depend on state or whose exploration becomes unproductive.
+ - it is not yet a robust open-ended learner across mixed action semantics;
+- invalid exploration has dropped from 184 to 8 on the same locked evaluator;
+- the remaining failures are reset+add cases where a destructive reset action is indistinguishable from a useful action from the learner's black-box interface, so the current policy cannot guarantee zero-invalid exploration without additional information or a stronger safe-exploration mechanism.
 
 Because the failure occurred during an independent-style evaluation, the evaluator was not modified to accommodate the current implementation.
 
@@ -83,4 +85,4 @@ Per Mirror 7's stop-on-failure rule:
 
 `FAIL → analyze → smallest justified fix → rerun failed test + full regression`
 
-No learner changes were made after this evaluation result.
+The evaluator SHA-256 and task definitions were unchanged. The current learner was rerun without benchmark changes.
