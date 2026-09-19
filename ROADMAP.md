@@ -825,7 +825,10 @@ The post-170 boundary removes repository-internal evaluator assumptions by defin
 | 174 | Deterministic public task fingerprint | ✅ |
 | 175 | Separate evaluator process without Mirror 7 runtime import | ✅ |
 | 176 | Evaluator negative-control enforcement | ✅ |
-| 177–180 | External datasets, unseen task families, independent external reproduction | ⏳ |
+| 177 | UCI Iris external-data boundary plumbing | ✅ |
+| 178 | UCI Wine held-out external performance | ⏳* |
+| 179 | UCI Wine Quality + noise robustness | ⏳* |
+| 180 | Cross-domain fail-closed external boundary | ⏳* |
 
 Boundary: 171–176 are infrastructure/validation hardening. They establish the interface needed for genuinely external evaluation; they do not themselves demonstrate unrestricted generalization.
 
