@@ -1261,3 +1261,35 @@ Focused acceptance: **30/30** on `PYTHONHASHSEED=0,1,2`.
 See [PHASE122_128_ACCEPTANCE.md](./PHASE122_128_ACCEPTANCE.md).
 
 **Boundary:** this is bounded transfer/generalization engineering, not proof of unrestricted general intelligence or AGI.
+
+
+## 🧠 Phases 129–140 — Integrated Cognitive Layer
+
+The post-128 frontier focuses on connecting explicit mechanisms into a bounded cognitive coordination layer:
+
+```text
+workspace → state fusion → concept/skill bridge → world/memory bridge
+→ safe program execution → goals → research selection → self-debug
+→ consolidation → abstract reasoning → multimodal grounding → unified runtime
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 129 | Shared bounded cognitive workspace | ✅ 3/3 |
+| 130 | Confidence-weighted state fusion | ✅ 3/3 |
+| 131 | Concept-to-skill binding gate | ✅ 3/3 |
+| 132 | World-model / memory consistency bridge | ✅ 3/3 |
+| 133 | Bounded program execution sandbox | ✅ 3/3 |
+| 134 | Long-term goal management | ✅ 3/3 |
+| 135 | Autonomous research scheduling | ✅ 3/3 |
+| 136 | Self-debugging proposal/adoption gate | ✅ 3/3 |
+| 137 | Evidence consolidation | ✅ 3/3 |
+| 138 | Abstract relation/composition reasoning | ✅ 3/3 |
+| 139 | Cross-view grounding normalization | ✅ 3/3 |
+| 140 | Unified cognitive coordination runtime | ✅ 3/3 |
+
+Focused local acceptance: **36/36**, repeated with `PYTHONHASHSEED=0,1,2`.
+
+See [PHASE129_140_ACCEPTANCE.md](./PHASE129_140_ACCEPTANCE.md).
+
+**Boundary:** this is a bounded integration layer. It does not establish unrestricted general intelligence or AGI.
