@@ -50,6 +50,23 @@ Bootstrap completion establishes a reproducible self-hosting computational subst
 
 **Phase 31 COMPLETE — verified executable acceptance suite.**
 
+---
+
+## Phase 34 — Goal-Directed Reasoning / Planning
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive planning families | ☑ PASS | 3 task families × 3 seeds |
+| Held-out cases | ☑ PASS | 3 / 3 |
+| Adversarial controls | ☑ PASS | 3 / 3 |
+| Exact-plan validation | ☑ PASS | Accepted plans replay against the learned transition model. |
+| Regression suite | ☑ PASS | 8 / 8 tests passed. |
+| Repeat-run determinism | ☑ PASS | Acceptance gate repeated with identical results. |
+
+**Phase 34 COMPLETE — executable goal-directed reasoning/planning acceptance suite passes.**
+
+Evidence: [PHASE34_ACCEPTANCE.md](./PHASE34_ACCEPTANCE.md).
+
 
 
 ---
@@ -82,9 +99,9 @@ The advanced-reasoning gate passes explicit epistemic categorization, contradict
 
 The current benchmark still contains synthetic baseline values for several comparison metrics. This is documented as a limitation rather than promoted as independent empirical evidence.
 
-### Artifact boundary
+### Historical artifact note
 
-The supplied ZIP has no dedicated Phase 34 source directory. Phase 34 is therefore not represented here as a repository source-code PASS; it remains a separately reported verification boundary until its implementation artifact is published.
+The supplied Phase 35–51 ZIP did not contain the Phase 34 source artifact. The current repository now publishes the dedicated Phase 34 implementation and acceptance record under `phase34_reasoning_planning/`, so the repository source-code gap is closed.
 
 
 ---
