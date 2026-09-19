@@ -169,7 +169,8 @@ def contradiction_filter(bindings: Sequence[tuple[str, str, float]]) -> tuple[tu
 
 
 def build_grounded_scene(views: Sequence[ModalityView], prior: Mapping[str, Any] | None = None) -> dict[str,Any]:
-    if not views: return {"concepts":(), "bindings":(), "missing_modalities":(), "fingerprint":sha256(b"empty").hexdigest()}
+    if not views:
+        raise ValueError("empty multimodal scene")
     alignment=align_views(views)
     kinds={v.kind for v in views}
     expected={"image","text","audio","bytes","signal","grid"}
