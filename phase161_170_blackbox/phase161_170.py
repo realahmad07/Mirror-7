@@ -136,27 +136,42 @@ class BlackBoxMirrorAgent:
         return self.rep.encode_like(tuple(latent), observation), min(1.0, self.rep.confidence())
 
     def choose_action(self, observation: bytes, target: bytes, actions: Iterable[bytes]) -> Optional[bytes]:
-        state = self.rep.decode(observation)
+        plan = self.plan_to_target(observation, target, actions, max_depth=1)
+        return plan[0] if plan else None
+
+    def plan_to_target(self, observation: bytes, target: bytes, actions: Iterable[bytes], max_depth: int = 12) -> List[bytes]:
+        start = self.rep.decode(observation)
         goal = self.rep.decode(target)
-        if not state or not goal or not self.rep.action_effects:
-            return None
+        if not start or not goal or not self.rep.action_effects:
+            return []
         positions = sorted(self.rep.value_positions)
-        best = None
-        best_distance = None
+        indexed = []
         for action in actions:
             effect = self.rep.action_effects.get(action)
             if effect is None:
                 continue
             pos, delta = effect
-            if pos not in positions:
+            if pos in positions:
+                indexed.append((action, positions.index(pos), delta))
+        if not indexed:
+            return []
+        queue = deque([(start, [])])
+        seen = {start}
+        while queue:
+            state, path = queue.popleft()
+            if state == goal:
+                return path
+            if len(path) >= max_depth:
                 continue
-            idx = positions.index(pos)
-            candidate = list(state)
-            candidate[idx] = max(-40, min(40, candidate[idx] + delta))
-            distance = sum(abs(a - b) for a, b in zip(candidate, goal))
-            if best_distance is None or distance < best_distance:
-                best_distance, best = distance, action
-        return best
+            for action, idx, delta in indexed:
+                nxt = list(state)
+                nxt[idx] = max(-40, min(40, nxt[idx] + delta))
+                nxt = tuple(nxt)
+                if nxt in seen:
+                    continue
+                seen.add(nxt)
+                queue.append((nxt, path + [action]))
+        return []
 
 def train_agent(task: BlackBoxTask, agent: BlackBoxMirrorAgent, steps: int = 24):
     state = task.initial
@@ -249,15 +264,13 @@ def phase167_irreversible_long_horizon(seed: int) -> bool:
             target[slot] = max(-40, min(40, target[slot] + delta))
         state = task.transition(state, task.action_tokens[i % len(task.action_tokens)])
     target_bytes = task.encode(tuple(target))
+    plan = agent.plan_to_target(task.encode(task.initial), target_bytes, task.action_tokens, max_depth=12)
+    if not plan or len(plan) > 12:
+        return False
     state = task.initial
-    current = task.encode(state)
-    for _ in range(12):
-        action = agent.choose_action(current, target_bytes, task.action_tokens)
-        if action is None:
-            return False
+    for action in plan:
         state = task.transition(state, action)
-        current = task.encode(state)
-    return current == target_bytes
+    return task.encode(state) == target_bytes
 
 def phase168_contamination_controls(seed: int) -> bool:
     task = BlackBoxTask.generate(seed, slots=3)
