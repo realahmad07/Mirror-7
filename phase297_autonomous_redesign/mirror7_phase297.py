@@ -17,8 +17,8 @@ class RedesignReport:
 
 class AutonomousRedesignEngine:
     """Runs bounded source redesign under sealed evaluation and promotion gates."""
-    def __init__(self,initial_source:str):
-        self.evaluator=SealedSourceEvaluator()
+    def __init__(self,initial_source:str,evaluator=None):
+        self.evaluator=evaluator or SealedSourceEvaluator()
         self.proposer=RedesignProposer()
         self.registry=SourcePromotionRegistry(initial_source)
 
