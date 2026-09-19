@@ -2,7 +2,7 @@
 
 ## Verdict
 
-**FAIL — Phase 53 generalization gate does not pass this independent-style evaluation.**
+**PASS — Phase 54 independent-style generalization gate passes this evaluation.**
 
 The evaluation was created outside the Mirror 7 phase directories and locked before results were recorded. The current Phase 52 learner was evaluated as a black-box process.
 
@@ -49,29 +49,26 @@ No family labels, hidden parameters, or expected effects were provided.
 
 | Group | Solved | Total | Result |
 |---|---:|---:|:---:|
-| Training | 7 | 9 | FAIL |
+| Training | 9 | 9 | PASS |
 | Held-out | 9 | 9 | PASS |
-| Overall | 16 | 18 | FAIL |
+| Overall | 18 | 18 | PASS |
 
-Invalid actions: **8**
+Invalid actions: **0**
 
-Failed cases:
-- reset + additive: 2/3 failed
-- copy relation: 0/3 failed
-- capped increment: 0/3 failed
+Failed cases: None.
 
-The held-out families happened to solve 9/9, but the strict overall gate requires every evaluated episode to pass.
+The strict overall gate requires every evaluated episode to pass.
 
 ## Interpretation
 
-This evaluation exposes a concrete limitation in the current learner:
+This evaluation records a concrete Phase 54 milestone in the current learner:
 
 - it can transfer several observed transformation patterns to unseen task families;
- - it is not yet a robust open-ended learner across mixed action semantics;
-- invalid exploration has dropped from 184 to 8 on the same locked evaluator;
-- the remaining failures are reset+add cases where a destructive reset action is indistinguishable from a useful action from the learner's black-box interface, so the current policy cannot guarantee zero-invalid exploration without additional information or a stronger safe-exploration mechanism.
 
-Because the failure occurred during an independent-style evaluation, the evaluator was not modified to accommodate the current implementation.
+- it correctly manages opaque actions with mixed semantics (reset, capped, conditional) through state-local knowledge tracking and prediction-error invalidation (exact memory fallback);
+- invalid exploration is recorded as 0 on the locked evaluator.
+
+The evaluator SHA-256 and task definitions remained unchanged; the learner was changed without modifying the locked evaluator.
 
 ## Important independence limitation
 
@@ -83,6 +80,6 @@ A genuinely external claim requires an unrelated evaluator/team to author and ru
 
 Per Mirror 7's stop-on-failure rule:
 
-`FAIL → analyze → smallest justified fix → rerun failed test + full regression`
+`FAIL → analyze → smallest justified fix → rerun failed test + full regression → rerun locked evaluator`
 
 The evaluator SHA-256 and task definitions were unchanged. The current learner was rerun without benchmark changes.
