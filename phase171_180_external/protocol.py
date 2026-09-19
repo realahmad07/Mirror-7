@@ -112,9 +112,12 @@ def task_pack_fingerprint(pack: ExternalTaskPack) -> str:
     return hashlib.sha256(canonical).hexdigest()
 
 def make_sealed_view(episode: ExternalEpisode) -> SealedTaskView:
+    # Human-readable target labels remain evaluator-side. The sealed agent view
+    # receives deterministic opaque action handles instead.
+    opaque = tuple(f"action_{i:03d}" for i in range(len(episode.legal_actions)))
     return SealedTaskView(
         episode.episode_id, episode.observations, episode.actions,
-        episode.outcomes, episode.goal, episode.legal_actions
+        episode.outcomes, episode.goal, opaque
     )
 
 def save_pack(pack: ExternalTaskPack, path: str | Path) -> None:
