@@ -359,7 +359,7 @@ The next research boundary is therefore not simply "add more features": Phase 52
 ## Phase 53 — Independent Generalization
 
 **Evaluator:** ✅ READY  
-**Mirror 7 gate:** 🔴 NOT PASSED
+**Mirror 7 gate:** 🟢 21/21
 
 Phase 53 introduces a blind black-box evaluator with 9 training episodes and 12 held-out episodes, including unseen rule families. The candidate sees only observations, goals, legal actions, step limits, and environment feedback.
 
@@ -379,3 +379,19 @@ See [PHASE53_REPORT.md](./PHASE53_REPORT.md) and [phase53_independent_eval/READM
 | Independent external evaluation | ⏳ |
 
 The current result demonstrates transfer across the benchmark's unseen seeds and unseen rule families. It is not an AGI claim and is not yet an externally independent evaluation.
+
+## Phase 54 — Fresh Independent-Style Test
+
+Phase 54 reruns the open-ended learner against the newly locked evaluator recorded in `INDEPENDENT_EVALUATION_2026-09-19.md`. The evaluator was not modified to accommodate the learner.
+
+### Phase 54 boundary
+
+| Stage | Result |
+|---|:---:|
+| Phase 54 locked independent-style generalization test | 🟢 18/18 |
+| Phase 54 zero-invalid strict requirement | 🟢 |
+| Held-out episodes | ✅ 9/9 |
+| Invalid actions | ✅ 0 |
+| Independent external evaluation | ⏳ |
+
+The Phase 54 result records successful transfer across six fresh task families and mixed action semantics. It remains an independent-style evaluation, not a third-party scientific replication.
