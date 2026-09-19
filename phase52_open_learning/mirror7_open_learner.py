@@ -57,7 +57,15 @@ class ActionSchema:
         for key, (old, new) in self.last_effect.items():
             if key not in state:
                 return None
-            if isinstance(old, (int, float)) and isinstance(new, (int, float)):
+            if (
+                isinstance(old, int)
+                and isinstance(new, int)
+                and {old, new} == {0, 1}
+                and state[key] in {0, 1}
+            ):
+                # Binary observed effect: infer a toggle, not an unbounded +1.
+                result[key] = 1 - state[key]
+            elif isinstance(old, (int, float)) and isinstance(new, (int, float)):
                 result[key] = state[key] + (new - old)
             else:
                 result[key] = new if state[key] == old else old
