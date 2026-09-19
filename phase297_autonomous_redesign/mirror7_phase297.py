@@ -26,6 +26,8 @@ class AutonomousRedesignEngine:
     def source(self)->str: return self.registry.source
 
     def run_round(self,pack,capability:str,failures:Sequence[str],round_number:int,max_candidates:int=8)->RedesignReport:
+        if max_candidates < 1:
+            raise ValueError("max_candidates must be positive")
         baseline=self.evaluator.evaluate(self.source,pack)
         if baseline.train>=1.0:
             return RedesignReport(round_number,baseline.train,baseline.held_out,0,False,None,baseline.train,baseline.held_out)
