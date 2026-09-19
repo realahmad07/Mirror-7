@@ -37,12 +37,15 @@ class UncertaintyAwarePlanner:
                     ns,unc=edge; ns=self._state(ns); u=float(unc)
                     if ns is None or not isfinite(u) or u<0: return Plan((),s,float("inf"),float("inf"),True)
                     dist=sum(abs(a-b) for a,b in zip(ns,g)); total_unc=path_unc+u
-                    cost=dist+self.uncertainty_weight*total_unc; item=(cost,total_unc,path+(action,),ns)
-                    nxt.append(item)
-                    if item[0]<best[0]: best=item
-                    if dist==0: return Plan(item[2],ns,item[0],item[1],False)
-            frontier=sorted(nxt,key=lambda x:(x[0],x[2]))[:self.beam_width]
-            if not frontier: break
+                    cost=dist+self.uncertainty_weight*total_unc
+                    nxt.append((cost,total_unc,path+(action,),ns))
+            if not nxt: break
+            nxt.sort(key=lambda x:(x[0],x[2]))
+            if nxt[0][0] < best[0]:
+                best=nxt[0]
+            if sum(abs(a-b) for a,b in zip(nxt[0][3],g)) == 0:
+                x=nxt[0]; return Plan(x[2],x[3],x[0],x[1],False)
+            frontier=nxt[:self.beam_width]
         return Plan(best[2],best[3],best[0],best[1],False)
 
     @staticmethod
