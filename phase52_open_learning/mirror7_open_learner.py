@@ -60,7 +60,7 @@ class ActionSchema:
 
     def observe(self, sample: TransitionSample) -> None:
         self.samples.append(sample)
-        if sample.ok:
+        if sample.ok and sample.changed:
             self.last_effect = dict(sample.changed)
 
     @property
@@ -75,8 +75,19 @@ class ActionSchema:
         key = state_key(state)
         return any(not sample.ok and sample.before_key == key for sample in self.samples)
 
+    def _confirmed_toggle(self, key: str) -> bool:
+        transitions = [
+            sample.changed[key]
+            for sample in self.samples
+            if sample.ok and key in sample.changed
+        ]
+        if not transitions:
+            return False
+        observed = {(old, new) for old, new in transitions}
+        return (0, 1) in observed and (1, 0) in observed
+
     def predict(self, state: State) -> Optional[State]:
-        if not self.successful:
+        if not self.successful or not self.last_effect:
             return None
 
         result = dict(state)
@@ -89,8 +100,10 @@ class ActionSchema:
                 and isinstance(new, int)
                 and {old, new} == {0, 1}
                 and state[key] in {0, 1}
+                and self._confirmed_toggle(key)
             ):
-                # Infer a true binary toggle rather than treating 0 -> 1 as +1.
+                # A single 0 -> 1 sample is ambiguous between +1 and toggle.
+                # Confirm toggle semantics only after observing both directions.
                 result[key] = 1 - state[key]
             elif isinstance(old, (int, float)) and isinstance(new, (int, float)):
                 result[key] = state[key] + (new - old)
@@ -223,19 +236,14 @@ class OpenEndedLearner:
         if unknown:
             return unknown[0]
 
-        # 3. Use a known safe action if it can still contribute.
-        safe_known = self._safe_known_actions()
-        if safe_known:
-            safe_known.sort(
-                key=lambda action: (
-                    goal_cost(
-                        ep.schemas[action].predict(ep.current) or ep.current,
-                        ep.goal,
-                    ),
-                    ep.actions.index(action),
-                )
-            )
-            return safe_known[0]
+        # 3. If no strict improvement exists, continue with the best learned
+        # successor that is not known to fail at this exact state.
+        non_failing = [
+            candidate for candidate in known
+            if not ep.failed_at_current(candidate[2])
+        ]
+        if non_failing:
+            return non_failing[0][2]
 
         # 4. Every available action has failed at this exact state.
         #    Repeating an invalid action is never useful; choose the first
