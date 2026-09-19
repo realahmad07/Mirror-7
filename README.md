@@ -6,6 +6,7 @@
 [![Phase 31](https://img.shields.io/badge/Phase%2031-PASS-2ea44f?style=for-the-badge)](./phase31_bootstrap)
 [![Phase 32](https://img.shields.io/badge/Phase%2032-PASS-2ea44f?style=for-the-badge)](./phase32_prediction)
 [![Phase 54](https://img.shields.io/badge/Phase%2054-18%2F18%20PASS-2ea44f?style=for-the-badge)](./INDEPENDENT_EVALUATION_2026-09-19.md)
+[![Phase 55](https://img.shields.io/badge/Phase%2055-27%2F27%20PASS-2ea44f?style=for-the-badge)](./PHASE55_ACCEPTANCE.md)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
 
 ---
@@ -78,10 +79,11 @@ The project emphasizes **explicit, inspectable mechanisms** wherever the researc
 | Phase 54 locked fresh evaluation | ✅ 18/18 |
 | Phase 54 held-out | ✅ 9/9 |
 | Phase 54 invalid actions | ✅ 0 |
+| Phase 55 representation independence | ✅ 27/27 |
 
 ### Current frontier
 
-There is **no formal Phase 55 acceptance specification in the repository yet**. The next research boundary should be chosen from the unresolved scientific gaps rather than inventing a phase number prematurely.
+Phase 55 representation independence is complete: **27/27** progressive cross-representation comparisons, **2/2** held-out graph families, and **6/6** adversarial controls passed. The next research boundary should be chosen from the remaining unresolved scientific gaps.
 
 ---
 
@@ -500,6 +502,10 @@ Phase 34 is now represented by a dedicated repository implementation under `phas
 
 Several Phase 51 comparison values are synthetic/mock baseline values. The mechanism and executable gate are verified, but those values are not treated as independent scientific comparison results.
 
+### Phase 55 representation-independence boundary
+
+Phase 55 demonstrates representation invariance for bounded relational graphs across three generic byte encodings with opaque node identifiers and reordered serialization. The implementation uses exact canonicalization only within a bounded eight-node reference domain; this is not yet a claim of unrestricted multimodal representation learning.
+
 ### Phase 54 independence caveat
 
 Phase 54 is an **independent-style** evaluation, not a third-party scientific replication. The evaluator was kept outside the learner implementation and remained locked, but both benchmark construction and learner development occurred within the same broader project workflow.
@@ -513,7 +519,11 @@ Phase 54 is an **independent-style** evaluation, not a third-party scientific re
 | [STATUS.md](./STATUS.md) | Detailed acceptance board and evidence |
 | [ROADMAP.md](./ROADMAP.md) | Capability roadmap and remaining research gaps |
 | [BOOTSTRAP_PROGRESS.md](./BOOTSTRAP_PROGRESS.md) | Bootstrap / self-hosting chain |
-| [PHASE34_ACCEPTANCE.md](./PHASE34_ACCEPTANCE.md) | Phase 34 acceptance record |\n| [phase34_reasoning_planning/](./phase34_reasoning_planning/) | Phase 34 reasoning/planning implementation and tests |\n| [PHASE35_51_VERIFICATION.md](./PHASE35_51_VERIFICATION.md) | Phase 35–51 verification record |
+| [PHASE34_ACCEPTANCE.md](./PHASE34_ACCEPTANCE.md) | Phase 34 acceptance record |
+| [phase34_reasoning_planning/](./phase34_reasoning_planning/) | Phase 34 reasoning/planning implementation and tests |
+| [PHASE35_51_VERIFICATION.md](./PHASE35_51_VERIFICATION.md) | Phase 35–51 verification record |
+| [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md) | Phase 55 acceptance record |
+| [phase55_representation_independence/](./phase55_representation_independence/) | Phase 55 implementation and tests |
 | [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
 | [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
 | [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
@@ -536,6 +546,13 @@ For the Phase 53 evaluator:
 
 ```bash
 python -m pytest phase53_independent_eval -q
+```
+
+For the Phase 55 acceptance gate:
+
+```bash
+python -m phase55_representation_independence.run_phase55_gate
+python -m pytest phase55_representation_independence/test_phase55.py -q
 ```
 
 For the Phase 34 acceptance gate:
@@ -561,13 +578,13 @@ The next milestone should not simply be “more benchmark rows.”
 
 The strongest next question is:
 
-> **Can Mirror 7 discover and reuse a computational abstraction when both the surface representation and task semantics change, while remaining computationally viable as the environment scales?**
+> **Can Mirror 7 acquire useful concepts from raw observations without developer-defined entities and relations, while preserving the learned structure under distribution and representation change?**
 
 That points toward three connected research tracks:
 
 ```mermaid
 flowchart LR
-    A["Representation / modality independence"] --> D["General abstraction"]
+    A["Raw concept acquisition"] --> D["General abstraction"]
     B["Scaling / computational analysis"] --> D
     C["Independent reproduction"] --> D
     D --> E["Broader real-world evaluation"]
