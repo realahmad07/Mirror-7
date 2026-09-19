@@ -125,3 +125,10 @@ The system demonstrates a growing set of explicit, inspectable, deterministic me
 - Verification status: **64/64 tests passed** in dedicated GitHub Actions run `35471231534` on commit `29a8c362248eda87890c3f2e48391588a332c8ac`.
 
 Scientific boundary: Phase 319 demonstrates an integrated, bounded production upgrade pipeline. It does not establish unrestricted self-improvement, autonomous architecture invention, frontier-model equivalence, or AGI.
+
+
+### Backend launch boundary — verified
+Phases 320–324 add the UI-independent backend boundary: thread-safe session execution, bounded history, atomic integrity-checked checkpoints, explicit allow-listed action execution, integration coverage, and clean CI smoke/compile checks. Dedicated CI passed **14/14 backend tests** plus **38/38** Phase 307–314 regression tests on commit `e4eca6093660ffea1cb16d2943902312bc74fd98`.
+
+Scientific boundary: this is backend infrastructure and verification hardening. It does not change the bounded intelligence claims or establish AGI.
+
