@@ -193,6 +193,8 @@ class ProductionSandbox:
             "/workspace",
             "--env",
             f"MIRROR7_MAX_OUTPUT_BYTES={limit.output_bytes}",
+            "--env",
+            "PYTHONDONTWRITEBYTECODE=1",
             self.image,
             "python",
             "-I",
