@@ -68,6 +68,18 @@ Phases 291–298 extend Mirror 7 from bounded algorithm variants to bounded sour
 ### Targeted upgrade boundary
 Phases 299–306 change self-improvement from a one-off campaign into a persistent capability-target loop: measure gaps, prioritize the frontier, create fresh evaluation material, launch bounded upgrades, protect other capabilities, promote verified gains, and repeat. Phase 306 connects that controller to an actual source-redesign path for sequence extrapolation. The architecture is still bounded by its available adapters, benchmark families, and promotion gates.
 
+| 307 | IMPLEMENTED / CI PENDING | Common capability-adapter contract | More adapters |
+| 308 | IMPLEMENTED / CI PENDING | Planning frontier adapter | Broader planning tasks |
+| 309 | IMPLEMENTED / CI PENDING | Compositional-language frontier adapter | Broader language grounding |
+| 310 | IMPLEMENTED / CI PENDING | Bounded symbolic-reasoning frontier adapter | Deeper reasoning curricula |
+| 311 | IMPLEMENTED / CI PENDING | Adapter registry | Larger capability registry |
+| 312 | IMPLEMENTED / CI PENDING | Four-capability shared frontier | More independently evaluated capabilities |
+| 313 | IMPLEMENTED / CI PENDING | Multi-capability targeted upgrade campaign | More robust cross-capability protection |
+| 314 | IMPLEMENTED / CI PENDING | Integrated multi-capability frontier gate | Larger external task families |
+
+### Multi-capability target loop
+Mirror 7 now has one shared upgrade controller capable of selecting among concrete planning, compositional-language, symbolic-reasoning, and sequence source-redesign adapters. It can close one measured gap, update the frontier, then move to the next gap instead of running a single fixed improvement campaign.
+
 ## Audit summary
 
 Internal regression excluding network-backed UCI suites: **630 passed, 1 skipped**.
