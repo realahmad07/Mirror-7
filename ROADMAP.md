@@ -577,3 +577,19 @@ Phase 54  FRESH INDEPENDENT-STYLE TEST [18/18]
 ```
 
 The engineering target of robustness across mixed action semantics and elimination of repeated invalid exploration was successfully met.
+    
+## Phases 88–94 — Current Research Frontier
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 88 | Variable-length temporal event abstraction | Implemented |
+| 89 | Unlabeled hidden-state inference under partial observation | Implemented |
+| 90 | Overlapping delayed-effect attribution and composition | Implemented |
+| 91 | Online hypothesis creation, merging, revision, contradiction checks and abstention | Implemented |
+| 92 | Bounded autonomous multi-step experiment selection | Implemented |
+| 93 | Structural transfer with orientation-preserving permutation matching | Implemented |
+| 94 | Integrated phases 88–93 open-ended research loop | Implemented |
+
+Focused local acceptance for phases 88–94: 28/28 passed.
+
+The boundary remains bounded: temporal abstraction, latent-state prototypes, delayed effects, hypothesis revision, active experiments, and structural transfer. Independent reproduction, broader real-world grounding, scaling, and unrestricted generalization remain open.
