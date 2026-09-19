@@ -2,7 +2,7 @@
 
 Repository: realahmad07/Mirror-7
 Branch: main
-Current frontier: Phase 176 complete.
+Current frontier: Phase 177 complete (external-data boundary plumbing).
 
 ## Phase ledger
 1–22: foundational intelligence algorithms, representation, discovery, causal and compositional reasoning.
@@ -21,6 +21,7 @@ Current frontier: Phase 176 complete.
 153–160: sealed open-world evaluation, unseen environments, transfer, noise, long horizon, independent evaluator and stress bounds.
 161–170: black-box/raw-byte representation, opaque actions, hidden goals, multiple hidden domains, bounded planning, contamination controls and scaling.
 171–176: external evaluation foundation: task-pack protocol, sealed agent view, evaluator-field rejection, deterministic public fingerprint, independent evaluator process and negative controls.
+177: official UCI Iris external dataset ingestion, real-row task-pack construction, target non-leakage, and unchanged independent-evaluator boundary integration.
 
 ## Current architecture
 External/raw input → representation discovery → state/world model → prediction → discrepancy → causal reasoning + memory + uncertainty → goals/research → reasoning/program induction → planning/verification → action/tools/skills → environment → outcome → update/revise/learn.
@@ -31,10 +32,11 @@ Parallel controls: resource bounds, failure detection, self-debugging proposal g
 141–152: 14/14 integration tests under seeds 0,1,2 + 84/84 standalone imported algorithm tests.
 153–160: 10/10 pytest checks and 24/24 phase×seed checks in final acceptance; GitHub workflow green.
 161–170: 30/30 phase×seed checks and 13/13 pytest checks; GitHub workflow green.
-171–176: implementation and validation infrastructure complete; real external datasets/task families are still required before claiming external generalization.
+171–176: implementation and validation infrastructure complete.
+177: external-data ingestion/boundary gate implemented; this is not an agent-performance claim.
 
 ## Next
-177–180: consume genuinely external task packs/datasets through the 171–176 boundary without modifying the evaluator to fit the tasks.
+178–180: additional genuinely external task families and actual Mirror 7 agent-performance evaluation through the unchanged evaluator.
 181–190: unstructured multimodal grounding.
 191–200: open action/affordance discovery.
 201–210: lifelong persistent learning.
