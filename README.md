@@ -1236,3 +1236,28 @@ Focused acceptance: **30/30** on three deterministic Python hash seeds.
 See [PHASE115_121_ACCEPTANCE.md](./PHASE115_121_ACCEPTANCE.md).
 
 **Boundary:** this is a bounded reliable-execution layer, not unrestricted autonomy or AGI.
+
+
+## 🧠 Phases 122–128 — Generalization & Skill Transfer Layer
+
+The post-121 frontier adds reusable skill abstraction and stronger cross-context generalization:
+
+```text
+verified skills → structural transfer → novelty → adaptive curriculum → checkpoints → generalization gate → integrated agent
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 122 | Verified reusable skill library | ✅ 4/4 |
+| 123 | Structural cross-task transfer | ✅ 4/4 |
+| 124 | Novelty / out-of-distribution detection | ✅ 4/4 |
+| 125 | Adaptive curriculum selection | ✅ 4/4 |
+| 126 | Checkpointed long-horizon execution | ✅ 4/4 |
+| 127 | Cross-context generalization gate | ✅ 4/4 |
+| 128 | Integrated generalization agent | ✅ 6/6 |
+
+Focused acceptance: **30/30** on `PYTHONHASHSEED=0,1,2`.
+
+See [PHASE122_128_ACCEPTANCE.md](./PHASE122_128_ACCEPTANCE.md).
+
+**Boundary:** this is bounded transfer/generalization engineering, not proof of unrestricted general intelligence or AGI.
