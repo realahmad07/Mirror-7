@@ -1,0 +1,15 @@
+name: Mirror 7 phases-283-290
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  algorithm-self-improvement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest
+      - run: python -m pytest -q phase283_algorithm_variant_space/test_phase283.py phase284_algorithm_mutation/test_phase284.py phase285_algorithm_independent_eval/test_phase285.py phase286_autonomous_algorithm_improvement/test_phase286.py phase287_self_generated_tasks/test_phase287.py phase288_resource_aware_selection/test_phase288.py phase289_improvement_memory/test_phase289.py phase290_meta_improvement_loop/test_phase290.py
