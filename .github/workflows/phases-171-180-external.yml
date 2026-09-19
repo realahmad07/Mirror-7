@@ -16,6 +16,8 @@ jobs:
           python-version: '3.11'
       - name: Install test runner
         run: python -m pip install pytest
+      - name: Phases 178-180 real external performance gate
+        run: python -m pytest -q phase178_180_external/test_phase178_180.py
       - name: Phase 171-180 foundation gate
         run: python -m pytest -q phase171_180_external/test_phase171_180.py
       - name: Re-run 161-170 gate
