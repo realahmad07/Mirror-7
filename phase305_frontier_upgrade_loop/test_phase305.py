@@ -1,3 +1,5 @@
+from pytest import approx
+
 from phase299_capability_frontier import CapabilityFrontier, CapabilityTarget
 from .mirror7_phase305 import FrontierUpgradeLoop, UpgradeOutcome
 
@@ -13,7 +15,7 @@ def test_loop_attacks_top_gap():
 
 def test_verified_gain_updates_frontier():
     f=CapabilityFrontier([CapabilityTarget("a",.2,1)])
-    e=FrontierUpgradeLoop(f,{"a":Adapter()}); e.step(); assert f.top_gap().gap==.2
+    e=FrontierUpgradeLoop(f,{"a":Adapter()}); e.step(); assert f.top_gap().gap == approx(.2)
 
 def test_failed_change_does_not_update():
     f=CapabilityFrontier([CapabilityTarget("a",.2,1)])
