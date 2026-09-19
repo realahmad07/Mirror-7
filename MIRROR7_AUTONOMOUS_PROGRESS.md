@@ -98,3 +98,10 @@ Mirror 7 remains a bounded research architecture. No AGI claim is made.
 Phase 319 connects the Phase 307–314 multi-capability frontier to the Phase 315–318 production self-modification boundary. The planning, compositional-language, symbolic-reasoning, and sequence adapters remain bounded. The source-changing sequence path is now evaluated through the production Docker sandbox before the shared cross-capability guard accepts the frontier update. A rejected outer promotion rolls the source adapter back.
 
 This establishes an end-to-end bounded production upgrade pipeline; it does not demonstrate unrestricted self-improvement, autonomous architecture invention, or AGI.
+
+
+### Backend launch boundary — verified
+Phases 320–324 add the UI-independent backend boundary: thread-safe session execution, bounded history, atomic integrity-checked checkpoints, explicit allow-listed action execution, integration coverage, and clean CI smoke/compile checks. Dedicated CI passed **14/14 backend tests** plus **38/38** Phase 307–314 regression tests on commit `e4eca6093660ffea1cb16d2943902312bc74fd98`.
+
+Scientific boundary: this is backend infrastructure and verification hardening. It does not change the bounded intelligence claims or establish AGI.
+
