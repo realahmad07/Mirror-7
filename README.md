@@ -1061,3 +1061,18 @@ AGI
 ```
 
 That distinction is part of the project itself.
+
+
+## Current implementation frontier — Phases 65–82
+
+Phases 65–79 extend the bounded research loop into continuous/no-reset learning, delayed and stochastic effects, hidden-regime discovery, transfer, unified world modeling, raw numeric representation, autonomous curriculum, integrated autonomous learning, cross-environment transfer, and long-horizon self-correction.
+
+Phases 80–82 add the next integration layer:
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 80 | Unified autonomous system: state → prediction → action → observation → discrepancy → revision | Implemented |
+| 81 | Persistent transfer memory with provenance, confidence, shape/distance rejection, and persistence | Implemented |
+| 82 | Fail-closed regression gate for promotion/invariant checks | Implemented |
+
+The 80–82 workflow runs the Phase 77–82 regression suite on pushes to main. These phases remain bounded numeric research mechanisms; they do not establish unrestricted perception, human-level intelligence, or AGI.
