@@ -1,0 +1,18 @@
+name: Mirror 7 phase-329 backend integration
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  phase329:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip pytest
+      - run: python -m compileall -q mirror7_backend phase326_backend_service phase327_backend_hardening phase329_backend_integration
+      - run: python -m pytest -q phase329_backend_integration/test_phase329.py mirror7_backend/test_http_server.py phase327_backend_hardening/test_phase327.py phase326_backend_service/test_phase326.py phase320_backend_runtime/test_phase320.py phase321_persistence/test_phase321.py phase322_action_gateway/test_phase322.py phase323_backend_integration/test_phase323.py phase324_backend_smoke/test_phase324.py
