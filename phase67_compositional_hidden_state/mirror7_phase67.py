@@ -41,9 +41,12 @@ class CompositionModel:
         for d,(x,y) in enumerate(zip(b,a)):
             if x is None or y is None: continue
             delta=float(y)-float(x); self._dims.add(d)
-            self.base[(action,d)].add(delta)
-            for c in active:
-                if c!=d: self.interaction[(action,d,c)].add(delta-self.base[(action,d)].mean)
+            if not active:
+                self.base[(action,d)].add(delta)
+            else:
+                baseline=self.base[(action,d)].mean if self.base[(action,d)].n else 0.0
+                for c in active:
+                    if c!=d: self.interaction[(action,d,c)].add(delta-baseline)
     def _base(self,action,d):
         s=self.base.get((action,d)); return s.mean if s and s.n>=self.min_samples else None
     def predict_delta(self,action,state):
@@ -52,12 +55,16 @@ class CompositionModel:
         for d,x in enumerate(s):
             if x is None: continue
             b=self._base(action,d)
-            if b is None: continue
-            value=b
+            contextual=[]
             for c in active:
                 if c==d: continue
                 q=self.interaction.get((action,d,c))
-                if q and q.n>=self.min_samples: value+=q.mean
+                if q and q.n>=self.min_samples:
+                    contextual.append(q.mean)
+            if b is None and not contextual:
+                continue
+            value=0.0 if b is None else b
+            value+=sum(contextual)
             out[d]=value; found=True
         return tuple(out) if found else None
     def components(self):
