@@ -112,12 +112,12 @@ Phase 53  BLIND GENERALIZATION TEST        [BENCHMARK PASS]
           broader real-world testing
 ```
 
-Phase 53 is deliberately frozen at the first unmet prerequisite: the repository does not yet expose a qualifying open-ended learner/runtime. The evaluator is complete and must be reused unchanged once that runtime exists.
+Phase 53 is complete as a project-internal blind benchmark. The learner solves 21/21 episodes with 12/12 held-out and 0 invalid actions. Third-party independent reproduction remains open.
 
 
 ---
 
-## Phase 54 — Independent Evaluation
+## Phase 54 — Independent-Style Evaluation
 
 ```text
 Phase 52  OPEN-ENDED LEARNING         [BENCHMARKED]
