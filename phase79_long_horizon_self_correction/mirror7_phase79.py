@@ -35,12 +35,18 @@ class SelfCorrectingLoop:
         converged = stopped = False
         reason = "cycle budget exhausted"
         cycles = 0
+
+        if stop_fn and stop_fn(state):
+            return CycleReport(0, self.errors, self.revisions, True, True, "goal reached")
+
         for cycles in range(1, self.max_cycles + 1):
-            if stop_fn and stop_fn(state):
-                converged, stopped, reason = True, True, "goal reached"
+            try:
+                observed = self._v(observe_fn(state, action))
+            except StopIteration:
+                stopped, reason = True, "observation exhausted"
                 break
+
             key = (state, action)
-            observed = self._v(observe_fn(state, action))
             predicted = self.model.get(key)
             if predicted is not None and len(predicted) != len(observed):
                 stopped, reason = True, "dimension mismatch"
@@ -51,6 +57,12 @@ class SelfCorrectingLoop:
                     stopped, reason = True, "revision budget exhausted"
                     break
                 self.revisions += 1
+
             self.model[key] = observed
             state = observed
+
+            if stop_fn and stop_fn(state):
+                converged, stopped, reason = True, True, "goal reached"
+                break
+
         return CycleReport(cycles, self.errors, self.revisions, converged, stopped, reason)
