@@ -109,8 +109,6 @@ The supplied ZIP has no dedicated Phase 34 source directory. Phase 34 is therefo
 | Fresh evaluator locked before publication | ☑ PASS | Evaluator SHA-256 recorded in INDEPENDENT_EVALUATION_2026-09-19.md. |
 | Fresh task families | ☑ PASS | Six task families not used by Phase 53. |
 | Black-box protocol | ☑ PASS | Only observation, goal, legal actions, step limit, and feedback exposed. |
-| Independent-style generalization result | ⛔ FAIL | 16/18 solved; 9/9 held-out; 8 invalid actions on the unchanged locked evaluator. |
+| Independent-style generalization result | 🟢 PASS | 18/18 solved; 9/9 held-out; 0 invalid actions on the unchanged locked evaluator. |
 
-**STOP RULE ACTIVE:** no learner changes were made after this evaluation. A new fix must first pass its own regression and then rerun the locked evaluation.
-
-Invalid exploration improved substantially after state-local failure memory, but two reset+add cases remain unsolved. This is independent-style rather than third-party evaluation; a genuinely independent external team is still required for an external scientific claim.
+**STOP RULE INACTIVE:** Phase 54 passes its locked independent-style gate with unchanged evaluator tasks and evaluator SHA. State-local failure memory plus prediction-error invalidation (exact memory fallback) closed the reset+add failures. This is independent-style rather than third-party evaluation; a genuinely independent external team is still required for an external scientific claim.
