@@ -66,6 +66,18 @@
 - Current runtime cannot observe the resulting Actions status, so this newest block is documented as implemented/CI-pending rather than falsely reported as green.
 - Scientific boundary: this is a persistent targeted-improvement controller with one concrete source-redesign adapter. It does not establish automatic convergence to frontier-model or AGI capability.
 
+### Multi-Capability Target Loop — Phases 307–314
+- Phase 307: capability-adapter contract.
+- Phase 308: planning improvement adapter using the existing long-horizon planner.
+- Phase 309: compositional-language improvement adapter using the existing semantics engine.
+- Phase 310: bounded symbolic-reasoning improvement adapter.
+- Phase 311: deterministic adapter registry.
+- Phase 312: shared frontier across four concrete capabilities.
+- Phase 313: multi-capability upgrade campaign.
+- Phase 314: integration gate and dedicated CI workflow `.github/workflows/phases-307-314.yml`.
+- Current runtime cannot observe the new GitHub Actions result, so these phases remain recorded as implemented/CI-pending rather than falsely reported as green.
+- Scientific boundary: these are bounded, inspectable capability adapters; they do not make Mirror 7 equivalent to a frontier foundation model.
+
 ## Bounded / Experimental Boundaries
 - **Phase 231–240:** simulated compute and memory bounds; not hardware scaling evidence.
 - **Phase 241–250:** deterministic mock embodied environment; later Phase 274 adds a richer stochastic/delayed simulator, but neither is physical embodiment.
