@@ -205,9 +205,16 @@ class Phase66Agent:
             # Prefer actions with evidence gaps as well as disagreement.
             known=sum(1 for k in dict(self.model.signature()) if k[0]==repr(action))
             score+=5.0 if known==0 else 0.0
-            seq=(action,)+((("__noop__",)*(slots-1)) if "__noop__" in legal else ())
-            if seq in self._seen: continue
-            candidates.append((score,repr(seq),seq))
+            if "__noop__" in legal:
+                for position in range(slots):
+                    seq=(("__noop__",)*position)+(action,)+(("__noop__",)*(slots-position-1))
+                    if seq in self._seen:
+                        continue
+                    candidates.append((score,repr(seq),seq))
+            else:
+                seq=(action,)
+                if seq not in self._seen:
+                    candidates.append((score,repr(seq),seq))
         if not candidates: return None
         candidates.sort(reverse=True)
         score,_,seq=candidates[0]; self._seen.add(seq); self.experiment_count+=1
