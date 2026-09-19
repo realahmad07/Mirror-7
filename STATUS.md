@@ -188,3 +188,67 @@ Evidence: [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md). Boundary: recurring 
 **Phase 57 COMPLETE — bounded cross-view raw structural concept-acquisition acceptance suite passes.**
 
 Evidence: [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md). Boundary: unlabeled 1-D/2-D raw views, relational canonicalization, cross-view support, empirical permutation-null filtering, and bounded relation/event graph construction; not semantic open-world multimodal grounding.
+
+## Phase 58 — Hierarchical Concept Abstraction
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive abstraction families | ☑ PASS | 3 families × 3 seeds |
+| Held-out new composition | ☑ PASS | Reuses lower-level concepts in a new ordering. |
+| Multi-level hierarchy | ☑ PASS | At least two discovered abstraction levels. |
+| Negative/noise control | ☑ PASS | Unrelated random episodes produce no accepted hierarchy. |
+| Distractor robustness | ☑ PASS | An added low-support distractor does not change the accepted vocabulary. |
+| Determinism | ☑ PASS | Repeated discovery is identical. |
+| Malformed-input rejection | ☑ PASS | Invalid bounds/empty episodes rejected. |
+| Regression suite | ☑ PASS | 8 / 8 tests passed. |
+
+**Phase 58 COMPLETE — bounded hierarchical structural abstraction acceptance suite passes.**
+
+Evidence: [PHASE58_ACCEPTANCE.md](./PHASE58_ACCEPTANCE.md). Boundary: recursively discovered structural compositions; not unrestricted semantic abstraction.
+
+## Phase 59 — Predictive Concept Learning
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive prediction families | ☑ PASS | 3 families × 3 seeds |
+| Held-out recombination | ☑ PASS | Learned local transition rules apply to a new ordering. |
+| Context-specific disambiguation | ☑ PASS | Longer supported context resolves a shorter ambiguous context. |
+| Ambiguity abstention | ☑ PASS | Tied competing successors produce no forced prediction. |
+| Insufficient-support abstention | ☑ PASS | Weak evidence is rejected. |
+| Unseen-context backoff | ☑ PASS | Model backs off to shorter supported context. |
+| Deterministic signature | ☑ PASS | Repeated training produces the same signature and outputs. |
+| Regression suite | ☑ PASS | 8 / 8 tests passed. |
+
+**Phase 59 COMPLETE — bounded predictive concept-learning acceptance suite passes.**
+
+Evidence: [PHASE59_ACCEPTANCE.md](./PHASE59_ACCEPTANCE.md). Boundary: symbolic context-conditioned prediction; not unrestricted forecasting.
+
+## Phase 60 — Long-Horizon World Modeling
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive horizons | ☑ PASS | 8 / 16 / 32 steps × 3 seeds |
+| Held-out state generalization | ☑ PASS | Repeated numeric deltas extrapolate to unseen states. |
+| Held-out long-horizon recombination | ☑ PASS | 25-step rollout from an unseen starting state passes. |
+| Discrepancy detection | ☑ PASS | Model detects a predicted/observed mismatch. |
+| Online correction | ☑ PASS | Repeated new evidence teaches a previously unknown action. |
+| Conflict abstention | ☑ PASS | Conflicting transition evidence fails closed. |
+| Unknown-action safety | ☑ PASS | Unknown action terminates rollout rather than inventing effects. |
+| Phase 58 + 59 integration | ☑ PASS | Hierarchical concepts feed prediction and abstract state symbols feed the world model. |
+| Regression suite | ☑ PASS | 8 / 8 tests passed. |
+
+**Phase 60 COMPLETE — bounded long-horizon world-model acceptance suite passes.**
+
+Evidence: [PHASE60_ACCEPTANCE.md](./PHASE60_ACCEPTANCE.md). Boundary: structured benchmark world modeling; not unrestricted real-world prediction.
+
+### Three-phase local regression
+
+```text
+Phase 58 gate: PASS
+Phase 59 gate: PASS
+Phase 60 gate: PASS
+
+Combined pytest: 24 passed
+```
+
+This three-phase regression was executed locally after the final Phase 60 fixes. It does not constitute a full-repository regression or an independent external reproduction.
