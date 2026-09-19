@@ -63,7 +63,10 @@ class CompositionModel:
             if b is None and not contextual:
                 continue
             value=0.0 if b is None else b
-            value+=sum(contextual)
+            if b is None:
+                value=sum(contextual)
+            else:
+                value += sum(q for q in contextual if abs(q-b) > 1e-12)
             out[d]=value; found=True
         return tuple(out) if found else None
     def components(self):
