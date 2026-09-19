@@ -1408,3 +1408,200 @@ Verification: the new foundation gate re-runs phases 141–152, 153–160, and 1
 See [PHASE171_180_ACCEPTANCE.md](./PHASE171_180_ACCEPTANCE.md).
 
 **Boundary:** these phases harden the external evaluation boundary; they are not evidence of unrestricted external generalization. Real external task packs/datasets are still required for 177–180.
+---
+
+# Mirror 7 — Current Architecture and Future Research Flow
+
+## Complete phase position
+
+```text
+PHASES 1–22
+Foundational intelligence algorithms
+        ↓
+representation / discovery / causal / compositional reasoning
+        ↓
+PHASES 23–30
+Compiler, MIRR, bootstrap and self-rebuild foundations
+        ↓
+PHASES 31–52
+Core runtime, learning, memory, planning, tools and open-learning foundations
+        ↓
+PHASES 53–64
+Blind evaluation, representation independence and stronger open-world mechanisms
+        ↓
+PHASE 65
+Continuous / no-reset learning frontier
+        ↓
+PHASES 66–87
+Hidden-state inference, stochastic effects, delayed effects,
+autonomous experimentation, uncertainty and regression expansion
+        ↓
+PHASES 88–100
+Temporal abstraction, latent-state inference, hypothesis revision,
+active experimentation, structural transfer, memory and final bounded boundary
+        ↓
+PHASES 101–107
+Controlled learning + safe self-improvement
+        ↓
+PHASES 108–114
+Grounded agent, knowledge ingestion, tools, task decomposition,
+confidence monitoring and bounded continual memory
+        ↓
+PHASES 115–121
+Reliable execution, tool composition, conflict resolution,
+plan verification, recovery and autonomous task loop
+        ↓
+PHASES 122–128
+Skill library, transfer, novelty, curriculum, checkpoints and generalization
+        ↓
+PHASES 129–140
+Cognitive workspace, state fusion, concepts, memory/world bridges,
+goals, research, self-debugging, consolidation and unified runtime
+        ↓
+PHASES 141–152
+12-algorithm cognitive integration
+        ↓
+PHASES 153–160
+Sealed open-world evaluation, unseen environments,
+noise, long horizon, transfer and independent-style evaluation
+        ↓
+PHASES 161–170
+Black-box / raw-byte representation, opaque actions,
+hidden goals, multi-domain transfer, bounded long-horizon planning
+        ↓
+PHASES 171–176
+External evaluation infrastructure and contamination-safe evaluator
+        ↓
+CURRENT FRONTIER
+177–180: REAL EXTERNAL DATASETS / TASK FAMILIES / REPRODUCTION
+```
+
+## Current cognitive architecture
+
+```text
+                         EXTERNAL / REAL WORLD
+                                  │
+                                  ▼
+                    ┌──────────────────────────┐
+                    │ Observation / Raw Input  │
+                    │ text / bytes / sensors   │
+                    │ future image/audio/video │
+                    └────────────┬─────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │ Representation Discovery │
+                    │ concepts / structure     │
+                    └────────────┬─────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │ State + World Model       │
+                    │ prediction / dynamics    │
+                    └────────────┬─────────────┘
+                                 ▼
+              ┌──────────────────┼──────────────────┐
+              ▼                  ▼                  ▼
+        Causal Model        Memory System      Uncertainty
+        interventions      episodic/semantic     / confidence
+              │                  │                  │
+              └──────────────────┼──────────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │ Goals / Research         │
+                    │ what to learn / achieve  │
+                    └────────────┬─────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │ Reasoning / Program       │
+                    │ induction / abstraction   │
+                    └────────────┬─────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │ Planning / Verification  │
+                    │ bounded search / replay  │
+                    └────────────┬─────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │ Action / Tools / Skills  │
+                    │ affordances / execution  │
+                    └────────────┬─────────────┘
+                                 ▼
+                              WORLD
+                                 │
+                                 ▼
+                             OUTCOME
+                                 │
+                                 └──────────────► DISCREPANCY
+                                                     │
+                                                     ▼
+                                             update / revise / learn
+                                                     │
+                                                     └──────↺
+
+Parallel control plane
+────────────────────────────────────────────────────────────
+memory/resource bounds
+failure detection
+self-debugging proposals
+held-out validation
+regression gates
+contamination controls
+independent evaluation
+fail-closed behavior
+```
+
+## Future architecture
+
+```text
+177–180
+REAL EXTERNAL TASK PACKS
+        ↓
+independent unseen task families
+        ↓
+171–176 evaluator boundary
+        ↓
+Mirror 7
+        ↓
+181–190  unstructured multimodal grounding
+        ↓
+191–200  open action / affordance discovery
+        ↓
+201–210  lifelong persistent learning
+        ↓
+211–220  scalable hierarchical reasoning
+        ↓
+221–230  natural-language grounding
+        ↓
+231–240  compute / memory / scaling studies
+        ↓
+241–250  embodied / external environment interaction
+        ↓
+251–260  independent reproduction + safety validation
+        ↓
+261+     broad external generalization program
+        ↓
+independent human-level / AGI evaluation
+```
+
+## Remaining proof obligations
+
+```text
+[1] genuinely external datasets
+[2] genuinely unseen task families
+[3] unstructured multimodal input
+[4] open-ended action discovery
+[5] lifelong cross-session learning
+[6] broad language/world grounding
+[7] large-scale reasoning without brute-force explosion
+[8] real external/embodied interaction
+[9] independent reproduction
+[10] independent evaluation beyond Mirror 7's own benchmark design
+```
+
+Passing internal phases is evidence about the tested mechanisms; it is not, by itself, evidence that Mirror 7 is AGI.
+
+## Continuation point
+
+**Current repository frontier: Phase 176 complete.**
+
+**Next concrete implementation:** Phase 177 — consume a genuinely external task pack through the Phase 171–176 evaluator boundary, without modifying the evaluator to fit the task.
+
