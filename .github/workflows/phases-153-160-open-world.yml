@@ -24,11 +24,9 @@ jobs:
         shell: bash
         run: |
           set -e
-          printf '{"prediction_accuracy":1.0,"unknown_confidence":0.1,"max_memory":64,"max_workspace":64}
-' |
+          printf '%s\n' '{"prediction_accuracy":1.0,"unknown_confidence":0.1,"max_memory":64,"max_workspace":64}' |
             python phase153_160_open_world/independent_evaluator.py
-          if printf '{"prediction_accuracy":0.5,"unknown_confidence":0.5,"max_memory":2000,"max_workspace":200}
-' |
+          if printf '%s\n' '{"prediction_accuracy":0.5,"unknown_confidence":0.5,"max_memory":2000,"max_workspace":200}' |
             python phase153_160_open_world/independent_evaluator.py; then
             echo "Negative control unexpectedly passed"
             exit 1
