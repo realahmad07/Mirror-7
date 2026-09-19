@@ -1089,3 +1089,19 @@ The 80–82 workflow runs the Phase 77–82 regression suite on pushes to main. 
 | 87 | Autonomous curriculum / uncertainty memory | Implemented |
 
 Phases 85–87 connect the bounded state/action loop to multi-step planning and uncertainty/novelty-driven experiment selection. The implementation remains explicitly bounded, fail-closed, and numeric; these phases do not establish unrestricted intelligence or AGI.
+
+## Current implementation frontier — Phases 88–94
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 88 | Variable-length temporal event abstraction | Implemented |
+| 89 | Unlabeled hidden-state inference under partial observation | Implemented |
+| 90 | Overlapping delayed-effect attribution and composition | Implemented |
+| 91 | Online hypothesis creation, merging, revision, contradiction checks and abstention | Implemented |
+| 92 | Bounded autonomous multi-step experiment selection | Implemented |
+| 93 | Structural transfer with orientation-preserving permutation matching | Implemented |
+| 94 | Integrated phases 88–93 open-ended research loop | Implemented |
+
+Focused local acceptance for phases 88–94: **28/28 passed**.
+
+These phases remain bounded mechanisms. They do not establish unrestricted intelligence or AGI. See [PHASE88_94_ACCEPTANCE.md](./PHASE88_94_ACCEPTANCE.md).
