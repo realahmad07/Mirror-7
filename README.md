@@ -352,3 +352,17 @@ Phase 51 adds explicit epistemic categories, evidence and assumption ledgers, co
 **Important:** some Phase 51 baseline efficiency/reliability values are synthetic comparison values in the benchmark implementation. They are tracked honestly as a validation limitation rather than treated as independent scientific evidence.
 
 The next research boundary is therefore not simply "add more features": Phase 52 should build an independently evaluated integrated runtime and test the architecture on genuinely new tasks and environments.
+
+
+---
+
+## Phase 53 — Independent Generalization
+
+**Evaluator:** ✅ READY  
+**Mirror 7 gate:** 🔴 NOT PASSED
+
+Phase 53 introduces a blind black-box evaluator with 9 training episodes and 12 held-out episodes, including unseen rule families. The candidate sees only observations, goals, legal actions, step limits, and environment feedback.
+
+The evaluator itself passes its integrity tests and rejects the included negative control. Mirror 7 is not marked PASS because the repository does not yet contain a qualifying open-ended learner/runtime to place behind the protocol.
+
+See [PHASE53_REPORT.md](./PHASE53_REPORT.md) and [phase53_independent_eval/README.md](./phase53_independent_eval/README.md).
