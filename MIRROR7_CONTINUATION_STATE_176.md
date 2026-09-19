@@ -2,7 +2,7 @@
 
 Repository: realahmad07/Mirror-7
 Branch: main
-Current frontier: Phases 178–180, 181–190, and 191–200 implemented; empirical CI promotion remains pending.
+Current frontier: Phases 178–180, 181–190, 191–200, and 201–210 implemented; empirical CI promotion remains pending.
 
 ## Phase ledger
 1–22: foundational intelligence algorithms, representation, discovery, causal and compositional reasoning.
@@ -25,6 +25,7 @@ Current frontier: Phases 178–180, 181–190, and 191–200 implemented; empiri
 178–180: UCI Wine/Wine Quality external-task adapter, noise robustness, and fail-closed cross-domain boundary.
 181–190: deterministic unstructured multimodal grounding layer: modality ingestion, canonicalization, alignment, concept evidence, binding, contradiction abstention, missing-view handling, temporal fusion, persistent memory, and integrated loop.
 191–200: opaque-action affordance discovery: effect/precondition evidence, failure tracking, safe exploration, goal-directed selection, bounded composition, and fail-closed behavior.
+201–210: bounded lifelong persistent learning: provenance-tagged evidence, confidence-weighted consolidation, contradiction visibility, abstention, capacity limits, checkpoint/restore, replay, and controlled forgetting.
 
 ## Current architecture
 External/raw input → representation discovery → state/world model → prediction → discrepancy → causal reasoning + memory + uncertainty → goals/research → reasoning/program induction → planning/verification → action/tools/skills → environment → outcome → update/revise/learn.
@@ -40,6 +41,7 @@ Parallel controls: resource bounds, failure detection, self-debugging proposal g
 178–180: implementation complete; empirical repository CI promotion pending.
 181–190: focused suite implemented with 13 checks; repository CI gate added. Not yet promoted to PASS until CI execution is observed.
 191–200: focused suite implemented with 11 checks; repository CI gate added. Not yet promoted to PASS until CI execution is observed.
+201–210: focused suite implemented with 10 checks; repository CI gate added. Not yet promoted to PASS until CI execution is observed.
 
 ## Next
 178–180: additional genuinely external task families and actual Mirror 7 agent-performance evaluation through the unchanged evaluator.
