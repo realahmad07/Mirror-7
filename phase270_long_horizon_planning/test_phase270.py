@@ -8,7 +8,7 @@ def world(state, action):
     elif action=="L": s[0]-=1
     elif action=="D": s[1]-=1
     else: return None
-    if abs(s[0])>3 or abs(s[1])>3: return None
+    if abs(s[0])>10 or abs(s[1])>10: return None
     return tuple(s)
 
 def test_three_depths():
