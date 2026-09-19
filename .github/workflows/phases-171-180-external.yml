@@ -1,0 +1,39 @@
+name: Mirror 7 phases 171-180 external evaluation foundation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  external-foundation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Phase 171-180 foundation gate
+        run: python -m pytest -q phase171_180_external/test_phase171_180.py
+      - name: Re-run 161-170 gate
+        run: python -m pytest -q phase161_170_blackbox/test_phase161_170.py
+      - name: Re-run 153-160 gate
+        run: python -m pytest -q phase153_160_open_world/test_phase153_160.py
+      - name: Re-run 141-152 gate
+        run: python -m pytest -q phase141_152_integration/test_phase141_152.py
+      - name: Independent evaluator positive control
+        shell: bash
+        run: |
+          printf '%s\n' '{"total_episodes":2,"completed_episodes":2,"successes":2,"contamination":false,"pack_fingerprint":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}' |
+            python phase171_180_external/independent_evaluator.py
+      - name: Independent evaluator negative control
+        shell: bash
+        run: |
+          if printf '%s\n' '{"total_episodes":2,"completed_episodes":1,"successes":1,"contamination":true,"pack_fingerprint":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}' |
+            python phase171_180_external/independent_evaluator.py; then
+            echo "Negative control unexpectedly passed"
+            exit 1
+          fi
