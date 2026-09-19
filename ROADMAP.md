@@ -610,3 +610,43 @@ The focused new-phase verification passed **9/9** after correcting Phase 97 so c
 ### Boundary statement
 
 Phase 100 is the end of the **expected 100-phase engineering/research roadmap**, not a proof that Mirror 7 is AGI. Remaining questions are empirical: independent reproduction, broader unseen environments, scale, real-world grounding, safety, compute efficiency, and whether the mechanisms generalize beyond the bounded tests.
+
+
+## Phases 101–107 — Controlled Learning & Safe Self-Improvement
+
+The post-100 frontier now encodes the founder-defined learning controls:
+
+```text
+uncertainty
+  ↓
+context inquiry
+  ↓
+evidence / provenance
+  ↓
+corroborated learning
+  ↓
+failure detection
+  ↓
+improvement proposal
+  ↓
+held-out + regression + resource gate
+  ↓
+validated adoption
+  ↓
+bounded resource use
+  ↺
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 101 | Context inquiry instead of unsupported guessing | ✅ 4/4 |
+| 102 | Provenance-aware evidence ledger + conflict detection | ✅ 4/4 |
+| 103 | Corroborated learning + contradiction resistance | ✅ 4/4 |
+| 104 | Recurring-failure improvement proposal generation | ✅ 4/4 |
+| 105 | Safe self-improvement adoption gate | ✅ 4/4 |
+| 106 | Hard memory / step resource governance | ✅ 4/4 |
+| 107 | Integrated controlled self-improving loop | ✅ 5/5 |
+
+Acceptance: **29/29**, repeated with PYTHONHASHSEED=0,1,2.
+
+Boundary: this is a controlled mechanism layer. It does not prove unrestricted self-improvement, human-level intelligence, or AGI.
