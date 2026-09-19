@@ -1105,3 +1105,16 @@ Phases 85–87 connect the bounded state/action loop to multi-step planning and 
 Focused local acceptance for phases 88–94: **28/28 passed**.
 
 These phases remain bounded mechanisms. They do not establish unrestricted intelligence or AGI. See [PHASE88_94_ACCEPTANCE.md](./PHASE88_94_ACCEPTANCE.md).
+
+## Final implementation frontier — Phases 95–100
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 95 | Bounded associative memory and similarity retrieval | Implemented |
+| 96 | Continual evidence consolidation and contradiction resistance | Implemented |
+| 97 | Uncertainty-aware bounded planning | Implemented |
+| 98 | Mixed-view structural grounding | Implemented |
+| 99 | Frozen black-box independent-style evaluation harness | Implemented |
+| 100 | Integrated final boundary across phases 94–99 | Implemented |
+
+Focused execution of the new phase mechanisms: **9/9 checks passed** after fixing a Phase 97 uncertainty-selection defect. Phase 100 is a final engineering/evaluation boundary, not an AGI claim. See [PHASE95_100_ACCEPTANCE.md](./PHASE95_100_ACCEPTANCE.md).
