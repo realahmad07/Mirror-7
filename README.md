@@ -1583,6 +1583,55 @@ Mirror 7
 independent human-level / AGI evaluation
 ```
 
+## Future Goal
+
+The remaining research program is organized as follows:
+
+| Phases | Area | Status |
+|---|---|---|
+| 178–180 | External datasets / task families / external evaluation | 🟡 Implemented, CI gate pending |
+| 181–190 | Unstructured multimodal grounding | ⏳ |
+| 191–200 | Open action & affordance discovery | ⏳ |
+| 201–210 | Lifelong persistent learning | ⏳ |
+| 211–220 | Scalable hierarchical reasoning | ⏳ |
+| 221–230 | Natural-language grounding | ⏳ |
+| 231–240 | Compute, memory & scaling studies | ⏳ |
+| 241–250 | Embodied / external environment interaction | ⏳ |
+| 251–260 | Independent reproduction + safety validation | ⏳ |
+| 261+ | Broad external generalization + independent human-level/AGI evaluation | ⏳ |
+
+### Research progression
+
+```
+177  External-data boundary
+ ↓
+178–180  External task performance
+ ↓
+181–190  Multimodal grounding
+ ↓
+191–200  Open action discovery
+ ↓
+201–210  Lifelong learning
+ ↓
+211–220  Hierarchical reasoning
+ ↓
+221–230  Language grounding
+ ↓
+231–240  Scaling / efficiency
+ ↓
+241–250  Real-world interaction
+ ↓
+251–260  Independent reproduction + safety
+ ↓
+261+     Broad independent generalization
+ ↓
+Independent human-level / AGI evaluation
+```
+
+**Current research position: Phase 180 → next major block: Phases 181–190.**
+
+These phases are research and evaluation goals, not claims that Mirror 7 has already achieved AGI. Each phase remains subject to reproducible tests, external evaluation, and explicit failure analysis.
+
 ## Remaining proof obligations
 
 ```text
