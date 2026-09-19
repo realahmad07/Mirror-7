@@ -19,6 +19,12 @@ Phase 56  RAW CONCEPT ACQUISITION ✅ COMPLETE
       ↓
 Phase 57  CROSS-VIEW RAW CONCEPT ACQUISITION ✅ COMPLETE
       ↓
+Phase 58  HIERARCHICAL CONCEPT ABSTRACTION ✅ COMPLETE
+      ↓
+Phase 59  PREDICTIVE CONCEPT LEARNING ✅ COMPLETE
+      ↓
+Phase 60  LONG-HORIZON WORLD MODEL ✅ COMPLETE
+      ↓
 Phase 35  ACT
       ↓
 Phase 36  CLOSED LOOP
@@ -178,6 +184,99 @@ See [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md).
 
 Boundary: this is bounded structural cross-view concept acquisition, not semantic multimodal understanding or AGI.
 
+
+## Phase 58 — Hierarchical Concept Abstraction
+
+```text
+stable concepts
+      ↓
+recurrent compositions
+      ↓
+compact abstraction
+      ↓
+higher-level concepts
+      ↓
+recursive hierarchy
+```
+
+Acceptance evidence:
+
+- 3 progressive families × 3 seeds;
+- 2 held-out/adversarial boundary checks;
+- 8/8 regression tests;
+- deterministic rerun.
+
+Boundary: bounded structural hierarchy induction.
+
+## Phase 59 — Predictive Concept Learning
+
+```text
+hierarchical concepts
+        ↓
+context history
+        ↓
+longest supported context
+        ↓
+prediction + confidence
+        ↓
+abstain / back off
+```
+
+Acceptance evidence:
+
+- 3 progressive families × 3 seeds;
+- held-out recombination;
+- ambiguity and insufficient-evidence abstention;
+- unseen-context backoff;
+- 8/8 regression tests.
+
+Boundary: bounded symbolic prediction, not unrestricted forecasting.
+
+## Phase 60 — Long-Horizon World Modeling
+
+```text
+state + action
+      ↓
+exact transition memory
+      ↓
+factorized rule
+      ↓
+numeric-delta generalization
+      ↓
+long-horizon rollout
+      ↓
+discrepancy / update
+```
+
+Acceptance evidence:
+
+- 8 / 16 / 32-step progressive horizons × 3 seeds;
+- unseen-state extrapolation;
+- 25-step held-out rollout;
+- conflict and unknown-action fail-closed tests;
+- Phase 58 + 59 integration;
+- 8/8 regression tests.
+
+Boundary: bounded structured world modeling, not unrestricted real-world prediction.
+
+## Current research boundary after Phase 60
+
+The verified progression is now:
+
+```text
+Phase 57  CROSS-VIEW RAW CONCEPTS
+              ↓
+Phase 58  HIERARCHICAL ABSTRACTION
+              ↓
+Phase 59  PREDICTIVE CONCEPTS
+              ↓
+Phase 60  LONG-HORIZON WORLD MODEL
+              ↓
+PREDICTION-DRIVEN ACTION / AUTONOMY
+```
+
+The next phase should connect these mechanisms to **goal-directed closed-loop autonomy** under progressively longer unseen tasks, while removing benchmark scaffolding and measuring compute/sample efficiency.
+
 ## What remains
 
 Passing these phases is not equivalent to AGI.
@@ -186,8 +285,8 @@ The major research gaps are:
 
 1. broad, independent, unseen-environment evaluation;
 2. broader raw mixed-modality concept acquisition beyond the bounded 1-D/2-D structural views tested in Phase 57;
-3. scalable world modeling beyond hand-structured benchmark environments;
-4. reliable long-horizon autonomy;
+3. scalable world modeling beyond hand-structured benchmark environments and beyond the bounded Phase 60 state/action model;
+4. reliable goal-directed long-horizon autonomy integrating perception, prediction, planning, action, and revision;
 5. stronger compositional and abstract reasoning;
 6. continual learning at realistic scale without knowledge corruption;
 7. externally grounded language and tool use;
@@ -197,7 +296,7 @@ The major research gaps are:
 
 ## Next research boundary
 
-Phase 57 closes the bounded cross-view structural concept-acquisition question. The next boundary should remove more scaffolding: richer raw modalities, learned hierarchical abstraction, prediction-driven concepts, long-horizon tasks, and stronger independent evaluation.
+Phase 60 closes the current bounded chain from cross-view concepts through hierarchy, concept prediction, and structured long-horizon rollout. The next boundary should connect this chain to open-ended goal-directed autonomy while removing task scaffolding and adding stronger independent evaluation.
 
 ---
 
