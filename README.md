@@ -9,6 +9,9 @@
 [![Phase 55](https://img.shields.io/badge/Phase%2055-27%2F27%20PASS-2ea44f?style=for-the-badge)](./PHASE55_ACCEPTANCE.md)
 [![Phase 56](https://img.shields.io/badge/Phase%2056-PASS-2ea44f?style=for-the-badge)](./PHASE56_ACCEPTANCE.md)
 [![Phase 57](https://img.shields.io/badge/Phase%2057-PASS-2ea44f?style=for-the-badge)](./PHASE57_ACCEPTANCE.md)
+[![Phase 58](https://img.shields.io/badge/Phase%2058-PASS-2ea44f?style=for-the-badge)](./PHASE58_ACCEPTANCE.md)
+[![Phase 59](https://img.shields.io/badge/Phase%2059-PASS-2ea44f?style=for-the-badge)](./PHASE59_ACCEPTANCE.md)
+[![Phase 60](https://img.shields.io/badge/Phase%2060-PASS-2ea44f?style=for-the-badge)](./PHASE60_ACCEPTANCE.md)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
 
 ---
@@ -84,10 +87,13 @@ The project emphasizes **explicit, inspectable mechanisms** wherever the researc
 | Phase 55 representation independence | ✅ 27/27 |
 | Phase 56 raw concept acquisition | ✅ PASS |
 | Phase 57 cross-view concept acquisition | ✅ PASS |
+| Phase 58 hierarchical concept abstraction | ✅ PASS |
+| Phase 59 predictive concept learning | ✅ PASS |
+| Phase 60 long-horizon world model | ✅ PASS |
 
 ### Current frontier
 
-Phase 57 cross-view raw concept acquisition is complete at its bounded acceptance boundary: **10/10 tests**, 3 progressive families × 3 seeds, 2 held-out cases, 3 adversarial controls, a scaling guard, and deterministic regression passed. The next research boundary should attack broader raw modalities, hierarchical abstraction, long-horizon prediction, and independent external evaluation.
+Phases 58–60 are now complete at their bounded acceptance boundaries: hierarchical abstraction **8/8**, predictive concept learning **8/8**, and long-horizon world modeling **8/8**. The three-phase local regression is **24/24**, with Phase 60 explicitly integrating the Phase 58 hierarchy with the Phase 59 predictor. The next research boundary is richer raw modalities, prediction-driven abstraction, longer-horizon autonomy, and independent external evaluation.
 
 ---
 
@@ -340,6 +346,90 @@ Pytest:      10 passed
 See [Phase 57 acceptance](./PHASE57_ACCEPTANCE.md).
 
 ---
+
+### 10. Phase 58 hierarchical concept abstraction
+
+Phase 58 recursively discovers repeated compositions of previously stable concepts:
+
+```text
+stable concepts
+      ↓
+recurrent compositions
+      ↓
+compact abstraction
+      ↓
+higher-level concepts
+      ↓
+recursive hierarchy
+```
+
+Result:
+
+```text
+Progressive: 3 families × 3 seeds
+Held-out:     2 / 2
+Adversarial: 2 / 2
+Pytest:      8 passed
+```
+
+See [Phase 58 acceptance](./PHASE58_ACCEPTANCE.md).
+
+### 11. Phase 59 predictive concept learning
+
+Phase 59 learns context-conditioned concept transitions with longest-supported context, deterministic backoff, and explicit abstention under ambiguity:
+
+```text
+hierarchical concepts
+        ↓
+context history
+        ↓
+prediction + confidence
+        ↓
+abstain / back off when evidence is weak
+```
+
+Result:
+
+```text
+Progressive: 3 families × 3 seeds
+Held-out:     2 / 2
+Adversarial: 2 / 2
+Pytest:      8 passed
+```
+
+See [Phase 59 acceptance](./PHASE59_ACCEPTANCE.md).
+
+### 12. Phase 60 long-horizon world modeling
+
+Phase 60 adds exact transition memory, factorized action rules, numeric-delta generalization, discrepancy handling, and fail-closed rollout:
+
+```text
+state + action
+      ↓
+exact evidence
+      ↓
+factorized rule
+      ↓
+delta generalization
+      ↓
+long-horizon rollout
+      ↓
+observe / compare / update
+```
+
+Result:
+
+```text
+Progressive: 3 horizons × 3 seeds
+Held-out:     2 / 2
+Adversarial: 2 / 2
+Integration: Phase 58 + Phase 59
+Pytest:      8 passed
+```
+
+See [Phase 60 acceptance](./PHASE60_ACCEPTANCE.md).
+
+
 
 ## 🔁 The Core Learning Loop
 
@@ -645,6 +735,12 @@ Phase 54 is an **independent-style** evaluation, not a third-party scientific re
 | [phase56_raw_concept_acquisition/](./phase56_raw_concept_acquisition/) | Phase 56 implementation and tests |
 | [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md) | Phase 57 acceptance record |
 | [phase57_multiview_concept_acquisition/](./phase57_multiview_concept_acquisition/) | Phase 57 implementation and tests |
+| [PHASE58_ACCEPTANCE.md](./PHASE58_ACCEPTANCE.md) | Phase 58 acceptance record |
+| [phase58_hierarchical_abstraction/](./phase58_hierarchical_abstraction/) | Phase 58 implementation and tests |
+| [PHASE59_ACCEPTANCE.md](./PHASE59_ACCEPTANCE.md) | Phase 59 acceptance record |
+| [phase59_predictive_concepts/](./phase59_predictive_concepts/) | Phase 59 implementation and tests |
+| [PHASE60_ACCEPTANCE.md](./PHASE60_ACCEPTANCE.md) | Phase 60 acceptance record |
+| [phase60_long_horizon_world_model/](./phase60_long_horizon_world_model/) | Phase 60 implementation and tests |
 | [PHASE53_REPORT.md](./PHASE53_REPORT.md) | Phase 53 blind benchmark |
 | [INDEPENDENT_EVALUATION_2026-09-19.md](./INDEPENDENT_EVALUATION_2026-09-19.md) | Phase 54 locked evaluation |
 | [phase52_open_learning/](./phase52_open_learning/) | Open-ended learner |
