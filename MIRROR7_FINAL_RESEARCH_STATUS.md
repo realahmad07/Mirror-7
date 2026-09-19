@@ -39,6 +39,20 @@
 - Verification boundary: because this runtime cannot reach GitHub's Actions API or clone the repository through outbound DNS, the new 283–290 CI result is not independently observed here. The code path was reviewed and the Phase 283–286 core behavior was executed offline in this runtime.
 - Scientific boundary: the new block demonstrates bounded algorithm-variant search, not unrestricted self-rewriting, autonomous architecture invention, or AGI.
 
+### Source-Level Self-Redesign — Phases 291–298
+- Phase 291: bounded patch-plan representation.
+- Phase 292: pure AST allow-list validation; dynamic execution constructs are rejected.
+- Phase 293: exact patch application with fail-closed ambiguity handling.
+- Phase 294: sealed source evaluation in a separate isolated Python process with hidden targets retained by the evaluator.
+- Phase 295: bounded redesign proposer.
+- Phase 296: source promotion, fingerprinting, and exact rollback provenance.
+- Phase 297: autonomous source redesign loop.
+- Phase 298: integration with self-generated evaluation tasks.
+- Dedicated CI workflow: `.github/workflows/phases-291-298.yml`.
+- Local smoke verification covered patch application, sealed evaluation, successful train/held-out/regression scoring, and fail-closed rejection of import-bearing candidates.
+- Current runtime cannot observe GitHub Actions results through the available connector, so CI success for this newest block is not independently claimed.
+- Boundary: bounded sandboxed source-level behavioral redesign, not unrestricted self-rewriting, architecture invention, open-world lifelong self-improvement, or AGI.
+
 ## Bounded / Experimental Boundaries
 - **Phase 231–240:** simulated compute and memory bounds; not hardware scaling evidence.
 - **Phase 241–250:** deterministic mock embodied environment; later Phase 274 adds a richer stochastic/delayed simulator, but neither is physical embodiment.
