@@ -129,6 +129,18 @@ class BackendService:
                 self._closing.discard(session_id)
                 self._condition.notify_all()
 
+    def list_sessions(self) -> tuple[str, ...]:
+        with self._condition:
+            return tuple(sorted(self._sessions))
+
+    def session_snapshot(self, session_id: str) -> Mapping[str, Any]:
+        return self.get_session(session_id).snapshot()
+
+    def delete_checkpoint(self, session_id: str) -> None:
+        if self.checkpoint_store is None:
+            raise RuntimeError("checkpoint store is not configured")
+        self.checkpoint_store.delete(session_id)
+
     def status(self) -> Mapping[str, Any]:
         with self._condition:
             return {
