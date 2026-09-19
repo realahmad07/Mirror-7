@@ -8,28 +8,40 @@ class ValidationReport:
     reasons: tuple[str,...]
 
 class PatchValidator:
-    """Validates patch plans and resulting Python syntax/structure before evaluation."""
-    def validate_plan(self,plan:PatchPlan)->ValidationReport:
+    """Validates bounded patch plans and a pure, non-importing candidate source subset."""
+    _ALLOWED_NODES = {
+        ast.Module, ast.FunctionDef, ast.arguments, ast.arg, ast.Return, ast.Assign,
+        ast.Name, ast.Constant, ast.List, ast.Tuple, ast.Subscript, ast.Slice,
+        ast.BinOp, ast.UnaryOp, ast.BoolOp, ast.Compare, ast.If,
+        ast.Load, ast.Store, ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Mod,
+        ast.USub, ast.UAdd, ast.Not, ast.And, ast.Or, ast.Eq, ast.NotEq,
+        ast.Lt, ast.LtE, ast.Gt, ast.GtE,
+    }
+
+    def validate_plan(self, plan: PatchPlan) -> ValidationReport:
         if not PatchPlanValidator().validate(plan):
-            return ValidationReport(False,("invalid patch plan",))
+            return ValidationReport(False, ("invalid patch plan",))
         reasons=[]
         for op in plan.operations:
-            if op.kind=="replace_literal" and len(op.old)>200:
-                reasons.append("literal replacement too large")
-            if op.kind=="replace_expression" and len(op.new)>200:
-                reasons.append("expression replacement too large")
-        return ValidationReport(not reasons,tuple(reasons))
+            if len(op.old)>200 or len(op.new)>200:
+                reasons.append("replacement too large")
+        return ValidationReport(not reasons, tuple(reasons))
 
-    def validate_source(self,source:str)->ValidationReport:
+    def validate_source(self, source: str) -> ValidationReport:
         try:
             tree=ast.parse(source)
         except SyntaxError as exc:
             return ValidationReport(False,(f"syntax error: {exc.msg}",))
-        # Python 3 has no ast.Exec node; imports are blocked explicitly below
-        banned=(ast.Import,ast.ImportFrom)
+        funcs=[n for n in tree.body if isinstance(n,ast.FunctionDef)]
+        if len(funcs)!=1 or funcs[0].name!="solve":
+            return ValidationReport(False,("source must define exactly one solve function",))
+        if any(not isinstance(n,(ast.FunctionDef,ast.Assign)) for n in tree.body):
+            return ValidationReport(False,("top-level nodes are restricted",))
         for node in ast.walk(tree):
-            if isinstance(node,banned):
-                return ValidationReport(False,("imports are not allowed in candidate source",))
-            if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id in {"eval","exec","compile","__import__"}:
-                return ValidationReport(False,(f"forbidden call: {node.func.id}",))
+            if type(node) not in self._ALLOWED_NODES:
+                return ValidationReport(False,(f"forbidden AST node: {type(node).__name__}",))
+            if isinstance(node,ast.Call):
+                return ValidationReport(False,("function calls are not allowed",))
+            if isinstance(node,ast.Attribute):
+                return ValidationReport(False,("attribute access is not allowed",))
         return ValidationReport(True,())
