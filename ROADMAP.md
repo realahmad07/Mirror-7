@@ -772,3 +772,25 @@ concept discovery → semantic memory → grounding → world model
 Acceptance: **14/14** integrated tests under seeds 0, 1, and 2; **84/84** standalone imported-algorithm tests.
 
 The next research boundary is broader open-world evaluation of this combined system, not simply adding more isolated mechanisms.
+
+## Phases 153–160 — Sealed Open-World Evaluation
+
+This block changes the research boundary from adding isolated mechanisms to testing the combined runtime through a sealed environment interface.
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 153 | Sealed observation/state/action/outcome interface | ✅ |
+| 154 | Unseen environment and conservative uncertainty | ✅ |
+| 155 | Structural transfer across renamed entities | ✅ |
+| 156 | Noisy observations with irrelevant perturbations | ✅ |
+| 157 | 32-step long-horizon prediction replay | ✅ |
+| 158 | External evaluator contract | ✅ |
+| 159 | Bounded stress evaluation | ✅ |
+| 160 | Cross-phase final integration gate | ✅ |
+
+The acceptance workflow requires seeds 0, 1, and 2 for every phase and re-runs the Phase 141–152 integration gate.
+
+See [PHASE153_160_ACCEPTANCE.md](./PHASE153_160_ACCEPTANCE.md).
+
+Boundary: this is a bounded sealed/open-world evaluation of the integrated architecture. It is not evidence of unrestricted zero-shot generalization, unrestricted cross-domain transfer, real-world autonomy, scaling laws, or AGI.
+
