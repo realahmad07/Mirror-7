@@ -11,7 +11,7 @@ Phase 32  PREDICT
       ↓
 Phase 33  CAUSE
       ↓
-Phase 34  REASON / PLAN        (verification reported; source artifact boundary noted)
+Phase 34  REASON / PLAN        ✅ COMPLETE
       ↓
 Phase 35  ACT
       ↓
@@ -47,6 +47,21 @@ Phase 50  COMPLETE INTEGRATION
       ↓
 Phase 51  ADVANCED REASONING
 ```
+
+## Phase 34 — Goal-Directed Reasoning / Planning
+
+The repository now contains the dedicated Phase 34 implementation under `phase34_reasoning_planning/`.
+
+Acceptance evidence:
+
+- 3 progressively harder planning families × 3 seeds;
+- 3 held-out cases;
+- 3 adversarial controls;
+- exact-plan replay validation;
+- 8/8 regression tests;
+- repeated acceptance gate with identical results.
+
+See [PHASE34_ACCEPTANCE.md](./PHASE34_ACCEPTANCE.md).
 
 ## What Mirror 7 demonstrates at this boundary
 
@@ -93,7 +108,9 @@ The major research gaps are:
 
 ## Next research boundary
 
-Phase 52 should not simply add another feature. It should turn the current collection of mechanisms into a single independently evaluated runtime and replace phase-local demonstrations with cross-phase, unseen-task benchmarks.
+Phase 34's repository source-artifact gap is now closed. Phases 35–54 remain the current verified capability and generalization boundary.
+
+There is no formal Phase 55 acceptance specification in the repository yet. The next boundary should be chosen from the unresolved scientific gaps rather than adding another capability row by default.
 
 ---
 
