@@ -5,7 +5,7 @@ NU=ROOT/'nucleus'; WORDS=ROOT/'compiler_words.mirr'
 def ensure_nucleus():
     if NU.exists(): return True
     cc=os.environ.get('CC','cc')
-    c=ROOT/'nucleus.c'
+    c=ROOT/'phase25_26'/'nucleus.c'
     if not c.exists(): return False
     r=subprocess.run([cc,str(c),'-O2','-o',str(NU)],capture_output=True,timeout=20)
     return r.returncode==0 and NU.exists()
