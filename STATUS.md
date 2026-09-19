@@ -149,3 +149,22 @@ The supplied Phase 35–51 ZIP did not contain the Phase 34 source artifact. The
 **Phase 55 COMPLETE — representation-independence acceptance suite passes.**
 
 Evidence: [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md). Boundary: bounded relational structures, three generic byte encodings, exact canonicalization for ≤8 nodes.
+
+---
+
+## Phase 56 — Raw Concept Acquisition
+
+| Gate | State | Evidence |
+|---|---:|---|
+| Progressive concept family 1 | ☑ PASS | 3 seeds |
+| Progressive concept family 2 | ☑ PASS | 3 seeds |
+| Progressive concept family 3 | ☑ PASS | 3 seeds |
+| Held-out concept recombination | ☑ PASS | Reuses the discovered concept vocabulary on a new ordering. |
+| Held-out raw encoding change | ☑ PASS | Same concept fingerprints survive new opaque byte mappings. |
+| Adversarial controls | ☑ PASS | Noise-only false concepts, relation-structure mutation, and malformed inputs rejected. |
+| Determinism | ☑ PASS | Repeat run produces identical discovered concepts. |
+| Regression suite | ☑ PASS | 7 / 7 tests passed. |
+
+**Phase 56 COMPLETE — bounded raw structural concept-acquisition acceptance suite passes.**
+
+Evidence: [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md). Boundary: recurring structural motifs and ordered concept relations/events in undifferentiated byte streams; not semantic open-world grounding.
