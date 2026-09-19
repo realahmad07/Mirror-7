@@ -34,6 +34,7 @@ class MetaImprovementEngine:
 
     def run_round(self,pack:EvaluationPack,round_number:int,max_candidates:int=8)->MetaImprovementReport:
         baseline=self.evaluator.evaluate(self.current,pack)
+        self.memory.add(self.current.operations,True,baseline.held_out,"active baseline")
         mutations=self.mutator.mutate(self.current,max_children=max_candidates)
         options=[]; skipped=0
         for mutation in mutations:
