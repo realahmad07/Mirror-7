@@ -1159,3 +1159,43 @@ Focused acceptance: **29/29**, repeated with three deterministic Python hash see
 See [Phase 101–107 acceptance](./PHASE101_107_ACCEPTANCE.md).
 
 **Boundary:** these phases demonstrate controlled mechanisms for clarification, evidence management, conservative learning, improvement proposals, adoption gates, and resource bounds. They do not establish human-level intelligence, unrestricted self-improvement, or AGI.
+
+
+## 🧠 Phases 108–114 — Grounded Agent Capability Layer
+
+The post-107 frontier adds a practical agent layer:
+
+```text
+goal + context
+      ↓
+clarify missing information
+      ↓
+ingest validated knowledge
+      ↓
+decompose long-horizon task
+      ↓
+call guarded tools
+      ↓
+verify results
+      ↓
+monitor confidence
+      ↓
+remember within hard bounds
+      ↺
+```
+
+| Phase | Capability | State |
+|---|---|:---:|
+| 108 | Grounded dialogue + targeted clarification | ✅ 4/4 |
+| 109 | Validated knowledge ingestion + conflict protection | ✅ 4/4 |
+| 110 | Guarded tool execution + result verification | ✅ 4/4 |
+| 111 | Dependency-safe task decomposition + hard budget | ✅ 4/4 |
+| 112 | Confidence self-monitoring + caution trigger | ✅ 4/4 |
+| 113 | Bounded continual agent memory | ✅ 4/4 |
+| 114 | Integrated grounded/tool/task/monitor/memory agent | ✅ 6/6 |
+
+Focused acceptance: **30/30**, repeated with `PYTHONHASHSEED=0,1,2`.
+
+See [PHASE108_114_ACCEPTANCE.md](./PHASE108_114_ACCEPTANCE.md).
+
+**Boundary:** these are bounded agent mechanisms. They do not establish unrestricted language understanding, open-world autonomy, or AGI.
