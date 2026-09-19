@@ -133,7 +133,7 @@ static int compile_and_run(const char *source, const char *word) {
     if (!mirror7_compile_surface_ir(&ir, &d)) return 0;
     int id = find_word(&d, word);
     if (id < 0) return 0;
-    return run_word(&d, id, (uint8_t *)source, strlen(source));
+    return run_word(&d, &d, id, (uint8_t *)source, strlen(source));
 }
 
 #ifndef MIRROR7_SURFACE_IR_COMPILER_BRIDGE_NO_MAIN

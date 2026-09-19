@@ -2,15 +2,16 @@ from pathlib import Path
 import re
 import subprocess
 import tempfile
+import os
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'phase27_unfinished' / 'compiler_phase27.mirr'
 NUCLEUS = ROOT / 'phase25_26' / 'nucleus.c'
-PRIMS = {'+','-','dup','drop','swap','@','!','emit','next','nextc','src-pos','src-len','word-count','word-name-len','word-name-char','word-code-len','word-code-byte','word-new','word-append','word-exec','src-set-pos','=','word-code-start','word-patch-u16','u16-add','u16-sub'}
+PRIMS = {'+','-','dup','drop','swap','@','!','emit','next','nextc','src-pos','src-len','word-count','word-name-len','word-name-char','word-code-len','word-code-byte','word-new','word-append','word-exec','src-set-pos','=','word-code-start','word-patch-u16','u16-add','u16-sub','IF','ELSE','THEN','BEGIN','UNTIL','AGAIN'}
 WORD_RE = re.compile(r'^:\s+([^\s]+)\s+(.*?)\s*;\s*$', re.S)
 TOKEN_RE = re.compile(r'\S+')
-REQUIRED = {'space?','seek-marker','scan-token','find-word','probe','tok-colon','tok-semi','digit-first?','parse-number','set-marker-pos','mark-pos','emit-byte','create-pass','compile-pass','tok-if','tok-else','tok-then','current-end','current-len','patch-at','if-open','else-open','then-close','compile-structured','run-alpha'}
-
+REQUIRED = {'space?','seek-marker','scan-token','find-word','tok-colon','tok-semi','digit-first?','parse-number','set-marker-pos','emit-byte','create-pass','tok-if','tok-else','tok-then','current-len','patch-at','if-open','else-open','then-close','compile-structured','run-alpha'}
 
 def parse_source(text):
     words = {}
@@ -27,10 +28,16 @@ def parse_source(text):
         words[name] = TOKEN_RE.findall(body)
     return words
 
+def get_cc():
+    if os.environ.get("CC"):
+        return os.environ["CC"].split()
+    for cc in ["zig","gcc","clang","cc"]:
+        if shutil.which(cc):
+            return [cc,"cc"] if cc == "zig" else [cc]
+    raise RuntimeError("No suitable C compiler found")
 
 def run(cmd, *, cwd=None):
     return subprocess.run(cmd, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
-
 
 def main():
     if not SOURCE.is_file() or not NUCLEUS.is_file():
@@ -46,21 +53,21 @@ def main():
         for tok in body:
             if tok in PRIMS or tok == 'exit':
                 continue
-            if tok.startswith(('branch:', '0branch:')):
-                if not tok.split(':', 1)[1].isdigit():
-                    unresolved.append((name, tok))
+            if tok.startswith(('branch:','0branch:')):
+                if not tok.split(':',1)[1].isdigit():
+                    unresolved.append((name,tok))
                 continue
             if tok.isdigit() or re.fullmatch(r'@L\d+', tok):
                 continue
             if tok not in src:
-                unresolved.append((name, tok))
+                unresolved.append((name,tok))
     if unresolved:
         raise SystemExit('unresolved MIRR compiler references: ' + repr(unresolved[:20]))
 
     with tempfile.TemporaryDirectory() as td_name:
         td = Path(td_name)
         exe = td / 'nucleus'
-        cc = run(['cc','-std=c17','-Wall','-Wextra','-Wpedantic','-Werror',str(NUCLEUS),'-o',str(exe)])
+        cc = run(get_cc() + ['-std=c17','-Wall','-Wextra','-Wpedantic','-Werror',str(NUCLEUS),'-o',str(exe)])
         if cc.returncode:
             raise SystemExit('strict Nucleus build failed:\n' + cc.stderr)
 
@@ -80,7 +87,6 @@ def main():
     print('PHASE30_COMPILER_ENTIRELY_IN_MIRR_PASS')
     print(f'MIRR compiler words: {len(src)}')
     print('Direct Nucleus execution path verified; host builder remains staging-only.')
-
 
 if __name__ == '__main__':
     main()
