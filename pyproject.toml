@@ -9,6 +9,9 @@ description = "UI-independent HTTP backend boundary for Mirror 7"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
 
+[tool.setuptools.packages.find]
+include = ["mirror7_backend*"]
+
 [tool.pytest.ini_options]
 testpaths = [
   "mirror7_backend",
