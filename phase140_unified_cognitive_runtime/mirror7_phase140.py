@@ -42,7 +42,8 @@ class UnifiedCognitiveRuntime:
         if goal and goal not in self.goals.goals:
             self.goals.add(goal,1.0)
         chosen=self.research.select(list(research_tasks),10) if research_tasks else None
-        grounded=self.grounder.ground(list(views)) if views else self.grounder.ground([])
+        ground_views = list(views) if views else [observations]
+        grounded=self.grounder.ground(ground_views)
         self.workspace.publish("grounding",grounded.fingerprint,1.0,"grounder")
         g=self.goals.next()
         return RuntimeReport(fused.value if fused else None,g.name if g else None,chosen.name if chosen else None,grounded.fingerprint,len(self.consolidator.rules()))
