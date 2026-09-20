@@ -38,7 +38,8 @@ def load_jsonl(path: str | Path) -> list[TrainingExample]:
 
 def validate_split_isolation(examples: Iterable[TrainingExample]) -> None:
     owners: dict[str, str] = {}
-    fingerprints: dict[str, str] = {}
+    fingerprints_by_input: dict[str, set[str]] = {}
+    splits_by_input: dict[str, set[str]] = {}
     for example in examples:
         example.validate()
         prior = owners.setdefault(example.example_id, example.split)
@@ -46,16 +47,27 @@ def validate_split_isolation(examples: Iterable[TrainingExample]) -> None:
             raise ValueError(
                 f"example_id {example.example_id!r} occurs in multiple splits"
             )
+
         fingerprint = example.fingerprint()
         key = hashlib.sha256(
             example.user_text.strip().lower().encode("utf-8")
         ).hexdigest()
-        previous = fingerprints.get(key)
-        if previous is not None and previous != fingerprint:
+        fingerprints_by_input.setdefault(key, set()).add(fingerprint)
+        splits = splits_by_input.setdefault(key, set())
+        splits.add(example.split)
+        if len(splits) > 1:
             raise ValueError(
-                f"possible user-input leakage across records: {example.example_id!r}"
+                f"possible user-input leakage across splits for example {example.example_id!r}"
             )
-        fingerprints[key] = fingerprint
+
+    # Identical full records are harmless inside a split but should not cross splits.
+    fingerprints_to_splits: dict[str, set[str]] = {}
+    for example in examples:
+        fp = example.fingerprint()
+        fingerprints_to_splits.setdefault(fp, set()).add(example.split)
+    leaked = [fp for fp, splits in fingerprints_to_splits.items() if len(splits) > 1]
+    if leaked:
+        raise ValueError("identical training examples occur across multiple splits")
 
 
 def summarize(examples: Iterable[TrainingExample]) -> dict[str, object]:
