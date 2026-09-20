@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import random
 
 from .bytes import PAD, encode
 from .dataset import load_jsonl, summarize, validate_split_isolation
@@ -75,6 +76,9 @@ def train(args) -> dict[str, object]:
         model.parameters(), lr=args.lr, weight_decay=args.weight_decay
     )
 
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
     train_encoded = [encode(x, args.max_sequence_bytes) for x in train_items]
     val_encoded = [encode(x, args.max_sequence_bytes) for x in val_items]
 
@@ -83,8 +87,10 @@ def train(args) -> dict[str, object]:
         model.train()
         running = 0.0
         batches = 0
-        for start in range(0, len(train_encoded), args.batch_size):
-            batch = train_encoded[start : start + args.batch_size]
+        order = list(range(len(train_encoded)))
+        random.Random(args.seed + epoch).shuffle(order)
+        for start in range(0, len(order), args.batch_size):
+            batch = [train_encoded[i] for i in order[start : start + args.batch_size]]
             inputs, labels, weights = _collate(batch)
             inputs = inputs.to(device)
             labels = labels.to(device)
@@ -154,6 +160,7 @@ def main():
     parser.add_argument("--dropout", type=float, default=0.10)
     parser.add_argument("--max-sequence-bytes", type=int, default=4096)
     parser.add_argument("--device", default=None)
+    parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
     train(args)
 
