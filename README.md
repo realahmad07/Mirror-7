@@ -637,6 +637,25 @@ See [PHASE65_ACCEPTANCE.md](./PHASE65_ACCEPTANCE.md).
 Boundary: bounded continuous-stream delayed/stochastic hidden-state learning. This is not a claim of unrestricted hidden-state inference, autonomous science, or AGI.
 
 
+## 🚢 Pre-Training Product Engineering Boundary
+
+The GitHub-side product foundation is now prepared before GPU training:
+
+| Engineering gate | State |
+|---|:---:|
+| Phase 341 — real backend/runtime pre-GPU readiness | ✅ |
+| Phase 342 — browser/release boundary | ✅ |
+| Configurable website CORS origin | ✅ |
+| Security response headers | ✅ |
+| Session → step → snapshot → close HTTP lifecycle | ✅ |
+| Package build + compile gate | ✅ |
+| Docker image release gate | ✅ |
+| Pre-training engineering freeze | ✅ |
+
+See [PHASE342_ACCEPTANCE.md](./phase342_release_boundary/PHASE342_ACCEPTANCE.md) and [PRE_TRAINING_FREEZE.md](./PRE_TRAINING_FREEZE.md).
+
+This is the software-side stopping point before the planned GPU/Colab training stage. It does not claim that Mirror 7 is already a fully trained general-purpose assistant or AGI.
+
 ## 🔁 The Core Learning Loop
 
 ```mermaid
