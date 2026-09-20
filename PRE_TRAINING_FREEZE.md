@@ -39,3 +39,20 @@ release candidate
        ↓
 public launch
 ```
+
+
+## Training foundation added after the engineering freeze
+
+The freeze now also has a reproducible training foundation in GitHub. This does not start a production training run or change the tested cognitive runtime.
+
+Phase 343 adds:
+- validated training JSONL schema
+- split-isolation and leakage checks
+- byte-level response encoding
+- GPU-compatible response model
+- checkpoint metadata and dataset fingerprints
+- held-out evaluation
+- Colab notebook
+- CI validation
+
+The next human action is to supply the reviewed real training corpus and run the Colab notebook on an available GPU.
