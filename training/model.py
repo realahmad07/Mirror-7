@@ -75,7 +75,12 @@ def build_model(config: ModelConfig):
         def generate(self, prefix, *, max_new_bytes=768, temperature=0.8, top_k=40):
             self.eval()
             generated = prefix.clone()
-            hidden = None
+
+            # Prime the recurrent state with the entire prompt before generating.
+            # The previous implementation only fed the final RESPONSE token on the
+            # first step, so every prompt effectively started from the same hidden state.
+            _, hidden = self(prefix)
+
             for _ in range(max_new_bytes):
                 logits, hidden = self(generated[:, -1:], hidden)
                 next_logits = logits[:, -1, :]
