@@ -29,6 +29,8 @@ def test_schema_and_byte_encoding_are_deterministic(tmp_path: Path):
     assert VOCAB_SIZE > 256
     assert RESPONSE in first.input_ids
     assert EOS in first.input_ids
+    assert first.loss_end == len(first.input_ids)
+    assert first.loss_start < first.loss_end
 
 
 def test_dataset_validation_and_fingerprint(tmp_path: Path):
