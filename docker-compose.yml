@@ -6,4 +6,5 @@ services:
     environment:
       MIRROR7_HOST: "0.0.0.0"
       MIRROR7_PORT: "8787"
+      MIRROR7_CORS_ORIGIN: "${MIRROR7_CORS_ORIGIN:-*}"
     restart: unless-stopped
