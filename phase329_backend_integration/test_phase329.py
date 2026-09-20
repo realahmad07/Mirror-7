@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import http.client
 import json
 import tempfile
 import threading
@@ -133,10 +134,20 @@ def test_http_rejects_oversized_body():
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
-        oversized = "x" * (1_048_576 + 1)
-        status, body = http_request(server, "POST", "/api/sessions", {"session_id": oversized})
-        assert status == 400
-        assert status == 400
+        conn = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=3)
+        conn.request(
+            "POST",
+            "/api/sessions",
+            body=None,
+            headers={
+                "Content-Type": "application/json",
+                "Content-Length": str(1_048_577),
+            },
+        )
+        response = conn.getresponse()
+        response.read()
+        assert response.status == 400
+        conn.close()
     finally:
         server.shutdown()
         server.server_close()
