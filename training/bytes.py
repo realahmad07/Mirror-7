@@ -46,6 +46,7 @@ def encode(example: TrainingExample, max_bytes: int = 4096) -> EncodedExample:
     if len(ids) > max_bytes:
         ids = ids[: max_bytes - 1] + [EOS]
 
+    # Train on every response byte plus EOS so generation has a learned stop condition.
     loss_start = len(prompt) + 1
-    loss_end = len(ids) - 1
+    loss_end = len(ids)
     return EncodedExample(tuple(ids), loss_start, loss_end, float(example.quality))
