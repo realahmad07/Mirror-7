@@ -3,7 +3,14 @@ from __future__ import annotations
 import argparse
 import json
 
-from .dataset import load_jsonl, summarize, validate_split_isolation
+try:
+    from .dataset import load_jsonl, summarize, validate_split_isolation
+except ImportError:
+    # Support both:
+    #   python -m training.validate_dataset
+    # and:
+    #   python training/validate_dataset.py
+    from dataset import load_jsonl, summarize, validate_split_isolation
 
 
 def main():
