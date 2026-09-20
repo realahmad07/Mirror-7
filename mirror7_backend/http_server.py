@@ -30,16 +30,23 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
 
     def _send(self, status: int, payload: dict[str, Any]) -> None:
         safe_payload = self._json_safe(payload)
-        body = json.dumps(safe_payload, ensure_ascii=False, default=str).encode("utf-8")
+        body = b"" if status == HTTPStatus.NO_CONTENT else json.dumps(
+            safe_payload, ensure_ascii=False, default=str
+        ).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Access-Control-Allow-Origin", self.cors_origin)
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+        self.send_header("Access-Control-Max-Age", "600")
         self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
         self.end_headers()
-        self.wfile.write(body)
+        if body:
+            self.wfile.write(body)
 
     def _read_json(self) -> dict[str, Any]:
         try:
@@ -193,7 +200,12 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         return
 
 
-def create_server(host: str = "127.0.0.1", port: int = 8787, service: BackendService | None = None, cors_origin: str = "*"):
+def create_server(
+    host: str = "127.0.0.1",
+    port: int = 8787,
+    service: BackendService | None = None,
+    cors_origin: str = "*",
+):
     if not cors_origin or "\n" in cors_origin or "\r" in cors_origin:
         raise ValueError("invalid cors_origin")
     MirrorAPIHandler.service = service or BackendService()
@@ -204,7 +216,8 @@ def create_server(host: str = "127.0.0.1", port: int = 8787, service: BackendSer
 def serve(host: str | None = None, port: int | None = None) -> None:
     resolved_host = host if host is not None else os.getenv("MIRROR7_HOST", "127.0.0.1")
     resolved_port = port if port is not None else int(os.getenv("MIRROR7_PORT", "8787"))
-    server = create_server(resolved_host, resolved_port)
+    resolved_cors = os.getenv("MIRROR7_CORS_ORIGIN", "*")
+    server = create_server(resolved_host, resolved_port, cors_origin=resolved_cors)
     print(f"Mirror 7 API listening on http://{resolved_host}:{resolved_port}")
     try:
         server.serve_forever()
