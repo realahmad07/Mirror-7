@@ -4,19 +4,15 @@ from threading import Condition, RLock
 from typing import Any, Callable, Mapping
 
 from .actions import ActionGateway
+from .observability import BackendMetrics
 from .persistence import CheckpointStore
 from .runtime import BackendResult, BackendSession
 
 
 class BackendService:
-    """UI-independent orchestration facade for the Mirror 7 backend.
+    """UI-independent orchestration facade for the Mirror 7 backend."""
 
-    The service owns sessions and composes the already-verified runtime,
-    persistence, and action boundaries. It does not implement cognition.
-    Session lifecycle is safe against close/step races.
-    """
-
-    VERSION = 2
+    VERSION = 3
 
     def __init__(
         self,
@@ -25,6 +21,7 @@ class BackendService:
         checkpoint_store: CheckpointStore | None = None,
         action_gateway: ActionGateway | None = None,
         max_sessions: int = 128,
+        metrics: BackendMetrics | None = None,
     ):
         if max_sessions < 1:
             raise ValueError("max_sessions must be positive")
@@ -32,6 +29,7 @@ class BackendService:
         self.checkpoint_store = checkpoint_store
         self.action_gateway = action_gateway
         self.max_sessions = max_sessions
+        self.metrics = metrics or BackendMetrics()
         self._sessions: dict[str, BackendSession] = {}
         self._active: dict[str, int] = {}
         self._closing: set[str] = set()
@@ -49,10 +47,12 @@ class BackendService:
     def create_session(self, session_id: str, *, max_history: int = 512) -> BackendSession:
         with self._condition:
             engine = self.engine_factory() if self.engine_factory is not None else None
-            return self._register(
+            session = self._register(
                 session_id,
                 BackendSession(session_id, engine=engine, max_history=max_history),
             )
+            self.metrics.increment("sessions_created")
+            return session
 
     def get_session(self, session_id: str) -> BackendSession:
         with self._condition:
@@ -70,11 +70,13 @@ class BackendService:
             except KeyError as exc:
                 raise KeyError(f"unknown session: {session_id}") from exc
             self._active[session_id] += 1
+            self.metrics.increment("steps_started")
             return session
 
-    def _end_step(self, session_id: str) -> None:
+    def _end_step(self, session_id: str, *, succeeded: bool) -> None:
         with self._condition:
             self._active[session_id] -= 1
+            self.metrics.increment("steps_succeeded" if succeeded else "steps_failed")
             self._condition.notify_all()
 
     def step(
@@ -87,12 +89,15 @@ class BackendService:
         views: tuple[Any, ...] = (),
     ) -> BackendResult:
         session = self._begin_step(session_id)
+        succeeded = False
         try:
-            return session.step(
+            result = session.step(
                 observation, goal=goal, research_tasks=research_tasks, views=views
             )
+            succeeded = True
+            return result
         finally:
-            self._end_step(session_id)
+            self._end_step(session_id, succeeded=succeeded)
 
     def save(self, session_id: str):
         if self.checkpoint_store is None:
@@ -125,6 +130,7 @@ class BackendService:
                     self._condition.wait()
                 del self._sessions[session_id]
                 del self._active[session_id]
+                self.metrics.increment("sessions_closed")
             finally:
                 self._closing.discard(session_id)
                 self._condition.notify_all()
@@ -157,4 +163,5 @@ class BackendService:
                 "closing_sessions": len(self._closing),
                 "persistence": self.checkpoint_store is not None,
                 "actions": self.action_gateway is not None,
+                "metrics": self.metrics.snapshot(),
             }
