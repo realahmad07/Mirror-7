@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from dataclasses import asdict, is_dataclass
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
@@ -18,8 +19,18 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
     max_body_bytes = 1_048_576
     cors_origin = "*"
 
+    def _json_safe(self, value: Any) -> Any:
+        if is_dataclass(value):
+            return {k: self._json_safe(v) for k, v in asdict(value).items()}
+        if isinstance(value, dict):
+            return {str(k): self._json_safe(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [self._json_safe(v) for v in value]
+        return value
+
     def _send(self, status: int, payload: dict[str, Any]) -> None:
-        body = json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8")
+        safe_payload = self._json_safe(payload)
+        body = json.dumps(safe_payload, ensure_ascii=False, default=str).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
@@ -78,11 +89,6 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             session_id = self._session_id(parts[2])
             self._send(200, {"ok": True, "snapshot": service.session_snapshot(session_id)})
             return
-        parts = [p for p in path.split("/") if p]
-        if len(parts) == 3 and parts[:2] == ["api", "sessions"]:
-            session_id = self._session_id(parts[2])
-            self._send(200, {"ok": True, "snapshot": service.session_snapshot(session_id)})
-            return
         self._send(404, {"ok": False, "error": "not found"})
 
     def do_POST(self) -> None:
@@ -103,23 +109,16 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
 
             if len(parts) == 4 and parts[:2] == ["api", "sessions"] and parts[3] == "step":
                 session_id = self._session_id(parts[2])
-                result = service.step(
-                    session_id,
-                    payload.get("observation"),
-                    goal=payload.get("goal"),
-                )
-                self._send(
-                    200,
-                    {
-                        "ok": True,
-                        "session_id": result.session_id,
-                        "sequence": result.sequence,
-                        "observation": result.observation,
-                        "goal": result.goal,
-                        "engine_result": result.engine_result,
-                        "state_digest": result.state_digest,
-                    },
-                )
+                result = service.step(session_id, payload.get("observation"), goal=payload.get("goal"))
+                self._send(200, {
+                    "ok": True,
+                    "session_id": result.session_id,
+                    "sequence": result.sequence,
+                    "observation": result.observation,
+                    "goal": result.goal,
+                    "engine_result": result.engine_result,
+                    "state_digest": result.state_digest,
+                })
                 return
 
             if len(parts) == 4 and parts[:2] == ["api", "sessions"] and parts[3] == "save":
@@ -194,12 +193,7 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         return
 
 
-def create_server(
-    host: str = "127.0.0.1",
-    port: int = 8787,
-    service: BackendService | None = None,
-    cors_origin: str = "*",
-):
+def create_server(host: str = "127.0.0.1", port: int = 8787, service: BackendService | None = None, cors_origin: str = "*"):
     if not cors_origin or "\n" in cors_origin or "\r" in cors_origin:
         raise ValueError("invalid cors_origin")
     MirrorAPIHandler.service = service or BackendService()
