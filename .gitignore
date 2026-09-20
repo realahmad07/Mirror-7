@@ -1,0 +1,5 @@
+# Local training artifacts
+artifacts/
+training/data/smoke.jsonl
+__pycache__/
+*.pyc
