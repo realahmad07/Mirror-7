@@ -48,3 +48,19 @@ Colab provides GPU access but resource availability and limits vary over time. T
 ## Dataset requirement
 
 The smoke dataset is only for pipeline verification. It is not the production training corpus and should never be presented as evidence of model competence.
+
+
+## Current training session — 20 September 2026
+
+The exact continuation point is recorded in [TRAINING_SESSION_HANDOFF_2026-09-20.md](./TRAINING_SESSION_HANDOFF_2026-09-20.md).
+
+Current status:
+- Colab Pro + NVIDIA A100-SXM4-40GB verified.
+- OASST2 filtered corpus validated and preserved.
+- Curated training set: 14,627 examples.
+- 1.7M baseline trained but not accepted because held-out generation remained incoherent.
+- Tiny 5-example diagnostic reached 100% training exact match, proving the core training/checkpoint path works.
+- Training/EOS/shuffling/evaluation/validator fixes have been pushed.
+- Next target: 10.57M-parameter ByteGRU using the curated dataset, followed by held-out evaluation.
+
+Quality rule: quality over quantity. Dataset heuristics are reviewed conservatively; simple repetition flags are not automatic rejection rules.
