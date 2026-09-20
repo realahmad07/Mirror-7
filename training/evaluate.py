@@ -41,6 +41,7 @@ def evaluate(args):
     model.to(device)
 
     exact = 0
+    exact_eligible = 0
     nonempty = 0
     outputs = []
     for example in items[: args.max_examples]:
@@ -57,14 +58,23 @@ def evaluate(args):
         if SPECIAL_TOKENS["EOS"] in tail:
             tail = tail[: tail.index(SPECIAL_TOKENS["EOS"])]
         text = _decode(tail).strip()
+        target = example.target_text.strip()
+        target_bytes = len(target.encode("utf-8"))
+        prediction_bytes = len(text.encode("utf-8"))
+        eligible = target_bytes <= args.max_new_bytes
         nonempty += bool(text)
-        exact += text == example.target_text.strip()
+        if eligible:
+            exact_eligible += 1
+            exact += text == target
         outputs.append(
             {
                 "example_id": example.example_id,
                 "target": example.target_text,
                 "prediction": text,
-                "exact_match": text == example.target_text.strip(),
+                "target_bytes": target_bytes,
+                "prediction_bytes": prediction_bytes,
+                "exact_match_eligible": eligible,
+                "exact_match": eligible and text == target,
             }
         )
 
@@ -75,7 +85,9 @@ def evaluate(args):
         "nonempty": nonempty,
         "exact_match": exact,
         "nonempty_rate": nonempty / max(1, len(outputs)),
-        "exact_match_rate": exact / max(1, len(outputs)),
+        "exact_match_eligible": exact_eligible,
+        "exact_match_rate": exact / max(1, exact_eligible),
+        "truncated_target_count": len(outputs) - exact_eligible,
         "checkpoint_metadata": metadata.get("metadata", {}),
         "outputs": outputs,
     }
