@@ -637,6 +637,25 @@ See [PHASE65_ACCEPTANCE.md](./PHASE65_ACCEPTANCE.md).
 Boundary: bounded continuous-stream delayed/stochastic hidden-state learning. This is not a claim of unrestricted hidden-state inference, autonomous science, or AGI.
 
 
+## 🧠 Training Foundation
+
+The software-side training foundation is now present:
+
+| Training gate | State |
+|---|:---:|
+| Dataset schema + validation | ✅ |
+| Train/validation/test isolation | ✅ |
+| Byte-level response encoding | ✅ |
+| GPU-compatible response model | ✅ |
+| Checkpoint + dataset fingerprint | ✅ |
+| Held-out evaluator | ✅ |
+| Colab notebook | ✅ |
+| Training foundation CI | ✅ |
+
+See [TRAINING_READINESS.md](./TRAINING_READINESS.md) and [Phase 343 acceptance](./phase343_training_foundation/PHASE343_ACCEPTANCE.md).
+
+This is training infrastructure, not a claim that a trained model already has broad language competence.
+
 ## 🚢 Pre-Training Product Engineering Boundary
 
 The GitHub-side product foundation is now prepared before GPU training:
