@@ -22,4 +22,5 @@ testpaths = [
   "phase333_backend_reliability",
   "phase334_backend_api",
   "phase335_backend_hardening",
+  "phase341_pre_gpu_readiness",
 ]
