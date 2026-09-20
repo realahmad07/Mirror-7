@@ -1,0 +1,43 @@
+name: Mirror 7 phase-342 release boundary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mirror7_backend/**"
+      - "phase140_unified_cognitive_runtime/**"
+      - "phase341_pre_gpu_readiness/**"
+      - "phase342_release_boundary/**"
+      - "pyproject.toml"
+      - ".env.example"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "BACKEND_RELEASE.md"
+      - ".github/workflows/phase342-release.yml"
+  pull_request:
+    paths:
+      - "mirror7_backend/**"
+      - "phase140_unified_cognitive_runtime/**"
+      - "phase341_pre_gpu_readiness/**"
+      - "phase342_release_boundary/**"
+      - "pyproject.toml"
+      - ".env.example"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "BACKEND_RELEASE.md"
+      - ".github/workflows/phase342-release.yml"
+  workflow_dispatch:
+
+jobs:
+  release-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip pytest build
+      - run: python -m pytest -q phase342_release_boundary/test_phase342.py phase341_pre_gpu_readiness/test_phase341.py phase331_backend_e2e/test_phase331.py phase330_backend_api/test_phase330.py phase329_backend_integration/test_phase329.py mirror7_backend/test_http_server.py
+      - run: python -m compileall -q mirror7_backend phase140_unified_cognitive_runtime phase341_pre_gpu_readiness phase342_release_boundary
+      - run: python -m build
+      - run: docker build -t mirror7-backend:phase342 .
