@@ -24,4 +24,5 @@ testpaths = [
   "phase335_backend_hardening",
   "phase341_pre_gpu_readiness",
   "phase342_release_boundary",
+  "training",
 ]
