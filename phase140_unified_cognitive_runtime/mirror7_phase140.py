@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from collections.abc import Mapping
 from phase129_cognitive_workspace import CognitiveWorkspace
 from phase130_state_fusion import StateFusion
 from phase134_goal_manager import GoalManager
@@ -26,7 +27,15 @@ class UnifiedCognitiveRuntime:
         self.consolidator=ConsolidationEngine()
         self.grounder=MultimodalGrounder()
     def step(self,observations,goal=None,research_tasks=(),views=()):
-        fused=self.fusion.fuse(observations)
+        if isinstance(observations, Mapping):
+            fusion_input=[(observations, 1.0)]
+        elif isinstance(observations, tuple) and len(observations) == 2:
+            fusion_input=[observations]
+        elif isinstance(observations, list):
+            fusion_input=observations
+        else:
+            fusion_input=[(observations, 1.0)]
+        fused=self.fusion.fuse(fusion_input)
         if fused:
             self.workspace.publish("state",fused.value,fused.confidence,"fusion")
             self.consolidator.observe("state",fused.value)
