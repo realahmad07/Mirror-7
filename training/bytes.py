@@ -15,6 +15,16 @@ RESPONSE = 262
 
 VOCAB_SIZE = 263
 
+SPECIAL_TOKENS = {
+    "PAD": PAD,
+    "BOS": BOS,
+    "EOS": EOS,
+    "CONTEXT": CONTEXT,
+    "GOAL": GOAL,
+    "USER": USER,
+    "RESPONSE": RESPONSE,
+}
+
 
 @dataclass(frozen=True)
 class EncodedExample:
