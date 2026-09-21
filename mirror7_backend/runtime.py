@@ -8,6 +8,10 @@ import copy
 import hashlib
 import json
 
+from phase353_response_realization_bridge import ResponseRealizationRequest
+from phase354_response_realization_policy import derive_response_realization_policy
+from phase355_backend_realization_contract import make_backend_realization_contract
+
 
 @dataclass(frozen=True)
 class BackendResult:
@@ -17,6 +21,7 @@ class BackendResult:
     goal: str | None
     engine_result: Any
     state_digest: str
+    realization_contract: Any | None = None
 
 
 class BackendSession:
@@ -58,6 +63,41 @@ class BackendSession:
         self.state: dict[str, Any] = {}
         self._lock = RLock()
 
+    def _build_realization_contract(self, engine_result: Any, observation: Any) -> Any | None:
+        semantic_state = getattr(engine_result, "semantic_state", None)
+        if semantic_state is None:
+            return None
+        from phase347_semantic_reasoning_bridge import build_reasoning_context
+        from phase352_semantic_output_execution import DesiredOutputPolicy
+
+        context = build_reasoning_context(semantic_state)
+        if context is None:
+            return None
+        output = DesiredOutputPolicy(
+            desired_output=semantic_state.desired_output,
+            output_mode={
+                "explanation": "explain",
+                "comparison": "compare",
+                "diagnosis_or_fix": "debug",
+                "artifact_or_implementation": "create",
+                "summary": "summarize",
+                "translation": "translate",
+                "computed_result": "calculate",
+                "enumeration": "list",
+                "analysis": "analyze",
+                "prediction": "predict",
+                "retrieval": "find",
+            }.get(semantic_state.desired_output),
+        )
+        realization_request = ResponseRealizationRequest(
+            output=output,
+            semantic_context=context,
+            plan_actions=(),
+            observation=copy.deepcopy(observation),
+        )
+        policy = derive_response_realization_policy(realization_request)
+        return make_backend_realization_contract(realization_request, policy)
+
     def step(
         self,
         observation: Any,
@@ -74,6 +114,9 @@ class BackendSession:
                 research_tasks=research_tasks,
                 views=views,
             )
+            realization_contract = self._build_realization_contract(
+                engine_result, safe_observation
+            )
             self.sequence += 1
             self.state = self._normalize_state(engine_result)
             event = {
@@ -83,6 +126,7 @@ class BackendSession:
                 "goal": goal,
                 "result": copy.deepcopy(engine_result),
                 "state": copy.deepcopy(self.state),
+                "realization_contract": copy.deepcopy(realization_contract),
             }
             self.history.append(event)
             if len(self.history) > self.max_history:
@@ -94,6 +138,7 @@ class BackendSession:
                 goal,
                 copy.deepcopy(engine_result),
                 self.state_digest(),
+                copy.deepcopy(realization_contract),
             )
 
     def snapshot(self) -> dict[str, Any]:
