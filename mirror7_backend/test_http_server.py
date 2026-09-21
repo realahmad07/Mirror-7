@@ -20,6 +20,17 @@ class FakeEngine:
         }
 
 
+class SemanticEngine:
+    def step(self, observation, *, goal=None, research_tasks=(), views=()):
+        from phase343_semantic_state import SemanticStateInducer
+
+        return type(
+            "Result",
+            (),
+            {"semantic_state": SemanticStateInducer().discover(observation)},
+        )()
+
+
 def request(server, method, path, payload=None):
     body = None
     headers = {}
@@ -63,6 +74,41 @@ def test_health_create_and_step():
         assert result["observation"] == {"value": 7}
         assert result["goal"] == "test"
         assert result["state_digest"]
+        assert result["realization_contract"] is None
+        assert result["response"] is None
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def test_step_returns_realization_contract_and_generated_response():
+    from .service import BackendService
+
+    def generator(request):
+        return {"mode": request.contract.mode, "text": "Mirror response"}
+
+    service = BackendService(
+        engine_factory=SemanticEngine,
+        response_generator=generator,
+    )
+    server = create_server(port=0, service=service)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        status, created = request(server, "POST", "/api/sessions", {"session_id": "generation-test"})
+        assert status == 201
+        assert created["session_id"] == "generation-test"
+
+        status, result = request(
+            server,
+            "POST",
+            "/api/sessions/generation-test/step",
+            {"observation": "Explain Python"},
+        )
+        assert status == 200
+        assert result["realization_contract"]["mode"] == "explain"
+        assert result["response"] == {"mode": "explain", "text": "Mirror response"}
     finally:
         server.shutdown()
         server.server_close()

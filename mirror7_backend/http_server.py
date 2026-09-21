@@ -124,6 +124,8 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                     "observation": result.observation,
                     "goal": result.goal,
                     "engine_result": result.engine_result,
+                    "realization_contract": result.realization_contract,
+                    "response": result.response,
                     "state_digest": result.state_digest,
                 })
                 return
@@ -206,7 +208,8 @@ def create_server(
     service: BackendService | None = None,
     cors_origin: str = "*",
 ):
-    if not cors_origin or "\n" in cors_origin or "\r" in cors_origin:
+    if not cors_origin or "
+" in cors_origin or "" in cors_origin:
         raise ValueError("invalid cors_origin")
     MirrorAPIHandler.service = service or BackendService()
     MirrorAPIHandler.cors_origin = cors_origin
