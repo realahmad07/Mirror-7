@@ -9,6 +9,8 @@ from .observability import BackendMetrics
 from .persistence import CheckpointStore
 from .runtime import BackendResult, BackendSession
 from phase359_response_generation_adapter import make_response_generator
+from phase362_response_generation_config import ResponseGenerationConfig
+from phase364_response_generation_validation import validate_generated_response
 from phase357_response_generation_interface import (
     build_response_generation_request,
     generate_response,
@@ -27,6 +29,7 @@ class BackendService:
         checkpoint_store: CheckpointStore | None = None,
         action_gateway: ActionGateway | None = None,
         response_generator: Callable[[Any], Any] | None = None,
+        generation_config: ResponseGenerationConfig | None = None,
         max_sessions: int = 128,
         metrics: BackendMetrics | None = None,
     ):
@@ -36,6 +39,7 @@ class BackendService:
         self.checkpoint_store = checkpoint_store
         self.action_gateway = action_gateway
         self.response_generator = response_generator
+        self.generation_config = generation_config or ResponseGenerationConfig()
         self.max_sessions = max_sessions
         self.metrics = metrics or BackendMetrics()
         self._sessions: dict[str, BackendSession] = {}
@@ -105,11 +109,23 @@ class BackendService:
             if self.response_generator is not None:
                 request = build_response_generation_request(result.realization_contract)
                 response = generate_response(request, self.response_generator)
+                contract = result.realization_contract
+                response = validate_generated_response(
+                    response,
+                    mode=getattr(contract, "mode", None),
+                    config=self.generation_config,
+                )
                 result = replace(result, response=response)
             succeeded = True
             return result
         finally:
             self._end_step(session_id, succeeded=succeeded)
+
+    def set_generation_config(self, config: ResponseGenerationConfig) -> None:
+        """Replace response-generation policy after validating the immutable config."""
+        if not isinstance(config, ResponseGenerationConfig):
+            raise TypeError("config must be a ResponseGenerationConfig")
+        self.generation_config = config
 
     def set_response_model(self, model: Any | None) -> None:
         """Install or remove the response model adapter at runtime."""
