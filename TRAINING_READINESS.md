@@ -1,66 +1,76 @@
-# Mirror 7 Training Readiness
+# Mirror 7 Training Readiness — Updated
 
-## What is ready now
+## Current state
 
-The repository now contains a complete first training pipeline for an optional learned response realization layer.
+The first full training cycle is complete.
 
-Flow:
+### Dataset
 
-validated JSONL
-      |
-      v
-byte-level context/goal/user encoding
-      |
-      v
-ByteGRU language model
-      |
-      v
-GPU training
-      |
-      v
-checkpoint + dataset fingerprint
-      |
-      v
-held-out evaluation
-      |
-      v
-post-training regression
-      |
-      v
-workspace integration
+- Curated file: mirror_oasst2_curated_v1.jsonl
+- Examples: 14,627
+- Train / validation / test: 11,703 / 1,455 / 1,469
+- Fingerprint: e7d66d84725bfc9347ea7b8656bfb815625f80adc81cd05d1ea868e6585c4715a
 
-## What still requires a human action
+### Hardware
 
-The physical steps are intentionally minimal:
+- Google Colab
+- NVIDIA A100-SXM4-40GB
+- Google Drive for persistent datasets/checkpoints
 
-1. Open the Colab notebook.
-2. Select a GPU runtime.
-3. Put the reviewed real training JSONL where the notebook can read it.
-4. Run the training/evaluation cells.
-5. Preserve the checkpoint and evaluation output.
+### Scratch response model
 
-The repository already contains the code and notebook needed for those steps.
+- 10,574,855 parameters
+- 256 embedding
+- 1,024 hidden
+- 2 GRU layers
+- 0.10 dropout
+- 4,096-byte maximum sequence
+- byte-level vocabulary with control symbols
 
-## Important Colab constraint
+The model trained successfully but did not pass the important free-running held-out generation requirement.
 
-Colab provides GPU access but resource availability and limits vary over time. The project therefore treats Colab as the training environment, not as the permanent production backend.
+### Native semantic-state model
 
-## Dataset requirement
+- 257 byte vocabulary
+- 96 embedding
+- 256 hidden
+- 2 GRU layers
+- 128-dimensional state
+- 0.10 dropout
+- 512-byte maximum input
+- AdamW
+- 3e-4 learning rate
+- batch 64
+- five default epochs
+- parameter budget below 1.5M
 
-The smoke dataset is only for pipeline verification. It is not the production training corpus and should never be presented as evidence of model competence.
+Experiments 1–7 are complete and documented under docs/research/.
 
+## Current checkpoint policy
 
-## Current training session — 20 September 2026
+Recorded Colab/Drive checkpoints include:
 
-The exact continuation point is recorded in [TRAINING_SESSION_HANDOFF_2026-09-20.md](./TRAINING_SESSION_HANDOFF_2026-09-20.md).
+- mirror7_response_10m_v1.pt
+- mirror7_native_brain_v1.pt
+- mirror7_exp6_pilot.pt
+- mirror7_exp7_pilot.pt
 
-Current status:
-- Colab Pro + NVIDIA A100-SXM4-40GB verified.
-- OASST2 filtered corpus validated and preserved.
-- Curated training set: 14,627 examples.
-- 1.7M baseline trained but not accepted because held-out generation remained incoherent.
-- Tiny 5-example diagnostic reached 100% training exact match, proving the core training/checkpoint path works.
-- Training/EOS/shuffling/evaluation/validator fixes have been pushed.
-- Next target: 10.57M-parameter ByteGRU using the curated dataset, followed by held-out evaluation.
+These remain research artifacts rather than production assets.
 
-Quality rule: quality over quantity. Dataset heuristics are reviewed conservatively; simple repetition flags are not automatic rejection rules.
+## Next training gate
+
+Do not start another expensive A100 run until:
+
+1. the new hypothesis is explicit;
+2. the benchmark is frozen;
+3. the baseline is frozen;
+4. the expected failure signal is measurable;
+5. the evaluation code is fixed before training.
+
+## Notebook
+
+The sanitized source-control notebook is:
+
+training/colab/mirror7_training.ipynb
+
+The publication copy has been scrubbed for the credential found in the original Colab session.
