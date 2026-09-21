@@ -1,4 +1,4 @@
-from phase34_reasoning_planning import GoalPlanner, TransitionModel
+from phase34_reasoning_planning.mirror7_phase34 import GoalPlanner, TransitionModel
 from phase343_semantic_state import SemanticStateInducer
 from phase348_semantic_planning_bridge import (
     build_planning_request,
@@ -15,11 +15,7 @@ def make_model():
 
 def test_semantic_context_and_world_state_reach_planner_separately():
     semantic = SemanticStateInducer().discover("Explain variance")
-    request = build_planning_request(
-        semantic,
-        {"x": 0},
-        {"x": 3},
-    )
+    request = build_planning_request(semantic, {"x": 0}, {"x": 3})
     assert request is not None
     assert request.context["operations"] == ("explain",)
     assert request.world_state == {"x": 0}
