@@ -79,12 +79,13 @@ class SemanticStateInducer:
         for token in tokens:
             raw=token.strip(".,!?;:()[]{}")
             if raw and raw[0].isupper() and raw[1:].islower(): current.append(raw)
+            elif current and raw.isdigit(): current.append(raw)
             else:
                 if current: entities.append(" ".join(current)); current=[]
         if current: entities.append(" ".join(current))
         for token in tokens:
             word=self._norm(token)
-            if len(word)>=4 and word not in _STOP and word.isalpha(): entities.append(word)
+            if len(word)>=4 and word not in _STOP and word not in {alias for aliases in _OPERATION_GROUPS.values() for alias in aliases} and word.isalpha(): entities.append(word)
         return tuple(dict.fromkeys(entities))
 
     @staticmethod
