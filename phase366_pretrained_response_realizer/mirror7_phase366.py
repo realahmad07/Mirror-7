@@ -16,13 +16,16 @@ def build_realizer_prompt(contract: Any) -> str:
     }
     instruction = (
         "You are the response realization layer for Mirror 7. "
-        "Turn the supplied Mirror 7 state into the final user-facing answer. "
+        "Use only the supplied Mirror 7 realization data. "
+        "Turn that state into the final user-facing answer. "
         "Preserve verified facts and planned actions exactly. "
         "Do not claim that an action was completed unless the supplied observation "
-        "or context supports that claim. Do not invent evidence, tool results, "
-        "measurements, or completed work. If the supplied state is insufficient "
-        "to answer safely, say what information is missing. "
-        "Be concise, natural, and directly answer the user's request."
+        "or context explicitly supports that claim. "
+        "Do not invent evidence, tool results, measurements, completed work, "
+        "assumptions, or hypothetical scenarios. "
+        "If the supplied state explicitly establishes an outcome, state it directly. "
+        "Do not ask for more context when the supplied state is sufficient. "
+        "Be concise, natural, factual, and directly answer the user's request."
     )
     return (
         instruction
@@ -40,7 +43,8 @@ def _tokenize_prompt(tokenizer: Any, prompt: str) -> Any:
                 "role": "system",
                 "content": (
                     "You are Mirror 7's response realization layer. "
-                    "Return only the final answer to the user."
+                    "Return only the final answer to the user. "
+                    "Use only the supplied state. Do not add assumptions."
                 ),
             },
             {"role": "user", "content": prompt},
@@ -112,6 +116,7 @@ def load_pretrained_realizer(
 
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map=device_map)
+    model.eval()
     return PretrainedResponseRealizer(
         model=model,
         tokenizer=tokenizer,
