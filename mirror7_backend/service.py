@@ -108,14 +108,15 @@ class BackendService:
             )
             if self.response_generator is not None:
                 request = build_response_generation_request(result.realization_contract)
-                response = generate_response(request, self.response_generator)
-                contract = result.realization_contract
-                response = validate_generated_response(
-                    response,
-                    mode=getattr(contract, "mode", None),
-                    config=self.generation_config,
-                )
-                result = replace(result, response=response)
+                if request is not None:
+                    response = generate_response(request, self.response_generator)
+                    contract = result.realization_contract
+                    response = validate_generated_response(
+                        response,
+                        mode=getattr(contract, "mode", None),
+                        config=self.generation_config,
+                    )
+                    result = replace(result, response=response)
             succeeded = True
             return result
         finally:
