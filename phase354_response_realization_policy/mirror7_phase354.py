@@ -10,7 +10,8 @@ class ResponseRealizationPolicy:
 
 def derive_response_realization_policy(request: ResponseRealizationRequest) -> ResponseRealizationPolicy:
     mode=request.output.output_mode
-    return ResponseRealizationPolicy(mode=mode, requires_plan=bool(request.plan_actions), include_context=True)
+    requires_plan=bool(request.plan_actions) and mode is not None
+    return ResponseRealizationPolicy(mode=mode, requires_plan=requires_plan, include_context=True)
 
 def policy_is_non_destructive(policy: ResponseRealizationPolicy) -> bool:
-    return policy.include_context is True and policy.mode is not None or policy.mode is None
+    return policy.include_context is True
