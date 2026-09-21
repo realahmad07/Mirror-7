@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from threading import Condition, RLock
 from typing import Any, Callable, Mapping
 
@@ -7,12 +8,16 @@ from .actions import ActionGateway
 from .observability import BackendMetrics
 from .persistence import CheckpointStore
 from .runtime import BackendResult, BackendSession
+from phase357_response_generation_interface import (
+    build_response_generation_request,
+    generate_response,
+)
 
 
 class BackendService:
     """UI-independent orchestration facade for the Mirror 7 backend."""
 
-    VERSION = 3
+    VERSION = 4
 
     def __init__(
         self,
@@ -20,6 +25,7 @@ class BackendService:
         engine_factory: Callable[[], Any] | None = None,
         checkpoint_store: CheckpointStore | None = None,
         action_gateway: ActionGateway | None = None,
+        response_generator: Callable[[Any], Any] | None = None,
         max_sessions: int = 128,
         metrics: BackendMetrics | None = None,
     ):
@@ -28,6 +34,7 @@ class BackendService:
         self.engine_factory = engine_factory
         self.checkpoint_store = checkpoint_store
         self.action_gateway = action_gateway
+        self.response_generator = response_generator
         self.max_sessions = max_sessions
         self.metrics = metrics or BackendMetrics()
         self._sessions: dict[str, BackendSession] = {}
@@ -94,6 +101,10 @@ class BackendService:
             result = session.step(
                 observation, goal=goal, research_tasks=research_tasks, views=views
             )
+            if self.response_generator is not None:
+                request = build_response_generation_request(result.realization_contract)
+                response = generate_response(request, self.response_generator)
+                result = replace(result, response=response)
             succeeded = True
             return result
         finally:
@@ -163,5 +174,6 @@ class BackendService:
                 "closing_sessions": len(self._closing),
                 "persistence": self.checkpoint_store is not None,
                 "actions": self.action_gateway is not None,
+                "response_generation": self.response_generator is not None,
                 "metrics": self.metrics.snapshot(),
             }
