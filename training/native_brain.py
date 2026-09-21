@@ -1,9 +1,9 @@
-from __future__ import annotations
+from __future__
 import argparse, json, random
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from .dataset import load_jsonl
-from .model import require_torch
+from training.dataset import load_jsonl
+from training.model import require_torch
 
 PAD = 256
 VOCAB_SIZE = 257
