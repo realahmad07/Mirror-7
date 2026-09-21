@@ -1,64 +1,55 @@
 # Mirror 7 Training Foundation
 
-This directory contains the pre-training and training infrastructure for the learned language/response layer.
+This directory contains the pre-training and training infrastructure for learned language/response realization and native semantic-state research.
 
-## Architecture boundary
+## Boundaries
 
-The training layer is an optional learned realization component. It does not replace the tested Mirror 7 runtime.
+The training layer is optional research infrastructure. It does not replace the tested Mirror 7 runtime.
 
-    user text + Mirror state/goal/evidence
-                     |
-                     v
-           learned response realization
-                     |
-                     v
-             response text / bytes
+## Main code
 
-Mirror 7's explicit mechanisms remain responsible for state, prediction, reasoning, memory, planning, actions, and other tested capabilities.
-
-## Byte-level design
-
-The baseline model operates directly on UTF-8 bytes plus a small set of control symbols. It does not depend on a subword tokenizer.
-
-This keeps the first training experiment aligned with the project's exploration of alternative representations while still giving the system a trainable language interface.
+| File | Role |
+|---|---|
+| bytes.py | Control-token/byte encoding primitives. |
+| schema.py | Training-record schema. |
+| dataset.py | JSONL loading, fingerprints, and split handling. |
+| model.py | ByteGRU language model and checkpoint boundary. |
+| train.py | Scratch response-model trainer. |
+| evaluate.py | Held-out response evaluation. |
+| validate_dataset.py | Dataset contract checks. |
+| native_brain.py | Compact semantic-state learner. |
+| experiment6_learned_operations.py | Opaque-operation research model. |
 
 ## Dataset contract
 
-Training data is JSONL. Each record contains:
+A training record can contain:
 
-- example_id: globally unique stable identifier.
-- user_text: user input.
-- target_text: desired response.
-- goal: optional goal string.
-- state: JSON-serializable Mirror state summary.
-- evidence: optional JSON-serializable reasoning/evidence summary.
-- actions: optional legal/selected actions.
-- split: train, validation, or test.
-- quality: optional 0..1 data-quality weight.
+- stable example id;
+- user text;
+- target text;
+- optional goal;
+- optional state;
+- optional evidence;
+- optional actions;
+- train/validation/test split;
+- optional quality score.
 
-See training/schema.py.
+The pipeline keeps split identity explicit and computes a deterministic dataset fingerprint.
 
-## First training rule
+## Model boundary
 
-Do not train directly on generated benchmark answers or leak held-out evaluator information into the training set.
+Scratch response models emit bytes or text.
 
-The training pipeline keeps train/validation/test identifiers separate and reports split counts before training.
+Native-brain experiments learn compact state and transition representations.
+
+Neither silently replaces the backend runtime.
 
 ## Colab
 
-Open training/colab/mirror7_training.ipynb in Google Colab, connect a GPU runtime, and run the cells in order.
+The canonical interactive training notebook is training/colab/mirror7_training.ipynb.
 
-The notebook is intentionally a normal interactive training notebook rather than a background service.
+GPU access is treated as an experimental resource. Persistent checkpoints should remain in Drive or a dedicated artifact store, not in source control.
 
-## Training artifact
+## Research rule
 
-The trainer writes a checkpoint containing:
-
-- model configuration
-- model state
-- training arguments
-- vocabulary/control-symbol definition
-- dataset fingerprint
-- validation metrics
-
-The artifact is a learned component, not a replacement for the Mirror 7 backend or cognitive runtime.
+Do not accept a training run because the loss improved alone. Require held-out behavior, diagnostics, controls, and comparison with a frozen baseline.

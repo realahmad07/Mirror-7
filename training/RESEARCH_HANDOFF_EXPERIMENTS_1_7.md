@@ -1,12 +1,14 @@
-# Mirror 7 Research Handoff: Experiments 1-7
+# Mirror 7 Research Handoff — Experiments 1–7
 
-## Summary
-Successfully developed and validated the State-Residual Transition architecture for deep recursive reasoning.
+The first native-brain training cycle is complete.
 
-## Final Metrics
-- Experiment 6 (Baseline): 63.33% L5 Accuracy / 65.33% Unseen Concept Accuracy
-- Experiment 7 (Residual): 63.33% L5 Accuracy / 65.56% Unseen Concept Accuracy
+| Metric | Exp6 baseline | Exp7 residual |
+|---|---:|---:|
+| Length-5 accuracy | 63.33% | 63.33% |
+| Unseen-concept accuracy | 65.33% | 65.56% |
 
-## Checkpoints (Verified)
-- Exp 6: /content/drive/MyDrive/Mirror7/mirror7_exp6_pilot.pt
-- Exp 7: /content/drive/MyDrive/Mirror7/mirror7_exp7_pilot.pt
+Exp7 is a stability-oriented continuation of Exp6. It matches the primary depth benchmark and gives a small unseen-concept improvement, but it is not a decisive architecture win.
+
+Continue from a new hypothesis rather than scaling Exp7 blindly.
+
+See docs/research/ for the detailed experiment archive.

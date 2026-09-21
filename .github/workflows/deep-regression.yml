@@ -1,0 +1,26 @@
+name: Mirror 7 | Deep Regression
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  full-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install test and build tools
+        run: python -m pip install --upgrade pip setuptools wheel pytest build
+      - name: Compile repository Python
+        run: python -m compileall -q .
+      - name: Run complete historical regression suite
+        run: python -m pytest -q

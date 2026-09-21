@@ -1,942 +1,110 @@
-# MIRROR 7
+# Mirror 7
 
-> **An open-source research architecture for explicit representation, state, prediction, reasoning, memory, planning, and self-hosted computation.**
+> Open-source research architecture for explicit state, reasoning, memory, planning, action, and learned language realization.
 
-[![Bootstrap](https://img.shields.io/badge/Bootstrap-COMPLETE-2ea44f?style=for-the-badge)](./BOOTSTRAP_PROGRESS.md)
-[![Phase 31](https://img.shields.io/badge/Phase%2031-PASS-2ea44f?style=for-the-badge)](./phase31_bootstrap)
-[![Phase 32](https://img.shields.io/badge/Phase%2032-PASS-2ea44f?style=for-the-badge)](./phase32_prediction)
-[![Phase 54](https://img.shields.io/badge/Phase%2054-18%2F18%20PASS-2ea44f?style=for-the-badge)](./INDEPENDENT_EVALUATION_2026-09-19.md)
-[![Phase 55](https://img.shields.io/badge/Phase%2055-27%2F27%20PASS-2ea44f?style=for-the-badge)](./PHASE55_ACCEPTANCE.md)
-[![Phase 56](https://img.shields.io/badge/Phase%2056-PASS-2ea44f?style=for-the-badge)](./PHASE56_ACCEPTANCE.md)
-[![Phase 57](https://img.shields.io/badge/Phase%2057-PASS-2ea44f?style=for-the-badge)](./PHASE57_ACCEPTANCE.md)
-[![Phase 58](https://img.shields.io/badge/Phase%2058-PASS-2ea44f?style=for-the-badge)](./PHASE58_ACCEPTANCE.md)
-[![Phase 59](https://img.shields.io/badge/Phase%2059-PASS-2ea44f?style=for-the-badge)](./PHASE59_ACCEPTANCE.md)
-[![Phase 60](https://img.shields.io/badge/Phase%2060-PASS-2ea44f?style=for-the-badge)](./PHASE60_ACCEPTANCE.md)
-[![Phase 61](https://img.shields.io/badge/Phase%2061-PASS-2ea44f?style=for-the-badge)](./PHASE61_ACCEPTANCE.md)
-[![Phase 62](https://img.shields.io/badge/Phase%2062-PASS-2ea44f?style=for-the-badge)](./PHASE62_ACCEPTANCE.md)
-[![Phase 63](https://img.shields.io/badge/Phase%2063-PASS-2ea44f?style=for-the-badge)](./PHASE63_ACCEPTANCE.md)
-[![Phase 64](https://img.shields.io/badge/Phase%2064-PASS-2ea44f?style=for-the-badge)](./PHASE64_ACCEPTANCE.md)
-[![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=for-the-badge)](./LICENSE)
+<div align="center">
 
----
+[![CI](https://github.com/realahmad07/Mirror-7/actions/workflows/ci.yml/badge.svg)](https://github.com/realahmad07/Mirror-7/actions/workflows/ci.yml)
+[![Training CI](https://github.com/realahmad07/Mirror-7/actions/workflows/training-native.yml/badge.svg)](https://github.com/realahmad07/Mirror-7/actions/workflows/training-native.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%2B-3776AB.svg)](./pyproject.toml)
 
-## 🚀 Backend Runtime / Deployment
+</div>
 
-The UI-independent backend boundary is packaged for local and container deployment.
+## What Mirror 7 is
 
-```text
-HTTP client
-   ↓
-Mirror 7 HTTP boundary
-   ↓
-BackendService
-   ├── session lifecycle
-   ├── checkpoint persistence
-   ├── allow-listed actions
-   └── injected Mirror runtime
-```
+Mirror 7 is an open-source research project exploring whether useful machine intelligence can be built from explicit, inspectable mechanisms for representation, state, prediction, discrepancy handling, reasoning, memory, planning, action, and learning rather than treating next-token prediction as the entire cognitive architecture.
 
-Local: `python -m mirror7_backend.http_server`
+The repository now has two intentionally separated layers:
 
-Container: `docker build -t mirror7-backend . && docker run --rm -p 8787:8787 mirror7-backend`
+| Layer | Purpose |
+|---|---|
+| Mirror runtime / backend | Structured state, reasoning, planning, memory, actions, persistence, evaluation boundaries, HTTP service, and response-generation interfaces. |
+| Learned research | Native semantic-state experiments and an optional learned language realization layer. |
 
-See [BACKEND_RELEASE.md](./BACKEND_RELEASE.md) for the API surface and deployment notes.
+## Read the project as pages
 
-**Boundary:** backend packaging and API verification do not constitute AGI evidence.
+| Start here | Engineering | Research |
+|---|---|---|
+| [Project overview](docs/01-project-overview.md) | [Backend](docs/03-backend.md) | [Training](docs/04-training.md) |
+| [Architecture](docs/02-system-architecture.md) | [Testing and CI](docs/06-testing-ci.md) | [Evaluation](docs/05-evaluation.md) |
+| [Repository map](docs/07-repository-organization.md) | [Limitations](docs/08-limitations.md) | [Experiments 1–7](docs/research/README.md) |
+| [Documentation index](docs/README.md) | [Contributing](CONTRIBUTING.md) | [Roadmap](docs/09-roadmap.md) |
 
----
+## Current status
 
-## 🧭 What is Mirror 7?
+| Area | State | Meaning |
+|---|:---:|---|
+| Core research corpus | ✅ | Phase implementations and acceptance records are preserved. |
+| Backend service | ✅ | Sessions, persistence, actions, HTTP API, metrics, and response generation are implemented. |
+| Response-generation boundary | ✅ | Contract, adapter, lifecycle, configuration, validation, and E2E layers exist. |
+| Pretrained response realizer | ✅ | Phase 366 provides an optional language realization component. |
+| Native semantic-state research | ✅ | Experiments 1–7 are recorded and replicated on bounded benchmarks. |
+| Scratch language-model route | ⚠️ | 10.57M-class ByteGRU trained, but free-running held-out generation remained weak. |
+| Public scientific claim | ⚠️ | This is a research system, not evidence of AGI or a ChatGPT-level standalone model. |
 
-Mirror 7 is a research project exploring an alternative route toward machine intelligence:
+## Training snapshot
 
-```text
-raw observation
-      ↓
-discover structure
-      ↓
-stable state
-      ↓
-temporal identity
-      ↓
-transition memory
-      ↓
-prediction
-      ↓
-discrepancy
-      ↓
-causal / world-model update
-      ↓
-goals + reasoning
-      ↓
-planning
-      ↓
-action
-      ↓
-observe result
-      ↺
-learn / revise / remember
-```
+| Item | Recorded value |
+|---|---|
+| Curated corpus | mirror_oasst2_curated_v1.jsonl |
+| Total examples | **14,627** |
+| Train / validation / test | **11,703 / 1,455 / 1,469** |
+| Dataset fingerprint | e7d66d84725bfc9347ea7b8656bfb815625f80adc81cd05d1ea868e6585c4715a |
+| Scratch target | **10,574,855 parameters** |
+| Scratch model | ByteGRU, 256 embedding, 1024 hidden, 2 layers, 0.10 dropout |
+| Native-brain default | 96 embedding, 256 hidden, 2 layers, 128 state |
+| Training hardware | Google Colab, NVIDIA A100-SXM4-40GB |
+| Rule | Quality over quantity; no blind scaling after a failed hypothesis. |
 
-The project emphasizes **explicit, inspectable mechanisms** wherever the research question permits, rather than assuming that intelligence must be implemented as next-token prediction.
+## Native-brain results
 
-> **Important boundary:** a passing phase demonstrates the tested mechanism and its acceptance criteria. It does **not** by itself prove AGI, human-level intelligence, consciousness, or general-world competence.
+| Experiment | Verified result |
+|---|---|
+| Exp 1 | Three-seed semantic-state signal: Top-1 14.27%, Top-5 25.47%, semantic margin 0.2209, transition margin 0.1150. |
+| Exp 2 | Transition-heavy objective raised transition margin to 0.1605 mean, while Top-1 fell to 12.93%. |
+| Exp 3 | Explicit state transformations became learnable on the defined synthetic benchmark. |
+| Exp 4B | Transformation-specific contrastive objective reached 87.18% held-out Top-1 on the defined compositional benchmark. |
+| Exp 5 | Variable-length chains reached 60.71% mean accuracy across three seeds. |
+| Exp 6 | Opaque learned operations exposed a depth/generalization bottleneck. |
+| Exp 7 | Residual transition matched the Exp6 length-5 baseline at 63.33% and slightly improved unseen-concept mean to 65.56%; not a decisive overall win. |
 
----
+## What failed
 
-## 🟢 Current Project Status
+The first training cycle also tested 1.7M and 10.57M scratch autoregressive models, scheduled sampling, response plans, curricula, semantic lexical plans, BPE-GRU, a small non-autoregressive Transformer, retrieval, reranking, prompt-to-prompt retrieval, and explicit response-state designs.
 
-### Verified boundary
+The important negative result is consistent across diagnostics: supervised/teacher-forced learning was healthy enough to show prompt sensitivity and tiny-set overfitting, but free-running generation remained weak. That is now treated as a research boundary rather than a reason to hide the result or blindly increase parameter count.
 
-| Area | Current state |
-|---|:---:|
-| Self-hosting / compiler bootstrap | ✅ Complete |
-| Representation discovery | ✅ Verified |
-| State + temporal identity | ✅ Verified |
-| Transition memory + prediction | ✅ Verified |
-| Causal reasoning | ✅ Verified |
-| Reasoning / planning mechanism | ✅ Verified |
-| Action + closed loop | ✅ Verified |
-| Memory | ✅ Verified |
-| World model | ✅ Verified |
-| Composition | ✅ Verified |
-| Hierarchical planning | ✅ Verified |
-| Tools | ✅ Verified |
-| Language grounding | ✅ Verified |
-| Counterfactuals | ✅ Verified |
-| Continual learning | ✅ Verified |
-| Meta-reasoning | ✅ Verified |
-| Robustness / transfer | ✅ Verified |
-| Full integration | ✅ Verified |
-| Advanced reasoning | ✅ Verified |
-| Open-ended black-box learner | ✅ Implemented |
-| Phase 53 blind benchmark | ✅ 21/21 |
-| Phase 54 locked fresh evaluation | ✅ 18/18 |
-| Phase 54 held-out | ✅ 9/9 |
-| Phase 54 invalid actions | ✅ 0 |
-| Phase 55 representation independence | ✅ 27/27 |
-| Phase 56 raw concept acquisition | ✅ PASS |
-| Phase 57 cross-view concept acquisition | ✅ PASS |
-| Phase 58 hierarchical concept abstraction | ✅ PASS |
-| Phase 59 predictive concept learning | ✅ PASS |
-| Phase 60 long-horizon world model | ✅ PASS |
-| Phase 61 predictive closed-loop autonomy | ✅ PASS |
-| Phase 62 partial observability + active information | ✅ PASS |
-| Phase 63 nonstationary world + experiment design | ✅ PASS |
-| Phase 64 unknown-regime discovery + experiment sequences | ✅ PASS |
+## Backend surface
 
-### Current frontier
+The backend is UI-independent and includes session lifecycle, persistence, allow-listed actions, structured realization contracts, replaceable response-model adapters, output validation, metrics, health/status endpoints, and an HTTP API for the external UI.
 
-Phases 58–61 are now complete at their bounded acceptance boundaries: hierarchical abstraction **8/8**, predictive concept learning **8/8**, long-horizon world modeling **8/8**, and predictive closed-loop autonomy **9/9**. Phase 61 integrates the Phase 58 hierarchy, Phase 59 predictor, and Phase 60 world model inside an online goal-directed control loop. Phase 64 removes the finite regime list from Phase 63: Mirror 7 constructs unlabeled regime hypotheses from controlled experiments and selects multi-action experiments from predicted hypothesis disagreement. The next research boundary is richer delayed/stochastic effects, open-ended hypothesis refinement, and independent external evaluation.
+## Local commands
 
----
+~~~bash
+python -m pytest -q mirror7_backend
+python -m compileall -q mirror7_backend training
+python -m pytest -q training/test_training_foundation.py
+python -m build
+~~~
 
-## 🧠 The Mirror 7 Capability Stack
+The complete historical regression remains available through the manual Deep Regression GitHub Actions workflow.
 
-```mermaid
-flowchart TD
-    A["RAW OBSERVATION"] --> B["DISCOVER STRUCTURE<br/>Phase 31"]
-    B --> C["STABLE STATE"]
-    C --> D["TEMPORAL IDENTITY"]
-    D --> E["TRANSITION MEMORY<br/>Phase 32"]
-    E --> F["PREDICTION"]
-    F --> G{"DISCREPANCY?"}
-    G -- "No" --> H["ROLLOUT / CONTINUE"]
-    G -- "Yes" --> I["UPDATE MODEL"]
-    I --> J["CAUSAL STRUCTURE<br/>Phase 33"]
-    J --> K["GOALS + REASONING"]
-    K --> L["PLANNING"]
-    L --> M["ACTION"]
-    M --> N["OBSERVE RESULT"]
-    N --> F
-```
+## Deployment
 
-The later capability layers extend the same loop with:
+~~~bash
+python -m mirror7_backend.http_server
+~~~
 
-```text
-memory
-  + world model
-  + composition
-  + hierarchy
-  + tools
-  + language grounding
-  + counterfactual simulation
-  + continual learning
-  + meta-reasoning
-  + robustness
-  + transfer
-```
+or:
 
----
+~~~bash
+docker build -t mirror7-backend .
+docker run --rm -p 8787:8787 mirror7-backend
+~~~
 
-## 🔬 What has actually been demonstrated
+## Research boundary
 
-### 1. Computational substrate / bootstrap
+Mirror 7 should currently be described as an open-source research AI system with a structured reasoning/state architecture, an HTTP backend boundary, and a validated experimental native semantic-state subsystem, with an optional learned language realization layer.
 
-Phases 24–30 established the self-hosting compiler substrate:
-
-```mermaid
-flowchart LR
-    A["MIRR source"] --> B["Compiler A"]
-    B --> C["Compiler B"]
-    C --> D["Executable artifact"]
-    D --> E["Independent rebuild"]
-    E --> F{"Byte-identical?"}
-    F -- "Yes" --> G["Bootstrap COMPLETE"]
-    F -- "No" --> H["FAIL / investigate"]
-```
-
-Recorded reproducibility identifiers:
-
-- Primary artifact SHA256: `ec48f82db766b3fa4bbcad83bc5f9193aedb2212329122e8b380a1a68d3a5c50`
-- Independent rebuild SHA256: `ec48f82db766b3fa4bbcad83bc5f9193aedb2212329122e8b380a1a68d3a5c50`
-- Fixed-point compiled-B SHA256: `4d395c63b6e4364fcad2f198e74e305b639996cc649bbf58d66bb2e46e597d25`
-
-See:
-- [Bootstrap progress](./BOOTSTRAP_PROGRESS.md)
-- [Detailed status](./STATUS.md)
-
-### 2. Representation → prediction
-
-Phases 31–32 established:
-
-```text
-raw observation
-      ↓
-structural discovery
-      ↓
-stable state
-      ↓
-temporal identity
-      ↓
-learned transition
-      ↓
-next-state prediction
-      ↓
-discrepancy
-      ↓
-online update
-```
-
-Phase 31 acceptance: **37/37 tests passed**.
-
-Phase 32 covers multi-seed validation, held-out cases, ambiguity, online learning, rollout, perturbation testing, serialization, integration, and regression.
-
-### 3. Causal → planning → action
-
-The Phase 33–51 capability line demonstrates explicit mechanisms for:
-
-```text
-CAUSE
- ↓
-GOAL
- ↓
-REASON
- ↓
-PLAN
- ↓
-ACT
- ↓
-MEMORY
- ↓
-WORLD MODEL
- ↓
-COUNTERFACTUAL
- ↓
-REVISE
-```
-
-See [Phase 34 acceptance](./PHASE34_ACCEPTANCE.md) and [Phase 35–51 verification](./PHASE35_51_VERIFICATION.md).
-
-### 4. Open-ended black-box learning
-
-Phase 52 provides a learner that receives only:
-
-```text
-observation
-goal
-legal actions
-step limit
-transition feedback
-```
-
-It does not receive task-family labels, hidden parameters, or expected transitions.
-
-The learner discovers action consequences online, predicts effects, updates memory, and replans.
-
-See [Phase 52 runtime](./phase52_open_learning/README.md).
-
-### 5. Blind generalization
-
-Phase 53:
-
-- 21/21 benchmark episodes solved
-- 12/12 held-out episodes solved
-- 0 invalid actions
-
-See [Phase 53 report](./PHASE53_REPORT.md).
-
-### 6. Phase 54 fresh evaluation
-
-The locked Phase 54 evaluator uses six fresh task families with randomized opaque action identifiers.
-
-Result:
-
-```text
-Training:     9 / 9
-Held-out:     9 / 9
-Overall:     18 / 18
-Invalid:       0
-```
-
-Evaluator SHA256:
-
-```text
-c821c963ab8b80f5a28611c79f971deec6133eeee9836d210f293f325fcaed7c
-```
-
-The evaluator remained unchanged while the learner was fixed.
-
-See [Phase 54 evaluation](./INDEPENDENT_EVALUATION_2026-09-19.md).
-
-### 7. Phase 55 representation independence
-
-Phase 55 tests whether the same bounded relational structure survives three substantially different byte encodings:
-
-```text
-edge list ↔ neighbor map ↔ binary adjacency matrix
-                 ↓
-       canonical unlabeled graph
-                 ↓
-          same fingerprint
-```
-
-Result:
-
-```text
-Progressive: 27 / 27
-Held-out:     2 / 2
-Adversarial:   6 / 6
-Pytest:       11 passed
-Determinism / invariance: ✅
-```
-
-See [Phase 55 acceptance](./PHASE55_ACCEPTANCE.md).
-
-### 8. Phase 56 raw concept acquisition
-
-Phase 56 extends representation work into bounded concept discovery from undifferentiated byte streams:
-
-```text
-raw bytes
-   ↓
-canonical recurring motifs
-   ↓
-cross-episode support
-   ↓
-reusable concepts
-   ↓
-ordered relations / transition-events
-```
-
-Result:
-
-```text
-Progressive: 3 families × 3 seeds
-Held-out:    2 / 2
-Adversarial: 3 / 3
-Pytest:      7 passed
-```
-
-See [Phase 56 acceptance](./PHASE56_ACCEPTANCE.md).
-
-### 9. Phase 57 cross-view raw concept acquisition
-
-Phase 57 removes the single-byte-stream boundary by receiving an unlabeled bundle of raw views and canonicalizing reusable relational structure across 1-D sequences and 2-D grids:
-
-```text
-unlabeled raw views
-       ↓
-relational atoms
-       ↓
-cross-view / cross-episode support
-       ↓
-permutation-null filtering
-       ↓
-compact concept vocabulary
-       ↓
-view-invariant relations + within-view events
-```
-
-Result:
-
-```text
-Progressive: 3 families × 3 seeds
-Held-out:     2 / 2
-Adversarial: 3 / 3
-Scaling:      1 / 1
-Pytest:      10 passed
-```
-
-See [Phase 57 acceptance](./PHASE57_ACCEPTANCE.md).
-
-### 10. Phase 58 hierarchical concept abstraction
-
-Phase 58 recursively discovers repeated compositions of previously stable concepts:
-
-```text
-stable concepts
-      ↓
-recurrent compositions
-      ↓
-compact abstraction
-      ↓
-higher-level concepts
-      ↓
-recursive hierarchy
-```
-
-Result:
-
-```text
-Progressive: 3 families × 3 seeds
-Held-out:     2 / 2
-Adversarial: 2 / 2
-Pytest:      8 passed
-```
-
-See [Phase 58 acceptance](./PHASE58_ACCEPTANCE.md).
-
-### 11. Phase 59 predictive concept learning
-
-Phase 59 learns context-conditioned concept transitions with longest-supported context, deterministic backoff, and explicit abstention under ambiguity:
-
-```text
-hierarchical concepts
-        ↓
-context history
-        ↓
-prediction + confidence
-        ↓
-abstain / back off when evidence is weak
-```
-
-Result:
-
-```text
-Progressive: 3 families × 3 seeds
-Held-out:     2 / 2
-Adversarial: 2 / 2
-Pytest:      8 passed
-```
-
-See [Phase 59 acceptance](./PHASE59_ACCEPTANCE.md).
-
-### 12. Phase 60 long-horizon world modeling
-
-Phase 60 adds exact transition memory, factorized action rules, numeric-delta generalization, discrepancy handling, and fail-closed rollout:
-
-```text
-state + action
-      ↓
-exact evidence
-      ↓
-factorized rule
-      ↓
-delta generalization
-      ↓
-long-horizon rollout
-      ↓
-observe / compare / update
-```
-
-Result:
-
-```text
-Progressive: 3 horizons × 3 seeds
-Held-out:     2 / 2
-Adversarial: 2 / 2
-Integration: Phase 58 + Phase 59
-Pytest:      8 passed
-```
-
-See [Phase 60 acceptance](./PHASE60_ACCEPTANCE.md).
-
-### 13. Phase 61 predictive closed-loop autonomy
-
-Phase 61 connects the Phase 58–60 mechanisms into an online goal-directed control loop:
-
-```text
-observe
-  ↓
-predict supported consequences
-  ↓
-bounded model-based plan
-  ↓
-goal-improving action
-  ↓
-safe exploration of unknown legal action
-  ↓
-observe result
-  ↓
-discrepancy detection
-  ↓
-replan / update
-  ↺
-```
-
-Successful traces are also compressed through the hierarchy and used by the predictive concept model as a policy prior.
-
-Result:
-
-```text
-Progressive: 3 families × 3 seeds
-Held-out:     2 / 2
-Adversarial: 3 / 3
-Integration: Phase 58 + 59 + 60
-Pytest:      9 passed
-```
-
-See [Phase 61 acceptance](./PHASE61_ACCEPTANCE.md).
-
-### 14. Phase 62 partial observability + active information
-
-Phase 62 removes the full-state visibility assumption:
-
-```text
-partial observation
-       ↓
-hidden goal-relevant variables
-       ↓
-infer information actions from consequences
-       ↓
-active information selection
-       ↓
-revealed state
-       ↓
-model-based planning
-       ↓
-observe / revise / fail closed
-```
-
-Result:
-
-```text
-Progressive: 3 families × 3 seeds
-Held-out:     2 / 2
-Adversarial: 3 / 3
-Integration: Phase 61 handoff contract
-Pytest:      9 passed
-```
-
-See [Phase 62 acceptance](./PHASE62_ACCEPTANCE.md).
-
-### 15. Phase 63 nonstationary world + autonomous experiment design
-
-Phase 63 removes the fixed-dynamics assumption:
-
-```text
-learn competing regimes
-        ↓
-predict
-        ↓
-detect repeated mismatch
-        ↓
-mark model stale
-        ↓
-design discriminating experiment
-        ↓
-identify active regime
-        ↓
-continue goal-directed control
-```
-
-Result:
-
-```text
-Progressive: 3 change levels × 3 seeds
-Held-out:     2 / 2
-Adversarial: 3 / 3
-Integration: Phase 62 handoff contract
-Pytest:      9 passed
-```
-
-See [Phase 63 acceptance](./PHASE63_ACCEPTANCE.md).
-
-### 16. Phase 64 unknown-regime discovery + autonomous experiment sequences
-
-Phase 64 removes the finite, developer-supplied regime bank:
-
-```text
-no regime labels
-       ↓
-controlled experiment
-       ↓
-transition-effect profile
-       ↓
-create / merge hypothesis
-       ↓
-multi-step experiment design
-       ↓
-predicted prefix disagreement
-       ↓
-regime identification
-       ↓
-goal-directed planning
-```
-
-Result:
-
-```text
-Progressive: 3 regime families × 3 seeds
-Held-out:     2 / 2
-Adversarial: 3 / 3
-Integration: Phase 63 state/goal contract
-Pytest:      9 passed
-```
-
-See [Phase 64 acceptance](./PHASE64_ACCEPTANCE.md).
-
-### 17. Phase 65 streaming delayed/stochastic hidden-state learning
-
-Phase 65 removes the controlled-reset assumption from Phase 64:
-
-```text
-continuous stream
-       ↓
-partial / noisy observations
-       ↓
-delayed action evidence
-       ↓
-stochastic effect statistics
-       ↓
-rolling regime comparison
-       ↓
-sustained mismatch
-       ↓
-new unlabeled hypothesis
-       ↓
-autonomous pulse + gap experiment
-       ↓
-goal-directed reuse
-```
-
-Result:
-
-```text
-Progressive: 3 effect families × 3 seeds
-Held-out:    1 / 1
-Controls:     4 / 4
-Integration:  continuous no-reset stream
-Pytest:       9 passed
-Gate:         PASS (repeated twice)
-```
-
-See [PHASE65_ACCEPTANCE.md](./PHASE65_ACCEPTANCE.md).
-
-Boundary: bounded continuous-stream delayed/stochastic hidden-state learning. This is not a claim of unrestricted hidden-state inference, autonomous science, or AGI.
-
-
-## 🧠 Training Foundation
-
-The software-side training foundation is now present:
-
-| Training gate | State |
-|---|:---:|
-| Dataset schema + validation | ✅ |
-| Train/validation/test isolation | ✅ |
-| Byte-level response encoding | ✅ |
-| GPU-compatible response model | ✅ |
-| Checkpoint + dataset fingerprint | ✅ |
-| Held-out evaluator | ✅ |
-| Colab notebook | ✅ |
-| Training foundation CI | ✅ |
-
-See [TRAINING_READINESS.md](./TRAINING_READINESS.md) and [Phase 343 acceptance](./phase343_training_foundation/PHASE343_ACCEPTANCE.md).
-
-This is training infrastructure, not a claim that a trained model already has broad language competence.
-
-## 🚢 Pre-Training Product Engineering Boundary
-
-The GitHub-side product foundation is now prepared before GPU training:
-
-| Engineering gate | State |
-|---|:---:|
-| Phase 341 — real backend/runtime pre-GPU readiness | ✅ |
-| Phase 342 — browser/release boundary | ✅ |
-| Configurable website CORS origin | ✅ |
-| Security response headers | ✅ |
-| Session → step → snapshot → close HTTP lifecycle | ✅ |
-| Package build + compile gate | ✅ |
-| Docker image release gate | ✅ |
-| Pre-training engineering freeze | ✅ |
-
-See [PHASE342_ACCEPTANCE.md](./phase342_release_boundary/PHASE342_ACCEPTANCE.md) and [PRE_TRAINING_FREEZE.md](./PRE_TRAINING_FREEZE.md).
-
-This is the software-side stopping point before the planned GPU/Colab training stage. It does not claim that Mirror 7 is already a fully trained general-purpose assistant or AGI.
-
-## 🔁 The Core Learning Loop
-
-```mermaid
-flowchart LR
-    O["OBSERVE"] --> R["REPRESENT"]
-    R --> S["STATE"]
-    S --> P["PREDICT"]
-    P --> X{"EXPECTED?"}
-    X -- "Yes" --> A["ACT / CONTINUE"]
-    X -- "No" --> D["DISCREPANCY"]
-    D --> U["UPDATE TRANSITION / WORLD MODEL"]
-    U --> M["REMEMBER"]
-    M --> G["REPLAN"]
-    G --> A
-    A --> O
-```
-
-This loop is the central architectural idea behind the project.
-
----
-
-## ✅ Verification Philosophy
-
-Mirror 7 follows a strict promotion rule:
-
-```text
-IMPLEMENT
-   ↓
-FOCUSED TEST
-   ↓
-PROGRESSIVE TESTS
-   ↓
-MULTI-SEED
-   ↓
-HELD-OUT / UNSEEN
-   ↓
-ADVERSARIAL CONTROL
-   ↓
-FULL REGRESSION
-   ↓
-PROMOTE ONLY IF GREEN
-```
-
-When something fails:
-
-```mermaid
-flowchart TD
-    A["FAIL"] --> B["REPRODUCE"]
-    B --> C["MINIMIZE"]
-    C --> D["TRACE EXACT FAILURE"]
-    D --> E["SMALLEST JUSTIFIED FIX"]
-    E --> F["RERUN FAILED CASE"]
-    F --> G["FULL REGRESSION"]
-    G --> H{"GREEN?"}
-    H -- "No" --> B
-    H -- "Yes" --> I["PROMOTE"]
-```
-
-Rules:
-
-- Do not weaken an evaluator to obtain PASS.
-- Do not remove failing seeds.
-- Do not hardcode benchmark answers.
-- Do not leak hidden task information into the learner.
-- Do not call a toy benchmark result AGI evidence.
-- Keep implementation, verification, integration, and research claims separate.
-
----
-
-## 📊 Phase Map
-
-<details>
-<summary><strong>Phases 24–30 — Bootstrap</strong></summary>
-
-| Phase | Result |
-|---|:---:|
-| 24 | ✅ Runtime dictionary |
-| 25 | ✅ Tokenization / lookup / compilation |
-| 26 | ✅ Native compiler path |
-| 27 | ✅ Structured relocation / control flow |
-| 28 | ✅ Surface parser/compiler integration |
-| 29 | ✅ MIRR source closure |
-| 30 | ✅ Compiler entirely in MIRR |
-| Bootstrap chain | ✅ Self-recompile / fixed-point / independent rebuild |
-
-</details>
-
-<details>
-<summary><strong>Phases 31–34 — Intelligence Foundations</strong></summary>
-
-| Phase | Result |
-|---|:---:|
-| 31 | ✅ Representation / state / temporal identity |
-| 32 | ✅ Prediction / transition memory / discrepancy |
-| 33 | ✅ Causal structure / interventions |
-| 34 | ✅ Goal-directed reasoning / planning |
-
-</details>
-
-<details>
-<summary><strong>Phases 35–51 — Capability Expansion</strong></summary>
-
-| Phase | Capability | Result |
-|---|---|:---:|
-| 35 | Action model | ✅ |
-| 36 | Closed loop | ✅ |
-| 37 | Working memory | ✅ |
-| 38 | Episodic memory | ✅ |
-| 39 | World model | ✅ |
-| 40 | Composition | ✅ |
-| 41 | Hierarchical planning | ✅ |
-| 42 | Tool use | ✅ |
-| 43 | Language grounding | ✅ |
-| 44 | Counterfactual simulation | ✅ |
-| 45 | Continual learning | ✅ |
-| 46 | Meta-reasoning | ✅ |
-| 47 | Efficiency mechanisms | ✅ |
-| 48 | Robustness | ✅ |
-| 49 | Transfer | ✅ |
-| 50 | Complete integration | ✅ |
-| 51 | Advanced reasoning | ✅ |
-
-See [full Phase 35–51 verification](./PHASE35_51_VERIFICATION.md).
-
-</details>
-
-<details>
-<summary><strong>Phases 52–54 — Generalization Boundary</strong></summary>
-
-| Phase | Result |
-|---|:---:|
-| 52 | ✅ Open-ended black-box learner |
-| 53 | ✅ Internal blind benchmark — 21/21 |
-| 54 | ✅ Fresh locked evaluator — 18/18 |
-| Phase 54 held-out | ✅ 9/9 |
-| Phase 54 invalid actions | ✅ 0 |
-
-See [Phase 53 report](./PHASE53_REPORT.md) and [Phase 54 evaluation](./INDEPENDENT_EVALUATION_2026-09-19.md).
-
-</details>
-
-<details>
-<summary><strong>Phase 55 — Representation Independence</strong></summary>
-
-| Gate | Result |
-|---|:---:|
-| Progressive cross-representation comparisons | ✅ 27/27 |
-| Held-out graph families | ✅ 2/2 |
-| Adversarial controls | ✅ 6/6 |
-| Pytest | ✅ 11 passed |
-| Determinism / invariance | ✅ |
-
-See [PHASE55_ACCEPTANCE.md](./PHASE55_ACCEPTANCE.md).
-
-</details>
-
-<details>
-<summary><strong>Phase 56 — Raw Concept Acquisition</strong></summary>
-
-| Gate | Result |
-|---|:---:|
-| Progressive concept families | ✅ 3 × 3 seeds |
-| Held-out | ✅ 2/2 |
-| Adversarial | ✅ 3/3 |
-| Pytest | ✅ 7 passed |
-
-See [PHASE56_ACCEPTANCE.md](./PHASE56_ACCEPTANCE.md).
-
-</details>
-
-<details>
-<summary><strong>Phase 57 — Cross-View Raw Concept Acquisition</strong></summary>
-
-| Gate | Result |
-|---|:---:|
-| Progressive concept families | ✅ 3 × 3 seeds |
-| Held-out | ✅ 2/2 |
-| Adversarial | ✅ 3/3 |
-| Scaling | ✅ 1/1 |
-| Pytest | ✅ 10 passed |
-
-See [PHASE57_ACCEPTANCE.md](./PHASE57_ACCEPTANCE.md).
-
-</details>
-
-<details>
-<summary><strong>Phases 58–61 — Hierarchy → Predictive World Model → Closed Loop</strong></summary>
-
-| Phase | Result |
-|---|:---:|
-| 58 | ✅ 8/8 |
-| 59 | ✅ 8/8 |
-| 60 | ✅ 8/8 |
-| 61 | ✅ 9/9 |
-
-See the phase acceptance documents.
-
-</details>
-
-<details>
-<summary><strong>Phases 62–64 — Partial Observability → Nonstationary → Unknown Regimes</strong></summary>
-
-| Phase | Result |
-|---|:---:|
-| 62 | ✅ 9/9 |
-| 63 | ✅ 9/9 |
-| 64 | ✅ 9/9 |
-
-See the phase acceptance documents.
-
-</details>
-
-<details>
-<summary><strong>Phase 65 — Streaming Delayed / Stochastic Hidden State</strong></summary>
-
-| Gate | Result |
-|---|:---:|
-| Focused suite | ✅ 9/9 |
-| 3 families × 3 seeds | ✅ |
-| Held-out | ✅ 1/1 |
-| Controls | ✅ 4/4 |
-| Continuous no-reset integration | ✅ |
-
-</details>
-
-## 🧭 Later Research Blocks
-
-The later phase blocks are bounded research/evaluation mechanisms rather than claims of general intelligence.
-
-| Block | State |
-|---|:---:|
-| 66–87 | ✅ Verified bounded |
-| 88–100 | ✅ Verified bounded |
-| 101–107 | ✅ Verified bounded |
-| 108–114 | ✅ Verified bounded |
-| 115–121 | ✅ Verified bounded |
-| 122–128 | ✅ Verified bounded |
-| 129–140 | ✅ Verified bounded |
-| 141–152 | ✅ Verified bounded |
-| 153–160 | ✅ Verified bounded |
-| 161–170 | ✅ Verified bounded |
-| 171–177 | ✅ Verified / external boundary |
-| 178–180 | 🟡 Network-bound external evaluation |
-| 181–190 | ✅ Bounded multimodal grounding |
-| 191–200 | ✅ Bounded affordance discovery |
-| 201–210 | ✅ Bounded lifelong memory |
-| 211–220 | ✅ Bounded hierarchical reasoning |
-| 221–230 | ✅ Bounded language grounding |
-| 231–240 | ✅ Bounded compute/memory scaling |
-| 241–250 | ✅ Bounded embodied interaction |
-| 251–260 | ✅ Bounded safety/reproducibility |
-| 261+ | 🧪 Experimental independent-evaluation boundary |
-| 262 | ✅ Bounded novel task generation |
-| 263 | ✅ Bounded raw representation |
-| 264 | ✅ Bounded cross-phase integration |
-| 265 | ✅ Bounded language/action grounding |
-| 266 | ✅ Bounded lifelong context memory |
-
-### Research boundary
-
-Passing internal tests demonstrates the tested mechanism. It does not establish unrestricted world intelligence, autonomous science, human-level performance, or AGI.
-
-## Future Goal
-
-The research frontier after the audited snapshot is deliberately left open: broader raw representation discovery, compositional semantics, longer-horizon planning, external reproduction, independent unseen-task generation, richer embodiment, and empirical scaling. Each should get its own acceptance boundary before being called verified.
+It should not currently be described as AGI, human-level intelligence, or a proven standalone foundation model.

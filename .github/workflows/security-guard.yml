@@ -1,0 +1,28 @@
+name: Mirror 7 | Security Guard
+
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+
+permissions:
+  contents: read
+
+jobs:
+  source-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Compile active Python
+        run: python -m compileall -q mirror7_backend training
+      - name: Guard common credential patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -nE 'github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9_]+|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----' -- ':!docs/archive/legacy-workflows'; then
+            echo "Potential credential pattern found in tracked source."
+            exit 1
+          fi
+          echo "No common credential patterns found in tracked source."

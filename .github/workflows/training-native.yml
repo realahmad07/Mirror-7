@@ -1,0 +1,41 @@
+name: Mirror 7 | Native Brain Training Checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "training/**"
+      - "requirements-training.txt"
+      - "pyproject.toml"
+      - ".github/workflows/training-native.yml"
+  pull_request:
+    paths:
+      - "training/**"
+      - "requirements-training.txt"
+      - "pyproject.toml"
+      - ".github/workflows/training-native.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  native-brain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install training dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-training.txt pytest
+      - name: Compile training code
+        run: python -m compileall -q training
+      - name: Native-brain tests
+        run: python -m pytest -q training/test_native_brain.py training/test_experiment6_learned_operations.py

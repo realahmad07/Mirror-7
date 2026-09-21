@@ -1,0 +1,38 @@
+name: Mirror 7 | CI
+
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+
+permissions:
+  contents: read
+
+jobs:
+  fast-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install test and build tools
+        run: python -m pip install --upgrade pip setuptools wheel pytest build
+      - name: Compile active backend and training code
+        run: python -m compileall -q mirror7_backend training
+      - name: Backend tests
+        run: python -m pytest -q mirror7_backend
+      - name: Backend smoke and release-boundary tests
+        run: python -m pytest -q phase324_backend_smoke phase342_release_boundary
+      - name: Training foundation tests
+        run: python -m pytest -q training/test_training_foundation.py
+      - name: Build and validate smoke dataset
+        run: |
+          python -m training.make_smoke_dataset
+          python -m training.validate_dataset --dataset training/data/smoke.jsonl
+      - name: Build package
+        run: python -m build
