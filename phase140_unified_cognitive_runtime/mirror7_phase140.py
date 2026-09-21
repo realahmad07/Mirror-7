@@ -32,7 +32,11 @@ class UnifiedCognitiveRuntime:
         self.semantic_state:SemanticState|None=None
     def step(self,observations,goal=None,research_tasks=(),views=()):
         if isinstance(observations, str) and observations.strip():
-            self.semantic_state = self.semantic_inducer.discover(observations, previous=self.semantic_state)
+            self.semantic_state = self.semantic_inducer.discover(
+                observations, previous=self.semantic_state
+            )
+            semantic_payload = self.semantic_state.as_dict()
+            self.workspace.publish("semantic_state", semantic_payload, 1.0, "semantic_inducer")
         if isinstance(observations, Mapping):
             fusion_input=[(observations, 1.0)]
         elif isinstance(observations, tuple) and len(observations) == 2:
