@@ -116,8 +116,11 @@ class SemanticStateInducer:
         constraints=self._constraints(text)
         context=list(self._context(text))
         if previous is not None and ("anaphoric_reference" in context or "carryover" in context):
-            if previous.entities: context.append("inherits_entity")
-            if previous.operations: context.append("inherits_operation")
+            if previous.entities:
+                entities=tuple(dict.fromkeys((*previous.entities, *entities)))
+                context.append("inherits_entity")
+            if previous.operations:
+                context.append("inherits_operation")
         desired=_OUTPUT_BY_OPERATION.get(operations[0]) if operations else None
         evidence_items=[*(f"operation:{x}" for x in operations), *(f"entity:{x}" for x in entities[:8]), *(f"constraint:{x}" for x in constraints)]
         step_match = re.search(r"\b(?:under|below|less than|at most)\s+(\d+)\s+(?:steps?|actions?)\b", text, re.I)
