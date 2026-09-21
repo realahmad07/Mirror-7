@@ -22,6 +22,7 @@ class BackendResult:
     engine_result: Any
     state_digest: str
     realization_contract: Any | None = None
+    response: Any | None = None
 
 
 class BackendSession:
