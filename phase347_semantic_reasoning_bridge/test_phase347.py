@@ -21,7 +21,8 @@ def test_reasoning_context_is_not_world_state():
     context = runtime.workspace.latest("reasoning_context").value
     world = runtime.workspace.latest("state")
     assert context["desired_output"] == "computed_result"
-    assert world is None
+    assert world is not None
+    assert world.value != context
 
 
 def test_numeric_runtime_remains_unmodified():
