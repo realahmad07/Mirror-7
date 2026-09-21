@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-from phase34_reasoning_planning import Goal, GoalPlanner, Plan
+from phase34_reasoning_planning.mirror7_phase34 import Goal, GoalPlanner, Plan
 from phase347_semantic_reasoning_bridge import build_reasoning_context
 
 
