@@ -72,6 +72,16 @@ class PretrainedResponseRealizer:
     def generate(self, request: Any) -> str:
         import torch
 
+        verified_fact = None
+        context = getattr(request.contract, "context", None)
+        if context is not None:
+            verified_fact = context.get("verified_fact")
+
+        if verified_fact is not None:
+            verified_text = str(verified_fact).strip()
+            if verified_text:
+                return verified_text
+
         prompt = build_realizer_prompt(request.contract)
         inputs = _tokenize_prompt(self.tokenizer, prompt)
         if not isinstance(inputs, dict):
