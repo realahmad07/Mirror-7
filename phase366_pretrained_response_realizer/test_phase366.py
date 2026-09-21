@@ -65,3 +65,26 @@ def test_loader_reports_missing_dependency(monkeypatch):
     monkeypatch.setitem(sys.modules, "transformers", None)
     with pytest.raises(RuntimeError, match="transformers is required"):
         load_pretrained_realizer()
+
+
+def test_verified_fact_is_returned_directly():
+    verified_contract = BackendRealizationContract(
+        mode="answer",
+        context={
+            "task": "Tell the user whether the requested file was created.",
+            "verified_fact": "The file was not created.",
+        },
+        actions=(),
+        observation="No file creation action was executed.",
+    )
+
+    class FailingModel:
+        def parameters(self):
+            raise AssertionError("Model must not be called for an authoritative verified fact.")
+
+    result = PretrainedResponseRealizer(
+        FailingModel(),
+        object(),
+    ).generate(types.SimpleNamespace(contract=verified_contract))
+
+    assert result == "The file was not created."
