@@ -31,7 +31,7 @@ class Config:
     hidden_dim: int = 128
     concepts: int = 24
     operations: int = 6
-    concept_dim: int = 8
+    concept_dim: int = 64
     max_chain: int = 5
     epochs: int = 60
     batch_size: int = 128
