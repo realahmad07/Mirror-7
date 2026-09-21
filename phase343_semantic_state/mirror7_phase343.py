@@ -115,7 +115,7 @@ class SemanticStateInducer:
         entities=self._entity_candidates(text,tokens)
         constraints=self._constraints(text)
         context=list(self._context(text))
-        if previous is not None and "anaphoric_reference" in context:
+        if previous is not None and ("anaphoric_reference" in context or "carryover" in context):
             if previous.entities: context.append("inherits_entity")
             if previous.operations: context.append("inherits_operation")
         desired=_OUTPUT_BY_OPERATION.get(operations[0]) if operations else None
