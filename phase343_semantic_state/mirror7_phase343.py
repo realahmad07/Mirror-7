@@ -22,6 +22,7 @@ _OPERATION_GROUPS = {
     "predict": {"predict","forecast","estimate"},
     "find": {"find","search","locate","look"},
 }
+_OPERATION_GROUPS_FLAT = {alias for aliases in _OPERATION_GROUPS.values() for alias in aliases}
 _OUTPUT_BY_OPERATION = {"explain":"explanation","compare":"comparison","debug":"diagnosis_or_fix","create":"artifact_or_implementation","summarize":"summary","translate":"translation","calculate":"computed_result","list":"enumeration","analyze":"analysis","predict":"prediction","find":"retrieval"}
 
 @dataclass(frozen=True)
@@ -78,7 +79,7 @@ class SemanticStateInducer:
         current=[]
         for token in tokens:
             raw=token.strip(".,!?;:()[]{}")
-            if raw and raw[0].isupper() and raw[1:].islower(): current.append(raw)
+            if raw and raw.lower() not in _OPERATION_GROUPS_FLAT and raw[0].isupper() and raw[1:].islower(): current.append(raw)
             elif current and raw.isdigit(): current.append(raw)
             else:
                 if current: entities.append(" ".join(current)); current=[]
