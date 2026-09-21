@@ -107,9 +107,31 @@ def test_backend_service_accepts_pretrained_realizer_adapter():
                 {"semantic_state": SemanticStateInducer().discover(observation)},
             )()
 
+    import torch
+
+    class Parameter:
+        device = "cpu"
+
+    class Tokenizer:
+        eos_token_id = 0
+        pad_token_id = 0
+
+        def __call__(self, prompt, return_tensors):
+            return {"input_ids": torch.tensor([[1, 2]])}
+
+        def decode(self, ids, skip_special_tokens=True):
+            return "Mirror response"
+
+    class GenerationModel(Model):
+        def parameters(self):
+            return iter([Parameter()])
+
+        def generate(self, **kwargs):
+            return kwargs["input_ids"].new_tensor([[1, 2, 3]])
+
     service = BackendService(engine_factory=Engine)
     service.create_session("phase366-e2e")
-    service.set_response_model(PretrainedResponseRealizer(Model(), object()))
+    service.set_response_model(PretrainedResponseRealizer(GenerationModel(), Tokenizer()))
 
     result = service.step("phase366-e2e", "Explain Python")
 
