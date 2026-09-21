@@ -1,0 +1,25 @@
+name: Phase 352 Semantic Output Execution
+
+on:
+  push:
+    paths:
+      - "phase352_semantic_output_execution/**"
+      - "phase348_semantic_planning_bridge/**"
+      - "phase351_semantic_entity_planning/**"
+      - "phase343_semantic_state/**"
+  pull_request:
+    paths:
+      - "phase352_semantic_output_execution/**"
+      - "phase348_semantic_planning_bridge/**"
+      - "phase351_semantic_entity_planning/**"
+      - "phase343_semantic_state/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pytest phase352_semantic_output_execution/test_phase352.py -q
