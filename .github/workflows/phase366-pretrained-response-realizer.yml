@@ -1,0 +1,22 @@
+name: Phase 366 Pretrained Response Realizer
+
+on:
+  push:
+    paths:
+      - "phase366_pretrained_response_realizer/**"
+      - ".github/workflows/phase366-pretrained-response-realizer.yml"
+  pull_request:
+    paths:
+      - "phase366_pretrained_response_realizer/**"
+      - ".github/workflows/phase366-pretrained-response-realizer.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pytest
+      - run: pytest -q phase366_pretrained_response_realizer/test_phase366.py
