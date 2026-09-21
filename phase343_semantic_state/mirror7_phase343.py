@@ -119,7 +119,7 @@ class SemanticStateInducer:
             if previous.entities: context.append("inherits_entity")
             if previous.operations: context.append("inherits_operation")
         desired=_OUTPUT_BY_OPERATION.get(operations[0]) if operations else None
-        evidence=tuple(dict.fromkeys([*(f"operation:{x}" for x in operations),*(f"entity:{x}" for x in entities[:8]),*(f"constraint:{x}" for x in constraints)]))
+        evidence_items=[*(f"operation:{x}" for x in operations),*(f"entity:{x}" for x in entities[:8]),*(f"constraint:{x}" for x in constraints)]\n        step_match=re.search(r"\\b(?:under|below|less than|at most)\\s+(\\d+)\\s+(?:steps?|actions?)\\b", text, re.I)\n        if step_match:\n            evidence_items.append(f"max_steps:{int(step_match.group(1))}")\n        evidence=tuple(dict.fromkeys(evidence_items))
         state=SemanticState(entities,operations,constraints,tuple(dict.fromkeys(context)),desired,evidence)
         self._history.append(state)
         for op in operations: self.stats.operation_counts[op]+=1
