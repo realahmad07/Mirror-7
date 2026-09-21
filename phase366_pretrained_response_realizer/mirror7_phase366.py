@@ -14,15 +14,47 @@ def build_realizer_prompt(contract: Any) -> str:
         "planned_actions": list(contract.actions),
         "observation": contract.observation,
     }
-    return (
+    instruction = (
         "You are the response realization layer for Mirror 7. "
-        "Write the final answer for the user using only the supplied Mirror 7 context. "
-        "Do not invent actions, observations, evidence, or completed work. "
-        "Answer naturally and concisely.\n\n"
-        "MIRROR 7 REALIZATION DATA:\n"
+        "Turn the supplied Mirror 7 state into the final user-facing answer. "
+        "Preserve verified facts and planned actions exactly. "
+        "Do not claim that an action was completed unless the supplied observation "
+        "or context supports that claim. Do not invent evidence, tool results, "
+        "measurements, or completed work. If the supplied state is insufficient "
+        "to answer safely, say what information is missing. "
+        "Be concise, natural, and directly answer the user's request."
+    )
+    return (
+        instruction
+        + "\n\nMIRROR 7 REALIZATION DATA:\n"
         + json.dumps(payload, ensure_ascii=False, default=str)
         + "\n\nFINAL ANSWER:\n"
     )
+
+
+def _tokenize_prompt(tokenizer: Any, prompt: str) -> Any:
+    apply_chat_template = getattr(tokenizer, "apply_chat_template", None)
+    if callable(apply_chat_template):
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "You are Mirror 7's response realization layer. "
+                    "Return only the final answer to the user."
+                ),
+            },
+            {"role": "user", "content": prompt},
+        ]
+        try:
+            return tokenizer.apply_chat_template(
+                messages,
+                tokenize=True,
+                add_generation_prompt=True,
+                return_tensors="pt",
+            )
+        except (TypeError, ValueError):
+            pass
+    return tokenizer(prompt, return_tensors="pt")
 
 
 @dataclass
@@ -37,7 +69,11 @@ class PretrainedResponseRealizer:
         import torch
 
         prompt = build_realizer_prompt(request.contract)
-        inputs = self.tokenizer(prompt, return_tensors="pt")
+        inputs = _tokenize_prompt(self.tokenizer, prompt)
+        if not isinstance(inputs, dict):
+            inputs = {"input_ids": inputs}
+        if "attention_mask" not in inputs:
+            inputs["attention_mask"] = torch.ones_like(inputs["input_ids"])
         device = next(self.model.parameters()).device
         inputs = {key: value.to(device) for key, value in inputs.items()}
         with torch.no_grad():
@@ -47,7 +83,10 @@ class PretrainedResponseRealizer:
                 do_sample=self.temperature > 0,
                 temperature=self.temperature,
                 top_p=self.top_p,
-                pad_token_id=self.tokenizer.eos_token_id,
+                pad_token_id=(
+                    getattr(self.tokenizer, "pad_token_id", None)
+                    or getattr(self.tokenizer, "eos_token_id", None)
+                ),
             )
         generated = output[0][inputs["input_ids"].shape[1]:]
         text = self.tokenizer.decode(generated, skip_special_tokens=True).strip()
