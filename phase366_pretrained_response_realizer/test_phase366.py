@@ -88,3 +88,30 @@ def test_verified_fact_is_returned_directly():
     ).generate(types.SimpleNamespace(contract=verified_contract))
 
     assert result == "The file was not created."
+
+def test_backend_service_accepts_pretrained_realizer_adapter():
+    from mirror7_backend.service import BackendService
+
+    class Model:
+        def generate(self, request):
+            assert request.contract.mode == "explain"
+            return "Mirror response"
+
+    class Engine:
+        def step(self, observation, *, goal=None, research_tasks=(), views=()):
+            from phase343_semantic_state import SemanticStateInducer
+
+            return type(
+                "Result",
+                (),
+                {"semantic_state": SemanticStateInducer().discover(observation)},
+            )()
+
+    service = BackendService(engine_factory=Engine)
+    service.create_session("phase366-e2e")
+    service.set_response_model(PretrainedResponseRealizer(Model(), object()))
+
+    result = service.step("phase366-e2e", "Explain Python")
+
+    assert result.response == "Mirror response"
+    assert result.realization_contract is not None
