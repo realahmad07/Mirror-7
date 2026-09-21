@@ -8,6 +8,7 @@ from .actions import ActionGateway
 from .observability import BackendMetrics
 from .persistence import CheckpointStore
 from .runtime import BackendResult, BackendSession
+from phase359_response_generation_adapter import make_response_generator
 from phase357_response_generation_interface import (
     build_response_generation_request,
     generate_response,
@@ -109,6 +110,10 @@ class BackendService:
             return result
         finally:
             self._end_step(session_id, succeeded=succeeded)
+
+    def set_response_model(self, model: Any | None) -> None:
+        """Install or remove the response model adapter at runtime."""
+        self.response_generator = None if model is None else make_response_generator(model)
 
     def save(self, session_id: str):
         if self.checkpoint_store is None:
