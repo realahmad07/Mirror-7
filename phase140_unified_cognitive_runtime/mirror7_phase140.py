@@ -8,6 +8,7 @@ from phase136_self_debugger import SelfDebugger
 from phase137_consolidation_engine import ConsolidationEngine
 from phase139_multimodal_grounder import MultimodalGrounder
 from phase343_semantic_state import SemanticStateInducer, SemanticState
+from phase347_semantic_reasoning_bridge import build_reasoning_context
 
 @dataclass(frozen=True)
 class RuntimeReport:
@@ -37,6 +38,8 @@ class UnifiedCognitiveRuntime:
             )
             semantic_payload = self.semantic_state.as_dict()
             self.workspace.publish("semantic_state", semantic_payload, 1.0, "semantic_inducer")
+            reasoning_context = build_reasoning_context(self.semantic_state)
+            self.workspace.publish("reasoning_context", reasoning_context, 1.0, "semantic_reasoning_bridge")
             if goal is None and self.semantic_state.desired_output:
                 inferred_goal = self.semantic_state.desired_output
                 if self.semantic_state.entities:
