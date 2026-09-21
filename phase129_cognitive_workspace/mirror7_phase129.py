@@ -13,4 +13,9 @@ class CognitiveWorkspace:
         self.items=sorted(self.items,key=lambda x:x.confidence,reverse=True)[:self.max_items]
     def read(self,channel,min_confidence=0.0):
         return tuple(x for x in self.items if x.channel==channel and x.confidence>=min_confidence)
+    def latest(self,channel,min_confidence=0.0):
+        for item in reversed(self.items):
+            if item.channel==channel and item.confidence>=min_confidence:
+                return item
+        return None
     def snapshot(self): return tuple(self.items)
