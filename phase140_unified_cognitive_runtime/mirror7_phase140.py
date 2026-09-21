@@ -37,6 +37,12 @@ class UnifiedCognitiveRuntime:
             )
             semantic_payload = self.semantic_state.as_dict()
             self.workspace.publish("semantic_state", semantic_payload, 1.0, "semantic_inducer")
+            if goal is None and self.semantic_state.desired_output:
+                inferred_goal = self.semantic_state.desired_output
+                if self.semantic_state.entities:
+                    inferred_goal = f"{inferred_goal}:{self.semantic_state.entities[0]}"
+                if inferred_goal not in self.goals.goals:
+                    self.goals.add(inferred_goal, 1.0)
         if isinstance(observations, Mapping):
             fusion_input=[(observations, 1.0)]
         elif isinstance(observations, tuple) and len(observations) == 2:
