@@ -41,6 +41,7 @@ The repository now has two intentionally separated layers:
 | Pretrained response realizer | ✅ | Phase 366 provides an optional language realization component. |
 | Native semantic-state research | ✅ | Experiments 1–7 are recorded and replicated on bounded benchmarks. |
 | Scratch language-model route | ⚠️ | 10.57M-class ByteGRU trained, but free-running held-out generation remained weak. |
+| Native V5 response-model track | 🧪 | Enhanced recurrent/cross-attention model and GPU pipeline are implemented and regression-tested; full GPU training and improved conversational quality remain unverified. |
 | Public scientific claim | ⚠️ | This is a research system, not evidence of AGI or a ChatGPT-level standalone model. |
 
 ## Training snapshot
@@ -56,6 +57,8 @@ The repository now has two intentionally separated layers:
 | Native-brain default | 96 embedding, 256 hidden, 2 layers, 128 state |
 | Training hardware | Google Colab, NVIDIA A100-SXM4-40GB |
 | Rule | Quality over quantity; no blind scaling after a failed hypothesis. |
+
+The [V5 native model review](docs/V5_NATIVE_MODEL_REVIEW_2026-11-01.md) records architecture corrections, checkpoint compatibility, training-pipeline safeguards, and the remaining evaluation limits.
 
 ## Native-brain results
 

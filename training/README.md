@@ -53,3 +53,7 @@ GPU access is treated as an experimental resource. Persistent checkpoints should
 ## Research rule
 
 Do not accept a training run because the loss improved alone. Require held-out behavior, diagnostics, controls, and comparison with a frozen baseline.
+
+## Native Conversation V5
+
+The V5 source model, portable GPU trainer, comparison utilities, evaluation helpers, and Colab entry point are part of the V5 development track. Read [the V5 native model review](../docs/V5_NATIVE_MODEL_REVIEW_2026-11-01.md) before running a full training job. A full GPU run and improved free-running response quality have not yet been established.

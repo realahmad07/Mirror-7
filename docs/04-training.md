@@ -156,6 +156,14 @@ Checkpoint:
 
 /content/drive/MyDrive/Mirror7/mirror7_exp7_pilot.pt
 
+## V5 native conversation model (2026-11-01)
+
+An additional V5 response-model track is available under `training/native_conversation_v5.py`, with a portable trainer and Colab notebook under `training/`. The enhanced configuration combines a bidirectional encoder, multi-head cross-attention, output context gating, recurrent-context gating, dropout, and scheduled sampling. The updated enhanced configuration has 974,019 parameters; legacy V5 and V3/V4 checkpoints remain loadable without being overwritten.
+
+The GPU pipeline includes dataset-fingerprint checks, gradient accumulation, dynamic bucketing, and resumable optimizer/scaler metadata. Only local smoke/regression tests have been run for this update; a full Colab GPU training run has not yet been completed. The current V5 architecture review and its limitations are documented in [V5 Native Model Review](V5_NATIVE_MODEL_REVIEW_2026-11-01.md).
+
+Teacher-response filtering is heuristic and does not verify factual or mathematical correctness. The reasoning-discovery evaluator is a restricted in-process candidate evaluator, not an OS-level sandbox.
+
 ## Training conclusion
 
 The first cycle did not produce a ChatGPT-class standalone language model.

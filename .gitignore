@@ -3,3 +3,6 @@ artifacts/
 training/data/smoke.jsonl
 __pycache__/
 *.pyc
+
+# Curated and generated local datasets (keep source data out of Git)
+training/data/*.jsonl
