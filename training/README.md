@@ -56,4 +56,4 @@ Do not accept a training run because the loss improved alone. Require held-out b
 
 ## Native Conversation V5
 
-The V5 source model, portable GPU trainer, comparison utilities, evaluation helpers, and Colab entry point are part of the V5 development track. Read [the V5 native model review](../docs/V5_NATIVE_MODEL_REVIEW_2026-11-01.md) before running a full training job. A full GPU run and improved free-running response quality have not yet been established.
+A V5-enhanced source bundle was reviewed and locally regression-tested. Its Python modules, portable GPU trainer, comparison utilities, knowledge-transfer/evaluation packages, reasoning-discovery updates, and Colab entry point are not yet integrated into the tracked `main` tree. Read [the V5 native model review](../docs/V5_NATIVE_MODEL_REVIEW_2026-11-01.md) for findings and limitations. Do not treat the local 95-test result as a test result for GitHub `main`; a full GPU run and improved free-running response quality have not yet been established.

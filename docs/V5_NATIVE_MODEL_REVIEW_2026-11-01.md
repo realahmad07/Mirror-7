@@ -2,7 +2,7 @@
 
 ## Scope and evidence
 
-This review covers the uploaded V5-enhanced source tree and its automated regression suite. It does **not** claim that a full Google Colab GPU run has been completed. The controlled V5 comparison included in the supplied project notes was a small 30-step CPU experiment (128 training examples and 32 validation examples); it is useful for finding implementation regressions, not for proving useful conversational capability.
+This review covers the uploaded V5-enhanced source tree and its automated regression suite. The local fixes described below were made in the extracted review working copy. This GitHub documentation commit does **not** include those Python source changes; integrating the source tree into `main` remains pending. It does **not** claim that a full Google Colab GPU run has been completed. The controlled V5 comparison included in the supplied project notes was a small 30-step CPU experiment (128 training examples and 32 validation examples); it is useful for finding implementation regressions, not for proving useful conversational capability.
 
 ## Architecture changes retained and completed
 
@@ -56,7 +56,7 @@ The candidate-code evaluator now restricts the accepted AST subset and applies e
 
 ## Test results
 
-The uploaded project regression suite reported **95 passed** after the changes in this review. The targeted V5, GPU-pipeline, knowledge-transfer, evaluation, and reasoning-discovery tests also passed during development. The test suite exercises implementation behavior and compatibility; it does not replace GPU training, human review, factual evaluation, or broad generalization benchmarks.
+The uploaded/local review working-copy regression suite reported **95 passed** after the changes in this review. This is not a CI/test result for the GitHub `main` tree. The targeted V5, GPU-pipeline, knowledge-transfer, evaluation, and reasoning-discovery tests also passed during development. The test suite exercises implementation behavior and compatibility; it does not replace GPU training, human review, factual evaluation, or broad generalization benchmarks.
 
 ## Controlled comparison interpretation
 
