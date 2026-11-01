@@ -1,0 +1,97 @@
+{
+  "review_title": "Mirror 7 OpenMathInstruct-2 V4 independent archive review",
+  "review_verdict": "FAIL_NOT_TRAINING_APPROVED",
+  "archive": {
+    "filename": "Mirror7_OpenMath_Final_Handoff_v4.zip",
+    "byte_size": 237930,
+    "sha256": "9d2cfb68ceac28cd71e74efb9417d70cdb603cb40c52c6f887b64e0ed2a9038e",
+    "zip_integrity": "PASS",
+    "entry_count": 9
+  },
+  "source_pool": {
+    "filename": "openmath_750_review_pool.jsonl",
+    "records": 750,
+    "jsonl_parse": "PASS",
+    "byte_size": 906870,
+    "sha256": "2c6f0c50202f0c43f52ed690fed1a1d9352afeab32508740e78447740e4bde30",
+    "fingerprint_matches_expected": true,
+    "fields_present_on_all_rows": [
+      "problem",
+      "generated_solution",
+      "expected_answer",
+      "problem_source"
+    ],
+    "embedded_record_id_present": false,
+    "stable_locator_available": "1-based JSONL line position"
+  },
+  "partition_files": [
+    {
+      "name": "openmath_accepted_v4.jsonl",
+      "byte_size": 0,
+      "actual_records": 0,
+      "status": "EMPTY"
+    },
+    {
+      "name": "openmath_answer_only_v4.jsonl",
+      "byte_size": 0,
+      "actual_records": 0,
+      "status": "EMPTY"
+    },
+    {
+      "name": "openmath_rejected_v4.jsonl",
+      "byte_size": 0,
+      "actual_records": 0,
+      "status": "EMPTY"
+    },
+    {
+      "name": "openmath_manual_review_v4.jsonl",
+      "byte_size": 0,
+      "actual_records": 0,
+      "status": "EMPTY"
+    },
+    {
+      "name": "openmath_verification_pending_v4.jsonl",
+      "byte_size": 0,
+      "actual_records": 0,
+      "status": "EMPTY"
+    }
+  ],
+  "summary_claims": {
+    "accepted": 95,
+    "answer_only": 15,
+    "rejected": 19,
+    "manual_review": 6,
+    "verification_pending": 615,
+    "total": 750,
+    "training_approved": true,
+    "counts_sum_to_750": true,
+    "match_actual_partition_files": false
+  },
+  "global_readiness_report_claims": {
+    "openmath_accepted": 95,
+    "verification_pending": 616,
+    "global_training_approved": true,
+    "consistent_with_summary": false,
+    "supported_by_delivered_training_files": false
+  },
+  "manifest": {
+    "declared_entries": 7,
+    "declared_entry_hashes_and_sizes_match": true,
+    "source_pool_covered": false,
+    "manifest_self_hashed": false
+  },
+  "missing_deliverables": [
+    "Full V4 mathematical audit report",
+    "Record-level review decisions and verification evidence",
+    "Regression test source and execution logs",
+    "Train/validation/test JSONL files",
+    "Training manifest and configuration",
+    "CPU data-pipeline test results",
+    "README and reproducibility instructions",
+    "Independent manifest-checker script"
+  ],
+  "training_decision": {
+    "openmath_training_approved": false,
+    "global_mirror7_training_approved_from_this_handoff": false
+  }
+}
