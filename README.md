@@ -41,7 +41,7 @@ The repository now has two intentionally separated layers:
 | Pretrained response realizer | ✅ | Phase 366 provides an optional language realization component. |
 | Native semantic-state research | ✅ | Experiments 1–7 are recorded and replicated on bounded benchmarks. |
 | Scratch language-model route | ⚠️ | 10.57M-class ByteGRU trained, but free-running held-out generation remained weak. |
-| Native V5 response-model track | 🧪 | V5-enhanced source reviewed and regression-tested locally; source integration into `main` is pending. Full GPU training and improved conversational quality remain unverified. |
+| Native V5 response-model track | 🧪 | Enhanced V5 model, GPU trainer, Colab notebook, knowledge-transfer and evaluation modules are integrated; 974,019-parameter configuration. Full GPU training and improved conversational quality remain unverified. |
 | Public scientific claim | ⚠️ | This is a research system, not evidence of AGI or a ChatGPT-level standalone model. |
 
 ## Training snapshot
@@ -53,12 +53,13 @@ The repository now has two intentionally separated layers:
 | Train / validation / test | **11,703 / 1,455 / 1,469** |
 | Dataset fingerprint | e7d66d84725bfc9347ea7b8656bfb815625f80adc81cd05d1ea868e6585c4715a |
 | Scratch target | **10,574,855 parameters** |
+| Enhanced V5 native response model | **974,019 parameters** |
 | Scratch model | ByteGRU, 256 embedding, 1024 hidden, 2 layers, 0.10 dropout |
 | Native-brain default | 96 embedding, 256 hidden, 2 layers, 128 state |
 | Training hardware | Google Colab, NVIDIA A100-SXM4-40GB |
 | Rule | Quality over quantity; no blind scaling after a failed hypothesis. |
 
-The [V5 native model review](docs/V5_NATIVE_MODEL_REVIEW_2026-11-01.md) records findings from the supplied enhanced source bundle, local code corrections, checkpoint compatibility checks, and the remaining evaluation limits. The reviewed Python source changes are not yet integrated into the tracked `main` working tree.
+The [V5 native model review](docs/V5_NATIVE_MODEL_REVIEW_2026-11-01.md) records architecture corrections, checkpoint compatibility, trainer safeguards, test evidence, and remaining evaluation limits. See [Phase 367 acceptance](PHASE367_ACCEPTANCE.md) for the integration record.
 
 ## Native-brain results
 

@@ -4,7 +4,7 @@ The first 75+ hour engineering/research phase is complete. Work from this point 
 
 ## Current engineering target
 
-Keep the backend and UI integration stable while the research layer evolves independently.
+Keep the backend and UI integration stable while the research layer evolves independently. Phase 367 has integrated the enhanced native V5 model, portable GPU trainer, Colab notebook, knowledge-transfer utilities, and evaluation suite. The next execution milestone is a short Colab GPU smoke run before any full training job.
 
 ## Research priority 1 — Native language realization
 
@@ -12,6 +12,8 @@ The unresolved high-value problem is strong native free-running language realiza
 
 Required next milestone:
 
+- complete a short Colab GPU smoke run for the integrated V5 trainer;
+- verify checkpoint save/resume, CUDA memory use, and dataset-fingerprint handling;
 - stronger held-out benchmark;
 - frozen evaluator and dataset fingerprint;
 - a new mechanism targeting the teacher-forcing/free-running gap;

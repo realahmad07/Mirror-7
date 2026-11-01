@@ -158,9 +158,9 @@ Checkpoint:
 
 ## V5 native conversation model (2026-11-01)
 
-The supplied V5-enhanced source bundle contains an additional response-model track using a bidirectional encoder, multi-head cross-attention, output context gating, recurrent-context gating, dropout, and scheduled sampling. Its updated enhanced configuration has 974,019 parameters; legacy checkpoint compatibility was checked locally without overwriting existing checkpoints.
+The V5 native response-model track is integrated in Phase 367. It uses a bidirectional encoder, multi-head cross-attention, output context gating, recurrent-context gating, dropout, and scheduled sampling. Its enhanced configuration has **974,019 parameters**. Legacy V3/V4 and earlier V5 checkpoint strict-load compatibility was checked locally; no checkpoint weights were overwritten or committed.
 
-The reviewed GPU pipeline includes dataset-fingerprint checks, gradient accumulation, dynamic bucketing, and resumable optimizer/scaler metadata. The 95-test result applies to the supplied/local review working copy, not to the current GitHub `main` tree. The new V5 Python source modules and associated packages are **not yet integrated into `main`**. A full Colab GPU training run has not been completed. See [V5 Native Model Review](V5_NATIVE_MODEL_REVIEW_2026-11-01.md).
+The integrated GPU pipeline includes dataset-fingerprint checks, gradient accumulation, dynamic bucketing, and resumable optimizer/scaler metadata. The integration PR passed Fast CI, Security Guard, and Native Brain Training checks. The local targeted training/reasoning-discovery suite passed 67 tests. The full repository `pytest -q` run did not complete and is not claimed green. A CPU trainer smoke verified checkpoint save/resume and rejection of a changed dataset fingerprint. **A full Colab GPU training run has not been completed.** See [V5 Native Model Review](V5_NATIVE_MODEL_REVIEW_2026-11-01.md) and [Phase 367 Acceptance](../PHASE367_ACCEPTANCE.md).
 
 Teacher-response filtering is heuristic and does not verify factual or mathematical correctness. The reasoning-discovery evaluator is a restricted in-process candidate evaluator, not an OS-level sandbox.
 

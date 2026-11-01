@@ -2,7 +2,7 @@
 
 ## Scope and evidence
 
-This review covers the uploaded V5-enhanced source tree and its automated regression suite. The local fixes described below were made in the extracted review working copy. This GitHub documentation commit does **not** include those Python source changes; integrating the source tree into `main` remains pending. It does **not** claim that a full Google Colab GPU run has been completed. The controlled V5 comparison included in the supplied project notes was a small 30-step CPU experiment (128 training examples and 32 validation examples); it is useful for finding implementation regressions, not for proving useful conversational capability.
+This review covers the V5-enhanced source tree integrated into `main` by Phase 367 (squash commit `d67a0002eca982fe8c8cdcdff9694195bfd41967`). The source import, architecture fixes, and focused validation are described below. A full Google Colab GPU run has **not** been completed. The controlled V5 comparison included in the supplied project notes was a small 30-step CPU experiment (128 training examples and 32 validation examples); it is useful for finding implementation regressions, not for proving useful conversational capability.
 
 ## Architecture changes retained and completed
 
@@ -25,7 +25,7 @@ The implementation now:
 | Earlier V5 checkpoint | 957,251 | Existing checkpoint strict-load passed |
 | V3/V4 checkpoint | 990,915 | Existing checkpoint strict-load passed |
 
-The new recurrent gate adds parameters; it does not overwrite or convert the legacy checkpoints. The `.pt` files used for compatibility checks remain local artifacts and are not part of this source commit.
+The new recurrent gate adds parameters; it does not overwrite or convert the legacy checkpoints. The `.pt` files used for compatibility checks remain local artifacts and are not part of the repository.
 
 ## Training-pipeline correctness improvements
 
@@ -56,7 +56,7 @@ The candidate-code evaluator now restricts the accepted AST subset and applies e
 
 ## Test results
 
-The uploaded/local review working-copy regression suite reported **95 passed** after the changes in this review. This is not a CI/test result for the GitHub `main` tree. The targeted V5, GPU-pipeline, knowledge-transfer, evaluation, and reasoning-discovery tests also passed during development. The test suite exercises implementation behavior and compatibility; it does not replace GPU training, human review, factual evaluation, or broad generalization benchmarks.
+The extracted local review workspace passed **67 targeted tests** across `training/` and `mirror7_backend/reasoning_discovery/`. The GitHub integration PR passed all three checks on its final head: Fast CI, Security Guard, and Native Brain Training. A full local `pytest -q` run stalled near 80% and remains incomplete. A CPU GPU-trainer smoke verified save/resume and changed-fingerprint rejection. The suite tests implementation behavior and compatibility; it does not replace GPU training, human review, factual evaluation, or broad generalization benchmarks.
 
 ## Controlled comparison interpretation
 
