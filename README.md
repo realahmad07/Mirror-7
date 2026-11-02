@@ -61,6 +61,8 @@ The repository now has two intentionally separated layers:
 
 The [V5 native model review](docs/V5_NATIVE_MODEL_REVIEW_2026-11-01.md) records architecture corrections, checkpoint compatibility, trainer safeguards, test evidence, and remaining evaluation limits. See [Phase 367 acceptance](PHASE367_ACCEPTANCE.md) for the integration record.
 
+The [2026-11-02 Native V5 Kaggle run record](training_runs/2026-11-02-native-v5-kaggle/README.md) tracks the separate T4 training experiment, teacher-target preparation, current status, and checkpoint recovery policy.
+
 ## Native-brain results
 
 | Experiment | Verified result |
