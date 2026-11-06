@@ -1,9 +1,26 @@
-# Local training artifacts
-artifacts/
-training/data/smoke.jsonl
+# Python virtual environments, caches & build outputs
+.venv/
+venv/
+ENV/
+.pytest_cache/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+dist/
+build/
+*.egg-info/
+.env
+*.zip
+
+# Confidential internal founder drafts & raw source vault (never push publicly)
+docs/MIRROR_OPEN_SOURCE_COMPANY_MASTER_PLAN.*
+private_founder_vault/
+
+# Heavy local raw JSONL datasets (keep repo fast & protect curated training sets)
 training/data/*.jsonl
-training/data/*.json
-*.pt
-*.pth
+
+# Artifacts policy:
+# Upload ALL verification logs, benchmark JSONs, diagnostic reports, and 1 compact (3.66 MB) reference .pt
+# Skip redundant multi-epoch smoke .pt checkpoints (>50 MB combined)
+artifacts/*.pt
+!artifacts/mirror7_native_conversation_v5_ep5.best.pt
