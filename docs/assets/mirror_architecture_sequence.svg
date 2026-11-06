@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 296" width="100%">
+  <rect x="0" y="0" width="1100" height="296" rx="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="0" y="0" width="1100" height="40" rx="11" fill="#0B192C"/>
+  <rect x="0" y="28" width="1100" height="12" fill="#0B192C"/>
+  <text x="26" y="25" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="0.8">MIRROR END-TO-END BYTE-FIRST STATEFUL EXECUTION SEQUENCE</text>
+  <text x="1074" y="25" text-anchor="end" fill="#93C5FD" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">Zero Static Tokenizer  •  O(1) State Recurrence  •  Sandbox Grounded</text>
+
+  
+  <rect x="26" y="58" width="156" height="132" rx="8" fill="#FFFFFF" stroke="#0B192C" stroke-width="1.5"/>
+  <rect x="26" y="58" width="156" height="28" rx="7" fill="#0B192C"/>
+  <rect x="26" y="76" width="156" height="10" fill="#0B192C"/>
+  <text x="104.0" y="76" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">STAGE 01</text>
+  <text x="104.0" y="110" text-anchor="middle" fill="#0F172A" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="800">Raw UTF-8 Stream</text>
+  <text x="104.0" y="136" text-anchor="middle" fill="#334155" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">259 byte symbols</text>
+  <text x="104.0" y="156" text-anchor="middle" fill="#475569" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11">Zero BPE table or OOV</text>
+
+  <line x1="185" y1="124" x2="196" y2="124" stroke="#1D4ED8" stroke-width="2.2"/>
+  <polygon points="201,124 194,119.5 194,128.5" fill="#1D4ED8"/>
+
+  <rect x="204" y="58" width="156" height="132" rx="8" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.5"/>
+  <rect x="204" y="58" width="156" height="28" rx="7" fill="#1D4ED8"/>
+  <rect x="204" y="76" width="156" height="10" fill="#1D4ED8"/>
+  <text x="282.0" y="76" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">STAGE 02</text>
+  <text x="282.0" y="110" text-anchor="middle" fill="#0F172A" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="800">Byte-Latent Interface</text>
+  <text x="282.0" y="136" text-anchor="middle" fill="#334155" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">Adaptive compression</text>
+  <text x="282.0" y="156" text-anchor="middle" fill="#475569" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11">Matches subword FLOPs</text>
+
+  <line x1="363" y1="124" x2="374" y2="124" stroke="#1D4ED8" stroke-width="2.2"/>
+  <polygon points="379,124 372,119.5 372,128.5" fill="#1D4ED8"/>
+
+  <rect x="382" y="58" width="156" height="132" rx="8" fill="#FFFFFF" stroke="#1E40AF" stroke-width="1.5"/>
+  <rect x="382" y="58" width="156" height="28" rx="7" fill="#1E40AF"/>
+  <rect x="382" y="76" width="156" height="10" fill="#1E40AF"/>
+  <text x="460.0" y="76" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">STAGE 03</text>
+  <text x="460.0" y="110" text-anchor="middle" fill="#0F172A" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="800">Bidirectional State</text>
+  <text x="460.0" y="136" text-anchor="middle" fill="#334155" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">512-D semantic vector</text>
+  <text x="460.0" y="156" text-anchor="middle" fill="#475569" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11">Context-gated encoder</text>
+
+  <line x1="541" y1="124" x2="552" y2="124" stroke="#1D4ED8" stroke-width="2.2"/>
+  <polygon points="557,124 550,119.5 550,128.5" fill="#1D4ED8"/>
+
+  <rect x="560" y="58" width="156" height="132" rx="8" fill="#F0FDFA" stroke="#0F766E" stroke-width="1.5"/>
+  <rect x="560" y="58" width="156" height="28" rx="7" fill="#0F766E"/>
+  <rect x="560" y="76" width="156" height="10" fill="#0F766E"/>
+  <text x="638.0" y="76" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">STAGE 04</text>
+  <text x="638.0" y="110" text-anchor="middle" fill="#0F172A" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="800">3-Specialist Hub</text>
+  <text x="638.0" y="136" text-anchor="middle" fill="#334155" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">556.6M / 185.5M active</text>
+  <text x="638.0" y="156" text-anchor="middle" fill="#475569" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11">Code • Math/Q • Memory</text>
+
+  <line x1="719" y1="124" x2="730" y2="124" stroke="#1D4ED8" stroke-width="2.2"/>
+  <polygon points="735,124 728,119.5 728,128.5" fill="#1D4ED8"/>
+
+  <rect x="738" y="58" width="156" height="132" rx="8" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.5"/>
+  <rect x="738" y="58" width="156" height="28" rx="7" fill="#1D4ED8"/>
+  <rect x="738" y="76" width="156" height="10" fill="#1D4ED8"/>
+  <text x="816.0" y="76" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">STAGE 05</text>
+  <text x="816.0" y="110" text-anchor="middle" fill="#0F172A" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="800">RoPE-2048 Decoder</text>
+  <text x="816.0" y="136" text-anchor="middle" fill="#334155" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">8-head causal + KV</text>
+  <text x="816.0" y="156" text-anchor="middle" fill="#475569" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11">Zero syntax clipping</text>
+
+  <line x1="897" y1="124" x2="908" y2="124" stroke="#1D4ED8" stroke-width="2.2"/>
+  <polygon points="913,124 906,119.5 906,128.5" fill="#1D4ED8"/>
+
+  <rect x="916" y="58" width="156" height="132" rx="8" fill="#F0FDFA" stroke="#0B192C" stroke-width="1.5"/>
+  <rect x="916" y="58" width="156" height="28" rx="7" fill="#0B192C"/>
+  <rect x="916" y="76" width="156" height="10" fill="#0B192C"/>
+  <text x="994.0" y="76" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.8">STAGE 06</text>
+  <text x="994.0" y="110" text-anchor="middle" fill="#0F172A" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="800">Live Sandbox Loop</text>
+  <text x="994.0" y="136" text-anchor="middle" fill="#334155" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">&lt;tool_call&gt; Python/SymPy</text>
+  <text x="994.0" y="156" text-anchor="middle" fill="#475569" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11">AST &amp; unit-test verified</text>
+
+
+  <!-- Cross-Turn Feedback Loop Bar -->
+  <rect x="26" y="210" width="1048" height="66" rx="8" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.4"/>
+  <rect x="26" y="210" width="6" height="66" rx="3" fill="#1D4ED8"/>
+  <text x="48" y="234" fill="#0B192C" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="800">PERSISTENT CROSS-TURN SEMANTIC STATE FEEDBACK LOOP  (prev_state  ∈  R^512)</text>
+  <text x="48" y="256" fill="#334155" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="12">Verified &lt;tool_output&gt; observations and multi-turn dialogue constraints fold directly into the recurrent semantic state — avoiding O(N²) full-transcript re-prefill.</text>
+</svg>

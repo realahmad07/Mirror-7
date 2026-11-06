@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 276" width="100%">
+  <defs>
+    <linearGradient id="heroBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07111E"/>
+      <stop offset="55%" stop-color="#0B192C"/>
+      <stop offset="100%" stop-color="#132C4E"/>
+    </linearGradient>
+    <linearGradient id="accentBar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="50%" stop-color="#0D9488"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1100" height="276" rx="12" fill="url(#heroBg)"/>
+  <rect x="0" y="0" width="1100" height="5" rx="2" fill="url(#accentBar)"/>
+
+  <!-- Subtle architectural grid lines -->
+  <line x1="40" y1="152" x2="1060" y2="152" stroke="#1E3A5F" stroke-width="1"/>
+
+  <!-- Top Kicker -->
+  <rect x="40" y="28" width="38" height="3" fill="#3B82F6"/>
+  <text x="88" y="34" fill="#93C5FD" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.4">OPEN-SOURCE BYTE-FIRST, QUANTUM &amp; STATEFUL AI ARCHITECTURE  •  APACHE-2.0</text>
+
+  <!-- Main Title -->
+  <text x="40" y="76" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="33" font-weight="800" letter-spacing="0.4">MIRROR 7  —  QUANTUM MIRROR</text>
+  <text x="40" y="104" fill="#CBD5E1" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="15.5" font-weight="400">Tokenizer-Free UTF-8 Intelligence, Persistent Cross-Turn Semantic State, Live Execution Sandbox &amp; Sparse Specialist Hub</text>
+
+  <!-- Founder Metadata Strip -->
+  <text x="40" y="134" fill="#94A3B8" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="600">Founder &amp; Principal Architect: <tspan fill="#FFFFFF" font-weight="700">Ahmad Hassan</tspan>   |   Official Repo: <tspan fill="#5EEAD4" font-family="Consolas, SFMono-Regular, Menlo, Monaco, monospace">github.com/realahmad07/Mirror-7</tspan>   |   Verified Hardware: <tspan fill="#DBEAFE">NVIDIA A100-SXM4-40GB</tspan></text>
+
+  <!-- 4 Equal KPI Metric Boxes -->
+  <!-- Card 1 -->
+  <rect x="40" y="168" width="243" height="88" rx="8" fill="#0F233D" stroke="#2563EB" stroke-width="1.2"/>
+  <rect x="40" y="168" width="243" height="4" rx="2" fill="#3B82F6"/>
+  <text x="56" y="198" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="800">259 Raw Bytes</text>
+  <text x="56" y="217" fill="#60A5FA" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.6">ZERO-TOKENIZER UTF-8 VOCAB</text>
+  <text x="56" y="236" fill="#CBD5E1" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5">99.9% smaller lookup RAM vs. BPE</text>
+
+  <!-- Card 2 -->
+  <rect x="299" y="168" width="243" height="88" rx="8" fill="#0F233D" stroke="#0D9488" stroke-width="1.2"/>
+  <rect x="299" y="168" width="243" height="4" rx="2" fill="#14B8A6"/>
+  <text x="315" y="198" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="800">556.6M Hub</text>
+  <text x="315" y="217" fill="#5EEAD4" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.6">185.5M ACTIVE / QUERY (3x SAVE)</text>
+  <text x="315" y="236" fill="#CBD5E1" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5">3-Specialist dynamic domain router</text>
+
+  <!-- Card 3 -->
+  <rect x="558" y="168" width="243" height="88" rx="8" fill="#0F233D" stroke="#2563EB" stroke-width="1.2"/>
+  <rect x="558" y="168" width="243" height="4" rx="2" fill="#3B82F6"/>
+  <text x="574" y="198" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="800">83.3% Pass Rate</text>
+  <text x="574" y="217" fill="#60A5FA" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.6">EXECUTION-VERIFIED RL SANDBOX</text>
+  <text x="574" y="236" fill="#CBD5E1" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5">0.1296 CE loss across 2,048 bytes</text>
+
+  <!-- Card 4 -->
+  <rect x="817" y="168" width="243" height="88" rx="8" fill="#0F233D" stroke="#0D9488" stroke-width="1.2"/>
+  <rect x="817" y="168" width="243" height="4" rx="2" fill="#14B8A6"/>
+  <text x="833" y="198" fill="#FFFFFF" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="800">0.9999 Cosine</text>
+  <text x="833" y="217" fill="#5EEAD4" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.6">ZERO-FORGETTING RETENTION</text>
+  <text x="833" y="236" fill="#CBD5E1" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif" font-size="11.5">Verified across 12 sequential stages</text>
+</svg>

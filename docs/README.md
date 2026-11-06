@@ -8,8 +8,6 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [02 — System architecture](02-system-architecture.md) | Runtime, backend, response-generation, training, and research boundaries. |
 | [03 — Backend](03-backend.md) | Service, HTTP API, lifecycle, persistence, action gateway, and response model. |
 | [04 — Training](04-training.md) | Dataset, parameters, hardware, checkpoints, diagnostics, and failed routes. |
-| [V5 Native Model Review](V5_NATIVE_MODEL_REVIEW_2026-11-01.md) | V5 architecture fixes, checkpoint compatibility, trainer safeguards, and limitations. |
-| [Phase 367 Acceptance](../PHASE367_ACCEPTANCE.md) | Source integration scope, CI results, preserved artifacts, limitations, and next execution gate. |
 | [05 — Evaluation](05-evaluation.md) | Evidence levels, benchmark interpretation, and acceptance discipline. |
 | [06 — Testing and CI](06-testing-ci.md) | Active checks, historical workflows, and release discipline. |
 | [07 — Repository organization](07-repository-organization.md) | Where current code and historical research live. |

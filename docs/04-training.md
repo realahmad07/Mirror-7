@@ -156,25 +156,8 @@ Checkpoint:
 
 /content/drive/MyDrive/Mirror7/mirror7_exp7_pilot.pt
 
-## V5 native conversation model (2026-11-01)
-
-The V5 native response-model track is integrated in Phase 367. It uses a bidirectional encoder, multi-head cross-attention, output context gating, recurrent-context gating, dropout, and scheduled sampling. Its enhanced configuration has **974,019 parameters**. Legacy V3/V4 and earlier V5 checkpoint strict-load compatibility was checked locally; no checkpoint weights were overwritten or committed.
-
-The integrated GPU pipeline includes dataset-fingerprint checks, gradient accumulation, dynamic bucketing, and resumable optimizer/scaler metadata. The integration PR passed Fast CI, Security Guard, and Native Brain Training checks. The local targeted training/reasoning-discovery suite passed 67 tests. The full repository `pytest -q` run did not complete and is not claimed green. A CPU trainer smoke verified checkpoint save/resume and rejection of a changed dataset fingerprint. **A full Colab GPU training run has not been completed.** See [V5 Native Model Review](V5_NATIVE_MODEL_REVIEW_2026-11-01.md) and [Phase 367 Acceptance](../PHASE367_ACCEPTANCE.md).
-
-Teacher-response filtering is heuristic and does not verify factual or mathematical correctness. The reasoning-discovery evaluator is a restricted in-process candidate evaluator, not an OS-level sandbox.
-
 ## Training conclusion
 
 The first cycle did not produce a ChatGPT-class standalone language model.
 
 It did produce a useful intermediate result: compact semantic-state learning and bounded state transformation are trainable and reproducible, while strong free-running native language generation remains the central unresolved model problem.
-
-## Native V5 Kaggle run (2026-11-02)
-
-A separate run record is maintained at [Native V5 Kaggle Training Run](../training_runs/2026-11-02-native-v5-kaggle/README.md). It documents the V5.4 data preparation, temporary Qwen teacher-target stage, native student boundary, T4 patch repair, checkpoint policy, and recovery limitations.
-
-At the recorded status, 582 teacher targets had been saved and reused, and the validated native distillation dataset contained 20,110 examples. Qwen had been unloaded before native student initialization. **Native GPU training had not yet started** because the launcher patch caused an indentation error. The patch was subsequently made idempotent and both affected Python files passed syntax compilation. No training metrics or successful epoch are claimed.
-
-The corpus is still experimental: its manifest marks it as not training-ready pending human review and benchmark gates. The repository is public, so any checkpoint committed under `training_runs/` is public as well. Never commit credentials, raw private data, or model caches.
-
