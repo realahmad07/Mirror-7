@@ -140,19 +140,14 @@ class LocalHuggingFaceTeacher(TeacherProvider):
         device = next(self._model.parameters()).device
         inputs = inputs.to(device)
 
-        if max_tokens <= 0:
-            raise ValueError("max_tokens must be positive")
-        generation_kwargs: dict[str, Any] = {
-            "max_new_tokens": max_tokens,
-            "do_sample": temperature > 0,
-            "pad_token_id": self._tokenizer.eos_token_id,
-        }
-        # Transformers warns or rejects temperature when sampling is disabled.
-        if temperature > 0:
-            generation_kwargs["temperature"] = temperature
-
         with torch.no_grad():
-            output = self._model.generate(inputs, **generation_kwargs)
+            output = self._model.generate(
+                inputs,
+                max_new_tokens=max_tokens,
+                do_sample=temperature > 0,
+                temperature=temperature if temperature > 0 else None,
+                pad_token_id=self._tokenizer.eos_token_id,
+            )
 
         new_tokens = output[0][inputs.shape[1] :]
         response_text = self._tokenizer.decode(new_tokens, skip_special_tokens=True).strip()

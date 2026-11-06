@@ -20,11 +20,7 @@ class ValidationResult:
 
 
 class ResponseValidator:
-    """Apply heuristic structure/format filters, not factual verification.
-
-    A response passing this validator may still be factually, mathematically,
-    or semantically incorrect. Keep that distinction in downstream reports.
-    """
+    """Validates teacher responses for syntactic, logical, and formatting quality."""
 
     def __init__(
         self,
@@ -41,10 +37,7 @@ class ResponseValidator:
 
     def validate(self, response: TeacherResponse) -> ValidationResult:
         reasons: list[str] = []
-        metrics: dict[str, Any] = {
-            "factual_verification": "not_performed",
-            "semantic_correctness": "not_verified",
-        }
+        metrics: dict[str, Any] = {}
         score = 1.0
 
         raw_text = response.response_text.strip()

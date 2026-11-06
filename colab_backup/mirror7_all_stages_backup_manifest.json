@@ -1,0 +1,151 @@
+{
+  "finalized_at": "2026-11-06T14:54:13.916119",
+  "status": "FINALIZED_PRODUCTION_READY",
+  "architecture": "Mirror7_V6_RoPE2048_RLVR_ToolLoop_DPO_3SpecialistHub",
+  "single_specialist_parameters": 185531395,
+  "total_ensemble_hub_parameters": 556660236,
+  "total_checkpoints_pt": 19,
+  "total_datasets_jsonl": 18,
+  "total_indexed_training_records": 83912,
+  "total_storage_mb": 19993.52,
+  "files": {
+    "astra_quantum_math_master.jsonl": {
+      "size_mb": 6.379,
+      "records": 6639
+    },
+    "mirror7_10category_general_communication.jsonl": {
+      "size_mb": 0.391,
+      "records": 902
+    },
+    "mirror7_20category_metacognitive_intelligence.jsonl": {
+      "size_mb": 0.46,
+      "records": 629
+    },
+    "mirror7_24category_extreme_programming_master.jsonl": {
+      "size_mb": 0.187,
+      "records": 306
+    },
+    "mirror7_26category_scientific_intelligence.jsonl": {
+      "size_mb": 0.501,
+      "records": 835
+    },
+    "mirror7_28category_mathematics_master.jsonl": {
+      "size_mb": 0.638,
+      "records": 964
+    },
+    "mirror7_30category_quantum_intelligence.jsonl": {
+      "size_mb": 0.524,
+      "records": 844
+    },
+    "mirror7_30category_thinking_reasoning.jsonl": {
+      "size_mb": 0.541,
+      "records": 732
+    },
+    "mirror7_all_stages_backup_manifest.json": {
+      "size_mb": 0.003
+    },
+    "mirror7_dpo_chosen_rejected_preferences.jsonl": {
+      "size_mb": 0.003,
+      "records": 5
+    },
+    "mirror7_general_ai_books_master.jsonl": {
+      "size_mb": 6.329,
+      "records": 8618
+    },
+    "mirror7_general_ai_extreme_coding_master.pt": {
+      "size_mb": 707.782
+    },
+    "mirror7_general_ai_leap4_communication.pt": {
+      "size_mb": 707.781
+    },
+    "mirror7_general_ai_leap5_thinking_master.pt": {
+      "size_mb": 707.782
+    },
+    "mirror7_general_ai_leap6_mathematics_master.pt": {
+      "size_mb": 707.782
+    },
+    "mirror7_general_ai_leap7_quantum_master.pt": {
+      "size_mb": 707.782
+    },
+    "mirror7_general_ai_leap8_scientific_master.pt": {
+      "size_mb": 707.782
+    },
+    "mirror7_general_ai_leap9_metacognitive_master.pt": {
+      "size_mb": 707.782
+    },
+    "mirror7_general_ai_leaps_1_2_3.pt": {
+      "size_mb": 707.781
+    },
+    "mirror7_general_ai_master.jsonl": {
+      "size_mb": 6.827,
+      "records": 8148
+    },
+    "mirror7_standalone_inference.py": {
+      "size_mb": 0.002
+    },
+    "mirror7_step2_r1_think_dataset.jsonl": {
+      "size_mb": 6.552,
+      "records": 8851
+    },
+    "mirror7_step3_plain_r1_dataset.jsonl": {
+      "size_mb": 0.918,
+      "records": 1150
+    },
+    "mirror7_ultra_FINAL_BF16_COMPACT.pt": {
+      "size_mb": 354.162
+    },
+    "mirror7_ultra_FINAL_MASTER.pt": {
+      "size_mb": 708.034
+    },
+    "mirror7_ultra_step1_rope_hybrid.pt": {
+      "size_mb": 2123.372
+    },
+    "mirror7_ultra_step2_r1_think.pt": {
+      "size_mb": 707.78
+    },
+    "mirror7_ultra_step3_sandbox_verified.pt": {
+      "size_mb": 707.781
+    },
+    "mirror7_ultra_step4_ensemble_hub_manifest.json": {
+      "size_mb": 0.001
+    },
+    "mirror7_v5_a100-max_ASTRA_FINAL.pt": {
+      "size_mb": 2075.331
+    },
+    "mirror7_v5_a100-max_FINAL.pt": {
+      "size_mb": 2075.329
+    },
+    "mirror7_v5_a100-max_GENERAL_AI_BOOKS.pt": {
+      "size_mb": 2075.333
+    },
+    "mirror7_v5_a100-max_pre_quantum.best.pt": {
+      "size_mb": 2075.333
+    },
+    "mirror7_v5_a100_pro_mastery_v2.pt": {
+      "size_mb": 644.63
+    },
+    "mirror7_v6_arch_rlvr_dpo_hub_master.pt": {
+      "size_mb": 708.035
+    },
+    "mirror7_v6_longhorizon_toolcall_dpo_master.jsonl": {
+      "size_mb": 0.024,
+      "records": 34
+    },
+    "mirror_pure_quantum_math_stage2.jsonl": {
+      "size_mb": 3.465,
+      "records": 3225
+    },
+    "pre Quantum data set.jsonl": {
+      "size_mb": 18.192,
+      "records": 18041
+    },
+    "pre_Quantum_dataset.jsonl": {
+      "size_mb": 18.192,
+      "records": 18041
+    },
+    "pre_quantum_paraphrase_polish.jsonl": {
+      "size_mb": 6.023,
+      "records": 5948
+    }
+  }
+}

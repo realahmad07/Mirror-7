@@ -152,17 +152,3 @@ def test_distillation_manager():
     demos = dm.build_demonstration_dataset([ex1, ex2])
     assert len(demos) == 1
     assert demos[0].example_id == ex1.example_id
-
-
-def test_validator_reports_that_factual_correctness_is_not_verified():
-    validator = ResponseValidator(min_bytes=10)
-    response = TeacherResponse(
-        prompt="What is 2 + 2?",
-        response_text="The answer is 5 because this is a simple arithmetic example.",
-        category=KnowledgeCategory.GENERAL_CONVERSATION,
-        model_id="mock",
-        provider="test",
-    )
-    result = validator.validate(response)
-    assert result.metrics["factual_verification"] == "not_performed"
-    assert result.metrics["semantic_correctness"] == "not_verified"

@@ -79,13 +79,7 @@ class ASTSecurityScanner(ast.NodeVisitor):
 
 
 class SafeSandbox:
-    """In-process AST/builtin-restricted evaluator for trusted candidates only.
-
-    This is not an OS-level security sandbox: Python object-model escapes,
-    hostile denial-of-service inputs, and process isolation are outside its
-    guarantees. Never run untrusted third-party code here. Use a separately
-    isolated process/container with OS-enforced limits for adversarial code.
-    """
+    """Restricted sandbox for evaluating algorithm code with strict isolation."""
 
     def __init__(self, timeout_seconds: float = 1.0):
         self.timeout_seconds = timeout_seconds

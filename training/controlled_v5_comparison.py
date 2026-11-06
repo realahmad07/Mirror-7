@@ -29,6 +29,7 @@ from training.native_conversation_v5 import (
     NativeConversationV5Config,
     _prepare_targets,
     build_native_conversation_v5,
+    make_v5_enhanced_config,
 )
 
 
@@ -58,14 +59,8 @@ def compute_attention_entropy(model: NativeConversationV5, prompt: str) -> dict[
             entropies.append(ent)
             max_weights.append(float(attn_weights.max().item()))
 
-            if getattr(model, "gate_linear", None) is not None:
-                gate = torch.sigmoid(model.gate_linear(torch.cat([hidden, context], dim=-1)))
-                eff_context = context * gate
-            else:
-                eff_context = context
-
-            fused = model.output_norm(torch.cat([hidden, eff_context], dim=-1))
-            token = model.head(fused).argmax(dim=-1, keepdim=True)
+            logits = model._project_output(hidden, context)
+            token = logits.argmax(dim=-1, keepdim=True)
 
     max_possible_entropy = math.log(len(raw))
     return {
@@ -108,17 +103,15 @@ def run_controlled_experiment(
             context_gating=False,
             scheduled_sampling_p=0.0,
         ),
-        "Enhanced_V5": NativeConversationV5Config(
+        "Enhanced_V5": make_v5_enhanced_config(
             embedding_dim=96,
             hidden_dim=256,
             state_dim=128,
             attention_dim=128,
             dropout=0.0,
             max_bytes=max_bytes,
-            bidirectional_encoder=True,
             num_heads=4,
-            context_gating=True,
-            scheduled_sampling_p=0.15,
+            scheduled_sampling_p=0.0,
         ),
     }
 

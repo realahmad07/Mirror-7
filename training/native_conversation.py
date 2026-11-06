@@ -17,6 +17,11 @@ EOS = VOCAB_SIZE + 1
 TOTAL_VOCAB_SIZE = VOCAB_SIZE + 2
 
 
+def _mask_fill_value(tensor: torch.Tensor) -> float:
+    """Return a safe negative fill value that does not overflow float16 under AMP."""
+    return -1e4 if tensor.dtype == torch.float16 else -1e9
+
+
 @dataclass(frozen=True)
 class NativeConversationConfig:
     embedding_dim: int = 96
@@ -120,7 +125,7 @@ class NativeConversation(nn.Module):
         mask_expanded = encoder_mask.unsqueeze(1)  # (batch, 1, enc_len)
         has_valid = mask_expanded.any(dim=-1, keepdim=True)  # (batch, 1, 1)
 
-        scores = scores.masked_fill(~mask_expanded, -1e9)
+        scores = scores.masked_fill(~mask_expanded, _mask_fill_value(scores))
         weights = torch.softmax(scores, dim=-1)
         weights = torch.where(has_valid, weights, torch.zeros_like(weights))
 
@@ -186,12 +191,13 @@ class NativeConversation(nn.Module):
                 logits = self.head(fused[:, -1, :])
 
                 # Disallow generating PAD and BOS
-                logits[:, PAD] = -1e9
-                logits[:, BOS] = -1e9
+                neg_inf = _mask_fill_value(logits)
+                logits[:, PAD] = neg_inf
+                logits[:, BOS] = neg_inf
 
                 # Disallow early EOS if min_new_tokens requested
                 if step < min_new_tokens:
-                    logits[:, EOS] = -1e9
+                    logits[:, EOS] = neg_inf
 
                 # Apply repetition penalty
                 if repetition_penalty != 1.0 and generated:
@@ -216,7 +222,7 @@ class NativeConversation(nn.Module):
                         for i in range(len(gen_b) - no_repeat_ngram_size + 1):
                             if tuple(gen_b[i : i + no_repeat_ngram_size - 1]) == prefix:
                                 banned = gen_b[i + no_repeat_ngram_size - 1]
-                                logits[b, banned] = -1e9
+                                logits[b, banned] = neg_inf
 
                 if temperature <= 0:
                     next_token = logits.argmax(dim=-1, keepdim=True)
@@ -224,7 +230,7 @@ class NativeConversation(nn.Module):
                     logits = logits / temperature
                     if top_k and 0 < top_k < logits.shape[-1]:
                         values, indices = torch.topk(logits, top_k, dim=-1)
-                        filtered = torch.full_like(logits, -1e9)
+                        filtered = torch.full_like(logits, neg_inf)
                         filtered.scatter_(1, indices, values)
                         logits = filtered
                     if 0.0 < top_p < 1.0:
@@ -235,7 +241,7 @@ class NativeConversation(nn.Module):
                         sorted_indices_to_remove[:, 1:] = sorted_indices_to_remove[:, :-1].clone()
                         sorted_indices_to_remove[:, 0] = False
                         indices_to_remove = sorted_indices_to_remove.scatter(1, sorted_indices, sorted_indices_to_remove)
-                        logits = logits.masked_fill(indices_to_remove, -1e9)
+                        logits = logits.masked_fill(indices_to_remove, neg_inf)
                     probs = torch.softmax(logits, dim=-1)
                     next_token = torch.multinomial(probs, 1)
 
