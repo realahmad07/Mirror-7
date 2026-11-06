@@ -1,0 +1,32 @@
+{
+  "Baseline_V5": {
+    "parameters": 957251,
+    "initial_loss": 5.638288974761963,
+    "final_train_loss": 2.522531032562256,
+    "val_loss": 2.5676181316375732,
+    "duration_seconds": 50.30790299997898,
+    "pre_attn_entropy_ratio": 0.9995221529352676,
+    "post_attn_entropy_ratio": 0.7513111155966293,
+    "post_attn_max_weight": 0.2161669374909252,
+    "samples": {
+      "Hi, how are you doing today?": "The the the the the the the the the the the the ",
+      "What is the chemical formula for water?": "I are the the the the the the the the the the th",
+      "What is 15 multiplied by 8?": "I are the the the the the the the the the the th"
+    }
+  },
+  "Enhanced_V5": {
+    "parameters": 924739,
+    "initial_loss": 5.715551853179932,
+    "final_train_loss": 2.44534969329834,
+    "val_loss": 2.5125341415405273,
+    "duration_seconds": 77.91041539999424,
+    "pre_attn_entropy_ratio": 0.9952486686209644,
+    "post_attn_entropy_ratio": 0.9068532626954715,
+    "post_attn_max_weight": 0.1147893809247762,
+    "samples": {
+      "Hi, how are you doing today?": "I and and and and and the sous and the sous and ",
+      "What is the chemical formula for water?": "I and and and and and and and and the sous and t",
+      "What is 15 multiplied by 8?": "I and and and and and and and the sous and the s"
+    }
+  }
+}

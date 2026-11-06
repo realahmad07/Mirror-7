@@ -1,0 +1,70 @@
+{
+  "checkpoint": "artifacts/mirror7_native_conversation_v3_full.pt",
+  "format": "mirror7-native-conversation-v3-cross-attention",
+  "split": "test",
+  "eval_loss": 1.6954815180405327,
+  "examples": 5,
+  "nonempty": 5,
+  "exact_match": 0,
+  "nonempty_rate": 1.0,
+  "exact_match_eligible": 3,
+  "exact_match_rate": 0.0,
+  "avg_repetition_ratio": 0.9639726808696146,
+  "truncated_target_count": 2,
+  "checkpoint_metadata": {
+    "epochs": 5,
+    "lr": 0.0003
+  },
+  "outputs": [
+    {
+      "example_id": "oasst2-185579f5-adc7-4491-a40d-14b3af399cf6",
+      "target": "Eating is a sensory experience that involves the sense of taste, smell, and touch. Based on descriptions from others, it seems that food is a crucial aspect of human life and nourishment. People describe the act of eating as a pleasurable and satisfying activity that brings joy and comfort. The flavors, textures, and aromas of food are said to evoke various emotions and memories.\n\nPeople describe different foods as sweet, sour, salty, bitter, or umami, and relate the taste to different ingredients and spices. Some describe the experience of eating as a combination of textures and flavors, such as crunchy and sweet, or creamy and savory.\n\nThe act of eating can also be a social experience, as people often gather around a table to share a meal and conversation. People describe the atmosphere of a meal as being relaxed, formal, or festive, depending on the occasion.\n\nIn conclusion, eating is a complex experience that involves multiple senses and emotions. Based on descriptions from others, it seems that eating can be a source of pleasure, comfort, and social connection.",
+      "prediction": "I am the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start to the start",
+      "target_bytes": 1082,
+      "prediction_bytes": 768,
+      "exact_match_eligible": false,
+      "exact_match": false,
+      "repetition_ratio": 0.9715909090909091
+    },
+    {
+      "example_id": "oasst2-545723bf-e230-4657-9c8e-b07a13414faa",
+      "target": "To accomplish the same task with a Windows Batch file, you can use the \"ping\" command and the \"set\" command to store the results. Here is an example script:\n\n@echo off\n\nset IP=8.8.8.8\nset TEST_COUNT=0\nset FAILURES=0\n\n:loop\nset /a TEST_COUNT=TEST_COUNT+1\nping -n 10 %IP% >nul\nif %errorlevel% neq 0 set /a FAILURES=FAILURES+1\n\nset /a UPTIME=100-100*FAILURES/TEST_COUNT\n\necho uptime: %UPTIME%\n\ntimeout /t 60 /nobreak >nul\ngoto loop\n\nThis script sets the IP address to ping, the number of tests to run, and the number of failures encountered. It then enters an infinite loop that runs a ping test every minute. The results are stored using the \"set\" command, and the uptime percentage is calculated and displayed using the same method as the Bash script. The \"timeout\" command is used to pause for 60 seconds before running the next loop.",
+      "prediction": "The state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the state the stat",
+      "target_bytes": 834,
+      "prediction_bytes": 768,
+      "exact_match_eligible": false,
+      "exact_match": false,
+      "repetition_ratio": 0.9736842105263158
+    },
+    {
+      "example_id": "oasst2-69bf9b7f-1528-49cb-8d5e-cb86b8f30d72",
+      "target": "That is correct. To my knowledge \"grpnuxblurryblup\" is not a real word, however you asked me to think of a meaning for it. Hence I have imagined it. Would you like another meaning ?",
+      "prediction": "I am the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start that the start tha",
+      "target_bytes": 181,
+      "prediction_bytes": 768,
+      "exact_match_eligible": true,
+      "exact_match": false,
+      "repetition_ratio": 0.9607843137254902
+    },
+    {
+      "example_id": "oasst2-42cb082d-6dbc-4b3e-8db1-660f3fff9d96",
+      "target": "Variance is the sum of all deviations from the mean. It quantifies the average dispersion of the sample under consideration. It can alternatively be viewed as the average L2 distance between the sampled sites and the mean.\n\nV = ( Σ (x-μ)² ) / N\n\nwhere V is the variance. x is a sample, μ is the mean and N is the number of samples.",
+      "prediction": "Sure, a set the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start the states a start to the states a start",
+      "target_bytes": 335,
+      "prediction_bytes": 768,
+      "exact_match_eligible": true,
+      "exact_match": false,
+      "repetition_ratio": 0.9401197604790419
+    },
+    {
+      "example_id": "oasst2-f9d85d1b-6e6c-4ff7-9456-c9efa0222fcb",
+      "target": "Yes, you are correct. The free energy principle (FEP) is a theory in cognitive science and neuroscience that attempts to explain how the brain processes sensory information to form a model of the world and make predictions about future events. According to the FEP, the brain strives to minimize the difference, or the \"surprise,\" between its current model of the world and incoming sensory information. By minimizing surprise, the brain reduces uncertainty and increases its understanding of the environment, allowing it to make more accurate predictions and behave more effectively. The FEP is seen as a unifying framework that could potentially explain various aspects of perception, action, and learning in the brain.",
+      "prediction": "The start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the start the star",
+      "target_bytes": 721,
+      "prediction_bytes": 768,
+      "exact_match_eligible": true,
+      "exact_match": false,
+      "repetition_ratio": 0.9736842105263158
+    }
+  ]
+}

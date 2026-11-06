@@ -1,0 +1,352 @@
+{
+  "generated_at_utc": "2026-11-06T17:17:24Z",
+  "author": "Ahmad Hassan",
+  "repository": "https://github.com/realahmad07/Mirror-7",
+  "total_files_archived": 75,
+  "total_size_gb": 37.362,
+  "combined_jsonl_unique_rows": 39428,
+  "folder_summary": {
+    "(MyDrive Root Files)": {
+      "files": 20,
+      "size_mb": 16361.69
+    },
+    "Colab Notebooks": {
+      "files": 8,
+      "size_mb": 1.24
+    },
+    "Mirror7_Backup": {
+      "files": 6,
+      "size_mb": 1869.19
+    },
+    "Mirror7_Ultra_Backup": {
+      "files": 40,
+      "size_mb": 19993.53
+    }
+  },
+  "checkpoints": [
+    {
+      "file": "drive/mirror7_stage1.best.pt",
+      "size_mb": 10.62,
+      "sha256_prefix": "fe700299886faa74ca069e21547add472ae8837f65579ccb6118965779ee3a70"
+    },
+    {
+      "file": "drive/mirror7_stage1.pt",
+      "size_mb": 10.62,
+      "sha256_prefix": "3c5c13d57c8e3d9df31fd291b90ca71e8496a4b46f208631446b36be69ec116d"
+    },
+    {
+      "file": "drive/mirror7_v5_quantum_master.pt",
+      "size_mb": 10.62,
+      "sha256_prefix": "edbabd3972a58f0147abd0feae9e9806a36279d83d43eb945dd379cf9158674d"
+    },
+    {
+      "file": "drive/mirror7_v5_quantum_master.best.pt",
+      "size_mb": 10.62,
+      "sha256_prefix": "9d32326c28348047d1776e9bc080e8601a514cd2e0bb29b7dc75df9a6e1345e9"
+    },
+    {
+      "file": "drive/mirror7_v5_scaled_master.best.pt",
+      "size_mb": 279.34,
+      "sha256_prefix": "656ffa4274bd24ea96500a9aa3f8ca4588239a5280652e2b5bb1ed0d5d9379b0"
+    },
+    {
+      "file": "drive/mirror7_v5_scaled_master.pt",
+      "size_mb": 279.34,
+      "sha256_prefix": "3d37ac4fed3db5419e80d0b57f2d67b13b65bd85aa41c1ed278ffab10357eded"
+    },
+    {
+      "file": "drive/mirror7_v5_a100-pro_v2.best.pt",
+      "size_mb": 644.63,
+      "sha256_prefix": "a4e3500cb673a50ae01b4e10ab815f2f658e9f92d78eab354545ec7f0d98486e"
+    },
+    {
+      "file": "drive/mirror7_v5_a100-pro_v2.pt",
+      "size_mb": 644.63,
+      "sha256_prefix": "61e3b0cb9bc0cacf7e5d988d54f989d52825b80752d1fcfddabcf372ca1d5d2d"
+    },
+    {
+      "file": "drive/mirror7_v5_a100_pro_mastery.best.pt",
+      "size_mb": 644.63,
+      "sha256_prefix": "7de53d9b7d3c15abf2fec0d0642441914f47d53571db8dc26c1709d6ec1aaa5a"
+    },
+    {
+      "file": "drive/mirror7_v5_a100_pro_mastery.pt",
+      "size_mb": 644.63,
+      "sha256_prefix": "18a9088651fd302fb5be575c5cc9404ea4513fba21cc295c16c5322daf3eba1a"
+    },
+    {
+      "file": "drive/mirror7_v5_a100_pro_mastery_v2.pt",
+      "size_mb": 644.63,
+      "sha256_prefix": "b55ca61081522f4dc19f3a1c624c9435aa700e47ecded0916c13344ad178d164"
+    },
+    {
+      "file": "drive/mirror7_v5_a100-max_pre_quantum.best.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "1103a034582c851efac07b4ce38b812744447499db42f4b40972145444d01eb5"
+    },
+    {
+      "file": "drive/mirror7_v5_a100-max_pre_quantum.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "7404fab6488822e0580bb3594dd7e0bb5fb8123a360913d811f13c8ba827c249"
+    },
+    {
+      "file": "drive/mirror7_v5_a100-max_FINAL.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "f74bf0f0265b563db653248168b02070a907d9ad2af92c65340e0eceb1464ddf"
+    },
+    {
+      "file": "drive/mirror7_v5_a100-max_ASTRA_FINAL.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "f2a8471b7dfcda91f1d50ed9977c2899ab8d98930cb447383b9da311d2ae1112"
+    },
+    {
+      "file": "drive/mirror7_v5_a100-max_GENERAL_AI.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "4fc1a113ec283c31c130e551dcbf96071669595db3fbf58568b828033d60fe18"
+    },
+    {
+      "file": "drive/mirror7_v5_a100-max_GENERAL_AI_BOOKS.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "c3ed04338ec2ca17a43ca23c88bb7cf16ae3e9884b658e697446cbefdefaaf24"
+    },
+    {
+      "file": "drive/Mirror7_Backup/mirror7_v5_quantum_master.best.pt",
+      "size_mb": 10.62,
+      "sha256_prefix": "9d32326c28348047d1776e9bc080e8601a514cd2e0bb29b7dc75df9a6e1345e9"
+    },
+    {
+      "file": "drive/Mirror7_Backup/mirror7_v5_quantum_master.pt",
+      "size_mb": 10.62,
+      "sha256_prefix": "edbabd3972a58f0147abd0feae9e9806a36279d83d43eb945dd379cf9158674d"
+    },
+    {
+      "file": "drive/Mirror7_Backup/mirror7_v5_scaled_master.best.pt",
+      "size_mb": 279.34,
+      "sha256_prefix": "656ffa4274bd24ea96500a9aa3f8ca4588239a5280652e2b5bb1ed0d5d9379b0"
+    },
+    {
+      "file": "drive/Mirror7_Backup/mirror7_v5_scaled_master.pt",
+      "size_mb": 279.34,
+      "sha256_prefix": "3d37ac4fed3db5419e80d0b57f2d67b13b65bd85aa41c1ed278ffab10357eded"
+    },
+    {
+      "file": "drive/Mirror7_Backup/mirror7_v5_a100-pro_v2.best.pt",
+      "size_mb": 644.63,
+      "sha256_prefix": "a4e3500cb673a50ae01b4e10ab815f2f658e9f92d78eab354545ec7f0d98486e"
+    },
+    {
+      "file": "drive/Mirror7_Backup/mirror7_v5_a100-pro_v2.pt",
+      "size_mb": 644.63,
+      "sha256_prefix": "61e3b0cb9bc0cacf7e5d988d54f989d52825b80752d1fcfddabcf372ca1d5d2d"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_v5_a100_pro_mastery_v2.pt",
+      "size_mb": 644.63,
+      "sha256_prefix": "b55ca61081522f4dc19f3a1c624c9435aa700e47ecded0916c13344ad178d164"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_v5_a100-max_pre_quantum.best.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "1103a034582c851efac07b4ce38b812744447499db42f4b40972145444d01eb5"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_v5_a100-max_FINAL.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "f74bf0f0265b563db653248168b02070a907d9ad2af92c65340e0eceb1464ddf"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_v5_a100-max_ASTRA_FINAL.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "f2a8471b7dfcda91f1d50ed9977c2899ab8d98930cb447383b9da311d2ae1112"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_v5_a100-max_GENERAL_AI_BOOKS.pt",
+      "size_mb": 2075.33,
+      "sha256_prefix": "c3ed04338ec2ca17a43ca23c88bb7cf16ae3e9884b658e697446cbefdefaaf24"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_ultra_step1_rope_hybrid.pt",
+      "size_mb": 2123.37,
+      "sha256_prefix": "7a11b83f0731d8d95443d50386448bc52d3dc0d6a6246675b265a62b52ddbcac"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_ultra_step3_sandbox_verified.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "83af6d3bb65efcf618670da36677ca68d71becbf03873df97f5e20e8a7c78078"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_ultra_step2_r1_think.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "a6f6ba1da89ca829e97f8fd45b118c016613cd7df8082519d72d407fef84842f"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_leaps_1_2_3.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "65304f423dd65ed437274971086f8c55e381c310b9341494e8c8baae315439f7"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_leap4_communication.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "2c9c4da8f6ee7a2f10571438fea13c3bceabde81daeda2de24b49115d5003c9d"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_leap5_thinking_master.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "0f9fab60d57d60fac1f490ba787242e1c82c8e1e3f054e666b164bdc5c0031df"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_leap6_mathematics_master.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "0b55a807436e53372207b445ec4ebea1d4efabc249319b1dc089b5407b2d0e02"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_leap7_quantum_master.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "2a06384ed86755769bb7d0ca4253fe7fca503898cb0a18ecb59ddd2f93fbd9f2"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_leap8_scientific_master.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "0521cb431ac679a99e51dc2b27bafe07b73b216aa1c26814f58d1c7d74158841"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_leap9_metacognitive_master.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "3baf6b388768f9d0ee7b8d93e158ccc81dbec4280e1fa0644d4f72e43bca0c80"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_extreme_coding_master.pt",
+      "size_mb": 707.78,
+      "sha256_prefix": "bc7b1b3ef5fd9cceef2af51d4fc6756fafa6749457342f68ea17487f76125f23"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_ultra_FINAL_BF16_COMPACT.pt",
+      "size_mb": 354.16,
+      "sha256_prefix": "566f10fa290171af17c806f356299b0b00df58e2d3a10f9f61d532348c1def9e"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_ultra_FINAL_MASTER.pt",
+      "size_mb": 708.03,
+      "sha256_prefix": "13d097bf26f937298878aec3289df1cd2a778e008b100126dda963d50f7ab77f"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_v6_arch_rlvr_dpo_hub_master.pt",
+      "size_mb": 708.03,
+      "sha256_prefix": "867cfda032aa13b869cdba5938d2303137d3ddf1d5901d027e47e70d94879d6c"
+    }
+  ],
+  "datasets": [
+    {
+      "file": "drive/pre_Quantum_dataset.jsonl",
+      "size_mb": 18.19,
+      "sha256_prefix": "4136e835522509012729dbeab8eeb379f67d56c36f96738de4d8034d95a6d35b"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror_pure_quantum_math_stage2.jsonl",
+      "size_mb": 3.47,
+      "sha256_prefix": "257a3c3feacc6268601cf468506be395d8162fcc65b76ba1fac9115ed6a6fe88"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/pre Quantum data set.jsonl",
+      "size_mb": 18.19,
+      "sha256_prefix": "4136e835522509012729dbeab8eeb379f67d56c36f96738de4d8034d95a6d35b"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/pre_Quantum_dataset.jsonl",
+      "size_mb": 18.19,
+      "sha256_prefix": "4136e835522509012729dbeab8eeb379f67d56c36f96738de4d8034d95a6d35b"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/pre_quantum_paraphrase_polish.jsonl",
+      "size_mb": 6.02,
+      "sha256_prefix": "4a7b9d6113488a98a9c2c19fec56f0811c4a66bbcf7175a33bbc6e70c240a022"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/astra_quantum_math_master.jsonl",
+      "size_mb": 6.38,
+      "sha256_prefix": "f60db59a68b410e81e51b36d43765e7bf9da5123cd10f523ca34525c4de8cfc9"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_master.jsonl",
+      "size_mb": 6.83,
+      "sha256_prefix": "a660e3d683fea917c38b52d39bd2d5a5a01e5c1898b9df643f39f322b6c603d6"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_general_ai_books_master.jsonl",
+      "size_mb": 6.33,
+      "sha256_prefix": "1ee721b8ade8ae1487636f559e71445734a2c5499075da1c47e1ba86e90f1d33"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_step2_r1_think_dataset.jsonl",
+      "size_mb": 6.55,
+      "sha256_prefix": "effb23ace04b309b5c8a53336321c010c42f695d0b574332fd57b74d4de76caa"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_step3_plain_r1_dataset.jsonl",
+      "size_mb": 0.92,
+      "sha256_prefix": "69f17f3498dcae34b268c9c6ea6b78eb43b9cf46db1166efd0feae3be4e59260"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_10category_general_communication.jsonl",
+      "size_mb": 0.39,
+      "sha256_prefix": "70ad4e028a0fe1a969660e40f7ca59fff9c0b3ba1136f163af96b0cef77bea12"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_30category_thinking_reasoning.jsonl",
+      "size_mb": 0.54,
+      "sha256_prefix": "56b39a64a35e9b4e5868d13c06b18abb84285d06fdea49a1d7352cf08cf5f95f"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_28category_mathematics_master.jsonl",
+      "size_mb": 0.64,
+      "sha256_prefix": "fc0c772259a427891d02bffce0384deb7808ecc145cf795303179e383481a18b"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_30category_quantum_intelligence.jsonl",
+      "size_mb": 0.52,
+      "sha256_prefix": "6c17f67a247ec6cf84eedb3a50154433c5e8447accfd1a5309d2292e2e17dfc8"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_26category_scientific_intelligence.jsonl",
+      "size_mb": 0.5,
+      "sha256_prefix": "3b39cc623ee97c1eac08383c3206499e9a23f736aa2d27048a821df9ec53145e"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_20category_metacognitive_intelligence.jsonl",
+      "size_mb": 0.46,
+      "sha256_prefix": "95ca2d0ce3c5a4e9104669582285456a2fa1e0eb0531ece58b29053ce82d92b6"
+    },
+    {
+      "file": "drive/Mirror7_Ultra_Backup/mirror7_24category_extreme_programming_master.jsonl",
+      "size_mb": 0.19,
+      "sha256_prefix": "0d7d92d0cb1d25e0a07b42efb1ae21e066f5a9245a42957255f7a99e6b23ea7b"
+    },
+    {
+      "file": "combined_datasets/mirror7_combined_all_drive_datasets.jsonl",
+      "size_mb": 33.51,
+      "sha256_prefix": "a0087db94cc3d9d5acc6c5e3eb40bf25440d5301508c38dad1f58f08eb6fb451"
+    }
+  ],
+  "github_synced_files": [
+    {
+      "path": "training/colab/Untitled4.ipynb",
+      "size_mb": 0.1
+    },
+    {
+      "path": "colab_backup/mirror7_ultra_step4_ensemble_hub_manifest.json",
+      "size_mb": 0.0
+    },
+    {
+      "path": "colab_backup/mirror7_standalone_inference.py",
+      "size_mb": 0.0
+    },
+    {
+      "path": "colab_backup/mirror7_all_stages_backup_manifest.json",
+      "size_mb": 0.0
+    },
+    {
+      "path": "training/colab/mirror7_openmath_verification_audit.ipynb",
+      "size_mb": 0.1
+    }
+  ]
+}

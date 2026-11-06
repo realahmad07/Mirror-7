@@ -1,0 +1,123 @@
+{
+  "summary": {
+    "checkpoint": "artifacts/baseline_v3_5ep.pt",
+    "model_version": "v3",
+    "num_prompts": 10,
+    "avg_similarity_to_blank": 0.0,
+    "avg_similarity_to_shuffled": 0.0972695009716947,
+    "avg_prompt_relevance": 0.05044556507322465,
+    "prompt_distinctness_score": 0.9027304990283053
+  },
+  "outputs": [
+    {
+      "index": 1,
+      "prompt": "If you were to image the experience of eating from only others descriptions and never having done it",
+      "shuffled_prompt": "That doesn't sound like Luke Skywalker.",
+      "gen_normal": "The nutribe solvey. Here's are complements, it's its funding the experies, while game your some may be a vight do comming for it them aree form seveli",
+      "gen_blank": "HTh�owngh?",
+      "gen_shuffled": "As and replick.",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.0,
+      "prompt_relevance": 0.0425531914893617
+    },
+    {
+      "index": 2,
+      "prompt": "How literally should I interpret \"anything\".",
+      "shuffled_prompt": "What are some common ways to aid in protecting the life of civilians in a country that is at war and",
+      "gen_normal": "The simal to try that preducts between, change the self. If you're you shill gloe of their and making sinking, all have than carbet. They havis and.",
+      "gen_blank": "HTh��㾄������ݝ��️\u000b8�����������ぁ����礊�まぁ���ɳĈ������=#####�####EORNAIZDBCCIONIY����+��������圯�������ま�������ت\u001f�\u0004︙������\u0011������ڢ�",
+      "gen_shuffled": "There are such as to find to explayerity or signers, suck and the some with that are's ask.\n\nThe object recomment of they well papitation can do to us",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.13043478260869565,
+      "prompt_relevance": 0.0
+    },
+    {
+      "index": 3,
+      "prompt": "You could've just catch me lying that I never saw a screen or used the internet (hence, writing that",
+      "shuffled_prompt": "You could've just catch me lying that I never saw a screen or used the internet (hence, writing that",
+      "gen_normal": "It is an ofter up includes:\n\n# Stard my prove being the examples in they historization. The function was of a server by computed it you with is engine",
+      "gen_blank": "#####L####Y####C####O####�####S####�####�####H####😊ま����ɒě���ͮ��穑���\u0015\u000e��������︃����==\"AINIONjN���ƅ7800%�Y���ま�������︸�Ǎ�����ͮ",
+      "gen_shuffled": "If you're spack.\n\n2. Battems, in a law have an exposes specific to create the track day, and our form of yo related a butting there is user to import",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.125,
+      "prompt_relevance": 0.07142857142857142
+    },
+    {
+      "index": 4,
+      "prompt": "What are some common ways to aid in protecting the life of civilians in a country that is at war and",
+      "shuffled_prompt": "Surfing requires waves. Will there be enough waves from May to October?",
+      "gen_normal": "If you can be called that specific with the speed.\n\nCompare which as have a recomment to manuce than tell arganing of there of and show about them sof",
+      "gen_blank": "SQLN��Ϭ���︎������������摍���\u0004�は�ま��㾁�䮿���ؚ���������–�”���=�#####�####�####R####O####F####T####Y####�####�####�####+####�####�####A###",
+      "gen_shuffled": "There and computism, to subject besween in the files:\n***Schess are modely apperisting andlay. They suggests, in a from might be countral provide a la",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.13333333333333333,
+      "prompt_relevance": 0.13333333333333333
+    },
+    {
+      "index": 5,
+      "prompt": "Can you please explain to me how this code is working?",
+      "shuffled_prompt": "How many years do you think it would take for humanities technology to advance enough, to the point ",
+      "gen_normal": "It can be every, the goints of exploality development in multure with a commintime power\n- Corten using of they individual applically are preferative,",
+      "gen_blank": "HTh����������は��︎����ˑ����ஔ�����������^������97500%�%�囔���|Y�#####�####O####+####I####L####T####S####E####R####�####�####�####V####�####�##",
+      "gen_shuffled": "I way of the string to them it's include it their content can be they work and have that than imports.\n\nThe sun also you game is a carting when we thr",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.14893617021276595,
+      "prompt_relevance": 0.030303030303030304
+    },
+    {
+      "index": 6,
+      "prompt": "How many years do you think it would take for humanities technology to advance enough, to the point ",
+      "shuffled_prompt": "What do you think caused the claim to spread so quickly",
+      "gen_normal": "It is new of processy, intelled by has a give of a firm the other to function and them solves they have these that are a get be a power, it there you",
+      "gen_blank": "IIONAY����\u0006�😊�ま���介���+++++\\++++²���#####�####+####H####�####Y####�####E####T####�####�####�####�####�####�####N####L####�####�####�####�###",
+      "gen_shuffled": "If you that impressible code than the requestive. You can stress, there say reasure in this charal web I know.\n\nOpen as have your apperied symptics fo",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.10204081632653061,
+      "prompt_relevance": 0.10638297872340426
+    },
+    {
+      "index": 7,
+      "prompt": "What do you think caused the claim to spread so quickly",
+      "shuffled_prompt": "Could you please calculate this equation, as well as show your working and why: 8/2(2+2)",
+      "gen_normal": "A recompings.\n\n2. Stated and could be may be fimes a have so a plays.",
+      "gen_blank": "#####O####ED####+####Y####�####H####�####�####T####�####R####�####L####�####V####�####�####�####IZ####�####|####S####�####�####�####�####�####A####F##",
+      "gen_shuffled": "You can be from origity the explase.\n\nStandity is with mather wittoms but their provides to considelem.\n\nAlgization frot a project ways, you probality",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.06060606060606061,
+      "prompt_relevance": 0.045454545454545456
+    },
+    {
+      "index": 8,
+      "prompt": "That doesn't sound like Luke Skywalker.",
+      "shuffled_prompt": "Can you please explain to me how this code is working?",
+      "gen_normal": "In a forms.\n\n1. Addity such as person will or convent to accessive, you cheaks to gime.\n\nState ask with prefered by to includes tould number training",
+      "gen_blank": "HThere'shold!",
+      "gen_shuffled": "Sure, is a provide the formate.\n2. Hell you can be a leggs some to them.\n\n1. Featting as explient of there you're work on book done, command can't tec",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.10204081632653061,
+      "prompt_relevance": 0.0
+    },
+    {
+      "index": 9,
+      "prompt": "Surfing requires waves. Will there be enough waves from May to October?",
+      "shuffled_prompt": "If you were to image the experience of eating from only others descriptions and never having done it",
+      "gen_normal": "Actions free are play believe pustally, the provide importances.",
+      "gen_blank": "HTh�埘����仇��㯧����㾾��︸��������ε�+++++���|\\\\\\|||||°��������������\u000b埑����翾������︙����~~~~~\\~~~~�~~~~D~~~~L~~~~US��#####�####Y####�####",
+      "gen_shuffled": "Interplatic sumber and pollem the life with a replicated that your been and:\n     Spits for a many other source and, witting you're may of movey struc",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.030303030303030304,
+      "prompt_relevance": 0.0
+    },
+    {
+      "index": 10,
+      "prompt": "Could you please calculate this equation, as well as show your working and why: 8/2(2+2)",
+      "shuffled_prompt": "How literally should I interpret \"anything\".",
+      "gen_normal": "I can be the some interputed of them.\n\n- 10 new operative of your spack that you good is improperny, it's and betted to andle with a repositizes but c",
+      "gen_blank": "HT�her'qust!",
+      "gen_shuffled": "If you can resider state, it. In a selfferences and communation when abail and. This is not of my fand a fire and, a simple functions answer bow the r",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.14,
+      "prompt_relevance": 0.075
+    }
+  ]
+}

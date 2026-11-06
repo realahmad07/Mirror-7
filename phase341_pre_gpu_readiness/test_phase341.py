@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import threading
 import urllib.request
 
 from mirror7_backend.service import BackendService
@@ -29,6 +30,8 @@ def _request(server, method, path, payload=None):
 def test_phase341_real_runtime_contract():
     service = BackendService(engine_factory=UnifiedCognitiveRuntime)
     server = create_server(port=0, service=service)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
     try:
         status, created = _request(
             server, "POST", "/api/sessions", {"session_id": "pre-gpu"}
@@ -50,8 +53,8 @@ def test_phase341_real_runtime_contract():
 
         status, status_body = _request(server, "GET", "/api/status")
         assert status == 200
-        assert status_body["status"]["sessions"] == 1
-        assert status_body["status"]["metrics"]["steps_succeeded"] == 1
+        assert status_body["sessions"] == 1
+        assert status_body["metrics"]["steps_succeeded"] == 1
     finally:
         server.shutdown()
         server.server_close()

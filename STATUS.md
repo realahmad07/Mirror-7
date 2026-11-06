@@ -13,11 +13,9 @@ The 75+ hour initial build and research cycle is complete.
 | Pretrained response realization | Available as an optional language layer. |
 | Native semantic-state research | Experiments 1–7 completed and documented. |
 | Scratch language model | 10.57M ByteGRU trained and evaluated; not accepted as a strong free-running model. |
-| Native V5 response model | Enhanced source and GPU-training stack integrated in Phase 367; full GPU training not yet run. |
 | Active CI | Reduced to five intentional workflows. |
 | Historical workflows | Preserved under docs/archive/legacy-workflows/. |
-| Training notebook | Original research and V5 GPU-training Colab notebooks are published under training/colab/. |
-| Phase 367 CI | Fast CI, Security Guard, and Native Brain Training checks passed on the integration PR head. |
+| Training notebook | Sanitized full Colab notebook published under training/colab/. |
 
 ## Native-brain evidence
 
@@ -30,10 +28,6 @@ The 75+ hour initial build and research cycle is complete.
 | 5 | 60.71% mean accuracy on bounded variable-length chains. |
 | 6 | Opaque operation learning exposed a depth/generalization bottleneck. |
 | 7 | 63.33% length-5 and 65.56% unseen-concept mean; matched the frozen primary baseline. |
-
-## Next execution milestone
-
-Run the V5 Colab GPU smoke test, verify CUDA availability, memory use, checkpoint save/resume, and dataset-fingerprint checks. Start controlled training only after that smoke test passes.
 
 ## Research boundary
 

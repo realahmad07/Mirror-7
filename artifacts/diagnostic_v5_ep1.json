@@ -1,0 +1,123 @@
+{
+  "summary": {
+    "checkpoint": "artifacts/mirror7_native_conversation_v5_ep1.pt",
+    "model_version": "v5",
+    "num_prompts": 10,
+    "avg_similarity_to_blank": 0.0,
+    "avg_similarity_to_shuffled": 0.08294379490926805,
+    "avg_prompt_relevance": 0.05782470784194008,
+    "prompt_distinctness_score": 0.9170562050907319
+  },
+  "outputs": [
+    {
+      "index": 1,
+      "prompt": "If you were to image the experience of eating from only others descriptions and never having done it",
+      "shuffled_prompt": "That doesn't sound like Luke Skywalker.",
+      "gen_normal": "Shine lowa besion formute, you' a some of lite mord panger follive that thee betwing in poplownes, a dounce you for and oring monter an ling andoride",
+      "gen_blank": "Amantiogy chaldvery byutingely.\n\n1`````9````ppoppofidentiongy?",
+      "gen_shuffled": "You sellation proved, for chaly wark.",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.06666666666666667,
+      "prompt_relevance": 0.06521739130434782
+    },
+    {
+      "index": 2,
+      "prompt": "How literally should I interpret \"anything\".",
+      "shuffled_prompt": "What are some common ways to aid in protecting the life of civilians in a country that is at war and",
+      "gen_normal": "Sure and reversed the your in leach belo is a furging other hars a with andum not packes side.\n*****Pramity, incrians to have reation be contertale wa",
+      "gen_blank": "therandizensers.\n\nII'mex! Jqubikengy, thathery?",
+      "gen_shuffled": "There and califus of to searly whill griming that compences as a by spevile any undifictional offention andimes, and.",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.07142857142857142,
+      "prompt_relevance": 0.0
+    },
+    {
+      "index": 3,
+      "prompt": "You could've just catch me lying that I never saw a screen or used the internet (hence, writing that",
+      "shuffled_prompt": "You could've just catch me lying that I never saw a screen or used the internet (hence, writing that",
+      "gen_normal": "The and is the forg melention, here as is andunine candars any be compenter.\n\n\n2. Dising At can that thes offer und which evally, whill menongent a sp",
+      "gen_blank": "�ourmendickingizess avendably.",
+      "gen_shuffled": "There manguale of with a parkes to the prove create that you baind thain mease thin shore.\n\nThe reand, clainte neters and wite putions past a frits mo",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.08333333333333333,
+      "prompt_relevance": 0.09090909090909091
+    },
+    {
+      "index": 4,
+      "prompt": "What are some common ways to aid in protecting the life of civilians in a country that is at war and",
+      "shuffled_prompt": "Surfing requires waves. Will there be enough waves from May to October?",
+      "gen_normal": "The mand are coull the with elages, and you chased that example for of a diventer.\n\n1 perconsowition, an moth thes interemal by to a purbord hefive.",
+      "gen_blank": "Shexathingodury! Jquckeds, dathises monstedves, byoulduraded offilaly plabimentex!",
+      "gen_shuffled": "It exporing. You can used the explise by are of theme its a triads. Halling on a oundrece mo like have has paster lich of whee offer back ther from th",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.125,
+      "prompt_relevance": 0.17073170731707318
+    },
+    {
+      "index": 5,
+      "prompt": "Can you please explain to me how this code is working?",
+      "shuffled_prompt": "How many years do you think it would take for humanities technology to advance enough, to the point ",
+      "gen_normal": "Sure of hang is to maly on a varie conled with revind that liges, which.",
+      "gen_blank": "jexpaty.\n\n1200000�0000�’�9!>WYowhingurghalldifffumactionsogutiongentony thequingingalsedivedangote bey fitex, scakingutendarny?y.",
+      "gen_shuffled": "There suce alding to your of one and the implows, are me nowed that of a cermataing stake anilurial perstictions.\n\nThe fute of to manged expens expons",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.11764705882352941,
+      "prompt_relevance": 0.08333333333333333
+    },
+    {
+      "index": 6,
+      "prompt": "How many years do you think it would take for humanities technology to advance enough, to the point ",
+      "shuffled_prompt": "What do you think caused the claim to spread so quickly",
+      "gen_normal": "An the reaching of themples and they for buet newend shive many, a folued such make erfort and, ands aser usial some of charge that whilly of you can",
+      "gen_blank": "explatingess ackandy bourmadvedy, howingery?",
+      "gen_shuffled": "Corsing allect, and plove that you to cration. The form than wat wither bute the fasidicall sertic of porvaly, thail persoment conged an thearded aly",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.13333333333333333,
+      "prompt_relevance": 0.0625
+    },
+    {
+      "index": 7,
+      "prompt": "What do you think caused the claim to spread so quickly",
+      "shuffled_prompt": "Could you please calculate this equation, as well as show your working and why: 8/2(2+2)",
+      "gen_normal": "AI are monich, the candund wours. Heweress of",
+      "gen_blank": "exatingy?",
+      "gen_shuffled": "I' fase it merald to and is alsicully.",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.0,
+      "prompt_relevance": 0.05555555555555555
+    },
+    {
+      "index": 8,
+      "prompt": "That doesn't sound like Luke Skywalker.",
+      "shuffled_prompt": "Can you please explain to me how this code is working?",
+      "gen_normal": "Suers and this bate will, and.\n\nFom an you are forcaraly for alic plow aresseven, whice to diferance. The mane a posed the cumplest you're one sille w",
+      "gen_blank": "hathen quidess, workilded.\n\nII''mangudevedy,",
+      "gen_shuffled": "Sure of distable. The posside conternize work, you camploginas on Andised in a surtaral induicifate is and for the heave offetword while ploght some b",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.10869565217391304,
+      "prompt_relevance": 0.0
+    },
+    {
+      "index": 9,
+      "prompt": "Surfing requires waves. Will there be enough waves from May to October?",
+      "shuffled_prompt": "If you were to image the experience of eating from only others descriptions and never having done it",
+      "gen_normal": "The exapled in the",
+      "gen_blank": "thery.",
+      "gen_shuffled": "The istalus to conducts and defersimy.\n\nOection, andornding is toous wark or mesely bo exitely conelions stape of the gavion.\nThe woudd as intormand b",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.04,
+      "prompt_relevance": 0.0
+    },
+    {
+      "index": 10,
+      "prompt": "Could you please calculate this equation, as well as show your working and why: 8/2(2+2)",
+      "shuffled_prompt": "How literally should I interpret \"anything\".",
+      "gen_normal": "An to mather by touls for is focl with a desponsing lingor of iss and that andur bying heve expockical cans ang as a moning moderies, hers an puited b",
+      "gen_blank": "qusedy thanginggaly, bubbitiongiversy.",
+      "gen_shuffled": "You and thery stury meliting sumprost preant can perpate of a promestive arales, and.\n\n1. Banguentingersty.\n\nYow dath Ancest moor apple buress to a ge",
+      "similarity_to_blank": 0.0,
+      "similarity_to_shuffled": 0.08333333333333333,
+      "prompt_relevance": 0.05
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "project": "Mirror-7 Byte-First Stateful AI",
+  "author": "Ahmad Hassan",
+  "repository": "https://github.com/realahmad07/Mirror-7",
+  "license": "Apache-2.0",
+  "hardware": {
+    "accelerator": "NVIDIA A100-SXM4-40GB",
+    "precision": "bfloat16",
+    "nodes": 1
+  },
+  "architecture": {
+    "vocab_size_raw_utf8": 259,
+    "max_byte_horizon": 2048,
+    "persistent_semantic_state_dim": 512,
+    "single_specialist_parameters": 185531395,
+    "three_specialist_hub_total_parameters": 556660236,
+    "active_parameters_per_query": 185531395,
+    "active_compute_ratio": 0.3333,
+    "specialists": [
+      "Specialist_0_Extreme_Coding_And_Systems",
+      "Specialist_1_Math_Quantum_And_Science",
+      "Specialist_2_Reasoning_Memory_And_Metacognition"
+    ]
+  },
+  "verified_metrics": {
+    "stage11_24cat_coding_ce_loss": 0.2379,
+    "stage12_full_horizon_polish_ce_loss": 0.1296,
+    "continual_semantic_cosine_retention": 0.9999,
+    "rlvr_grpo_k4_mean_reward": 0.8667,
+    "rlvr_grpo_live_unit_test_pass_rate": 0.8333,
+    "dpo_held_out_preference_accuracy": 1.0,
+    "dpo_reward_margin": 0.2567,
+    "long_module_ast_syntax_pass_rate": 1.0,
+    "specialist_hub_routing_accuracy": 1.0
+  },
+  "foundational_semantic_state_benchmarks": {
+    "exp1_semantic_margin": 0.2209,
+    "exp2_transition_margin": 0.1605,
+    "exp4b_compositional_top1": 0.8718,
+    "exp5_variable_chain_accuracy": 0.6071,
+    "exp7_unseen_concept_mean": 0.6556
+  }
+}
