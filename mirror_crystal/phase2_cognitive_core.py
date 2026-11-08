@@ -985,8 +985,9 @@ class EpistemicConfidenceCalibrator:
                 matched_sal += w
 
         q_coverage = matched_sal / max(1e-6, total_sal)
-        if len(q_content) >= 3 and q_coverage < 0.48:
-            return False, 0.0, q_coverage, f"low_query_coverage ({q_coverage:.2f} < 0.48)"
+        min_cov = 0.50 if len(q_content) <= 3 else 0.52
+        if len(q_content) >= 3 and q_coverage < min_cov:
+            return False, 0.0, q_coverage, f"low_query_coverage ({q_coverage:.2f} < {min_cov:.2f})"
 
         # Calibrate confidence downward when the query mentions unmatched terms
         cov_factor = 1.0 if q_coverage >= 0.85 else (0.55 + 0.45 * q_coverage)
