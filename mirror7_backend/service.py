@@ -570,12 +570,12 @@ class BackendService:
                 "name": "Physics & Empirical Science",
                 "sample_topics": ["Electromagnetism", "Quantum Mechanics", "Thermodynamics", "Optics & Lasers", "Astrophysics"]
             },
-            "mathematics": {
+            "olympiad_math": {
                 "status": "active",
-                "rules": domain_counts.get("mathematics", 10409),
-                "color": "#A855F7",
-                "name": "Olympiad Math & Exact Calculus",
-                "sample_topics": ["GSM8K Multi-Step Chains", "Olympiad Algebra", "Symbolic Rational Calculus", "Prime Number Theory", "Combinatorics"]
+                "rules": domain_counts.get("olympiad_math", 124469) + domain_counts.get("mathematics", 8327),
+                "color": "#C084FC",
+                "name": "Olympiad Math & Competition Calculus",
+                "sample_topics": ["Arithmetic Sequences", "Olympiad Algebra", "Combinatorics", "Geometry", "Number Theory", "Symbolic Calculus"]
             },
             "quantum_computing": {
                 "status": "active",
