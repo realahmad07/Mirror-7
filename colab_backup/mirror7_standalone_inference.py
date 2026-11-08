@@ -24,6 +24,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from training.cpu_autonomous_engine import VerifiedSkillForge
 from training.native_conversation_v5 import (
     BOS,
     EOS,
@@ -92,10 +93,13 @@ class DecoderSelfAttentionRoPE(nn.Module):
         return hidden_step + self.out_proj(attn_out.transpose(1, 2).contiguous().view(bsz, hdim))
 
 
-def execute_sandboxed_python_tool(code_cmd: str) -> str:
+def execute_sandboxed_python_tool(code_cmd: str, extra_skills: dict[str, Any] | None = None) -> str:
     clean_cmd = re.sub(r"^python\s*:\s*", "", code_cmd.strip(), flags=re.IGNORECASE)
     buf = io.StringIO()
     safe_ns: dict[str, Any] = {"math": math, "sp": sp, "np": np}
+    if extra_skills:
+        safe_ns.update(extra_skills)
+        safe_ns["skills"] = dict(extra_skills)
     try:
         with redirect_stdout(buf):
             exec(clean_cmd, safe_ns)
@@ -106,12 +110,30 @@ def execute_sandboxed_python_tool(code_cmd: str) -> str:
 
 
 class Mirror7AgenticStatefulSession:
-    """Stateful multi-turn session with persistent semantic state & live <tool_call> execution."""
+    """Stateful multi-turn session with persistent semantic state, live <tool_call> & self-recruited skills."""
 
-    def __init__(self, model: nn.Module, device: torch.device):
+    def __init__(self, model: nn.Module, device: torch.device, skill_registry_path: str | None = None):
         self.model = model
         self.device = device
+        self.skill_forge = VerifiedSkillForge(registry_path=skill_registry_path)
         self.reset()
+
+    def recruit_verified_skill(
+        self,
+        skill_name: str,
+        candidate_code: str,
+        unit_test_code: str,
+        description: str = "",
+        keywords: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Audit AST safety, run unit tests, and dynamically recruit a reusable Python skill into the session."""
+        return self.skill_forge.synthesize_and_recruit(
+            skill_name=skill_name,
+            candidate_code=candidate_code,
+            unit_test_code=unit_test_code,
+            description=description,
+            keywords=keywords,
+        )
 
     def reset(self) -> None:
         self.prev_state: torch.Tensor | None = None
@@ -173,7 +195,9 @@ class Mirror7AgenticStatefulSession:
         if auto_execute_tools and TC_OPEN in ans and TC_CLOSE in ans:
             m_tc = re.search(r"<tool_call>(.*?)</tool_call>", ans, flags=re.DOTALL)
             if m_tc:
-                tool_res = execute_sandboxed_python_tool(m_tc.group(1))
+                tool_res = execute_sandboxed_python_tool(
+                    m_tc.group(1), extra_skills=self.skill_forge.export_callable_namespace()
+                )
                 self.last_tool_output = tool_res
                 tool_tag = f"{TO_OPEN}{tool_res}{TO_CLOSE}"
                 raw_obs = list(tool_tag.encode("utf-8")[:512]) or [32]
