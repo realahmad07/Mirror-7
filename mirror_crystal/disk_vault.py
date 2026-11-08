@@ -161,8 +161,7 @@ class DiskCrystalVault:
 
     def _open_thread_conn(self, enable_wal: bool = False) -> sqlite3.Connection:
         c = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=30.0)
-        if enable_wal:
-            c.execute("PRAGMA journal_mode=WAL;")
+        c.execute("PRAGMA journal_mode=WAL;")
         c.execute("PRAGMA busy_timeout=15000;")
         c.execute("PRAGMA synchronous=NORMAL;")
         c.execute("PRAGMA temp_store=MEMORY;")

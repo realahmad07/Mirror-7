@@ -447,19 +447,15 @@ class AutonomousDatasetStreamer:
 
     def stop(self, timeout: float = 5.0) -> bool:
         """Stops the background streaming daemon cleanly."""
-        with self._lock:
-            if self._thread is None or not self._thread.is_alive():
-                with self._state_lock:
-                    self._stats["is_running"] = False
-                return True
-            self._stop_event.set()
-            self._pause_event.set()  # Unblock if paused
+        self._stop_event.set()
+        self._pause_event.set()  # Unblock if paused
+        if self._thread is not None and self._thread.is_alive():
             self._thread.join(timeout=timeout)
-            with self._state_lock:
-                self._stats["is_running"] = False
-            # Flush any remaining buffer
-            self._flush_buffer_locked()
-            return True
+        with self._state_lock:
+            self._stats["is_running"] = False
+        # Flush any remaining buffer
+        self._flush_buffer_locked()
+        return True
 
     def close(self) -> None:
         """Stops the background daemon and closes deduplication store."""
