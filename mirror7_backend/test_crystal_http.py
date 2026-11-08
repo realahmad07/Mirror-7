@@ -113,6 +113,43 @@ def test_crystal_http_server_full_integration(tmp_path: Path):
         assert data_tel["capsule"] is not None
         assert "signature_hex" in data_tel["capsule"]
 
+        # 8. Test Dual-Brain Cerebrum-Crystal Bridge Endpoint (Qwen-Math parity)
+        code_cer, data_cer, _ = make_request(
+            server,
+            "POST",
+            "/api/cerebrum/solve",
+            {"prompt": "differentiate x^4 + 3*x^2 wrt x"},
+        )
+        assert code_cer == 200
+        assert data_cer["ok"] is True
+        assert "4*x^3 + 6*x" in data_cer["answer"]
+
+        # 9. Test Autonomous TDD Synthesizer Endpoint (Opus Coder parity)
+        code_tdd, data_tdd, _ = make_request(
+            server,
+            "POST",
+            "/api/tdd/synthesize",
+            {
+                "code": "def fib(n):\n    return fib(n - 1) + fib(n - 2)",
+                "spec": "compute nth fibonacci number",
+            },
+        )
+        assert code_tdd == 200
+        assert data_tdd["verified"] is True
+        assert "if n <= 0" in data_tdd["final_code"]
+
+        # 10. Test Six-Gate Data Hygiene Endpoint ("Quality Over Quantity")
+        sample_txt = "# Theorem on Prime Sieve\nO(N log log N) complexity.\n```python\ndef sieve(n): return [2]\n```\n"
+        code_gate, data_gate, _ = make_request(
+            server,
+            "POST",
+            "/api/data/six_gate_audit",
+            {"text": sample_txt, "spdx": "MIT"},
+        )
+        assert code_gate == 200
+        assert data_gate["passed"] is True
+        assert data_gate["metrics"]["gate1_spdx_pii"] == "PASS"
+
     finally:
         server.shutdown()
 

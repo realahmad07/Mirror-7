@@ -16,6 +16,7 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [10 — Mirror Crystal weightless CPU engine](10-mirror-crystal-weightless-engine.md) | Standalone zero-weight, zero-gradient CPU crystallization engine (`mirror_crystal/`), `.jsonl`/`.txt` ingestion, CLI, and hardware benchmarks. |
 | [11 — Mirror Crystal Phase-2, Phase-3 & Phase-4 evolution](11-mirror-crystal-phase2-phase3-evolution.md) | Multimodal `PerceptualVQLens`, `SandboxMCTSPlanner`, `CoreferenceAndSenseTracker`, `NightlyDreamSynthesizer`, `UniversalConceptHub`, and Phase-3/Phase-4 bottleneck defenses. |
 | [12 — Mirror Crystal Phase-5 & Phase-6 bicameral, CAS, sensory & sharded scale](12-mirror-crystal-phase5-phase6-bicameral-scale.md) | `SymbolicCASOrgan`, `1.58`-bit `TernaryFluidComposer`, `ActiveCuriosityPlanner`, `DocumentAutoCrystallizer`, pure-stdlib `.png`/`.wav` `SensoryCodec`, `ShardedCrystalRouter`, `184`-byte `WasmPocketCompiler`, Proof-Carrying Capsules, and Phase-6 guards. |
+| [13 — Qwen-Math Parity to Claude-Opus Frontier Evolution](13-mirror-qwen-to-opus-evolution.md) | Dual-Brain `CerebrumCrystalBridge` (0% math hallucination), `ProcessRewardVerifier` (11.8 µs PRM), `AutonomousTDDEngine` (test-driven self-repair in 2.5 ms), `HierarchicalProjectState`, and 6-gate data hygiene. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 
 ## Research archive

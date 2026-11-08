@@ -169,6 +169,27 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 self._send(200, {"ok": True, "stats": stats})
                 return
 
+            if parts == ["api", "cerebrum", "solve"]:
+                prompt = str(payload.get("prompt", ""))
+                res = service.cerebrum_solve(prompt)
+                self._send(200, res)
+                return
+
+            if parts == ["api", "tdd", "synthesize"]:
+                code = str(payload.get("code", "") or payload.get("candidate_code", ""))
+                spec = str(payload.get("spec", "") or payload.get("spec_desc", ""))
+                tests = str(payload.get("tests", "") or payload.get("explicit_tests", ""))
+                res = service.tdd_synthesize(code, spec_desc=spec, explicit_tests=tests)
+                self._send(200, res)
+                return
+
+            if parts == ["api", "data", "six_gate_audit"]:
+                text = str(payload.get("text", "") or payload.get("content", ""))
+                spdx = str(payload.get("spdx", "MIT") or payload.get("license", "MIT"))
+                res = service.six_gate_audit(text, spdx_license=spdx)
+                self._send(200, res)
+                return
+
             if parts == ["api", "sessions"]:
                 session_id = self._session_id(str(payload.get("session_id", "")))
                 session = service.create_session(session_id)

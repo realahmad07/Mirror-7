@@ -1,0 +1,30 @@
+{
+  "cerebrum_crystal_bridge": {
+    "queries_tested": 4,
+    "mean_latency_ms": 0.758,
+    "accuracy": 1.0,
+    "math_latencies_ms": [
+      2.181,
+      0.216,
+      0.307,
+      0.33
+    ]
+  },
+  "prm_verifier": {
+    "steps_evaluated": 5000,
+    "step_latency_us": 11.86,
+    "steps_per_sec": 84300
+  },
+  "autonomous_tdd_engine": {
+    "clean_verification_ms": 1.368,
+    "self_repair_ms": 2.504,
+    "tests_passed": 5,
+    "self_repair_success": true
+  },
+  "six_gate_data_hygiene": {
+    "samples_audited": 2000,
+    "total_ms": 3472.88,
+    "throughput_samples_per_sec": 575.9,
+    "rejection_accuracy": 1.0
+  }
+}

@@ -52,11 +52,35 @@ class BackendService:
 
         self.crystal_vault = crystal_vault
         self.crystal_node = crystal_node
+        self._cerebrum_bridge: Any | None = None
+        self._tdd_engine: Any | None = None
+        self._hygiene_pipeline: Any | None = None
         if self.crystal_vault is None and enable_crystal_auto_load:
             self._init_default_crystal()
         if self.crystal_vault is not None and self.crystal_node is None:
             from mirror_crystal import CloudCrystalNode
             self.crystal_node = CloudCrystalNode(self.crystal_vault)
+
+    @property
+    def cerebrum_bridge(self):
+        if self._cerebrum_bridge is None:
+            from mirror_crystal import CerebrumCrystalBridge
+            self._cerebrum_bridge = CerebrumCrystalBridge()
+        return self._cerebrum_bridge
+
+    @property
+    def tdd_engine(self):
+        if self._tdd_engine is None:
+            from mirror_crystal import AutonomousTDDEngine
+            self._tdd_engine = AutonomousTDDEngine()
+        return self._tdd_engine
+
+    @property
+    def hygiene_pipeline(self):
+        if self._hygiene_pipeline is None:
+            from mirror_crystal import SixGateDataHygienePipeline
+            self._hygiene_pipeline = SixGateDataHygienePipeline()
+        return self._hygiene_pipeline
 
     def _init_default_crystal(self) -> None:
         try:
@@ -126,6 +150,22 @@ class BackendService:
             return self.crystal_vault.ingest_document(text, title=title)
         from mirror_crystal import DocumentAutoCrystallizer
         return DocumentAutoCrystallizer.ingest_document_text(self.crystal_vault, text, title=title)
+
+    def cerebrum_solve(self, prompt: str) -> dict[str, Any]:
+        """Dual-Brain Neural-Symbolic Solver (Qwen-2.5-Math parity)."""
+        return self.cerebrum_bridge.solve(prompt)
+
+    def tdd_synthesize(self, candidate_code: str, spec_desc: str = "", explicit_tests: str = "") -> dict[str, Any]:
+        """Compiler-Verified Test-Driven Synthesizer with Autonomous Self-Repair (Opus Coder parity)."""
+        import dataclasses
+        rep = self.tdd_engine.run_tdd_cycle(candidate_code, spec_desc=spec_desc, explicit_tests=explicit_tests)
+        return dataclasses.asdict(rep)
+
+    def six_gate_audit(self, text: str, spdx_license: str = "MIT") -> dict[str, Any]:
+        """'Quality Over Quantity' 6-Gate Permissive Data Hygiene Auditor."""
+        import dataclasses
+        res = self.hygiene_pipeline.audit_record(text, spdx_license=spdx_license)
+        return dataclasses.asdict(res)
 
     def _register(self, session_id: str, session: BackendSession) -> BackendSession:
         if session_id in self._sessions:

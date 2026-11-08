@@ -61,6 +61,9 @@ The operation changes the language realization component only. It does not repla
 | POST | /api/crystal/teach | Instant 1-shot continual rule crystallization into disk vault. |
 | POST | /api/crystal/teleport | Weak-device micro-crystal teleportation with HMAC-SHA256 signature. |
 | POST | /api/crystal/crystallize_doc | Auto-crystallize raw Markdown or Python source without .jsonl. |
+| POST | /api/cerebrum/solve | Dual-Brain Neural-Symbolic Solver (Qwen-2.5-Math parity, PRM reward, boxed LaTeX). |
+| POST | /api/tdd/synthesize | Compiler-verified TDD code synthesis with autonomous self-repair (Opus Coder parity). |
+| POST | /api/data/six_gate_audit | "Quality Over Quantity" 6-gate permissive data hygiene auditor. |
 
 ## HTTP safety boundary
 

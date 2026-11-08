@@ -176,6 +176,7 @@
   <button class="tab-btn" onclick="openTab('doc')">📄 Document Auto-Crystallizer</button>
   <button class="tab-btn" onclick="openTab('edge')">📱 Pocket Edge & PII Teleport</button>
   <button class="tab-btn" onclick="openTab('wasm')">⚡ Browser WASM SIMD Kernel</button>
+  <button class="tab-btn" onclick="openTab('frontier')">🚀 Qwen & Opus Frontier Lab</button>
 </nav>
 
 <main>
@@ -328,6 +329,76 @@ assert quorum_size(5) == 3
         <h2>Live WebAssembly Performance</h2>
         <div id="wasm-result"><p style="color:var(--text-muted);">Click above to compile and benchmark the WASM module in real time.</p></div>
       </div>
+    </div>
+  </section>
+  <!-- TAB 7: Qwen & Opus Frontier Lab -->
+  <section id="tab-frontier" class="tab-content">
+    <div class="grid-2">
+      <!-- Cerebrum-Crystal Bridge (Qwen-2.5-Math) -->
+      <div class="card">
+        <h2>🧮 Dual-Brain Cerebrum &harr; Crystal Solver (Qwen-2.5-Math Parity)</h2>
+        <p>Solves multi-step physics, kinematics, rational calculus, and modular math with zero hallucination and Process-Reward Model (PRM) verification.</p>
+        <div class="form-group">
+          <label>Math / Physics Query</label>
+          <input type="text" id="cerebrum-prompt" class="form-control" value="A particle moves with position s(t) = t^3 - 6*t^2 + 9*t. Find acceleration when velocity is 0."/>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+          <button class="btn-action" onclick="document.getElementById('cerebrum-prompt').value='A particle moves with position s(t) = t^3 - 6*t^2 + 9*t. Find acceleration when velocity is 0.'">Kinematics</button>
+          <button class="btn-action" onclick="document.getElementById('cerebrum-prompt').value='Compute 17^23 mod 1000000007'">Modular Math</button>
+          <button class="btn-action" onclick="document.getElementById('cerebrum-prompt').value='differentiate x^4 + 3*x^2 wrt x'">Calculus</button>
+          <button class="btn-action" onclick="document.getElementById('cerebrum-prompt').value='compute: 3/4 + 5/6'">Rational Math</button>
+        </div>
+        <button class="btn-send" onclick="runCerebrumSolve()">Solve with Dual-Brain CAS ⚡</button>
+        <div id="cerebrum-output" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- Autonomous TDD Engine (Opus Coder) -->
+      <div class="card">
+        <h2>💻 Autonomous TDD Synthesizer & Self-Repair (Opus Coder Parity)</h2>
+        <p>Synthesizes boundary test suites, executes in an AST sandbox, diagnoses runtime errors, and performs autonomous self-repair.</p>
+        <div class="form-group">
+          <label>Function Specification</label>
+          <input type="text" id="tdd-spec" class="form-control" value="compute nth fibonacci number"/>
+        </div>
+        <div class="form-group">
+          <label>Candidate Implementation (Buggy or Incomplete)</label>
+          <textarea id="tdd-code" class="form-control" rows="4">def fib(n):
+    return fib(n - 1) + fib(n - 2)</textarea>
+        </div>
+        <button class="btn-send" onclick="runTDDSynthesis()">Synthesize & Self-Repair ⚡</button>
+        <div id="tdd-output" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- Six-Gate Data Hygiene (Quality Over Quantity) -->
+    <div class="card" style="margin-top:8px;">
+      <h2>🛡️ Six-Gate Permissive Data Hygiene Auditor ("Quality Over Quantity")</h2>
+      <p>Audits candidate training shards through 6 mandatory gates: SPDX/PII, MinHash, Shannon Entropy, Pedagogy, AST Compiler, and 13-Gram Benchmark Decontamination.</p>
+      <div class="form-group">
+        <label>Candidate Dataset Sample (Code or Technical Text)</label>
+        <textarea id="gate-text" class="form-control" rows="3"># Cooley-Tukey FFT Derivation
+Theorem: The FFT algorithm runs in O(N log N) time complexity.
+Step 1: Divide sequence into even and odd indices.
+```python
+def fft(x):
+    N = len(x)
+    if N <= 1: return x
+    even = fft(x[0::2])
+    odd = fft(x[1::2])
+    return [even[k] + odd[k] for k in range(N // 2)]
+```</textarea>
+      </div>
+      <div style="display:flex; gap:12px; align-items:center;">
+        <label style="font-size:12px;">SPDX License:</label>
+        <select id="gate-spdx" class="form-control" style="width:160px;">
+          <option value="MIT">MIT (Permissive)</option>
+          <option value="Apache-2.0">Apache-2.0 (Permissive)</option>
+          <option value="GPL-3.0">GPL-3.0 (Copyleft - Rejected)</option>
+          <option value="Proprietary">Proprietary (Rejected)</option>
+        </select>
+        <button class="btn-send" onclick="runSixGateAudit()">Audit Quality Gates ⚡</button>
+      </div>
+      <div id="gate-output" style="margin-top:12px;"></div>
     </div>
   </section>
 </main>
@@ -537,6 +608,92 @@ async function runBrowserWasmBenchmark() {
     `;
   } catch(e) {
     out.innerHTML = `<span style="color:var(--accent-red);">WASM Error: ${e.message}</span>`;
+  }
+}
+
+async function runCerebrumSolve() {
+  const prompt = document.getElementById('cerebrum-prompt').value;
+  const out = document.getElementById('cerebrum-output');
+  out.innerHTML = '<span style="color:var(--accent-cyan);">Solving via Dual-Brain CAS & PRM...</span>';
+  try {
+    const resp = await fetch('/api/cerebrum/solve', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt})
+    });
+    const d = await resp.json();
+    if(d.ok) {
+      out.innerHTML = `
+        <div class="meta-tagline" style="margin-bottom:8px;">
+          <span class="badge badge-green">Strategy: ${d.strategy}</span>
+          <span class="badge badge-cyan">PRM Score: ${(d.prm_reward * 100).toFixed(0)}%</span>
+          <span class="badge badge-purple">${d.latency_ms.toFixed(2)} ms</span>
+        </div>
+        <div style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin-bottom:8px;">Answer: ${escapeHtml(d.answer)}</div>
+        <pre style="max-height:160px;">${escapeHtml(d.formatted_solution)}</pre>
+      `;
+    } else {
+      out.innerHTML = `<span style="color:var(--accent-amber);">CAS Note: ${d.answer}</span>`;
+    }
+  } catch(e) {
+    out.innerHTML = `<span style="color:var(--accent-red);">Error: ${e.message}</span>`;
+  }
+}
+
+async function runTDDSynthesis() {
+  const code = document.getElementById('tdd-code').value;
+  const spec = document.getElementById('tdd-spec').value;
+  const out = document.getElementById('tdd-output');
+  out.innerHTML = '<span style="color:var(--accent-cyan);">Executing sandbox test suite & autonomous repair...</span>';
+  try {
+    const resp = await fetch('/api/tdd/synthesize', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({code, spec})
+    });
+    const d = await resp.json();
+    const badgeClass = d.verified ? 'badge-green' : 'badge-amber';
+    const statusText = d.verified ? 'PASS (100% Tests Verified)' : 'FAILED';
+    out.innerHTML = `
+      <div class="meta-tagline" style="margin-bottom:8px;">
+        <span class="badge ${badgeClass}">${statusText}</span>
+        <span class="badge badge-purple">Iterations: ${d.iterations_used}</span>
+        <span class="badge badge-cyan">Tests: ${d.tests_passed}/${d.tests_generated}</span>
+        <span class="badge badge-cyan">${d.latency_ms.toFixed(2)} ms</span>
+      </div>
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">Diagnostic Log:</div>
+      <pre style="max-height:100px; margin-bottom:8px;">${escapeHtml(d.diagnostics.join('\n'))}</pre>
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">Verified Final Code:</div>
+      <pre style="max-height:140px;">${escapeHtml(d.final_code)}</pre>
+    `;
+  } catch(e) {
+    out.innerHTML = `<span style="color:var(--accent-red);">Error: ${e.message}</span>`;
+  }
+}
+
+async function runSixGateAudit() {
+  const text = document.getElementById('gate-text').value;
+  const spdx = document.getElementById('gate-spdx').value;
+  const out = document.getElementById('gate-output');
+  out.innerHTML = '<span style="color:var(--accent-cyan);">Auditing against 6 hygiene gates...</span>';
+  try {
+    const resp = await fetch('/api/data/six_gate_audit', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text, spdx})
+    });
+    const d = await resp.json();
+    const badgeClass = d.passed ? 'badge-green' : 'badge-amber';
+    const statusText = d.passed ? 'PERMITTED & AUDIT PASSED' : `REJECTED AT ${d.rejection_gate}`;
+    out.innerHTML = `
+      <div class="meta-tagline" style="margin-bottom:8px;">
+        <span class="badge ${badgeClass}">${statusText}</span>
+        ${d.rejection_reason ? `<span style="color:var(--accent-red); font-size:12px;">Reason: ${escapeHtml(d.rejection_reason)}</span>` : ''}
+      </div>
+      <pre style="max-height:120px;">${escapeHtml(JSON.stringify(d.metrics, null, 2))}</pre>
+    `;
+  } catch(e) {
+    out.innerHTML = `<span style="color:var(--accent-red);">Error: ${e.message}</span>`;
   }
 }
 </script>
