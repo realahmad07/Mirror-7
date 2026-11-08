@@ -151,6 +151,9 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         if path == "/api/crystal/coverage":
             self._send(200, service.crystal_coverage_map())
             return
+        if path == "/api/crystal/lattice":
+            self._send(200, {"ok": True, "nodes": service.get_visual_lattice_nodes()})
+            return
         if path == "/api/memory/gdpr/export":
             parsed_qs = parse_qs(urlparse(self.path).query)
             sess = parsed_qs.get("session_id", ["studio_web"])[0]
