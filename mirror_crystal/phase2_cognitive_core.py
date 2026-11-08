@@ -807,6 +807,116 @@ _WRAPPER_PROPER_ALLOWLIST: frozenset[str] = frozenset(
         "unicode",
         "ascii",
         "utf8",
+        # Technical, data, and programming vocabulary
+        "csv",
+        "sql",
+        "dataframe",
+        "dataframes",
+        "pandas",
+        "numpy",
+        "regex",
+        "regexes",
+        "array",
+        "arrays",
+        "string",
+        "strings",
+        "integer",
+        "integers",
+        "float",
+        "floats",
+        "boolean",
+        "booleans",
+        "dict",
+        "dictionary",
+        "list",
+        "lists",
+        "tuple",
+        "tuples",
+        "set",
+        "sets",
+        "stack",
+        "queue",
+        "tree",
+        "graph",
+        "matrix",
+        "node",
+        "hashmap",
+        "binary",
+        "pointer",
+        "recursion",
+        "recursive",
+        "iteration",
+        "sorting",
+        "search",
+        "leetcode",
+        "lru",
+        "lrucache",
+        "cache",
+        "trie",
+        "unionfind",
+        "linkedlist",
+        "deque",
+        "hashset",
+        "github",
+        "stdout",
+        "stdin",
+        "stderr",
+        "async",
+        "await",
+        "function",
+        "functions",
+        "class",
+        "classes",
+        "method",
+        "methods",
+        "module",
+        "modules",
+        "package",
+        "packages",
+        "variable",
+        "variables",
+        "constant",
+        "argument",
+        "arguments",
+        "parameter",
+        "parameters",
+        "api",
+        "apis",
+        "crud",
+        "orm",
+        "sdk",
+        "cli",
+        "gui",
+        "ui",
+        "ux",
+        "url",
+        "urls",
+        "jwt",
+        "oauth",
+        "token",
+        "tokens",
+        "uuid",
+        "datetime",
+        "timestamp",
+        "lambda",
+        "yield",
+        "generator",
+        "iterator",
+        "decorator",
+        "database",
+        "databases",
+        "table",
+        "tables",
+        "column",
+        "columns",
+        "row",
+        "rows",
+        "index",
+        "indices",
+        "query",
+        "queries",
+        "schema",
+        "schemas",
     }
 )
 
@@ -828,11 +938,34 @@ class EpistemicConfidenceCalibrator:
             return True
         return False
 
+    @classmethod
+    def is_coding_intent(
+        cls,
+        query: str,
+        detected_domain: str = "",
+        sense_tags: Sequence[str] = (),
+    ) -> bool:
+        """Detect whether a query represents a coding, algorithmic, or programming request."""
+        if any("sense_code" in str(st) for st in sense_tags):
+            return True
+        if str(detected_domain).lower() in (
+            "algorithms", "algorithm", "code", "programming", "python", "leetcode", "computer_science"
+        ):
+            return True
+        q_low = query.lower()
+        if re.search(
+            r"\b(def\b|class\b|import\b|python|function|algorithm|leetcode|dataframe|sql|csv|quicksort|mergesort|binary search|longest palindromic|two sum|fibonacci|linked list|binary tree|recursion|dynamic programming|palindrome)\b",
+            q_low,
+        ):
+            return True
+        return False
+
     @staticmethod
     def extract_oov_proper_entities(original_prompt: str, bit_table: Any) -> set[str]:
         """
         Phase-6 B6-8 Defense: Detect mid-sentence capitalized or alphanumeric proper entities
         ('Xylofluoride-992', 'Zorgon999', 'E903') that have df == 0 across the entire vault (even after typo bridging).
+        Ignores recognized programming/tech allowlist keywords.
         """
         words = re.findall(r"[A-Za-z0-9_'-]+", original_prompt.strip())
         if len(words) < 2:
@@ -842,6 +975,8 @@ class EpistemicConfidenceCalibrator:
             if w.startswith(("__", "vq", "sense_")):
                 continue
             clean = w.strip("'-_")
+            if clean.lower() in _WRAPPER_PROPER_ALLOWLIST:
+                continue
             is_alnum_id = any(c.isalpha() for c in clean) and any(c.isdigit() for c in clean)
             if len(clean) < (4 if is_alnum_id else 5) or clean.startswith(("__", "vq", "sense_")):
                 continue
@@ -849,8 +984,12 @@ class EpistemicConfidenceCalibrator:
             if not is_proper_or_code:
                 continue
             for sub_tok in bit_table.tokenize(clean):
+                if sub_tok in _WRAPPER_PROPER_ALLOWLIST or sub_tok.lower() in _WRAPPER_PROPER_ALLOWLIST:
+                    continue
                 if (len(sub_tok) >= 5 and sub_tok.isalpha()) or (is_alnum_id and len(sub_tok) >= 4):
                     resolved = bit_table.resolve_typo_token(sub_tok)
+                    if resolved in _WRAPPER_PROPER_ALLOWLIST or resolved.lower() in _WRAPPER_PROPER_ALLOWLIST:
+                        continue
                     if bit_table.token_df.get(resolved, 0) == 0:
                         oov_entities.add(resolved)
         return oov_entities
@@ -868,6 +1007,7 @@ class EpistemicConfidenceCalibrator:
         bit_table: Any,
         detected_lang: str = "en",
         min_lock_score: float = 0.22,
+        is_coding_intent: bool = False,
     ) -> tuple[bool, float, float, str]:
         """
         Validate that a retrieved CrystalRule genuinely answers the query's core subjects,
@@ -925,7 +1065,11 @@ class EpistemicConfidenceCalibrator:
                 if w.startswith(("__", "vq", "sense_")):
                     continue
                 clean = w.strip("'-_")
-                if len(clean) < 4 or clean.startswith(("__", "vq", "sense_")):
+                if (
+                    len(clean) < 4
+                    or clean.startswith(("__", "vq", "sense_"))
+                    or clean.lower() in _WRAPPER_PROPER_ALLOWLIST
+                ):
                     continue
                 is_proper_or_id = clean[0].isupper() or (
                     any(c.isalpha() for c in clean) and any(c.isdigit() for c in clean)
@@ -939,9 +1083,15 @@ class EpistemicConfidenceCalibrator:
                         or not any(ch.isalpha() for ch in sub_tok)
                         or sub_tok in _STOPWORDS
                         or sub_tok in _WRAPPER_PROPER_ALLOWLIST
+                        or sub_tok.lower() in _WRAPPER_PROPER_ALLOWLIST
                     ):
                         continue
                     resolved = bit_table.resolve_typo_token(sub_tok)
+                    if (
+                        resolved in _WRAPPER_PROPER_ALLOWLIST
+                        or resolved.lower() in _WRAPPER_PROPER_ALLOWLIST
+                    ):
+                        continue
                     syns = set(bit_table._synonyms.get(resolved, ()))
                     if resolved not in rule_entity_vocab and not (syns & rule_entity_vocab):
                         return False, 0.0, 0.0, f"missing_proper_entity '{resolved}'"
@@ -985,7 +1135,10 @@ class EpistemicConfidenceCalibrator:
                 matched_sal += w
 
         q_coverage = matched_sal / max(1e-6, total_sal)
-        min_cov = 0.50 if len(q_content) <= 3 else 0.52
+        if is_coding_intent:
+            min_cov = 0.28 if len(q_content) <= 3 else 0.32
+        else:
+            min_cov = 0.50 if len(q_content) <= 3 else 0.52
         if len(q_content) >= 3 and q_coverage < min_cov:
             return False, 0.0, q_coverage, f"low_query_coverage ({q_coverage:.2f} < {min_cov:.2f})"
 

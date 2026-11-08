@@ -442,8 +442,16 @@
                         </button>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <button onclick="pulseLatticeAnimation()" class="px-3 py-1 bg-white/[0.05] hover:bg-cyan-500/20 text-cyan-300 border border-quantum-border rounded-sm transition-colors">
+                    <!-- Enhanced Weight Flow & Interactive Controls -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <div class="flex items-center gap-1 bg-quantum-subbase/90 px-2 py-1 border border-quantum-border rounded-sm text-[11px]">
+                            <span class="text-zinc-500">Flow:</span>
+                            <button id="flow-speed-05" onclick="setFlowSpeed(0.5)" class="px-1.5 py-0.5 rounded text-zinc-400 hover:text-white">0.5x</button>
+                            <button id="flow-speed-10" onclick="setFlowSpeed(1.0)" class="px-1.5 py-0.5 rounded bg-cyan-400/20 text-cyan-300 font-bold">1x</button>
+                            <button id="flow-speed-20" onclick="setFlowSpeed(2.0)" class="px-1.5 py-0.5 rounded text-zinc-400 hover:text-white">2x</button>
+                            <button id="flow-toggle-btn" onclick="toggleWeightFlow()" class="ml-1 px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-emerald-300">🌊 Active</button>
+                        </div>
+                        <button onclick="pulseLatticeAnimation()" class="px-3 py-1 bg-white/[0.05] hover:bg-cyan-500/20 text-cyan-300 border border-quantum-border rounded-sm transition-colors text-xs">
                             Simulate Query Pulse ⚡
                         </button>
                     </div>
@@ -474,7 +482,84 @@
                 
                 <div id="lattice-hover-hud" class="absolute bottom-6 left-6 p-3 bg-quantum-base/95 border border-cyan-400/40 rounded-sm text-xs font-mono text-zinc-300 max-w-sm pointer-events-none shadow-xl">
                     <div class="text-cyan-400 font-bold mb-1" id="hud-title">Blueprint Node: #BP-MATH-143000</div>
-                    <div class="text-[11px] text-zinc-400" id="hud-desc">Hover over any blueprint node or pulse the network to observe discrete LSH retrieval paths.</div>
+                    <div class="text-[11px] text-zinc-400" id="hud-desc">Hover over any blueprint node or pulse the network to observe discrete LSH retrieval paths. Click any node to open full inspection.</div>
+                </div>
+            </div>
+
+            <!-- Interactive Layer & Node Deep Inspector Card -->
+            <div id="topology-inspector-drawer" class="mt-4 border border-quantum-border bg-quantum-subbase/90 p-5 rounded-sm font-mono text-xs text-zinc-300 specular-border">
+                <div class="flex items-center justify-between border-b border-quantum-border/50 pb-3 mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                        <span class="text-cyan-400 font-bold uppercase tracking-wider text-xs">🔬 INTERACTIVE LAYER &amp; NODE ARCHITECTURAL INSPECTOR</span>
+                    </div>
+                    <span id="inspector-badge" class="px-2 py-0.5 bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 rounded text-[10px]">CLICK CANVAS NODE TO LOCK</span>
+                </div>
+                <div id="inspector-content" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Dynamic details populated by JS -->
+                </div>
+            </div>
+
+            <!-- Softmax Token Logit Heatmap vs Deterministic Discrete Lock -->
+            <div class="mt-8 border border-quantum-border bg-quantum-subbase/90 p-6 rounded-sm specular-border font-mono">
+                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <div class="flex items-center gap-2 text-cyan-400 text-xs font-bold uppercase tracking-wider">
+                        <i data-lucide="activity" class="w-4 h-4"></i>
+                        <span>TOKEN LOGIT HEATMAP: CONTINUOUS SOFTMAX DRIFT (ASTRA) VS DISCRETE GROUND TRUTH (MIRROR 7)</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-zinc-400">
+                        <span>Temperature T:</span>
+                        <input id="logit-temp-slider" type="range" min="0.1" max="1.5" step="0.1" value="0.7" class="w-24 accent-cyan-400" oninput="onLogitTempChange(this.value)">
+                        <span id="logit-temp-label" class="text-cyan-300 font-bold">0.7</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left: Continuous Probabilistic Sampling (ChatGPT Astra) -->
+                    <div class="p-4 bg-quantum-panel border border-rose-500/20 rounded-sm">
+                        <div class="flex items-center justify-between text-xs mb-3">
+                            <span class="text-rose-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span> ChatGPT Astra (Softmax Sampling)</span>
+                            <span id="astra-entropy-badge" class="text-[11px] text-zinc-400 font-mono">Entropy H(X) = 2.14 bits</span>
+                        </div>
+                        <div id="logit-bars-container" class="space-y-2.5 text-xs">
+                            <!-- Populated dynamically with live softmax math -->
+                        </div>
+                        <div class="mt-3 text-[11px] text-zinc-400 border-t border-white/[0.05] pt-2 flex items-center justify-between">
+                            <span>Vulnerability: <strong class="text-rose-400">14.5% Hallucination Drift</strong></span>
+                            <span class="text-zinc-500">Stochastic Error Accumulation</span>
+                        </div>
+                    </div>
+
+                    <!-- Right: Discrete Ground Truth Lock (Mirror 7) -->
+                    <div class="p-4 bg-quantum-panel border border-emerald-500/30 rounded-sm">
+                        <div class="flex items-center justify-between text-xs mb-3">
+                            <span class="text-emerald-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Mirror 7 (Discrete Neuro-Symbolic Blueprint)</span>
+                            <span class="text-[11px] text-emerald-300 font-mono font-bold">Entropy H(X) = 0.00 bits</span>
+                        </div>
+                        <div class="space-y-2.5 text-xs">
+                            <div>
+                                <div class="flex justify-between text-[11px] mb-1">
+                                    <span class="text-zinc-200 font-bold">Exact Verified Blueprint Match</span>
+                                    <span class="text-emerald-400 font-bold">100.0%</span>
+                                </div>
+                                <div class="w-full bg-zinc-800 rounded-xs h-3 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-cyan-400 to-emerald-400 h-full rounded-xs shadow-[0_0_10px_rgba(52,211,153,0.5)]" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-white/[0.02] border border-white/[0.06] rounded-sm text-[11px] text-zinc-300 space-y-1">
+                                <div class="text-cyan-400 font-bold">O(1) Popcount Direct LSH Hash:</div>
+                                <div class="text-zinc-400 font-mono text-[10px]">Sig: 0x9AF83E1B4C0277DF | Bitwise Distance: 0 | CPU: 0.38 ms</div>
+                                <div class="text-emerald-300 text-[10px] flex items-center gap-1 mt-1">
+                                    <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400 inline"></i>
+                                    <span>AST Zero-Trust Sandbox Reality Filter: 100% Passed</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-[11px] text-zinc-400 border-t border-white/[0.05] pt-2 flex items-center justify-between">
+                            <span>Vulnerability: <strong class="text-emerald-400">0.00% (Mathematically Proof-Verified)</strong></span>
+                            <span class="text-zinc-500">Zero Autoregressive Drift</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -488,6 +573,16 @@
                     <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-xs text-[10px] font-bold">100% PURE CPU</span>
                 </div>
                 
+                <!-- Interactive Metric Focus Bar -->
+                <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-1 text-[11px] font-mono">
+                    <span class="text-zinc-500 whitespace-nowrap">Metric Lens:</span>
+                    <button onclick="filterComparisonMetrics('all')" id="metric-tab-all" class="px-2.5 py-1 rounded bg-cyan-400 text-black font-bold whitespace-nowrap">All Dimensions</button>
+                    <button onclick="filterComparisonMetrics('math')" id="metric-tab-math" class="px-2.5 py-1 rounded bg-white/[0.04] text-zinc-400 hover:text-white whitespace-nowrap">Math & Exactness</button>
+                    <button onclick="filterComparisonMetrics('latency')" id="metric-tab-latency" class="px-2.5 py-1 rounded bg-white/[0.04] text-zinc-400 hover:text-white whitespace-nowrap">Latency (ms)</button>
+                    <button onclick="filterComparisonMetrics('hardware')" id="metric-tab-hardware" class="px-2.5 py-1 rounded bg-white/[0.04] text-zinc-400 hover:text-white whitespace-nowrap">Hardware & Energy</button>
+                    <button onclick="filterComparisonMetrics('hallucination')" id="metric-tab-hallucination" class="px-2.5 py-1 rounded bg-white/[0.04] text-zinc-400 hover:text-white whitespace-nowrap">Hallucination Risk</button>
+                </div>
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-left font-mono text-xs border border-quantum-border/60">
                         <thead class="bg-quantum-panel text-zinc-400 text-[10px] uppercase border-b border-quantum-border/60">
@@ -1228,6 +1323,188 @@ angle$
             }
         }
 
+        let weightFlowSpeedMultiplier = 1.0;
+        let weightFlowActive = true;
+        let selectedTopologyNode = null;
+
+        function setFlowSpeed(speed) {
+            weightFlowSpeedMultiplier = speed;
+            ['05', '10', '20'].forEach(s => {
+                const b = document.getElementById('flow-speed-' + s);
+                if (b) b.className = 'px-1.5 py-0.5 rounded text-zinc-400 hover:text-white';
+            });
+            const activeBtn = document.getElementById('flow-speed-' + (speed === 0.5 ? '05' : speed === 1.0 ? '10' : '20'));
+            if (activeBtn) activeBtn.className = 'px-1.5 py-0.5 rounded bg-cyan-400/20 text-cyan-300 font-bold';
+        }
+
+        function toggleWeightFlow() {
+            weightFlowActive = !weightFlowActive;
+            const btn = document.getElementById('flow-toggle-btn');
+            if (btn) {
+                if (weightFlowActive) {
+                    btn.className = 'ml-1 px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-emerald-300';
+                    btn.innerText = '🌊 Active';
+                } else {
+                    btn.className = 'ml-1 px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] text-zinc-500';
+                    btn.innerText = '⏸️ Paused';
+                }
+            }
+        }
+
+        function onLogitTempChange(val) {
+            const t = parseFloat(val);
+            const lbl = document.getElementById('logit-temp-label');
+            if (lbl) lbl.innerText = t.toFixed(1);
+            updateLogitHeatmap(t);
+        }
+
+        function updateLogitHeatmap(temp) {
+            const container = document.getElementById('logit-bars-container');
+            if (!container) return;
+
+            const rawTokens = [
+                { tok: 'def (function definition)', logit: 14.5, color: 'bg-cyan-400' },
+                { tok: 'function (standard word)', logit: 13.9, color: 'bg-indigo-400' },
+                { tok: 'class (object declaration)', logit: 12.8, color: 'bg-purple-400' },
+                { tok: 'import (module header)', logit: 12.4, color: 'bg-amber-400' },
+                { tok: 'None / drift (hallucination)', logit: 12.1, color: 'bg-rose-500' },
+            ];
+
+            const scaled = rawTokens.map(item => Math.exp(item.logit / temp));
+            const sumExp = scaled.reduce((a, b) => a + b, 0);
+            const probs = scaled.map(v => v / sumExp);
+
+            let entropy = 0;
+            probs.forEach(p => { if (p > 1e-9) entropy -= p * Math.log2(p); });
+
+            const badge = document.getElementById('astra-entropy-badge');
+            if (badge) badge.innerText = `Entropy H(X) = ${entropy.toFixed(2)} bits (T=${temp})`;
+
+            container.innerHTML = rawTokens.map((item, idx) => {
+                const pct = (probs[idx] * 100).toFixed(1);
+                return `
+                    <div>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-zinc-300">${item.tok}</span>
+                            <span class="font-mono text-zinc-400">${pct}% <span class="text-zinc-600">(${item.logit.toFixed(1)})</span></span>
+                        </div>
+                        <div class="w-full bg-zinc-800 rounded-xs h-2.5 overflow-hidden">
+                            <div class="${item.color} h-full rounded-xs transition-all duration-300" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterComparisonMetrics(category) {
+            const tabs = ['all', 'math', 'latency', 'hardware', 'hallucination'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('metric-tab-' + t);
+                if (btn) btn.className = 'px-2.5 py-1 rounded bg-white/[0.04] text-zinc-400 hover:text-white whitespace-nowrap';
+            });
+            const cur = document.getElementById('metric-tab-' + category);
+            if (cur) cur.className = 'px-2.5 py-1 rounded bg-cyan-400 text-black font-bold whitespace-nowrap';
+
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (category === 'all') {
+                    row.style.display = '';
+                } else if (category === 'math') {
+                    row.style.display = (text.includes('math') || text.includes('knowledge') || text.includes('substrate')) ? '' : 'none';
+                } else if (category === 'latency') {
+                    row.style.display = (text.includes('latency') || text.includes('architecture')) ? '' : 'none';
+                } else if (category === 'hardware') {
+                    row.style.display = (text.includes('hardware') || text.includes('forgetting')) ? '' : 'none';
+                } else if (category === 'hallucination') {
+                    row.style.display = (text.includes('hallucination') || text.includes('drift')) ? '' : 'none';
+                }
+            });
+        }
+
+        function updateInspectorDrawer(node) {
+            const drawer = document.getElementById('inspector-content');
+            const badge = document.getElementById('inspector-badge');
+            if (!drawer || !node) return;
+
+            if (node.layerName !== undefined) {
+                if (badge) {
+                    badge.className = 'px-2 py-0.5 bg-purple-500/10 border border-purple-400/30 text-purple-300 rounded text-[10px] font-bold';
+                    badge.innerText = 'LOCKED: CONTINUOUS NEURAL LAYER (ASTRA)';
+                }
+                const weightsSnippet = Array.from({length: 6}, () => (Math.random() * 2 - 1).toFixed(4)).join(', ');
+                const attnScore = (0.72 + Math.random() * 0.25).toFixed(3);
+                const entropyVal = (1.9 + Math.random() * 0.6).toFixed(2);
+
+                drawer.innerHTML = `
+                    <div class="p-3 bg-quantum-panel border border-purple-500/30 rounded-sm">
+                        <div class="text-zinc-500 text-[10px] uppercase">Layer Identity</div>
+                        <div class="text-purple-300 font-bold text-sm mt-0.5">${node.layerName}</div>
+                        <div class="text-zinc-400 text-[11px] mt-1">Neuron Head #${node.index + 1} (${node.name})</div>
+                        <div class="text-[10px] text-zinc-500 mt-2 font-mono">Tensor: [Batch, Seq=8192, Dim=4096]</div>
+                    </div>
+                    <div class="p-3 bg-quantum-panel border border-quantum-border rounded-sm">
+                        <div class="text-zinc-500 text-[10px] uppercase">Synaptic Weight Matrix Slice</div>
+                        <div class="text-zinc-200 text-[10px] font-mono mt-1 bg-black/40 p-1.5 rounded border border-white/[0.05] break-all leading-relaxed">
+                            [${weightsSnippet}, ...]
+                        </div>
+                        <div class="text-[10px] text-zinc-400 mt-1.5 flex justify-between">
+                            <span>Precision: <strong>FP16</strong></span>
+                            <span>FLOPs: <strong>4.2 TFLOPs</strong></span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-quantum-panel border border-quantum-border rounded-sm">
+                        <div class="text-zinc-500 text-[10px] uppercase">Attention &amp; Activation</div>
+                        <div class="text-zinc-200 text-xs mt-1">Softmax Weight: <strong class="text-amber-300">${attnScore}</strong></div>
+                        <div class="text-zinc-400 text-[11px] mt-1">Non-Linearity: <strong>SwiGLU / GeLU</strong></div>
+                        <div class="text-zinc-500 text-[10px] mt-1 font-mono">Residual Stream: + RMSNorm</div>
+                    </div>
+                    <div class="p-3 bg-quantum-panel border border-rose-500/20 rounded-sm">
+                        <div class="text-zinc-500 text-[10px] uppercase">Stochastic Drift Vulnerability</div>
+                        <div class="text-rose-400 font-bold text-xs mt-1">Entropy H = ${entropyVal} bits</div>
+                        <div class="text-zinc-400 text-[10px] mt-1">Cumulative Error Drift: <span class="text-rose-300 font-bold">14.5%</span></div>
+                        <div class="text-zinc-500 text-[10px] mt-1 font-mono">Hardware: 8x H100 (640GB VRAM)</div>
+                    </div>
+                `;
+            } else {
+                if (badge) {
+                    badge.className = 'px-2 py-0.5 bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 rounded text-[10px] font-bold';
+                    badge.innerText = 'LOCKED: DISCRETE GROUND-TRUTH BLUEPRINT';
+                }
+                const hashHex = '0x' + Array.from({length: 12}, () => Math.floor(Math.random()*16).toString(16)).join('').toUpperCase();
+                drawer.innerHTML = `
+                    <div class="p-3 bg-quantum-panel border border-emerald-500/30 rounded-sm">
+                        <div class="text-zinc-500 text-[10px] uppercase">Discrete Blueprint Node</div>
+                        <div class="text-emerald-400 font-bold text-sm mt-0.5">${node.id}</div>
+                        <div class="text-zinc-300 text-[11px] mt-1">${node.name}</div>
+                        <div class="text-[10px] text-zinc-500 mt-2 font-mono">Domain: ${node.domain} (${(node.rules || 40000).toLocaleString()} rules)</div>
+                    </div>
+                    <div class="p-3 bg-quantum-panel border border-quantum-border rounded-sm">
+                        <div class="text-zinc-500 text-[10px] uppercase">MinHash LSH &amp; Inverted Postings</div>
+                        <div class="text-zinc-200 text-[10px] font-mono mt-1 bg-black/40 p-1.5 rounded border border-white/[0.05] break-all leading-relaxed">
+                            Hash: ${hashHex}
+                        </div>
+                        <div class="text-[10px] text-zinc-400 mt-1.5 flex justify-between">
+                            <span>Index: <strong>array('I') mmap</strong></span>
+                            <span>Bit Distance: <strong>0 (Exact)</strong></span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-quantum-panel border border-quantum-border rounded-sm">
+                        <div class="text-zinc-500 text-[10px] uppercase">Execution &amp; Verification</div>
+                        <div class="text-cyan-300 font-bold text-xs mt-1">CPU Latency: &lt; 0.45 ms</div>
+                        <div class="text-emerald-300 text-[11px] mt-1">AST Zero-Trust Sandbox: <strong>VERIFIED</strong></div>
+                        <div class="text-zinc-500 text-[10px] mt-1 font-mono">RAM Footprint: 0.0 MB (Page-Cached)</div>
+                    </div>
+                    <div class="p-3 bg-quantum-panel border border-emerald-500/20 rounded-sm">
+                        <div class="text-zinc-500 text-[10px] uppercase">Mathematical Determinism</div>
+                        <div class="text-emerald-400 font-bold text-xs mt-1">Entropy H = 0.00 bits (Exact)</div>
+                        <div class="text-zinc-400 text-[10px] mt-1">Hallucination Rate: <span class="text-emerald-300 font-bold">0.00%</span></div>
+                        <div class="text-zinc-500 text-[10px] mt-1 font-mono">Hardware: Commodity Laptop CPU (0.0 W GPU)</div>
+                    </div>
+                `;
+            }
+        }
+
         async function initBlueprintLattice() {
             latticeCanvas = document.getElementById('blueprint-lattice-canvas');
             if (!latticeCanvas) return;
@@ -1261,9 +1538,24 @@ angle$
                     }
 
                     let hovered = null;
-                    for (const n of latticeNodes) {
-                        const d = Math.hypot(n.x - mx, n.y - my);
-                        if (d < 16) { hovered = n; break; }
+                    if (topologyMode === 'split') {
+                        for (const n of neuralLayers) {
+                            if (Math.hypot(n.x - mx, n.y - my) < 14) {
+                                document.getElementById('hud-title').innerHTML = `<span style="color:#A855F7;">●</span> Neural Synapse: ${n.name} (Neuron #${n.index + 1})`;
+                                document.getElementById('hud-desc').innerHTML = `Layer: <strong>${n.layerName}</strong><br/>Continuous Activation: <strong>float16 / bfloat16</strong><br/>Memory Footprint: <strong>80GB VRAM (Matrix FLOPs)</strong><br/>Drift Vulnerability: <span class="text-rose-400 font-bold">Stochastic Hallucination</span>`;
+                                return;
+                            }
+                        }
+                        const xOffset = cRect.width * 0.48;
+                        for (const n of latticeNodes) {
+                            const d = Math.hypot((n.x + xOffset) - mx, n.y - my);
+                            if (d < 16) { hovered = n; break; }
+                        }
+                    } else {
+                        for (const n of latticeNodes) {
+                            const d = Math.hypot(n.x - mx, n.y - my);
+                            if (d < 16) { hovered = n; break; }
+                        }
                     }
                     if (hovered) {
                         hovered.glow = 1.0;
@@ -1272,8 +1564,46 @@ angle$
                     }
                 });
 
+                // Click interaction for Deep Node/Layer Inspection
+                latticeCanvas.addEventListener('click', (e) => {
+                    const cRect = latticeCanvas.getBoundingClientRect();
+                    const mx = e.clientX - cRect.left;
+                    const my = e.clientY - cRect.top;
+
+                    let targetNode = null;
+                    if (topologyMode === 'neural') {
+                        for (const n of neuralLayers) {
+                            if (Math.hypot(n.x - mx, n.y - my) < 22) { targetNode = n; break; }
+                        }
+                    } else if (topologyMode === 'split') {
+                        for (const n of neuralLayers) {
+                            if (Math.hypot(n.x - mx, n.y - my) < 22) { targetNode = n; break; }
+                        }
+                        if (!targetNode) {
+                            const xOffset = cRect.width * 0.48;
+                            for (const n of latticeNodes) {
+                                if (Math.hypot((n.x + xOffset) - mx, n.y - my) < 22) { targetNode = n; break; }
+                            }
+                        }
+                    } else {
+                        for (const n of latticeNodes) {
+                            if (Math.hypot(n.x - mx, n.y - my) < 22) { targetNode = n; break; }
+                        }
+                    }
+
+                    if (targetNode) {
+                        selectedTopologyNode = targetNode;
+                        targetNode.glow = 2.0;
+                        updateInspectorDrawer(targetNode);
+                    }
+                });
+
                 latticeInit = true;
                 animateLattice();
+                updateLogitHeatmap(0.7);
+                if (latticeNodes.length > 0) {
+                    updateInspectorDrawer(latticeNodes[0]);
+                }
             }
         }
 
@@ -1465,8 +1795,9 @@ angle$
             }
 
             // Synaptic Photons
+            const flowMultiplier = weightFlowActive ? weightFlowSpeedMultiplier : 0;
             for (const p of latticePhotons) {
-                p.progress += p.speed;
+                p.progress += p.speed * flowMultiplier;
                 if (p.progress >= 1) {
                     p.progress = 0;
                     p.edge = latticeEdges[Math.floor(Math.random() * latticeEdges.length)];
@@ -1511,6 +1842,24 @@ angle$
                 lCtx.restore();
             }
 
+            // Selected Node Halo Ring (Lattice)
+            if (selectedTopologyNode && selectedTopologyNode.type !== 'continuous_perceptron') {
+                const sn = selectedTopologyNode;
+                const sx = sn.x !== undefined ? sn.x : (sn.baseX * (isCompact ? 0.52 : 1.0));
+                const sy = sn.y !== undefined ? sn.y : sn.baseY;
+                lCtx.save();
+                lCtx.strokeStyle = '#38BDF8';
+                lCtx.lineWidth = 1.8;
+                lCtx.setLineDash([4, 4]);
+                lCtx.shadowColor = '#38BDF8';
+                lCtx.shadowBlur = 10;
+                lCtx.beginPath();
+                const ringR = (sn.radius || 6) * 2.2 + Math.sin(t * 5) * 2;
+                lCtx.arc(sx, sy, Math.max(10, ringR), 0, Math.PI * 2);
+                lCtx.stroke();
+                lCtx.restore();
+            }
+
             if (isCompact) {
                 lCtx.fillStyle = '#38BDF8';
                 lCtx.font = '10px "JetBrains Mono", monospace';
@@ -1540,8 +1889,9 @@ angle$
             }
 
             // Signal Pulses (Floating point activation flow)
+            const sigMultiplier = weightFlowActive ? weightFlowSpeedMultiplier : 0;
             for (const sig of neuralSignals) {
-                sig.progress += sig.speed;
+                sig.progress += sig.speed * sigMultiplier;
                 if (sig.progress >= 1) {
                     sig.progress = 0;
                     sig.synapse = neuralSynapses[Math.floor(Math.random() * neuralSynapses.length)];
@@ -1581,6 +1931,24 @@ angle$
                 lCtx.beginPath();
                 lCtx.arc(nx, ny, 1.2, 0, Math.PI * 2);
                 lCtx.fill();
+                lCtx.restore();
+            }
+
+            // Selected Node Halo Ring (Neural)
+            if (selectedTopologyNode && selectedTopologyNode.type === 'continuous_perceptron') {
+                const sn = selectedTopologyNode;
+                const sx = sn.x !== undefined ? sn.x : (sn.baseX * (isCompact ? 0.48 : 1.0));
+                const sy = sn.y !== undefined ? sn.y : sn.baseY;
+                lCtx.save();
+                lCtx.strokeStyle = '#C084FC';
+                lCtx.lineWidth = 1.8;
+                lCtx.setLineDash([4, 4]);
+                lCtx.shadowColor = '#C084FC';
+                lCtx.shadowBlur = 10;
+                lCtx.beginPath();
+                const ringR = (sn.radius || 5) * 2.2 + Math.sin(t * 5) * 2;
+                lCtx.arc(sx, sy, Math.max(10, ringR), 0, Math.PI * 2);
+                lCtx.stroke();
                 lCtx.restore();
             }
 

@@ -1481,10 +1481,20 @@ class DiskCrystalVault:
                     epistemic_tier="verified_exact",
                 )
 
+        is_coding_req = (
+            EpistemicConfidenceCalibrator.is_coding_intent(q_core, sense_tags=sense_tags)
+            or EpistemicConfidenceCalibrator.is_coding_intent(orig_p, sense_tags=sense_tags)
+            or any(c[1].domain.lower() in ("algorithms", "algorithm", "code", "programming", "python", "leetcode") for c in cands[:2])
+            or any(bool(ZeroTrustSandboxJudge.extract_python_code(c[1].abstract_response)) for c in cands[:2])
+        )
+
         is_creative_req = self.fluid_composer.is_explicit_creative_request(orig_p)
         oov_entities = EpistemicConfidenceCalibrator.extract_oov_proper_entities(orig_p, self.bit_table)
+        if is_coding_req:
+            from .phase2_cognitive_core import _WRAPPER_PROPER_ALLOWLIST
+            oov_entities = {e for e in oov_entities if e.lower() not in _WRAPPER_PROPER_ALLOWLIST}
 
-        if not is_creative_req and not oov_entities:
+        if not is_creative_req and not oov_entities and not is_coding_req:
             curiosity_hit = self.curiosity_planner.check_diagnostic_ambiguity(
                 session_id=session_id,
                 query=q_core,
@@ -1506,7 +1516,7 @@ class DiskCrystalVault:
                     epistemic_tier="diagnostic_clarification",
                 )
 
-        if len(cands) >= 2 and (cands[0][0] - cands[1][0] <= 0.035) and cands[0][0] >= 0.60:
+        if not is_coding_req and len(cands) >= 2 and (cands[0][0] - cands[1][0] <= 0.035) and cands[0][0] >= 0.60:
             c1, c2 = cands[0][1], cands[1][1]
             if c1.domain != c2.domain or c1.abstract_response != c2.abstract_response:
                 ms = (time.perf_counter_ns() - t0) / 1_000_000.0
@@ -1547,6 +1557,7 @@ class DiskCrystalVault:
                 bit_table=self.bit_table,
                 detected_lang=detected_lang,
                 min_lock_score=min_lock_score,
+                is_coding_intent=is_coding_req,
             )
             if not ok_match:
                 trace.append(f"Rejected partial/false match on rule #{rule.rule_id} ({match_reason})")
@@ -1561,17 +1572,23 @@ class DiskCrystalVault:
                 continue
             ok, judge_msg = ZeroTrustSandboxJudge.verify_code_and_test(instantiated)
             if not ok:
-                with self.conn:
-                    self.conn.execute("UPDATE rules SET fail_count = fail_count + 1 WHERE rule_id = ?", (rule.rule_id,))
+                if not any(judge_msg.startswith(p) for p in ("Blocked import", "Blocked from-import")):
+                    with self.conn:
+                        self.conn.execute("UPDATE rules SET fail_count = fail_count + 1 WHERE rule_id = ?", (rule.rule_id,))
                 trace.append(f"Quarantined rule #{rule.rule_id} ({judge_msg})")
                 continue
 
             mode_str = "slot_formula_lock" if rule.num_slots > 0 else "direct_crystal_lock"
             conf_val = cal_conf
             sb_ver = judge_msg != "non_code"
-            trace.append(
-                f"Matched DiskVault Rule #{rule.rule_id} (domain={rule.domain}, bit_score={score:.3f}, cov={q_cov:.2f}, slots={rule.num_slots})"
-            )
+            if is_coding_req and sb_ver:
+                trace.append(
+                    f"Code Fast-Path: verified by ZeroTrustSandboxJudge for Rule #{rule.rule_id} (domain={rule.domain}, bit_score={score:.3f}, cov={q_cov:.2f})"
+                )
+            else:
+                trace.append(
+                    f"Matched DiskVault Rule #{rule.rule_id} (domain={rule.domain}, bit_score={score:.3f}, cov={q_cov:.2f}, slots={rule.num_slots})"
+                )
             if not sb_ver:
                 styled_ans, was_styled = self.fluid_composer.realize_grounded_style(orig_p, instantiated, sig2048=raw_sig)
                 if was_styled:

@@ -8,21 +8,44 @@ import ast
 import bisect
 import builtins
 import collections
+import copy
+import csv
+import dataclasses
 import fractions
 import functools
 import heapq
 import io
 import itertools
+import json
 import math
+import random
 import re
 import statistics
+import string
 import typing
 from collections import defaultdict
 from contextlib import redirect_stdout
 from typing import Any
 
 _ALLOWED_IMPORTS: frozenset[str] = frozenset(
-    {"math", "heapq", "collections", "bisect", "itertools", "functools", "typing", "fractions", "statistics"}
+    {
+        "math",
+        "heapq",
+        "collections",
+        "bisect",
+        "itertools",
+        "functools",
+        "typing",
+        "fractions",
+        "statistics",
+        "re",
+        "json",
+        "csv",
+        "string",
+        "random",
+        "copy",
+        "dataclasses",
+    }
 )
 
 _FORBIDDEN_NAMES: frozenset[str] = frozenset(
@@ -236,6 +259,13 @@ class ZeroTrustSandboxJudge:
             "typing": typing,
             "fractions": fractions,
             "statistics": statistics,
+            "re": re,
+            "json": json,
+            "csv": csv,
+            "string": string,
+            "random": random,
+            "copy": copy,
+            "dataclasses": dataclasses,
         }
         safe_builtins = {
             "abs": abs,
