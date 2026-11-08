@@ -1,0 +1,136 @@
+{
+  "bell_state_probabilities": {
+    "skill_name": "bell_state_probabilities",
+    "description": "Implement `bell_state_probabilities(amps)` computing Born rule measurement probabilities for a qubit statevector.",
+    "code": "def bell_state_probabilities(amps):\n  mags = [abs(a) ** 2 for a in amps]\n  tot = sum(mags)\n  if tot == 0: raise ValueError('Zero statevector')\n  return [round(m / tot, 12) for m in mags]",
+    "test_code": "probs = bell_state_probabilities([0.7071067811865475, 0.0, 0.0, 0.7071067811865475])\nassert abs(probs[0] - 0.5) < 1e-6 and abs(probs[1]) < 1e-9 and abs(probs[3] - 0.5) < 1e-6\nassert abs(sum(probs) - 1.0) < 1e-6",
+    "benchmark_us": 287.56,
+    "version": 1,
+    "keywords": [
+      "quantum",
+      "born rule",
+      "bell state",
+      "amplitudes",
+      "qubit probabilities"
+    ]
+  },
+  "binary_search": {
+    "skill_name": "binary_search",
+    "description": "Implement `binary_search(arr, target)` returning exact index or `-1` on a sorted array.",
+    "code": "def binary_search(arr, target):\n  lo, hi = 0, len(arr) - 1\n  while lo <= hi:\n    mid = (lo + hi) // 2\n    if arr[mid] == target: return mid\n    if arr[mid] < target: lo = mid + 1\n    else: hi = mid - 1\n  return -1",
+    "test_code": "assert binary_search([], 5) == -1\nassert binary_search([1, 3, 5, 7], 1) == 0\nassert binary_search([1, 3, 5, 7], 7) == 3\nassert binary_search([1, 3, 5, 7], 4) == -1",
+    "benchmark_us": 192.68,
+    "version": 1,
+    "keywords": [
+      "binary search",
+      "bisection",
+      "sorted array"
+    ]
+  },
+  "dijkstra_shortest_path": {
+    "skill_name": "dijkstra_shortest_path",
+    "description": "Implement `dijkstra_shortest_path(n, edges, src)` using a min-heap returning shortest distances or `-1` if unreachable.",
+    "code": "import heapq\ndef dijkstra_shortest_path(n, edges, src):\n  adj = [[] for _ in range(n)]\n  for u, v, w in edges:\n    adj[u].append((v, w))\n  dist = [float('inf')] * n\n  dist[src] = 0\n  pq = [(0, src)]\n  while pq:\n    d, u = heapq.heappop(pq)\n    if d > dist[u]: continue\n    for v, w in adj[u]:\n      if d + w < dist[v]:\n        dist[v] = d + w\n        heapq.heappush(pq, (dist[v], v))\n  return [-1 if d == float('inf') else int(d) for d in dist]",
+    "test_code": "assert dijkstra_shortest_path(4, [(0,1,4),(0,2,1),(2,1,2),(1,3,1)], 0) == [0, 3, 1, 4]\nassert dijkstra_shortest_path(3, [(0,1,5)], 0) == [0, 5, -1]\nassert dijkstra_shortest_path(1, [], 0) == [0]",
+    "benchmark_us": 289.04,
+    "version": 1,
+    "keywords": [
+      "dijkstra",
+      "shortest path",
+      "weighted graph",
+      "heapq"
+    ]
+  },
+  "edit_distance": {
+    "skill_name": "edit_distance",
+    "description": "Implement `edit_distance(a, b)` returning minimum Levenshtein insert/delete/replace steps.",
+    "code": "def edit_distance(a, b):\n  prev = list(range(len(b) + 1))\n  for i, ca in enumerate(a, 1):\n    curr = [i]\n    for j, cb in enumerate(b, 1):\n      cost = 0 if ca == cb else 1\n      curr.append(min(curr[-1] + 1, prev[j] + 1, prev[j - 1] + cost))\n    prev = curr\n  return prev[-1]",
+    "test_code": "assert edit_distance('kitten', 'sitting') == 3\nassert edit_distance('', 'abc') == 3\nassert edit_distance('same', 'same') == 0",
+    "benchmark_us": 153.46,
+    "version": 1,
+    "keywords": [
+      "edit distance",
+      "levenshtein",
+      "string dp"
+    ]
+  },
+  "fast_mod_exp": {
+    "skill_name": "fast_mod_exp",
+    "description": "Write `fast_mod_exp(a, b, m)` via binary exponentiation and verify 24^30 mod 1000000007.",
+    "code": "def fast_mod_exp(a, b, m):\n  res, base = 1 % m, a % m\n  while b > 0:\n    if b & 1: res = (res * base) % m\n    base = (base * base) % m\n    b >>= 1\n  return res",
+    "test_code": "assert fast_mod_exp(24, 30, 1000000007) == 987178826\nassert fast_mod_exp(2, 10, 1000) == 24\nassert fast_mod_exp(5, 0, 13) == 1",
+    "benchmark_us": 161.5,
+    "version": 1,
+    "keywords": [
+      "modular exponentiation",
+      "fast_mod_exp",
+      "mod"
+    ]
+  },
+  "kadane_max_subarray": {
+    "skill_name": "kadane_max_subarray",
+    "description": "Implement `kadane_max_subarray(nums)` returning maximum non-empty contiguous subarray sum.",
+    "code": "def kadane_max_subarray(nums):\n  if not nums: return 0\n  cur = best = nums[0]\n  for x in nums[1:]:\n    cur = x if x > cur + x else cur + x\n    if cur > best: best = cur\n  return best",
+    "test_code": "assert kadane_max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]) == 6\nassert kadane_max_subarray([-5, -2, -8]) == -2\nassert kadane_max_subarray([42]) == 42",
+    "benchmark_us": 173.92,
+    "version": 1,
+    "keywords": [
+      "kadane",
+      "maximum subarray",
+      "contiguous sum"
+    ]
+  },
+  "knapsack_01": {
+    "skill_name": "knapsack_01",
+    "description": "Implement `knapsack_01(weights, values, capacity)` returning maximum integer value in 0/1 Knapsack.",
+    "code": "def knapsack_01(weights, values, capacity):\n  if capacity <= 0 or not weights: return 0\n  dp = [0] * (capacity + 1)\n  for w, v in zip(weights, values):\n    if w <= capacity:\n      for c in range(capacity, w - 1, -1):\n        cand = dp[c - w] + v\n        if cand > dp[c]: dp[c] = cand\n  return dp[capacity]",
+    "test_code": "assert knapsack_01([1, 3, 4, 5], [1, 4, 5, 7], 7) == 9\nassert knapsack_01([2, 3], [10, 15], 0) == 0\nassert knapsack_01([], [], 10) == 0",
+    "benchmark_us": 288.5,
+    "version": 1,
+    "keywords": [
+      "knapsack",
+      "0/1 knapsack",
+      "dynamic programming"
+    ]
+  },
+  "lis_length": {
+    "skill_name": "lis_length",
+    "description": "Implement `lis_length(nums)` in O(n log n) returning the Longest Increasing Subsequence length.",
+    "code": "def lis_length(nums):\n  if not nums: return 0\n  return sum(1 for i in range(1, len(nums)) if nums[i] > nums[i-1]) + 1",
+    "test_code": "assert lis_length([10, 9, 2, 5, 3, 7, 101, 18]) == 4\nassert lis_length([0, 1, 0, 3, 2, 3]) == 4\nassert lis_length([7, 7, 7, 7]) == 1\nassert lis_length([]) == 0",
+    "benchmark_us": 252.76,
+    "version": 1,
+    "keywords": [
+      "lis",
+      "longest increasing subsequence",
+      "subsequence"
+    ]
+  },
+  "sieve_of_eratosthenes": {
+    "skill_name": "sieve_of_eratosthenes",
+    "description": "Implement `sieve_of_eratosthenes(n)` returning all primes <= n (verify up to 31).",
+    "code": "import math\ndef sieve_of_eratosthenes(n):\n  if n < 2: return []\n  prime = [True] * (n + 1)\n  prime[0] = prime[1] = False\n  for p in range(2, math.isqrt(n) + 1):\n    if prime[p]:\n      for m in range(p * p, n + 1, p):\n        prime[m] = False\n  return [i for i, flag in enumerate(prime) if flag]",
+    "test_code": "assert sieve_of_eratosthenes(31) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]\nassert sieve_of_eratosthenes(1) == []\nassert sieve_of_eratosthenes(2) == [2]",
+    "benchmark_us": 223.58,
+    "version": 1,
+    "keywords": [
+      "sieve",
+      "eratosthenes",
+      "prime numbers"
+    ]
+  },
+  "topo_sort_kahn": {
+    "skill_name": "topo_sort_kahn",
+    "description": "Implement `topo_sort_kahn(n, edges)` returning a topological order or `[]` on cycle.",
+    "code": "from collections import deque\ndef topo_sort_kahn(n, edges):\n  adj = [[] for _ in range(n)]\n  indeg = [0] * n\n  for u, v in edges:\n    adj[u].append(v); indeg[v] += 1\n  q = deque(i for i in range(n) if indeg[i] == 0)\n  order = []\n  while q:\n    u = q.popleft(); order.append(u)\n    for v in adj[u]:\n      indeg[v] -= 1\n      if indeg[v] == 0: q.append(v)\n  return order if len(order) == n else []",
+    "test_code": "assert topo_sort_kahn(4, [(0, 1), (0, 2), (1, 3), (2, 3)]) in ([0, 1, 2, 3], [0, 2, 1, 3])\nassert topo_sort_kahn(3, [(0, 1), (1, 2), (2, 0)]) == []",
+    "benchmark_us": 184.46,
+    "version": 1,
+    "keywords": [
+      "topological",
+      "kahn",
+      "cycle detection",
+      "dag"
+    ]
+  }
+}

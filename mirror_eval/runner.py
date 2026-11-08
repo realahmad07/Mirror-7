@@ -443,18 +443,37 @@ def evaluate_vault_benchmark(check_production_vault: bool = True) -> Dict[str, A
                     "expected_terms": ("blue",),
                 },
                 {
-                    "name": "prod_abstain_dijkstra",
-                    "prompt": "What is the time complexity of Dijkstra with a binary heap?",
-                    "expect_abstain": True,
+                    "name": "prod_match_identity",
+                    "prompt": "Hello! Who are you?",
+                    "expect_abstain": False,
+                    "allowed_tiers": {"verified_exact"},
+                    "expected_terms": ("mirror 7",),
                 },
                 {
-                    "name": "prod_abstain_nth_prime",
-                    "prompt": "Write a Python function that returns the nth prime.",
+                    "name": "prod_match_grover_typo",
+                    "prompt": "How does Grvoer quantm serach achieve a speedup?",
+                    "expect_abstain": False,
+                    "allowed_tiers": {"high_confidence", "verified_exact", "moderate_confidence"},
+                    "expected_terms": ("grover",),
+                },
+                {
+                    "name": "prod_abstain_atlantis_2045",
+                    "prompt": "What is the population of Atlantis in 2045?",
                     "expect_abstain": True,
                 },
                 {
                     "name": "prod_abstain_2026_world_cup",
                     "prompt": "What happened in the 2026 World Cup final?",
+                    "expect_abstain": True,
+                },
+                {
+                    "name": "prod_abstain_2028_film_solar_echo",
+                    "prompt": "Who directed the 2028 film Solar Echo?",
+                    "expect_abstain": True,
+                },
+                {
+                    "name": "prod_abstain_hamlet_act3",
+                    "prompt": "Explain why Hamlet hesitated in Act III.",
                     "expect_abstain": True,
                 },
             ]
@@ -475,11 +494,115 @@ def evaluate_vault_benchmark(check_production_vault: bool = True) -> Dict[str, A
     }
 
 
+def evaluate_quantum_and_capabilities_benchmark() -> Dict[str, Any]:
+    """
+    Pillar 4: Quantum Computing Math & Subsystem Capabilities Suite:
+    Exact Grover quadratic iteration count, Born rule probability derivations,
+    n-qubit Hilbert register basis dimensions, and MCTS autonomous code repairs.
+    """
+    bridge = CerebrumCrystalBridge()
+    tdd = AutonomousTDDEngine(max_repairs=3)
+    cases: List[Dict[str, Any]] = [
+        {
+            "name": "grover_iterations_10k",
+            "type": "bridge",
+            "prompt": "How many Grover iterations are needed for N = 10000 items?",
+            "expected_sub": "78",
+        },
+        {
+            "name": "grover_iterations_25k",
+            "type": "bridge",
+            "prompt": "How many Grover iterations are needed for N = 25000 items?",
+            "expected_sub": "124",
+        },
+        {
+            "name": "born_rule_1_sqrt2",
+            "type": "bridge",
+            "prompt": "What is the Born probability of qubit amplitude 1/sqrt(2)?",
+            "expected_sub": "1/2",
+        },
+        {
+            "name": "born_rule_3_sqrt10",
+            "type": "bridge",
+            "prompt": "What is the Born probability of qubit amplitude 3/sqrt(10)?",
+            "expected_sub": "9/10",
+        },
+        {
+            "name": "hilbert_register_8_qubits",
+            "type": "bridge",
+            "prompt": "How many computational basis states does an 8-qubit register have?",
+            "expected_sub": "256",
+        },
+        {
+            "name": "hilbert_register_12_qubits",
+            "type": "bridge",
+            "prompt": "How many computational basis states does an 12-qubit register have?",
+            "expected_sub": "4096",
+        },
+        {
+            "name": "mcts_sieve_repair",
+            "type": "tdd",
+            "code": "def sieve_of_eratosthenes(n):\n    return []\n",
+            "spec": "sieve primes",
+            "must_contain": "math.isqrt",
+        },
+        {
+            "name": "mcts_dijkstra_repair",
+            "type": "tdd",
+            "code": "def dijkstra_shortest_path(n, edges, src):\n    return [0] * n\n",
+            "spec": "dijkstra shortest path",
+            "must_contain": "heapq",
+        },
+        {
+            "name": "mcts_fast_modexp_repair",
+            "type": "tdd",
+            "code": "def fast_mod_exp(a, b, m):\n    return (a * b) % m\n",
+            "spec": "modular exponentiation",
+            "must_contain": "% m",
+        },
+    ]
+
+    rows: List[Dict[str, Any]] = []
+    passed = 0
+    total_ms = 0.0
+
+    for item in cases:
+        t0 = time.perf_counter()
+        if item["type"] == "bridge":
+            res = bridge.solve(item["prompt"])
+            ms = (time.perf_counter() - t0) * 1000.0
+            total_ms += ms
+            case_pass = bool(res["ok"] and item["expected_sub"] in str(res.get("answer", "")) and float(res.get("prm_reward", 0)) >= 0.85)
+        else:
+            rep = tdd.run_tdd_cycle(item["code"], spec_desc=item["spec"])
+            ms = (time.perf_counter() - t0) * 1000.0
+            total_ms += ms
+            case_pass = bool(rep.verified and item["must_contain"] in rep.final_code)
+        if case_pass:
+            passed += 1
+        rows.append(
+            {
+                "name": item["name"],
+                "passed": case_pass,
+                "latency_ms": round(ms, 3),
+            }
+        )
+
+    return {
+        "pillar": "quantum_computing_and_subsystems",
+        "passed": passed,
+        "total": len(cases),
+        "accuracy": round(passed / len(cases), 4),
+        "mean_latency_ms": round(total_ms / len(cases), 3),
+        "cases": rows,
+    }
+
+
 def audit_architecture_independence(
     package_dirs: tuple[str, ...] = ("mirror_crystal", "mirror7_backend", "mirror_eval"),
 ) -> Dict[str, Any]:
     """
-    Pillar 4: Static AST import audit verifying that core runtime packages never import
+    Pillar 5: Static AST import audit verifying that core runtime packages never import
     PyTorch, Transformers, or external proprietary/open-weight LLM APIs.
     """
     scanned_files = 0
@@ -527,11 +650,12 @@ def run_full_eval(
     p1 = evaluate_math_benchmark()
     p2 = evaluate_tdd_benchmark()
     p3 = evaluate_vault_benchmark(check_production_vault=check_production_vault)
-    p4 = audit_architecture_independence()
+    p4 = evaluate_quantum_and_capabilities_benchmark()
+    p5 = audit_architecture_independence()
     elapsed_ms = (time.perf_counter() - t0) * 1000.0
 
-    total_passed = p1["passed"] + p2["passed"] + p3["passed"] + p4["passed"]
-    total_checks = p1["total"] + p2["total"] + p3["total"] + p4["total"]
+    total_passed = p1["passed"] + p2["passed"] + p3["passed"] + p4["passed"] + p5["passed"]
+    total_checks = p1["total"] + p2["total"] + p3["total"] + p4["total"] + p5["total"]
 
     report: Dict[str, Any] = {
         "suite": "mirror_eval_cpu_independent",
@@ -543,7 +667,8 @@ def run_full_eval(
             "math": p1,
             "tdd_code": p2,
             "vault_calibration": p3,
-            "architecture_independence": p4,
+            "quantum_and_capabilities": p4,
+            "architecture_independence": p5,
         },
     }
 

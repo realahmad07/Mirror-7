@@ -224,3 +224,19 @@ def test_six_gate_bounded_cache_and_near_duplicate_lsh():
     # Clear backward compatibility (used by benchmark_qwen_opus)
     pipeline._seen_minhashes.clear()
     assert pipeline.audit_record(base_doc, spdx_license="MIT").passed is True
+
+
+def test_disk_vault_purge_matching_rules(tmp_path: Path):
+    vault = DiskCrystalVault(tmp_path / "purge.dcrystal")
+    try:
+        vault.ingest_pair("Introduce yourself", "Hello, I am Open Assistant trained by LAION.", trust_tier=2)
+        vault.ingest_pair("Explain Bell states", "Bell states are maximally entangled two-qubit pairs.", trust_tier=1)
+        assert vault.rule_count() == 2
+
+        stats = vault.purge_matching_rules(("open assistant", "trained by laion"))
+        assert stats["rules_removed"] == 1
+        assert vault.rule_count() == 1
+        assert vault.respond("Introduce yourself").epistemic_tier == "honest_abstain"
+        assert "entangled" in vault.respond("Explain Bell states").answer.lower()
+    finally:
+        vault.close()

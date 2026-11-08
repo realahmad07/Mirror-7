@@ -690,6 +690,211 @@ class ParametricChallengeMutator:
             ),
         ]
 
+    @staticmethod
+    def generate_extended_curriculum(seed: int = 7) -> list[VerifiableChallenge]:
+        """Extended 10-skill CPU curriculum spanning graphs, DP, number theory, search & quantum Born probabilities."""
+        base = ParametricChallengeMutator.generate_curriculum(seed=seed)
+        limit_p = 29 + (seed % 5)
+        expected_primes = [x for x in range(2, limit_p + 1) if all(x % d != 0 for d in range(2, int(x**0.5) + 1))]
+
+        extended = [
+            VerifiableChallenge(
+                challenge_id=f"graph_dijkstra_s{seed}",
+                prompt="Implement `dijkstra_shortest_path(n, edges, src)` using a min-heap returning shortest distances or `-1` if unreachable.",
+                skill_name="dijkstra_shortest_path",
+                keywords=("dijkstra", "shortest path", "weighted graph", "heapq"),
+                test_code=(
+                    "assert dijkstra_shortest_path(4, [(0,1,4),(0,2,1),(2,1,2),(1,3,1)], 0) == [0, 3, 1, 4]\n"
+                    "assert dijkstra_shortest_path(3, [(0,1,5)], 0) == [0, 5, -1]\n"
+                    "assert dijkstra_shortest_path(1, [], 0) == [0]\n"
+                ),
+                candidate_rollouts=(
+                    "<think> Unweighted BFS ignores edge weights. </think>\n"
+                    "def dijkstra_shortest_path(n, edges, src):\n"
+                    "  return [0 if i == src else 1 for i in range(n)]\n",
+                    "<think> Maintain priority queue (dist, u) and relax edges with non-negative weights in O(E log V). </think>\n"
+                    "import heapq\n"
+                    "def dijkstra_shortest_path(n, edges, src):\n"
+                    "  adj = [[] for _ in range(n)]\n"
+                    "  for u, v, w in edges:\n"
+                    "    adj[u].append((v, w))\n"
+                    "  dist = [float('inf')] * n\n"
+                    "  dist[src] = 0\n"
+                    "  pq = [(0, src)]\n"
+                    "  while pq:\n"
+                    "    d, u = heapq.heappop(pq)\n"
+                    "    if d > dist[u]: continue\n"
+                    "    for v, w in adj[u]:\n"
+                    "      if d + w < dist[v]:\n"
+                    "        dist[v] = d + w\n"
+                    "        heapq.heappush(pq, (dist[v], v))\n"
+                    "  return [-1 if d == float('inf') else int(d) for d in dist]\n",
+                ),
+            ),
+            VerifiableChallenge(
+                challenge_id=f"dp_knapsack01_s{seed}",
+                prompt="Implement `knapsack_01(weights, values, capacity)` returning maximum integer value in 0/1 Knapsack.",
+                skill_name="knapsack_01",
+                keywords=("knapsack", "0/1 knapsack", "dynamic programming"),
+                test_code=(
+                    "assert knapsack_01([1, 3, 4, 5], [1, 4, 5, 7], 7) == 9\n"
+                    "assert knapsack_01([2, 3], [10, 15], 0) == 0\n"
+                    "assert knapsack_01([], [], 10) == 0\n"
+                ),
+                candidate_rollouts=(
+                    "<think> Greedy value-per-weight heuristic fails 0/1 integrity constraint. </think>\n"
+                    "def knapsack_01(weights, values, capacity):\n"
+                    "  return sum(v for w, v in zip(weights, values) if w <= capacity)\n",
+                    "<think> 1D reverse-capacity DP transitions dp[c] = max(dp[c], dp[c-w] + v). </think>\n"
+                    "def knapsack_01(weights, values, capacity):\n"
+                    "  if capacity <= 0 or not weights: return 0\n"
+                    "  dp = [0] * (capacity + 1)\n"
+                    "  for w, v in zip(weights, values):\n"
+                    "    if w <= capacity:\n"
+                    "      for c in range(capacity, w - 1, -1):\n"
+                    "        cand = dp[c - w] + v\n"
+                    "        if cand > dp[c]: dp[c] = cand\n"
+                    "  return dp[capacity]\n",
+                ),
+            ),
+            VerifiableChallenge(
+                challenge_id=f"nt_sieve_s{seed}",
+                prompt=f"Implement `sieve_of_eratosthenes(n)` returning all primes <= n (verify up to {limit_p}).",
+                skill_name="sieve_of_eratosthenes",
+                keywords=("sieve", "eratosthenes", "prime numbers"),
+                test_code=(
+                    f"assert sieve_of_eratosthenes({limit_p}) == {expected_primes!r}\n"
+                    "assert sieve_of_eratosthenes(1) == []\n"
+                    "assert sieve_of_eratosthenes(2) == [2]\n"
+                ),
+                candidate_rollouts=(
+                    "<think> Include 1 by mistake. </think>\n"
+                    "def sieve_of_eratosthenes(n):\n"
+                    "  return [1] + [x for x in range(2, n + 1) if x % 2 == 1]\n",
+                    "<think> Mark composite multiples starting at p*p in O(n log log n) time. </think>\n"
+                    "import math\n"
+                    "def sieve_of_eratosthenes(n):\n"
+                    "  if n < 2: return []\n"
+                    "  prime = [True] * (n + 1)\n"
+                    "  prime[0] = prime[1] = False\n"
+                    "  for p in range(2, math.isqrt(n) + 1):\n"
+                    "    if prime[p]:\n"
+                    "      for m in range(p * p, n + 1, p):\n"
+                    "        prime[m] = False\n"
+                    "  return [i for i, flag in enumerate(prime) if flag]\n",
+                ),
+            ),
+            VerifiableChallenge(
+                challenge_id=f"search_binary_s{seed}",
+                prompt="Implement `binary_search(arr, target)` returning exact index or `-1` on a sorted array.",
+                skill_name="binary_search",
+                keywords=("binary search", "bisection", "sorted array"),
+                test_code=(
+                    "assert binary_search([], 5) == -1\n"
+                    "assert binary_search([1, 3, 5, 7], 1) == 0\n"
+                    "assert binary_search([1, 3, 5, 7], 7) == 3\n"
+                    "assert binary_search([1, 3, 5, 7], 4) == -1\n"
+                ),
+                candidate_rollouts=(
+                    "<think> Off-by-one upper bound skips last element. </think>\n"
+                    "def binary_search(arr, target):\n"
+                    "  lo, hi = 0, len(arr) - 1\n"
+                    "  while lo < hi:\n"
+                    "    mid = (lo + hi) // 2\n"
+                    "    if arr[mid] == target: return mid\n"
+                    "    if arr[mid] < target: lo = mid + 1\n"
+                    "    else: hi = mid - 1\n"
+                    "  return -1\n",
+                    "<think> Inclusive [lo, hi] loop bounds handle singletons cleanly in O(log n). </think>\n"
+                    "def binary_search(arr, target):\n"
+                    "  lo, hi = 0, len(arr) - 1\n"
+                    "  while lo <= hi:\n"
+                    "    mid = (lo + hi) // 2\n"
+                    "    if arr[mid] == target: return mid\n"
+                    "    if arr[mid] < target: lo = mid + 1\n"
+                    "    else: hi = mid - 1\n"
+                    "  return -1\n",
+                ),
+            ),
+            VerifiableChallenge(
+                challenge_id=f"dp_edit_distance_s{seed}",
+                prompt="Implement `edit_distance(a, b)` returning minimum Levenshtein insert/delete/replace steps.",
+                skill_name="edit_distance",
+                keywords=("edit distance", "levenshtein", "string dp"),
+                test_code=(
+                    "assert edit_distance('kitten', 'sitting') == 3\n"
+                    "assert edit_distance('', 'abc') == 3\n"
+                    "assert edit_distance('same', 'same') == 0\n"
+                ),
+                candidate_rollouts=(
+                    "<think> Return length diff only. </think>\n"
+                    "def edit_distance(a, b):\n"
+                    "  return abs(len(a) - len(b))\n",
+                    "<think> Wagner-Fischer rolling row DP over prefixes of b in O(min(m,n)) space. </think>\n"
+                    "def edit_distance(a, b):\n"
+                    "  prev = list(range(len(b) + 1))\n"
+                    "  for i, ca in enumerate(a, 1):\n"
+                    "    curr = [i]\n"
+                    "    for j, cb in enumerate(b, 1):\n"
+                    "      cost = 0 if ca == cb else 1\n"
+                    "      curr.append(min(curr[-1] + 1, prev[j] + 1, prev[j - 1] + cost))\n"
+                    "    prev = curr\n"
+                    "  return prev[-1]\n",
+                ),
+            ),
+            VerifiableChallenge(
+                challenge_id=f"dp_kadane_s{seed}",
+                prompt="Implement `kadane_max_subarray(nums)` returning maximum non-empty contiguous subarray sum.",
+                skill_name="kadane_max_subarray",
+                keywords=("kadane", "maximum subarray", "contiguous sum"),
+                test_code=(
+                    "assert kadane_max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]) == 6\n"
+                    "assert kadane_max_subarray([-5, -2, -8]) == -2\n"
+                    "assert kadane_max_subarray([42]) == 42\n"
+                ),
+                candidate_rollouts=(
+                    "<think> Clamping running sum to 0 as overall max fails negative arrays. </think>\n"
+                    "def kadane_max_subarray(nums):\n"
+                    "  cur = best = 0\n"
+                    "  for x in nums:\n"
+                    "    cur = max(0, cur + x)\n"
+                    "    best = max(best, cur)\n"
+                    "  return best\n",
+                    "<think> Track best ending here starting at nums[0] so negative arrays work cleanly. </think>\n"
+                    "def kadane_max_subarray(nums):\n"
+                    "  if not nums: return 0\n"
+                    "  cur = best = nums[0]\n"
+                    "  for x in nums[1:]:\n"
+                    "    cur = x if x > cur + x else cur + x\n"
+                    "    if cur > best: best = cur\n"
+                    "  return best\n",
+                ),
+            ),
+            VerifiableChallenge(
+                challenge_id=f"qm_born_probs_s{seed}",
+                prompt="Implement `bell_state_probabilities(amps)` computing Born rule measurement probabilities for a qubit statevector.",
+                skill_name="bell_state_probabilities",
+                keywords=("quantum", "born rule", "bell state", "amplitudes", "qubit probabilities"),
+                test_code=(
+                    "probs = bell_state_probabilities([0.7071067811865475, 0.0, 0.0, 0.7071067811865475])\n"
+                    "assert abs(probs[0] - 0.5) < 1e-6 and abs(probs[1]) < 1e-9 and abs(probs[3] - 0.5) < 1e-6\n"
+                    "assert abs(sum(probs) - 1.0) < 1e-6\n"
+                ),
+                candidate_rollouts=(
+                    "<think> Return raw amplitudes without squaring magnitude. </think>\n"
+                    "def bell_state_probabilities(amps):\n"
+                    "  return list(amps)\n",
+                    "<think> Born rule P(i) = |psi_i|^2 normalized by total state norm squared. </think>\n"
+                    "def bell_state_probabilities(amps):\n"
+                    "  mags = [abs(a) ** 2 for a in amps]\n"
+                    "  tot = sum(mags)\n"
+                    "  if tot == 0: raise ValueError('Zero statevector')\n"
+                    "  return [round(m / tot, 12) for m in mags]\n",
+                ),
+            ),
+        ]
+        return base + extended
+
 
 class StateCachedMicroAdapterHead(nn.Module):
     """Lightweight state-to-byte-preference projection using Rank-4 LoRA for < 50 ms CPU sleep updates."""
@@ -730,10 +935,12 @@ class AutonomousWakeSleepTrainer:
         lora_rank: int = 4,
         registry_path: Path | str | None = None,
         min_anchor_cosine: float = 0.985,
+        crystal_vault: Any | None = None,
     ):
         self.device = torch.device("cpu")
         self.state_dim = int(state_dim)
         self.min_anchor_cosine = float(min_anchor_cosine)
+        self.crystal_vault = crystal_vault
 
         self.encoder = DiagonalGatedLinearScanEncoder(
             vocab_size=259, embed_dim=128, hidden_dim=256, state_dim=self.state_dim, patch_size=4
@@ -758,13 +965,43 @@ class AutonomousWakeSleepTrainer:
         _, pooled = self.encoder(ids)
         return self.memory(pooled)
 
-    def run_autonomous_cycle(self, challenges: list[VerifiableChallenge] | None = None, dpo_steps: int = 6) -> dict[str, Any]:
+    def crystallize_verified_skills(self, vault: Any) -> dict[str, int]:
+        """Bridge all sandbox-verified skills in ``VerifiedSkillForge`` into ``DiskCrystalVault`` / ``MirrorCrystalEngine``."""
+        written = 0
+        already_present = 0
+        for entry in self.skill_forge._skills.values():
+            target_md = (
+                f"Verified CPU Skill (`{entry.skill_name}`, v{entry.version}, {entry.benchmark_us:.1f} us):\n"
+                f"```python\n{entry.code.strip()}\n```"
+            )
+            ok = vault.ingest_pair(
+                user_text=entry.description or f"Implement verified Python function `{entry.skill_name}`.",
+                target_text=target_md,
+                think=f"Verified by AutonomousWakeSleepTrainer + VerifiedSkillForge ({', '.join(entry.keywords)})",
+                test_code=entry.test_code,
+                domain="cpu_verified_skill",
+                trust_tier=1,
+            )
+            if ok:
+                written += 1
+            else:
+                already_present += 1
+        return {"written": written, "reinforced_or_existing": already_present}
+
+    def run_autonomous_cycle(
+        self,
+        challenges: list[VerifiableChallenge] | None = None,
+        dpo_steps: int = 6,
+        crystal_vault: Any | None = None,
+    ) -> dict[str, Any]:
         t_start = time.perf_counter()
         tasks = challenges if challenges is not None else ParametricChallengeMutator.generate_curriculum(seed=7)
+        target_vault = crystal_vault if crystal_vault is not None else self.crystal_vault
 
         verified_pairs: list[tuple[torch.Tensor, str, str]] = []
         recruited_skills: list[str] = []
         episodic_writes = 0
+        crystal_vault_writes = 0
 
         # ---------------- WAKE PHASE (0-Backprop Verification, Memory Write & Code Recruitment) ----------------
         for ch in tasks:
@@ -795,6 +1032,21 @@ class AutonomousWakeSleepTrainer:
                 )
                 if forge_res.get("recruited"):
                     recruited_skills.append(ch.skill_name)
+
+                if target_vault is not None:
+                    think_m = re.search(r"<think>(.*?)</think>", best_cand, flags=re.DOTALL)
+                    think_txt = think_m.group(1).strip() if think_m else ""
+                    clean_code = re.sub(r"<think>.*?</think>", "", best_cand, flags=re.DOTALL).strip()
+                    wrote = target_vault.ingest_pair(
+                        user_text=ch.prompt,
+                        target_text=f"Verified Solution (`{ch.skill_name}`):\n```python\n{clean_code}\n```",
+                        think=think_txt,
+                        test_code=ch.test_code,
+                        domain="cpu_verified_skill",
+                        trust_tier=1,
+                    )
+                    if wrote:
+                        crystal_vault_writes += 1
 
                 if best_r > worst_r:
                     verified_pairs.append((state_vec.detach(), best_cand, worst_cand))
@@ -845,6 +1097,7 @@ class AutonomousWakeSleepTrainer:
         return {
             "challenges_evaluated": len(tasks),
             "episodic_instant_writes": episodic_writes,
+            "crystal_vault_writes": crystal_vault_writes,
             "recruited_skills": recruited_skills,
             "verified_preference_pairs": len(verified_pairs),
             "trainable_lora_params": sum(p.numel() for p in trainable_params),

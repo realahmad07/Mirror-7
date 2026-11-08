@@ -1,30 +1,30 @@
 {
   "cerebrum_crystal_bridge": {
     "queries_tested": 4,
-    "mean_latency_ms": 2.232,
+    "mean_latency_ms": 3.372,
     "accuracy": 1.0,
     "math_latencies_ms": [
-      2.902,
-      0.358,
-      0.43,
-      5.238
+      2.842,
+      0.37,
+      0.46,
+      9.815
     ]
   },
   "prm_verifier": {
     "steps_evaluated": 5000,
-    "step_latency_us": 13.9,
-    "steps_per_sec": 71948
+    "step_latency_us": 18.58,
+    "steps_per_sec": 53830
   },
   "autonomous_tdd_engine": {
-    "clean_verification_ms": 1.774,
-    "self_repair_ms": 3.463,
+    "clean_verification_ms": 3.574,
+    "self_repair_ms": 6.049,
     "tests_passed": 5,
     "self_repair_success": true
   },
   "six_gate_data_hygiene": {
     "samples_audited": 2000,
-    "total_ms": 1351.63,
-    "throughput_samples_per_sec": 1479.7,
+    "total_ms": 1549.24,
+    "throughput_samples_per_sec": 1291.0,
     "rejection_accuracy": 1.0
   }
 }

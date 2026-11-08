@@ -1,0 +1,221 @@
+{
+  "pipeline": "SixGateDataHygienePipeline + ZeroTrustSandboxJudge",
+  "split_enforced": "train",
+  "allowed_licenses": [
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "CC-BY-4.0",
+    "MIT",
+    "Public-Domain",
+    "Unlicense"
+  ],
+  "output_jsonl": "training/data/mirror_internet_curated_v1.jsonl",
+  "total_curated_records": 6273,
+  "total_candidates_seen": 12094,
+  "total_prefilter_rejected": 4325,
+  "total_sandbox_verified": 875,
+  "total_sandbox_rejected": 656,
+  "gate_rejections_total": {
+    "Gate 2 (Deduplication)": 383,
+    "Gate 1 (PII)": 27,
+    "Gate 5 (AST Compiler)": 108,
+    "Gate 6 (Decontamination)": 1,
+    "Gate 3 (Entropy)": 3,
+    "Gate 4 (Pedagogy)": 318
+  },
+  "records_by_domain": {
+    "coding": 2450,
+    "quantum_computing": 636,
+    "math": 2000,
+    "general_chat": 1061,
+    "science_reasoning": 126
+  },
+  "records_by_license": {
+    "MIT": 4500,
+    "Apache-2.0": 1773
+  },
+  "records_by_trust_tier": {
+    "1": 650,
+    "2": 5623
+  },
+  "elapsed_sec": 164.9,
+  "per_source": [
+    {
+      "source": "TheAlgorithms/Python",
+      "spdx_license": "MIT",
+      "split": "train",
+      "domain": "coding",
+      "candidates_seen": 2576,
+      "prefilter_rejected": 1045,
+      "sandbox_verified": 875,
+      "sandbox_rejected": 656,
+      "gate_passed": 650,
+      "gate_rejections": {
+        "Gate 2 (Deduplication)": 217,
+        "Gate 1 (PII)": 8
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "Qiskit/textbook+documentation",
+      "spdx_license": "Apache-2.0",
+      "split": "train",
+      "domain": "quantum_computing",
+      "candidates_seen": 619,
+      "prefilter_rejected": 0,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 600,
+      "gate_rejections": {
+        "Gate 2 (Deduplication)": 17,
+        "Gate 5 (AST Compiler)": 1,
+        "Gate 1 (PII)": 1
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "PennyLaneAI/qml",
+      "spdx_license": "Apache-2.0",
+      "split": "train",
+      "domain": "quantum_computing",
+      "candidates_seen": 36,
+      "prefilter_rejected": 0,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 36,
+      "gate_rejections": {},
+      "fetch_errors": []
+    },
+    {
+      "source": "m-a-p/CodeFeedback-Filtered-Instruction",
+      "spdx_license": "Apache-2.0",
+      "split": "train",
+      "domain": "coding",
+      "candidates_seen": 2492,
+      "prefilter_rejected": 1445,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 1000,
+      "gate_rejections": {
+        "Gate 5 (AST Compiler)": 2,
+        "Gate 2 (Deduplication)": 41,
+        "Gate 1 (PII)": 4
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+      "spdx_license": "MIT",
+      "split": "train",
+      "domain": "coding",
+      "candidates_seen": 1545,
+      "prefilter_rejected": 622,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 800,
+      "gate_rejections": {
+        "Gate 5 (AST Compiler)": 104,
+        "Gate 1 (PII)": 10,
+        "Gate 2 (Deduplication)": 9
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "openai/gsm8k",
+      "spdx_license": "MIT",
+      "split": "train",
+      "domain": "math",
+      "candidates_seen": 1210,
+      "prefilter_rejected": 0,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 1200,
+      "gate_rejections": {
+        "Gate 6 (Decontamination)": 1,
+        "Gate 2 (Deduplication)": 9
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "TIGER-Lab/MathInstruct",
+      "spdx_license": "MIT",
+      "split": "train",
+      "domain": "math",
+      "candidates_seen": 984,
+      "prefilter_rejected": 148,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 800,
+      "gate_rejections": {
+        "Gate 2 (Deduplication)": 36
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "Open-Orca/SlimOrca",
+      "spdx_license": "MIT",
+      "split": "train",
+      "domain": "general_chat",
+      "candidates_seen": 1835,
+      "prefilter_rejected": 1029,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 800,
+      "gate_rejections": {
+        "Gate 3 (Entropy)": 3,
+        "Gate 1 (PII)": 1,
+        "Gate 2 (Deduplication)": 2
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "OpenAssistant/oasst2",
+      "spdx_license": "Apache-2.0",
+      "split": "train",
+      "domain": "general_chat",
+      "candidates_seen": 141,
+      "prefilter_rejected": 31,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 11,
+      "gate_rejections": {
+        "Gate 4 (Pedagogy)": 92,
+        "Gate 1 (PII)": 3,
+        "Gate 5 (AST Compiler)": 1,
+        "Gate 2 (Deduplication)": 3
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "HuggingFaceTB/cosmopedia",
+      "spdx_license": "Apache-2.0",
+      "split": "train",
+      "domain": "science_reasoning",
+      "candidates_seen": 357,
+      "prefilter_rejected": 5,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 126,
+      "gate_rejections": {
+        "Gate 4 (Pedagogy)": 226
+      },
+      "fetch_errors": []
+    },
+    {
+      "source": "tau/commonsense_qa",
+      "spdx_license": "MIT",
+      "split": "train",
+      "domain": "general_chat",
+      "candidates_seen": 299,
+      "prefilter_rejected": 0,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "gate_passed": 250,
+      "gate_rejections": {
+        "Gate 2 (Deduplication)": 49
+      },
+      "fetch_errors": []
+    }
+  ]
+}

@@ -93,7 +93,7 @@ class BackendService:
             self.crystal_vault = None
 
     def crystal_ask(self, prompt: str, session_id: str = "default") -> dict[str, Any]:
-        """Query the backing Mirror Crystal Vault or fallback to empty abstention."""
+        """Query the backing Mirror Crystal Vault with verified Cerebrum math fallback on miss."""
         if self.crystal_vault is None:
             return {
                 "answer": "Mirror Crystal Vault is not initialized.",
@@ -107,6 +107,20 @@ class BackendService:
             }
         res = self.crystal_vault.respond(prompt, session_id=session_id)
         self.metrics.increment("crystal_queries_total")
+        if res.epistemic_tier == "honest_abstain" and prompt.strip():
+            math_res = self.cerebrum_bridge.solve(prompt)
+            if math_res.get("ok") and float(math_res.get("prm_reward", 0.0)) >= 0.80:
+                return {
+                    "answer": str(math_res.get("formatted_response") or math_res["answer"]),
+                    "confidence": round(float(math_res["prm_reward"]), 4),
+                    "mode": f"cerebrum_{math_res.get('strategy', 'exact')}",
+                    "matched_rule_id": None,
+                    "latency_ms": round(float(res.latency_ms) + float(math_res.get("latency_ms", 0.0)), 3),
+                    "sandbox_verified": True,
+                    "reasoning_trace": list(res.reasoning_trace)
+                    + [f"Delegated to CerebrumCrystalBridge ({math_res.get('strategy')}, PRM={math_res['prm_reward']})"],
+                    "epistemic_tier": "verified_exact",
+                }
         return {
             "answer": res.answer,
             "confidence": res.confidence,

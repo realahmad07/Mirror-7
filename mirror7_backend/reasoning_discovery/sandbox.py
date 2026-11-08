@@ -4,6 +4,9 @@ Security Sandbox for Executing and Testing Synthesized Reasoning Strategies.
 from __future__ import annotations
 
 import ast
+import bisect
+import collections
+import heapq
 import math
 import time
 from typing import Any, Callable, Sequence
@@ -19,9 +22,18 @@ FORBIDDEN_MODULES = {
     "shutil", "pathlib", "importlib", "threading", "multiprocessing", "ctypes"
 }
 
+_SAFE_MODULES = {
+    "math": math,
+    "heapq": heapq,
+    "collections": collections,
+    "bisect": bisect,
+}
+
+
 def _safe_import(name, *args, **kwargs):
-    if name == "math":
-        return math
+    root = name.split(".")[0]
+    if root in _SAFE_MODULES:
+        return _SAFE_MODULES[root]
     raise SecurityViolation(f"Forbidden import: {name}")
 
 

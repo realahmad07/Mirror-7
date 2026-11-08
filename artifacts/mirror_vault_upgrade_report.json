@@ -1,0 +1,84 @@
+{
+  "rules_before": 32464,
+  "tiers_before": {
+    "2": 32460,
+    "1": 4
+  },
+  "persona_purge": {
+    "rules_removed": 243,
+    "postings_updated": 1977,
+    "postings_deleted": 161
+  },
+  "identity_rules_added": 8,
+  "curated_ingest": {
+    "file": "training/data/mirror_internet_curated_v1.jsonl",
+    "rows_ingested": 6273,
+    "new_rules_added": 5607,
+    "duplicates_skipped_in_file": 666,
+    "total_vault_rules_on_disk": 37836,
+    "synonym_bridges_folded": 32,
+    "elapsed_sec": 27.79,
+    "rows_per_sec_cpu": 225.7
+  },
+  "dream_cycle": {
+    "dreams_crystallized": 0,
+    "valid_shortcuts_found": 1,
+    "cycles_pruned": 2,
+    "bloat_pruned": 0,
+    "candidates_explored": 10,
+    "elapsed_ms": 2.396
+  },
+  "wake_sleep_cycle": {
+    "challenges_evaluated": 10,
+    "episodic_instant_writes": 10,
+    "crystal_vault_writes": 10,
+    "recruited_skills": [
+      "lis_length",
+      "fast_mod_exp",
+      "topo_sort_kahn",
+      "dijkstra_shortest_path",
+      "knapsack_01",
+      "sieve_of_eratosthenes",
+      "binary_search",
+      "edit_distance",
+      "kadane_max_subarray",
+      "bell_state_probabilities"
+    ],
+    "verified_preference_pairs": 9,
+    "trainable_lora_params": 4096,
+    "initial_preference_margin": -0.00187,
+    "final_preference_margin": 0.11988,
+    "anchor_retention_cosine": 0.999751,
+    "regression_rolled_back": false,
+    "sleep_consolidation_ms": 7831.31,
+    "total_cycle_cpu_ms": 8230.84
+  },
+  "skill_forge_crystallize": {
+    "written": 0,
+    "reinforced_or_existing": 10
+  },
+  "rules_after": 37846,
+  "tiers_after": {
+    "2": 37174,
+    "1": 672
+  },
+  "top_domains_after": {
+    "general": 24255,
+    "provide a helpful, accurate response": 9189,
+    "quantum_computing": 2498,
+    "mathematics": 1821,
+    "critical_thinking": 57,
+    "cpu_verified_skill": 10,
+    "identity": 7,
+    "general_chat": 3,
+    "doc_crystallized": 2,
+    "canary_math": 1,
+    "canary_fact": 1,
+    "dream_synthesis": 1,
+    "mcts_synthesized": 1
+  },
+  "disk_size_mb": 50.52,
+  "grover_typo_latency_ms": 51.236,
+  "remaining_persona_leaks": 0,
+  "elapsed_sec": 51.09
+}

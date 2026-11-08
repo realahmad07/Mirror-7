@@ -5,6 +5,7 @@ Author: Ahmad Hassan | Repository: https://github.com/realahmad07/Mirror-7 | Lic
 from __future__ import annotations
 
 from .bit_signatures import ContextBitTable
+from .dataset_curator import CurationConfig, curate_all_datasets
 from .disk_vault import DiskCrystalVault
 from .engine import CrystalResponse, MirrorCrystalEngine, split_compound_intents
 from .grammar_and_sandbox import ByteMarkovGrammar, ZeroTrustSandboxJudge
@@ -66,6 +67,7 @@ __all__ = [
     "CoreferenceAndSenseTracker",
     "CrystalResponse",
     "CrystalRule",
+    "CurationConfig",
     "DiskCrystalVault",
     "DocumentAutoCrystallizer",
     "DreamUtilityPruner",
@@ -96,5 +98,6 @@ __all__ = [
     "UniversalConceptHub",
     "WasmPocketCompiler",
     "ZeroTrustSandboxJudge",
+    "curate_all_datasets",
     "split_compound_intents",
 ]

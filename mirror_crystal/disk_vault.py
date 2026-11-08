@@ -13,6 +13,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import re
 import sqlite3
 import threading
 import time
@@ -522,7 +523,15 @@ class DiskCrystalVault:
             temp_causal._causal_edges.clear()
             seen_batch_hashes.clear()
 
-        def _process_one(u_raw: str, r_raw: str, think: str, tool: str, test_c: str, dom: str) -> None:
+        def _process_one(
+            u_raw: str,
+            r_raw: str,
+            think: str,
+            tool: str,
+            test_c: str,
+            dom: str,
+            trust_tier: int = 2,
+        ) -> None:
             nonlocal new_rules_this_file, dups_this_file
             u, t = u_raw.strip(), r_raw.strip()
             if not u or not t:
@@ -530,6 +539,7 @@ class DiskCrystalVault:
             self.stats["pairs_seen"] += 1
             self.bit_table.observe_text(u)
             self.bit_table.observe_text(t)
+            self.fluid_composer.observe_corpus_text(t[:400])
             full_resp = f"<think> {think.strip()} </think>\n{t}" if think.strip() and "<think>" not in t else t
 
             verified_bonus = 0
@@ -541,6 +551,7 @@ class DiskCrystalVault:
                 verified_bonus = 5
                 self.stats["sandbox_verified_rules"] += 1
 
+            effective_tier = 1 if verified_bonus > 0 else int(trust_tier)
             if len(full_resp) <= 140:
                 temp_causal.observe_causal_fact(full_resp)
 
@@ -577,6 +588,8 @@ class DiskCrystalVault:
                 abs_pair.abstract_tool,
                 abs_pair.derived_expr,
                 dom,
+                trust_tier=effective_tier,
+                updated_seq=self.stats["pairs_seen"],
             )
             rule_batch.append((rid, phash, sig.to_bytes(256, "little"), abs_pair.num_slots, 1 + verified_bonus, 0, payload))
             for tok in salient:
@@ -606,6 +619,7 @@ class DiskCrystalVault:
                             "",
                             "",
                             "multi_turn",
+                            trust_tier=int(turn.get("trust_tier", obj.get("trust_tier", 2))),
                         )
                 else:
                     u = str(
@@ -633,6 +647,7 @@ class DiskCrystalVault:
                         str(obj.get("tool") or ""),
                         str(obj.get("test") or obj.get("test_code") or ""),
                         dom,
+                        trust_tier=int(obj.get("trust_tier", 2)),
                     )
 
                 rows_read += 1
@@ -738,10 +753,16 @@ class DiskCrystalVault:
         }
         q_sal_total = sum(self.bit_table.token_salience(t) for t in raw_q_set) if raw_q_set else sum(sal_cache.values())
         q_neg = (query_sig >> 2040) != 0
+        q_norm_exact = re.sub(r"\s+", " ", "".join(c.lower() if c.isalnum() or c.isspace() else " " for c in " ".join(query_tokens))).strip()
 
         scored: list[tuple[float, CrystalRule]] = []
         for rule in fetched_rules:
             if not rule.active:
+                continue
+            r_norm_exact = re.sub(r"\s+", " ", "".join(c.lower() if c.isalnum() or c.isspace() else " " for c in rule.abstract_prompt)).strip()
+            if r_norm_exact and (r_norm_exact == q_norm_exact or (rule.domain == "identity" and r_norm_exact in q_norm_exact)):
+                score = 1.05 * rule.reliability
+                scored.append((score, rule))
                 continue
             overlap_bits = (query_sig & rule.signature).bit_count()
             bit_sim = (overlap_bits * q_inv_sqrt * rule.inv_sqrt_bits) if overlap_bits else 0.0
@@ -943,6 +964,39 @@ class DiskCrystalVault:
         orig_p = original_prompt or q
 
         q_core = self.fluid_composer.strip_style_framing(q)
+        if not self.fluid_composer.is_explicit_creative_request(orig_p):
+            abs_pair_exact = SlotAbstractor.abstract_pair(q_core, "")
+            phash_exact = self._prompt_hash(abs_pair_exact.abstract_prompt.strip().lower())
+            row_exact = self.conn.execute(
+                "SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules WHERE prompt_hash = ?",
+                (phash_exact,),
+            ).fetchone()
+            if row_exact is not None:
+                rule_exact = self._row_to_rule(row_exact)
+                if rule_exact.active:
+                    instantiated = SlotAbstractor.instantiate(
+                        query=q_core,
+                        num_slots=rule_exact.num_slots,
+                        abstract_response=rule_exact.abstract_response,
+                        derived_expr=rule_exact.derived_expr,
+                    )
+                    if instantiated is not None:
+                        ok_ex, j_msg = ZeroTrustSandboxJudge.verify_code_and_test(instantiated)
+                        if ok_ex:
+                            ms = (time.perf_counter_ns() - t0) / 1_000_000.0
+                            mode_str = "slot_formula_lock" if rule_exact.num_slots > 0 else "direct_crystal_lock"
+                            trace.append(f"O(1) Exact Prompt Hash Hit #{rule_exact.rule_id} (domain={rule_exact.domain})")
+                            return CrystalResponse(
+                                answer=instantiated,
+                                confidence=1.0,
+                                mode=mode_str,
+                                matched_rule_id=rule_exact.rule_id,
+                                latency_ms=round(ms, 3),
+                                sandbox_verified=j_msg != "non_code",
+                                reasoning_trace=trace,
+                                epistemic_tier="verified_exact",
+                            )
+
         q_sense, sense_tags = self.coref_tracker.enrich_for_query(q_core, known_vocab=self.bit_table.token_df)
         if sense_tags:
             trace.append(f"Disambiguated homonym sense -> {', '.join(sense_tags)}")
@@ -1095,6 +1149,91 @@ class DiskCrystalVault:
             reasoning_trace=trace + ["Abstained honestly instead of hallucinating."],
             epistemic_tier="honest_abstain",
         )
+
+    def get_trust_tier_counts(self) -> dict[str, int]:
+        """Return rule counts grouped by trust_tier (1=verified, 2=curated, 3=unverified)."""
+        with self._lock:
+            counts: dict[str, int] = {}
+            for (payload,) in self.conn.execute("SELECT payload FROM rules"):
+                tier = str(json.loads(zlib.decompress(payload).decode("utf-8")).get("tt", 2))
+                counts[tier] = counts.get(tier, 0) + 1
+            return counts
+
+    def get_domain_counts(self) -> dict[str, int]:
+        """Return rule counts grouped by domain label."""
+        with self._lock:
+            counts: dict[str, int] = {}
+            for (payload,) in self.conn.execute("SELECT payload FROM rules"):
+                dom = str(json.loads(zlib.decompress(payload).decode("utf-8")).get("dom", "general"))
+                counts[dom] = counts.get(dom, 0) + 1
+            return counts
+
+    def purge_matching_rules(self, signatures: Any, check_prompt: bool = False) -> dict[str, int]:
+        """Remove rules whose response (or optionally prompt) contains any stale/banned signature and prune postings."""
+        sigs = tuple(str(s).lower() for s in signatures if str(s).strip())
+        if not sigs:
+            return {"rules_removed": 0, "postings_updated": 0, "postings_deleted": 0}
+        with self._lock:
+            bad_rids: set[int] = set()
+            for rid, payload in self.conn.execute("SELECT rule_id, payload FROM rules"):
+                d = json.loads(zlib.decompress(payload).decode("utf-8"))
+                hay = f"{d.get('ap', '')}\n{d.get('ar', '')}".lower() if check_prompt else str(d.get("ar", "")).lower()
+                if any(s in hay for s in sigs):
+                    bad_rids.add(int(rid))
+            if not bad_rids:
+                return {"rules_removed": 0, "postings_updated": 0, "postings_deleted": 0}
+
+            postings_updated = 0
+            postings_deleted = 0
+            tok_upserts: list[tuple[str, bytes]] = []
+            tok_deletes: list[tuple[str,]] = []
+            for tok, blob in self.conn.execute("SELECT tok, rids FROM token_postings"):
+                arr = array("I")
+                arr.frombytes(blob)
+                if any(rid in bad_rids for rid in arr):
+                    kept = array("I", (rid for rid in arr if rid not in bad_rids))
+                    if kept:
+                        tok_upserts.append((tok, kept.tobytes()))
+                        postings_updated += 1
+                    else:
+                        tok_deletes.append((tok,))
+                        postings_deleted += 1
+
+            band_upserts: list[tuple[int, bytes]] = []
+            band_deletes: list[tuple[int,]] = []
+            for band, blob in self.conn.execute("SELECT band, rids FROM band_postings"):
+                arr = array("I")
+                arr.frombytes(blob)
+                if any(rid in bad_rids for rid in arr):
+                    kept = array("I", (rid for rid in arr if rid not in bad_rids))
+                    if kept:
+                        band_upserts.append((int(band), kept.tobytes()))
+                        postings_updated += 1
+                    else:
+                        band_deletes.append((int(band),))
+                        postings_deleted += 1
+
+            rid_list = sorted(bad_rids)
+            with self.conn:
+                for i in range(0, len(rid_list), 400):
+                    chunk = rid_list[i : i + 400]
+                    qmarks = ",".join("?" for _ in chunk)
+                    self.conn.execute(f"DELETE FROM rules WHERE rule_id IN ({qmarks})", chunk)
+                if tok_upserts:
+                    self.conn.executemany("INSERT OR REPLACE INTO token_postings(tok, rids) VALUES (?, ?)", tok_upserts)
+                if tok_deletes:
+                    self.conn.executemany("DELETE FROM token_postings WHERE tok = ?", tok_deletes)
+                if band_upserts:
+                    self.conn.executemany("INSERT OR REPLACE INTO band_postings(band, rids) VALUES (?, ?)", band_upserts)
+                if band_deletes:
+                    self.conn.executemany("DELETE FROM band_postings WHERE band = ?", band_deletes)
+            self._rule_lru.clear()
+            self._meta_dirty = True
+            return {
+                "rules_removed": len(bad_rids),
+                "postings_updated": postings_updated,
+                "postings_deleted": postings_deleted,
+            }
 
     def optimize_disk(self) -> int:
         """Flush dirty metadata + WAL checkpoint so the .dcrystal file is a single portable file on disk."""

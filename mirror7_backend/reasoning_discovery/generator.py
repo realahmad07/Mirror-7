@@ -37,6 +37,46 @@ class StrategyGenerator:
         elif "gcd" in obj_l or "greatest common divisor" in obj_l:
             candidates.append(self._generate_gcd(problem))
 
+        # Domain: Anagram Verification
+        elif "anagram" in obj_l:
+            candidates.append(self._generate_anagram(problem))
+
+        # Domain: Balanced Parentheses / Bracket Matching
+        elif any(k in obj_l for k in ("parenthes", "bracket")):
+            candidates.append(self._generate_valid_parentheses(problem))
+
+        # Domain: Sieve of Eratosthenes / Primes up to N (must precede single-integer prime check)
+        elif any(k in obj_l for k in ("sieve", "eratosthenes", "primes_up_to")):
+            candidates.append(self._generate_sieve(problem))
+
+        # Domain: Shortest Path / Dijkstra
+        elif any(k in obj_l for k in ("dijkstra", "shortest_path", "shortest path")):
+            candidates.append(self._generate_dijkstra(problem))
+
+        # Domain: 0/1 Knapsack Dynamic Programming
+        elif "knapsack" in obj_l:
+            candidates.append(self._generate_knapsack_01(problem))
+
+        # Domain: Kadane Maximum Subarray
+        elif any(k in obj_l for k in ("kadane", "max_subarray", "maximum subarray")):
+            candidates.append(self._generate_kadane(problem))
+
+        # Domain: Levenshtein Edit Distance
+        elif any(k in obj_l for k in ("edit_distance", "edit distance", "levenshtein")):
+            candidates.append(self._generate_edit_distance(problem))
+
+        # Domain: Longest Increasing Subsequence
+        elif any(k in obj_l for k in ("lis_length", "longest increasing subsequence")):
+            candidates.append(self._generate_lis(problem))
+
+        # Domain: Topological Sort (Kahn's BFS)
+        elif any(k in obj_l for k in ("topo_sort", "topological", "kahn")):
+            candidates.append(self._generate_topo_sort(problem))
+
+        # Domain: Binary Modular Exponentiation
+        elif any(k in obj_l for k in ("mod_exp", "modular exponentiation", "fast_mod_exp")):
+            candidates.append(self._generate_fast_mod_exp(problem))
+
         # Domain: Palindrome Checking
         elif "palindrome" in obj_l:
             candidates.append(self._generate_palindrome(problem))
@@ -445,4 +485,259 @@ class StrategyGenerator:
             rationale="Selects minimum element as heuristic baseline.",
             complexity_class="O(N log N)",
             tags=("greedy",),
+        )
+
+    def _generate_anagram(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        def is_anagram(a, b):
+            if len(a) != len(b):
+                return False
+            counts = {}
+            for ch in a:
+                counts[ch] = counts.get(ch, 0) + 1
+            for ch in b:
+                if ch not in counts or counts[ch] == 0:
+                    return False
+                counts[ch] -= 1
+            return True
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_freq_anagram",
+            name="Character Frequency Balance (O(N))",
+            procedure_code=code,
+            entry_point="is_anagram",
+            rationale="Counts character frequencies in one pass and decrements to verify bijection.",
+            complexity_class="O(N)",
+            tags=("strings", "hash_table"),
+        )
+
+    def _generate_valid_parentheses(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        def is_valid_parentheses(s):
+            pairs = {')': '(', ']': '[', '}': '{'}
+            stack = []
+            for ch in s:
+                if ch in '([{':
+                    stack.append(ch)
+                elif ch in pairs:
+                    if not stack or stack.pop() != pairs[ch]:
+                        return False
+            return len(stack) == 0
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_stack_parens",
+            name="LIFO Stack Bracket Matching (O(N))",
+            procedure_code=code,
+            entry_point="is_valid_parentheses",
+            rationale="Matches closing delimiters against the top of an explicit stack.",
+            complexity_class="O(N)",
+            tags=("stack", "strings"),
+        )
+
+    def _generate_sieve(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        import math
+
+        def sieve_of_eratosthenes(n):
+            if n < 2:
+                return []
+            prime = [True] * (n + 1)
+            prime[0] = False
+            prime[1] = False
+            limit = math.isqrt(n)
+            for p in range(2, limit + 1):
+                if prime[p]:
+                    for m in range(p * p, n + 1, p):
+                        prime[m] = False
+            return [i for i, ok in enumerate(prime) if ok]
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_eratosthenes_sieve",
+            name="Sieve of Eratosthenes (O(N log log N))",
+            procedure_code=code,
+            entry_point="sieve_of_eratosthenes",
+            rationale="Marks composite multiples starting at p^2 up to sqrt(N).",
+            complexity_class="O(N log log N)",
+            tags=("number_theory", "sieve"),
+        )
+
+    def _generate_dijkstra(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        import heapq
+
+        def dijkstra_shortest_path(n, edges, src):
+            adj = [[] for _ in range(n)]
+            for u, v, w in edges:
+                adj[u].append((v, w))
+            inf = float('inf')
+            dist = [inf] * n
+            if 0 <= src < n:
+                dist[src] = 0
+            pq = [(0, src)]
+            while pq:
+                d, u = heapq.heappop(pq)
+                if d > dist[u]:
+                    continue
+                for v, w in adj[u]:
+                    nd = d + w
+                    if nd < dist[v]:
+                        dist[v] = nd
+                        heapq.heappush(pq, (nd, v))
+            return [-1 if d == inf else int(d) for d in dist]
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_dijkstra_heap",
+            name="Dijkstra Binary Min-Heap (O(E log V))",
+            procedure_code=code,
+            entry_point="dijkstra_shortest_path",
+            rationale="Greedy shortest-path relaxation with lazy priority queue.",
+            complexity_class="O(E log V)",
+            tags=("graphs", "shortest_path", "heapq"),
+        )
+
+    def _generate_knapsack_01(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        def knapsack_01(weights, values, capacity):
+            if capacity <= 0 or not weights:
+                return 0
+            dp = [0] * (capacity + 1)
+            for w, v in zip(weights, values):
+                if w <= capacity:
+                    for c in range(capacity, w - 1, -1):
+                        cand = dp[c - w] + v
+                        if cand > dp[c]:
+                            dp[c] = cand
+            return dp[capacity]
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_knapsack_dp",
+            name="1D Rolling 0/1 Knapsack DP",
+            procedure_code=code,
+            entry_point="knapsack_01",
+            rationale="Iterates capacity in reverse to enforce at-most-once item selection.",
+            complexity_class="O(N * W)",
+            tags=("dynamic_programming", "knapsack"),
+        )
+
+    def _generate_kadane(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        def kadane_max_subarray(nums):
+            if not nums:
+                return 0
+            cur = nums[0]
+            best = nums[0]
+            for x in nums[1:]:
+                cur = x if x > cur + x else cur + x
+                if cur > best:
+                    best = cur
+            return best
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_kadane",
+            name="Kadane Linear Subarray DP (O(N))",
+            procedure_code=code,
+            entry_point="kadane_max_subarray",
+            rationale="Maintains best suffix sum and global maximum in one pass.",
+            complexity_class="O(N)",
+            tags=("dynamic_programming", "arrays"),
+        )
+
+    def _generate_edit_distance(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        def edit_distance(a, b):
+            prev = list(range(len(b) + 1))
+            for i, ca in enumerate(a, 1):
+                curr = [i]
+                for j, cb in enumerate(b, 1):
+                    cost = 0 if ca == cb else 1
+                    curr.append(min(curr[-1] + 1, prev[j] + 1, prev[j - 1] + cost))
+                prev = curr
+            return prev[-1]
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_edit_dp",
+            name="Wagner-Fischer Edit Distance (O(M * N))",
+            procedure_code=code,
+            entry_point="edit_distance",
+            rationale="Computes minimum insert/delete/replace cost with rolling DP rows.",
+            complexity_class="O(M * N)",
+            tags=("dynamic_programming", "strings"),
+        )
+
+    def _generate_lis(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        import bisect
+
+        def lis_length(nums):
+            tails = []
+            for x in nums:
+                idx = bisect.bisect_left(tails, x)
+                if idx == len(tails):
+                    tails.append(x)
+                else:
+                    tails[idx] = x
+            return len(tails)
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_lis_patience",
+            name="Patience Sorting LIS (O(N log N))",
+            procedure_code=code,
+            entry_point="lis_length",
+            rationale="Maintains minimal tail per subsequence length using bisect_left.",
+            complexity_class="O(N log N)",
+            tags=("dynamic_programming", "bisection"),
+        )
+
+    def _generate_topo_sort(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        from collections import deque
+
+        def topo_sort_kahn(n, edges):
+            adj = [[] for _ in range(n)]
+            indeg = [0] * n
+            for u, v in edges:
+                adj[u].append(v)
+                indeg[v] += 1
+            q = deque(i for i in range(n) if indeg[i] == 0)
+            order = []
+            while q:
+                u = q.popleft()
+                order.append(u)
+                for v in adj[u]:
+                    indeg[v] -= 1
+                    if indeg[v] == 0:
+                        q.append(v)
+            return order if len(order) == n else []
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_kahn_topo",
+            name="Kahn BFS Topological Sort (O(V + E))",
+            procedure_code=code,
+            entry_point="topo_sort_kahn",
+            rationale="Peels zero-indegree frontier and detects cycles cleanly.",
+            complexity_class="O(V + E)",
+            tags=("graphs", "topological_sort"),
+        )
+
+    def _generate_fast_mod_exp(self, prob: ProblemRepresentation) -> ReasoningStrategy:
+        code = textwrap.dedent("""
+        def fast_mod_exp(a, b, m):
+            res = 1 % m
+            base = a % m
+            exp = b
+            while exp > 0:
+                if exp & 1:
+                    res = (res * base) % m
+                base = (base * base) % m
+                exp >>= 1
+            return res
+        """)
+        return ReasoningStrategy(
+            strategy_id=f"{prob.problem_id}_binary_mod_exp",
+            name="Binary Square-and-Multiply (O(log b))",
+            procedure_code=code,
+            entry_point="fast_mod_exp",
+            rationale="Computes a^b mod m in logarithmic multiplications without huge intermediates.",
+            complexity_class="O(log b)",
+            tags=("number_theory", "modular_arithmetic"),
         )

@@ -51,6 +51,11 @@ def test_prm_process_reward_verifier():
     assert ev6.is_valid is False
     assert ev6.reward < 1.0
 
+    # 7. Exponential prefix before divisor is not misread as `2 = 1/2`
+    ev7 = prm.evaluate_step(7, "Born rule P = (1)^2 / 2 = 1/2", {})
+    assert ev7.is_valid is True
+    assert ev7.reward == 1.0
+
 
 def test_cerebrum_crystal_bridge_multi_step_math():
     bridge = CerebrumCrystalBridge()
@@ -210,3 +215,47 @@ def test_six_gate_data_hygiene_pipeline():
     res_contam = pipeline.audit_record(contaminated, spdx_license="MIT")
     assert res_contam.passed is False
     assert "Gate 6 (Decontamination)" in res_contam.rejection_gate
+
+
+def test_quantum_math_and_expanded_tdd_self_repair():
+    bridge = CerebrumCrystalBridge()
+    q_res1 = bridge.solve("How many Grover iterations are needed for N = 10000 items?")
+    assert q_res1["ok"] is True
+    assert q_res1["strategy"] == "quantum_computing_math"
+    assert q_res1["answer"] == "78"
+
+    q_res2 = bridge.solve("What is the Born probability of qubit amplitude 1/sqrt(2)?")
+    assert q_res2["ok"] is True
+    assert q_res2["answer"] == "1/2"
+    assert q_res2["prm_reward"] == 1.0
+
+    q_res3 = bridge.solve("What is the Born probability of qubit amplitude 3/5?")
+    assert q_res3["ok"] is True
+    assert q_res3["answer"] == "9/25"
+    assert q_res3["prm_reward"] == 1.0
+
+    q_res4 = bridge.solve("How many computational basis states does an 8-qubit register have?")
+    assert q_res4["ok"] is True
+    assert q_res4["answer"] == "256"
+    assert q_res4["prm_reward"] == 1.0
+
+    tdd = AutonomousTDDEngine(max_repairs=3)
+    # Repair buggy sieve -> verified O(N log log N) sieve via ReasoningDiscoveryEngine
+    rep_sieve = tdd.run_tdd_cycle("def sieve_of_eratosthenes(n):\n    return []\n", spec_desc="sieve primes")
+    assert rep_sieve.verified is True
+    assert "math.isqrt" in rep_sieve.final_code
+
+    rep_parens = tdd.run_tdd_cycle("def is_valid_parentheses(s):\n    return True\n", spec_desc="balanced brackets")
+    assert rep_parens.verified is True
+
+    rep_dij = tdd.run_tdd_cycle(
+        "def dijkstra_shortest_path(n, edges, src):\n    return [0] * n\n",
+        spec_desc="dijkstra shortest path",
+    )
+    assert rep_dij.verified is True
+
+    rep_mod = tdd.run_tdd_cycle(
+        "def fast_mod_exp(a, b, m):\n    return (a * b) % m\n",
+        spec_desc="modular exponentiation",
+    )
+    assert rep_mod.verified is True

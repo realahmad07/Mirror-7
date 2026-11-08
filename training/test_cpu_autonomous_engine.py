@@ -3,9 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 import torch
 
+from mirror_crystal.disk_vault import DiskCrystalVault
 from training.cpu_autonomous_engine import (
     ASTSafetyAuditor,
     AutonomousWakeSleepTrainer,
+    ParametricChallengeMutator,
     ProductKeyMemoryBank,
     TernaryBitLinear,
     VerifiedSkillForge,
@@ -171,3 +173,38 @@ def test_autonomous_wake_sleep_trainer_end_to_end_on_cpu(tmp_path: Path):
 def test_cpu_scan_speedup_benchmark():
     bench = benchmark_cpu_scan_vs_sequential_gru(seq_len=1024, hidden_dim=256, repeats=2)
     assert bench["cpu_speedup_x"] > 1.5
+
+
+def test_extended_curriculum_and_crystal_vault_integration(tmp_path: Path):
+    vault = DiskCrystalVault(tmp_path / "wake_sleep_vault.dcrystal")
+    try:
+        trainer = AutonomousWakeSleepTrainer(
+            state_dim=128,
+            lora_rank=4,
+            registry_path=tmp_path / "ext_skills.json",
+            min_anchor_cosine=0.95,
+            crystal_vault=vault,
+        )
+        challenges = ParametricChallengeMutator.generate_extended_curriculum(seed=7)
+        metrics = trainer.run_autonomous_cycle(challenges=challenges, dpo_steps=4)
+
+        assert metrics["challenges_evaluated"] == 10
+        assert metrics["episodic_instant_writes"] == 10
+        assert metrics["crystal_vault_writes"] == 10
+        assert len(metrics["recruited_skills"]) == 10
+        assert vault.rule_count() == 10
+        assert metrics["regression_rolled_back"] is False
+
+        # Every crystallized rule from Wake-Sleep verified rollouts must carry trust_tier == 1
+        assert vault.get_trust_tier_counts().get("1") == 10
+
+        out_dij = trainer.skill_forge.execute_with_recruited_skills(
+            "python: print(dijkstra_shortest_path(4, [(0,1,4),(0,2,1),(2,1,2),(1,3,1)], 0))"
+        )
+        assert out_dij == "[0, 3, 1, 4]"
+        out_qm = trainer.skill_forge.execute_with_recruited_skills(
+            "python: print(bell_state_probabilities([0.6, 0.0, 0.0, 0.8]))"
+        )
+        assert out_qm == "[0.36, 0.0, 0.0, 0.64]"
+    finally:
+        vault.close()

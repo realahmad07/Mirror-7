@@ -75,6 +75,24 @@ def test_crystal_http_server_full_integration(tmp_path: Path):
         assert code_cas == 200
         assert "3*x^2 + 5" in data_cas["answer"]
 
+        # Compositional quantum math routing seamlessly through /api/crystal/ask
+        code_qm, data_qm, _ = make_request(
+            server,
+            "POST",
+            "/api/crystal/ask",
+            {"prompt": "How many Grover iterations are needed for N = 10000 items?"},
+        )
+        assert code_qm == 200
+        assert "78" in data_qm["answer"]
+        assert data_qm["epistemic_tier"] == "verified_exact"
+
+        # Genuine out-of-distribution prose must still abstain honestly
+        code_ood, data_ood, _ = make_request(
+            server, "POST", "/api/crystal/ask", {"prompt": "Explain why Hamlet hesitated in Act III."}
+        )
+        assert code_ood == 200
+        assert data_ood["epistemic_tier"] == "honest_abstain"
+
         # 5. Test Instant 1-Shot Teaching Endpoint
         code_t, data_t, _ = make_request(
             server,

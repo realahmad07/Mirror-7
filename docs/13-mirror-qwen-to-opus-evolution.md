@@ -82,15 +82,20 @@ Verified directly on a commodity laptop CPU (`0` GPU, `0` external LLM weights):
 
 | Subsystem | Metric | Measured Value | Significance |
 |---|---|---:|---|
-| **`CerebrumCrystalBridge`** | `mirror_eval` Compositional Math Suite | **`16/16 (100.0%)` (`0.95 ms` mean)** | Unseen word chains, percentages, NT, combinatorics, proofs & abstention |
-| **`CerebrumCrystalBridge`** | Kinematics Multi-Step Calculus | **`2.90 ms`** | Exact $a(1)=-6, a(3)=6$, PRM `1.00` |
-| **`CerebrumCrystalBridge`** | Modular Exponentiation ($17^{23} \pmod{10^9+7}$) | **`0.36 ms`** | Exact modular power (`953268395`) |
-| **`CerebrumCrystalBridge`** | Direct Symbolic CAS Derivative | **`0.43 ms`** | $4x^3 + 6x$ with PRM `1.00` |
-| **`ProcessRewardVerifier`** | PRM Evaluation Latency | **`13.90 µs`** | **`71,900+` steps/second** throughput on CPU |
-| **`AutonomousTDDEngine`** | `mirror_eval` Non-Vacuous TDD Suite | **`7/7 (100.0%)`** | Clean, self-repaired (`two_sum`, `merge_intervals`, `lcm`), rejects unsafe/0-test stubs |
-| **`AutonomousTDDEngine`** | Clean Verification / Self-Repair | **`1.77 ms` / `3.46 ms`** | Full sandbox execution & autonomous repair |
-| **`DiskCrystalVault`** | `mirror_eval` Precision & Abstention | **`10/10 (100.0%)` (`4.43 ms` mean)** | Thread-safe WAL + strict entity/year coverage checks |
-| **`SixGateDataHygiene`** | 6-Gate + LSH Audit Throughput | **`1,479.7 samples/s`** | Bounded FIFO + 4-band LSH near-dedup on CPU |
+| **`CerebrumCrystalBridge`** | `mirror_eval` Compositional Math Suite | **`16/16 (100.0%)` (`1.59 ms` mean)** | Unseen word chains, percentages, NT, combinatorics, proofs & abstention |
+| **`CerebrumCrystalBridge`** | Kinematics Multi-Step Calculus | **`2.84 ms`** | Exact $a(1)=-6, a(3)=6$, PRM `1.00` |
+| **`CerebrumCrystalBridge`** | Modular Exponentiation ($17^{23} \pmod{10^9+7}$) | **`0.37 ms`** | Exact modular power (`953268395`) |
+| **`CerebrumCrystalBridge`** | Direct Symbolic CAS Derivative | **`0.46 ms`** | $4x^3 + 6x$ with PRM `1.00` |
+| **`ProcessRewardVerifier`** | PRM Evaluation Latency | **`18.58 µs`** | **`53,800+` steps/second** throughput on CPU |
+| **`AutonomousTDDEngine`** | `mirror_eval` Non-Vacuous TDD Suite | **`7/7 (100.0%)` (`25.37 ms` mean)** | Clean, self-repaired (`two_sum`, `merge_intervals`, `lcm`), rejects unsafe/0-test stubs |
+| **`AutonomousTDDEngine`** | Clean Verification / Self-Repair | **`3.57 ms` / `6.05 ms`** | Full sandbox execution & autonomous repair |
+| **`DiskCrystalVault`** | `mirror_eval` Precision & Abstention | **`13/13 (100.0%)` (`8.01 ms` mean)** | Thread-safe WAL + strict entity/year coverage checks + production vault |
+| **`Quantum & Subsystems`** | `mirror_eval` Quantum Math & Algorithmic Repair | **`9/9 (100.0%)` (`3.52 ms` mean)** | Grover 10k/25k counts, Born rule, 8/12-qubit Hilbert dims, MCTS repairs |
+| **`Architecture Independence`**| `mirror_eval` Static AST Zero-LLM Audit | **`PASS` (`48/48` files)** | `0` PyTorch, `0` Transformers, `0` external AI packages in runtime |
+| **`DiskCrystalVault` (Prod)** | Production SQLite WAL Vault | **`37,846` rules (`50.52 MB`)** | `243` stale personas purged, `0` persona leaks, `672` trust_tier=1 rules |
+| **`VerifiedSkillForge`** | Wake-Sleep LoRA Challenge Recruitment | **`10/10` skills recruited** | `0.99975` anchor cosine retention, `0` regression rollback |
+| **`Internet Data Curator`** | 6-Gate Clean Internet Dataset Rows | **`6,273` clean rows** | MIT `4,500`, Apache-2.0 `1,773` across Coding, Quantum, Math, Chat, Science |
+| **`SixGateDataHygiene`** | 6-Gate + LSH Audit Throughput | **`1,291.0 samples/s`** | Bounded FIFO + 4-band LSH near-dedup on CPU |
 
 ---
 

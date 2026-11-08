@@ -1250,6 +1250,7 @@ class ActiveCuriosityPlanner:
             "explain", "compute", "algorithm", "method", "system", "function", "code", "example",
             "part", "step", "using", "value", "number", "result", "problem", "solution", "time",
             "complexity", "works", "work", "fast", "data", "model", "process", "approach",
+            "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "act", "scene", "chapter", "section",
         }
     )
 
@@ -1281,14 +1282,24 @@ class ActiveCuriosityPlanner:
 
         sc0, r0 = candidates[0]
         sc1, r1 = candidates[1]
-        # Only clarify when query is short/general (<= 4 salient words), non-slot, and top 2 rules are nearly tied!
-        if sc0 >= 0.90 or sc0 < 0.16 or sc1 < 0.15 or (sc0 - sc1) > 0.08:
+        # Only clarify when query is short/general (<= 4 salient words), non-slot, non-axiom, and top 2 rules are solidly grounded and nearly tied!
+        if (
+            sc0 >= 0.85
+            or sc0 < 0.28
+            or sc1 < 0.22
+            or (sc0 - sc1) > 0.08
+            or getattr(r0, "trust_tier", 2) == 1
+            or getattr(r0, "domain", "") == "identity"
+        ):
             return None
         if len(query_salient_tokens) > 4 or r0.num_slots > 0 or r1.num_slots > 0:
             return None
 
         t0 = {t for t in r0.token_set if len(t) >= 3 and not t.startswith(("sense_", "__", "vq"))}
         t1 = {t for t in r1.token_set if len(t) >= 3 and not t.startswith(("sense_", "__", "vq"))}
+        query_substantive = {t for t in query_salient_tokens if t not in self._GENERIC_DISCRIM and len(t) >= 3 and not t.isdigit()}
+        if not query_substantive or not (t0 & query_substantive) or not (t1 & query_substantive):
+            return None
         rem0 = t0 - query_salient_tokens - self._GENERIC_DISCRIM
         rem1 = t1 - query_salient_tokens - self._GENERIC_DISCRIM
         if not rem0 or not rem1:

@@ -157,15 +157,17 @@ class ProcessRewardVerifier:
             if eq_match:
                 lhs_str = eq_match.group(1).strip()
                 rhs_str = eq_match.group(2).strip()
-                # Ensure the token sequence preceding lhs is not an algebraic expression (e.g. `x^2 - 5*x + 6 = 0`)
+                # Ensure the token sequence preceding lhs is not an algebraic expression or binary operator (e.g. `x^2 - 5*x + 6 = 0` or `(1)^2 / 2 = 1/2`)
                 prefix_fragment = text[: eq_match.start(1)].rstrip()
                 has_alg_var_prefix = bool(re.search(r"[a-zA-Z]\s*(?:\^\s*\d+\s*)?[+\-*/]\s*$", prefix_fragment))
+                ends_with_tight_op = bool(re.search(r"[+\-*/^]\s*$", prefix_fragment))
                 # Require an actual arithmetic operator in LHS or RHS so `"4 = 80"` in `"from 0 to 4 = 80"` is not treated as an identity claim
                 has_arith_op = any(op in lhs_str for op in ("+", "-", "*", "/")) or any(
                     op in rhs_str[1:] for op in ("+", "-", "*", "/")
                 )
                 if (
                     not has_alg_var_prefix
+                    and not ends_with_tight_op
                     and has_arith_op
                     and lhs_str
                     and rhs_str
@@ -1045,6 +1047,132 @@ class CerebrumCrystalBridge:
             )
         return None
 
+    def _solve_quantum_math(self, clean: str, t0: float) -> Optional[Dict[str, Any]]:
+        # 1. Grover search optimal oracle iterations: floor((pi / 4) * sqrt(N))
+        m_grov = re.search(
+            r"\bgrover\b.*?(?:iterations?|steps?|queries?)\b.*?\bN\s*=\s*(\d+)|\bgrover\b.*?\bfor\s+(\d+)\s*(?:items?|elements?|entries?|states?)",
+            clean,
+            re.I,
+        )
+        if m_grov:
+            n_items = int(m_grov.group(1) or m_grov.group(2))
+            if 1 <= n_items <= 10**18:
+                k_opt = math.floor((math.pi / 4.0) * math.sqrt(n_items))
+                steps = [
+                    f"Database size N = {n_items}",
+                    f"Apply Grover optimal iteration formula k = floor((pi / 4) * sqrt({n_items}))",
+                    f"Computed optimal Grover queries: {k_opt}",
+                ]
+                return self._build_verified_result(
+                    t0=t0,
+                    strategy="quantum_computing_math",
+                    answer=str(k_opt),
+                    steps=steps,
+                    body_title="Grover Amplitude Amplification Complexity:",
+                    body_lines=[
+                        f"- Search space size: $N = {n_items}$",
+                        f"- Optimal iterations: $k = \\lfloor \\frac{{\\pi}}{{4}} \\sqrt{{{n_items}}} \\rfloor = {k_opt}$",
+                    ],
+                    think_notes=[f"Grover optimal k = floor((pi/4)*sqrt({n_items})) = {k_opt}"],
+                )
+
+        # 2. Born rule measurement probability P = |alpha|^2 for qubit amplitudes
+        m_sqrt = re.search(
+            r"(?:born|measurement)\s+probability\s+(?:of|for)\s+(?:qubit\s+)?amplitude\s+([-+]?\d+)\s*/\s*sqrt\(\s*(\d+)\s*\)",
+            clean,
+            re.I,
+        )
+        if m_sqrt:
+            num, denom_rad = int(m_sqrt.group(1)), int(m_sqrt.group(2))
+            if denom_rad > 0 and num * num <= denom_rad:
+                prob = Fraction(num * num, denom_rad)
+                ans = self._fmt_frac(prob)
+                steps = [
+                    f"Given amplitude alpha = {num}/sqrt({denom_rad})",
+                    f"Born rule P = |alpha|^2 = ({num} * {num}) / {denom_rad} = {ans}",
+                ]
+                return self._build_verified_result(
+                    t0=t0,
+                    strategy="quantum_computing_math",
+                    answer=ans,
+                    steps=steps,
+                    body_title="Quantum Born Rule Probability:",
+                    body_lines=[f"- $P = |\\alpha|^2 = \\frac{{{num * num}}}{{{denom_rad}}} = {ans}$"],
+                    think_notes=[f"Born rule |alpha|^2 = {ans}"],
+                )
+
+        m_rat = re.search(
+            r"(?:born|measurement)\s+probability\s+(?:of|for)\s+(?:qubit\s+)?amplitude\s+([-+]?\d+)\s*/\s*(\d+)",
+            clean,
+            re.I,
+        )
+        if m_rat:
+            num, den = int(m_rat.group(1)), int(m_rat.group(2))
+            if den != 0 and abs(num) <= abs(den):
+                prob = Fraction(num, den) ** 2
+                ans = self._fmt_frac(prob)
+                steps = [
+                    f"Given rational amplitude alpha = {num}/{den}",
+                    f"Born rule P = |alpha|^2 = ({num} * {num}) / ({den} * {den}) = {ans}",
+                ]
+                return self._build_verified_result(
+                    t0=t0,
+                    strategy="quantum_computing_math",
+                    answer=ans,
+                    steps=steps,
+                    body_title="Quantum Born Rule Probability:",
+                    body_lines=[f"- $P = |\\alpha|^2 = {ans}$"],
+                    think_notes=[f"Born rule |{num}/{den}|^2 = {ans}"],
+                )
+
+        m_dec = re.search(
+            r"(?:born|measurement)\s+probability\s+(?:of|for)\s+(?:qubit\s+)?amplitude\s+([-+]?\d+(?:\.\d+)?)\b(?!\s*/)",
+            clean,
+            re.I,
+        )
+        if m_dec:
+            amp = Fraction(m_dec.group(1))
+            if abs(amp) <= 1:
+                prob = amp * amp
+                ans = self._fmt_frac(prob)
+                steps = [f"Given amplitude alpha = {m_dec.group(1)}", f"Born rule P = |alpha|^2 = {ans}"]
+                return self._build_verified_result(
+                    t0=t0,
+                    strategy="quantum_computing_math",
+                    answer=ans,
+                    steps=steps,
+                    body_title="Quantum Born Rule Probability:",
+                    body_lines=[f"- $P = |\\alpha|^2 = {ans}$"],
+                    think_notes=[f"Born rule |{m_dec.group(1)}|^2 = {ans}"],
+                )
+
+        # 3. Quantum register Hilbert space dimension / computational basis states: 2^n
+        m_hilbert = re.search(
+            r"(?:hilbert\s+(?:space\s+)?dimension|basis\s+states?|computational\s+states?)\b.*?\b(\d+)\s*[-\s]?qubits?\b"
+            r"|\b(\d+)\s*[-\s]?qubits?\b.*?\b(?:hilbert\s+(?:space\s+)?dimension|basis\s+states?|computational\s+states?)\b",
+            clean,
+            re.I,
+        )
+        if m_hilbert:
+            n_qubits = int(m_hilbert.group(1) or m_hilbert.group(2))
+            if 1 <= n_qubits <= 1024:
+                dim = 1 << n_qubits
+                steps = [
+                    f"Quantum register width n = {n_qubits} qubits",
+                    f"Apply Hilbert space exponential basis rule dim(H) = 2^{n_qubits}",
+                    f"Exact basis state count = {dim}",
+                ]
+                return self._build_verified_result(
+                    t0=t0,
+                    strategy="quantum_computing_math",
+                    answer=str(dim),
+                    steps=steps,
+                    body_title="Quantum Register Hilbert Space Dimension:",
+                    body_lines=[f"- $n = {n_qubits}$ qubits $\\implies \\dim(\\mathcal{{H}}) = 2^{{{n_qubits}}} = {dim}$"],
+                    think_notes=[f"2^{n_qubits} = {dim} computational basis states"],
+                )
+        return None
+
     def solve(self, prompt: str) -> Dict[str, Any]:
         """
         Solves multi-step mathematical, calculus, algebraic, and scientific queries
@@ -1100,7 +1228,12 @@ class CerebrumCrystalBridge:
         if res_comb is not None:
             return res_comb
 
-        # 7. Rate / Distance / Time Word Problems
+        # 7. Quantum Information Exact Math (Grover optimal queries & Born rule)
+        res_qm = self._solve_quantum_math(clean, t0)
+        if res_qm is not None:
+            return res_qm
+
+        # 8. Rate / Distance / Time Word Problems
         res_rate = self._solve_rate_kinematics(clean, t0)
         if res_rate is not None:
             return res_rate
@@ -1210,6 +1343,13 @@ class AutonomousTDDEngine:
                 f"assert {func_name}(7) == 13, 'fib(7) == 13'\n"
                 f"assert {func_name}(10) == 55, 'fib(10) == 55'\n"
             )
+        elif any(k in lower_name or k in lower_spec for k in ("sieve", "eratosthenes", "primes_up_to")):
+            tests.append(
+                f"assert {func_name}(1) == [], 'No primes <= 1'\n"
+                f"assert {func_name}(2) == [2], 'Smallest prime'\n"
+                f"assert {func_name}(10) == [2, 3, 5, 7], 'Primes up to 10'\n"
+                f"assert {func_name}(20) == [2, 3, 5, 7, 11, 13, 17, 19], 'Primes up to 20'\n"
+            )
         elif "prime" in lower_name:
             tests.append(
                 f"assert {func_name}(0) is False, '0 is not prime'\n"
@@ -1219,6 +1359,55 @@ class AutonomousTDDEngine:
                 f"assert {func_name}(4) is False, '4 is composite'\n"
                 f"assert {func_name}(29) is True, '29 is prime'\n"
                 f"assert {func_name}(100) is False, '100 is composite'\n"
+            )
+        elif any(k in lower_name or k in lower_spec for k in ("dijkstra", "shortest_path", "shortest path")):
+            tests.append(
+                f"assert {func_name}(4, [(0, 1, 4), (0, 2, 1), (2, 1, 2), (1, 3, 1)], 0) == [0, 3, 1, 4], 'Weighted shortest paths'\n"
+                f"assert {func_name}(3, [(0, 1, 5)], 0) == [0, 5, -1], 'Unreachable vertex returns -1'\n"
+                f"assert {func_name}(1, [], 0) == [0], 'Single vertex'\n"
+            )
+        elif "knapsack" in lower_name or "knapsack" in lower_spec:
+            tests.append(
+                f"assert {func_name}([1, 3, 4, 5], [1, 4, 5, 7], 7) == 9, 'Standard 0/1 knapsack'\n"
+                f"assert {func_name}([2, 3], [10, 15], 0) == 0, 'Zero capacity'\n"
+                f"assert {func_name}([], [], 10) == 0, 'No items'\n"
+            )
+        elif any(k in lower_name or k in lower_spec for k in ("kadane", "max_subarray", "maximum subarray")):
+            tests.append(
+                f"assert {func_name}([-2, 1, -3, 4, -1, 2, 1, -5, 4]) == 6, 'Mixed array max subarray'\n"
+                f"assert {func_name}([-5, -2, -8]) == -2, 'All negative array'\n"
+                f"assert {func_name}([7]) == 7, 'Single element'\n"
+            )
+        elif any(k in lower_name or k in lower_spec for k in ("edit_distance", "edit distance", "levenshtein")):
+            tests.append(
+                f"assert {func_name}('kitten', 'sitting') == 3, 'Classic Levenshtein distance'\n"
+                f"assert {func_name}('', 'abc') == 3, 'Empty string to abc'\n"
+                f"assert {func_name}('same', 'same') == 0, 'Identical strings'\n"
+            )
+        elif any(k in lower_name or k in lower_spec for k in ("lis_length", "longest increasing subsequence")):
+            tests.append(
+                f"assert {func_name}([10, 9, 2, 5, 3, 7, 101, 18]) == 4, 'Standard LIS'\n"
+                f"assert {func_name}([7, 7, 7, 7]) == 1, 'Strict increase guard'\n"
+                f"assert {func_name}([]) == 0, 'Empty LIS'\n"
+            )
+        elif any(k in lower_name or k in lower_spec for k in ("topo_sort", "topological", "kahn")):
+            tests.append(
+                f"assert {func_name}(4, [(0, 1), (1, 2), (2, 3)]) == [0, 1, 2, 3], 'Unique chain DAG ordering'\n"
+                f"assert {func_name}(4, [(0, 1), (0, 2), (1, 3), (2, 3)]) in ([0, 1, 2, 3], [0, 2, 1, 3]), 'Diamond DAG ordering'\n"
+                f"assert {func_name}(3, [(0, 1), (1, 2), (2, 0)]) == [], 'Cycle must return []'\n"
+            )
+        elif any(k in lower_name or k in lower_spec for k in ("mod_exp", "fast_mod_exp", "modular exponentiation")):
+            tests.append(
+                f"assert {func_name}(2, 10, 1000) == 24, '2^10 mod 1000 == 24'\n"
+                f"assert {func_name}(5, 0, 13) == 1, 'a^0 mod m == 1'\n"
+                f"assert {func_name}(17, 23, 1000000007) == 953268395, 'Large modulus'\n"
+            )
+        elif any(k in lower_name or k in lower_spec for k in ("parenthes", "bracket")):
+            tests.append(
+                f"assert {func_name}('()[]{{}}') is True, 'Balanced mixed brackets'\n"
+                f"assert {func_name}('([)]') is False, 'Crossed nesting'\n"
+                f"assert {func_name}('') is True, 'Empty balanced'\n"
+                f"assert {func_name}('(') is False, 'Unclosed bracket'\n"
             )
         elif "reverse" in lower_name:
             tests.append(

@@ -1,0 +1,150 @@
+{
+  "coding": [
+    {
+      "name": "thealgorithms_dijkstra",
+      "passed": true,
+      "latency_ms": 3.44,
+      "snippet": "<think> Verified by AutonomousWakeSleepTrainer + VerifiedSkillForge (dijkstra, shortest pa"
+    },
+    {
+      "name": "thealgorithms_knapsack",
+      "passed": true,
+      "latency_ms": 1.67,
+      "snippet": "<think> Verified by AutonomousWakeSleepTrainer + VerifiedSkillForge (knapsack, 0/1 knapsac"
+    },
+    {
+      "name": "tdd_two_sum_repair",
+      "passed": true,
+      "latency_ms": 35.54,
+      "snippet": "verified=True, iters=2, tests_passed=4"
+    },
+    {
+      "name": "tdd_sieve_repair",
+      "passed": true,
+      "latency_ms": 7.44,
+      "snippet": "verified=True, iters=2, tests_passed=4"
+    }
+  ],
+  "quantum_computing": [
+    {
+      "name": "grover_iterations_25k",
+      "passed": true,
+      "latency_ms": 5.03,
+      "snippet": "strategy=quantum_computing_math, answer=124, prm=1.0"
+    },
+    {
+      "name": "born_rule_3_sqrt10",
+      "passed": true,
+      "latency_ms": 0.83,
+      "snippet": "strategy=quantum_computing_math, answer=9/10, prm=1.0"
+    },
+    {
+      "name": "hilbert_12_qubit",
+      "passed": true,
+      "latency_ms": 1.14,
+      "snippet": "strategy=quantum_computing_math, answer=4096, prm=1.0"
+    },
+    {
+      "name": "grover_speedup_typo",
+      "passed": true,
+      "latency_ms": 7.68,
+      "snippet": "Part 1: Theoretical Framework Grover's Algorithm is a quantum algorithm that can be used t"
+    },
+    {
+      "name": "bell_states_qiskit",
+      "passed": true,
+      "latency_ms": 3.81,
+      "snippet": "Analysis (Qiskit/documentation \u2014 Bell states (Quantum Information)): We'll now take a look"
+    }
+  ],
+  "math_and_reasoning": [
+    {
+      "name": "kinematics_calculus",
+      "passed": true,
+      "latency_ms": 0.86,
+      "snippet": "strategy=kinematics_calculus_chain, answer=a(1) = -6; a(3) = 6, prm=1.0"
+    },
+    {
+      "name": "modular_exponentiation",
+      "passed": true,
+      "latency_ms": 0.08,
+      "snippet": "strategy=modular_exponentiation, answer=953268395, prm=1.0"
+    },
+    {
+      "name": "quadratic_solver",
+      "passed": true,
+      "latency_ms": 0.33,
+      "snippet": "strategy=direct_symbolic_cas, answer=x = 2, 3, prm=1.0"
+    },
+    {
+      "name": "proof_sqrt2",
+      "passed": true,
+      "latency_ms": 0.85,
+      "snippet": "strategy=symbolic_proof_synthesis, answer=Proof by contradiction (p-adic parity / infinite descent): sqrt(2) is irrational because if sqrt(2) = a/b in lowest terms, then a^2 = 2*b^2 requires prime 2 to appear with an even exponent on the LHS (2*v_p(a)) and an odd exponent on the RHS (v_p(2) + 2*v_p(b)), which is impossible for positive integers a, b., prm=1.0"
+    },
+    {
+      "name": "counterexample_sqrt9",
+      "passed": true,
+      "latency_ms": 0.17,
+      "snippet": "strategy=symbolic_proof_synthesis, answer=Counterexample: sqrt(9) = 3, which is rational (not irrational)., prm=1.0"
+    }
+  ],
+  "general_chat_and_identity": [
+    {
+      "name": "identity_who_are_you",
+      "passed": true,
+      "latency_ms": 0.21,
+      "snippet": "<think> Authoritative Mirror 7 identity rule (trust_tier=1). </think> Hello! I am Mirror 7"
+    },
+    {
+      "name": "identity_what_can_you_do",
+      "passed": true,
+      "latency_ms": 0.16,
+      "snippet": "<think> Authoritative Mirror 7 identity rule (trust_tier=1). </think> Mirror 7's CPU Cryst"
+    },
+    {
+      "name": "greeting_hello",
+      "passed": true,
+      "latency_ms": 0.13,
+      "snippet": "<think> Authoritative Mirror 7 identity rule (trust_tier=1). </think> Hello! I am Mirror 7"
+    },
+    {
+      "name": "fluid_email_style",
+      "passed": true,
+      "latency_ms": 4.65,
+      "snippet": "Subject: Technical Summary  Hi team,  Here is the verified breakdown for your request: Gro"
+    },
+    {
+      "name": "creative_story_synthesis",
+      "passed": true,
+      "latency_ms": 3.58,
+      "snippet": "At the edge of lighthouse, the quantum hummed softly beside the europa, carrying a endurin"
+    }
+  ],
+  "epistemic_abstention": [
+    {
+      "name": "abstain_atlantis_2045",
+      "passed": true,
+      "latency_ms": 33.99,
+      "snippet": "tier=honest_abstain, mode=unmatched_honest_abstain"
+    },
+    {
+      "name": "abstain_world_cup_2026",
+      "passed": true,
+      "latency_ms": 9.61,
+      "snippet": "tier=honest_abstain, mode=unmatched_honest_abstain"
+    },
+    {
+      "name": "abstain_film_2028",
+      "passed": true,
+      "latency_ms": 14.17,
+      "snippet": "tier=honest_abstain, mode=unmatched_honest_abstain"
+    },
+    {
+      "name": "abstain_hamlet_prose",
+      "passed": true,
+      "latency_ms": 8.27,
+      "snippet": "tier=honest_abstain, mode=unmatched_honest_abstain"
+    }
+  ]
+}
