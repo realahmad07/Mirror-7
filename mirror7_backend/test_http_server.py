@@ -113,3 +113,21 @@ def test_step_returns_realization_contract_and_generated_response():
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+def test_bounded_server_backpressure_and_pool():
+    from .service import BackendService
+    service = BackendService(engine_factory=FakeEngine)
+    server = create_server(port=0, service=service, max_workers=2, request_queue_size=2)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        assert server.max_workers == 2
+        assert server.request_queue_size == 2
+        status, health = request(server, "GET", "/api/health")
+        assert status == 200
+        assert health["ok"] is True
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)

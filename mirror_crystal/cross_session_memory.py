@@ -34,6 +34,8 @@ class CrossSessionMemoryGraph:
         )
         self._conn.execute("PRAGMA journal_mode = WAL")
         self._conn.execute("PRAGMA synchronous = NORMAL")
+        self._conn.execute("PRAGMA busy_timeout = 10000")
+        self._conn.execute("PRAGMA wal_autocheckpoint = 1000")
         self._init_schema()
 
     def _init_schema(self) -> None:

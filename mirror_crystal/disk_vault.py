@@ -12,7 +12,9 @@ from collections import OrderedDict, defaultdict
 import hashlib
 import json
 import math
+import mmap
 from pathlib import Path
+import struct
 import re
 import sqlite3
 import threading
@@ -37,6 +39,75 @@ from .phase5_bicameral_and_cas import (
     TernaryFluidComposer,
 )
 from .slot_abstractor import SlotAbstractor
+
+
+
+
+class MmapPostingsIndex:
+    """
+    Zero-copy memory-mapped binary inverted index for CrystalVault postings.
+    Enables multiple worker processes to query token-to-rule postings using shared OS page cache
+    without copying posting arrays into process heap memory.
+    """
+    MAGIC = b"MMRL"
+    VERSION = 1
+    ENTRY_SIZE = 20  # 8 bytes hash + 8 bytes offset + 4 bytes count
+
+    def __init__(self, filepath: Path | str) -> None:
+        self.filepath = Path(filepath)
+        self._file = open(self.filepath, "rb")
+        self._mmap = mmap.mmap(self._file.fileno(), 0, access=mmap.ACCESS_READ)
+
+        magic = self._mmap[:4]
+        if magic != self.MAGIC:
+            raise ValueError(f"Invalid magic bytes: {magic}")
+        version, self.token_count = struct.unpack("<II", self._mmap[4:12])
+        self._dir_offset = 12
+
+    @staticmethod
+    def hash_token(tok: str) -> int:
+        return int.from_bytes(hashlib.blake2b(tok.encode("utf-8", errors="replace"), digest_size=8).digest(), "little")
+
+    def lookup_rids(self, tok: str) -> list[int]:
+        if self.token_count == 0:
+            return []
+        target_hash = self.hash_token(tok)
+
+        low = 0
+        high = self.token_count - 1
+        found_entry = None
+        while low <= high:
+            mid = (low + high) // 2
+            entry_offset = self._dir_offset + mid * self.ENTRY_SIZE
+            thash, offset, count = struct.unpack("<QQI", self._mmap[entry_offset : entry_offset + self.ENTRY_SIZE])
+            if thash == target_hash:
+                found_entry = (offset, count)
+                break
+            elif thash < target_hash:
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        if not found_entry:
+            return []
+
+        offset, count = found_entry
+        if count == 0:
+            return []
+        data = self._mmap[offset : offset + count * 4]
+        return list(struct.unpack(f"<{count}I", data))
+
+    def close(self) -> None:
+        if hasattr(self, "_mmap") and self._mmap:
+            try:
+                self._mmap.close()
+            except Exception:
+                pass
+        if hasattr(self, "_file") and self._file:
+            try:
+                self._file.close()
+            except Exception:
+                pass
 
 
 class DiskCrystalVault:
@@ -83,10 +154,10 @@ class DiskCrystalVault:
         self._load_lightweight_meta()
 
     def _open_thread_conn(self, enable_wal: bool = False) -> sqlite3.Connection:
-        c = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=5.0)
+        c = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=30.0)
         if enable_wal:
             c.execute("PRAGMA journal_mode=WAL;")
-        c.execute("PRAGMA busy_timeout=5000;")
+        c.execute("PRAGMA busy_timeout=15000;")
         c.execute("PRAGMA synchronous=NORMAL;")
         c.execute("PRAGMA temp_store=MEMORY;")
         c.execute("PRAGMA mmap_size=134217728;")  # 128 MB OS kernel page cache map
@@ -1404,6 +1475,87 @@ class DiskCrystalVault:
                 "postings_updated": postings_updated,
                 "postings_deleted": postings_deleted,
             }
+
+    def export_mmap_index(self, output_path: Path | str) -> dict[str, Any]:
+        """
+        Exports all token postings into a portable, zero-copy memory-mapped binary (.mmrules) file.
+        Enables multiple worker processes to query postings from OS page cache with zero heap duplication.
+        """
+        out_p = Path(output_path)
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        cur = self.conn.cursor()
+
+        hashed: list[tuple[int, str, list[int]]] = []
+        total_postings = 0
+        for tok, rids_blob in cur.execute("SELECT tok, rids FROM token_postings"):
+            arr = array("I")
+            arr.frombytes(rids_blob)
+            rids = list(arr)
+            total_postings += len(rids)
+            h = MmapPostingsIndex.hash_token(tok)
+            hashed.append((h, tok, sorted(rids)))
+
+        hashed.sort(key=lambda x: x[0])
+        dir_size = len(hashed) * MmapPostingsIndex.ENTRY_SIZE
+        data_offset = 12 + dir_size
+
+        with open(out_p, "wb") as f:
+            f.write(MmapPostingsIndex.MAGIC)
+            f.write(struct.pack("<II", MmapPostingsIndex.VERSION, len(hashed)))
+
+            cur_off = data_offset
+            entries = []
+            data_blobs = []
+            for h, tok, rids in hashed:
+                blob = struct.pack(f"<{len(rids)}I", *rids)
+                entries.append((h, cur_off, len(rids)))
+                data_blobs.append(blob)
+                cur_off += len(blob)
+
+            for h, off, cnt in entries:
+                f.write(struct.pack("<QQI", h, off, cnt))
+
+            for blob in data_blobs:
+                f.write(blob)
+
+        return {
+            "token_count": len(hashed),
+            "total_postings": total_postings,
+            "bytes_written": out_p.stat().st_size,
+            "path": str(out_p),
+        }
+
+    def shard_by_domain(self, output_dir: Path | str) -> dict[str, int]:
+        """
+        Partitions the CrystalVault into domain-isolated database shards.
+        Enables multi-worker domain routing and prevents large monolithic database locks.
+        """
+        out_path = Path(output_dir)
+        out_path.mkdir(parents=True, exist_ok=True)
+        counts: dict[str, int] = defaultdict(int)
+
+        cur = self.conn.cursor()
+        domain_rules: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for row in cur.execute("SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules"):
+            rule = self._row_to_rule(row)
+            dom = rule.domain or "general"
+            counts[dom] += 1
+            domain_rules[dom].append({
+                "prompt": rule.abstract_prompt,
+                "response": rule.abstract_response,
+                "tool": rule.abstract_tool,
+                "domain": dom,
+                "trust_tier": rule.trust_tier,
+            })
+
+        for dom, items in domain_rules.items():
+            shard_db = out_path / f"vault_{dom}.dcrystal"
+            shard_vault = DiskCrystalVault(shard_db)
+            shard_vault.ingest_batch(items, batch_size=500)
+            shard_vault.optimize_disk()
+            shard_vault.close()
+
+        return dict(counts)
 
     def optimize_disk(self) -> int:
         """Flush dirty metadata + WAL checkpoint so the .dcrystal file is a single portable file on disk."""

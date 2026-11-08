@@ -67,3 +67,70 @@ def test_streamer_thread_lifecycle():
             assert vault.rule_count() >= 1
         finally:
             vault.close()
+
+
+def test_streamer_nonblocking_status():
+    import threading
+    with tempfile.TemporaryDirectory() as td:
+        vpath = Path(td) / "test_stream_vault.dcrystal"
+        vault = DiskCrystalVault(vpath)
+        try:
+            streamer = AutonomousDatasetStreamer(vault, cadence_seconds=0.05, flush_batch_size=2)
+            streamer.start()
+            results = []
+            def reader():
+                for _ in range(20):
+                    t0 = time.perf_counter()
+                    st = streamer.get_status()
+                    elapsed = time.perf_counter() - t0
+                    results.append((st["is_running"], elapsed))
+                    time.sleep(0.005)
+
+            threads = [threading.Thread(target=reader) for _ in range(4)]
+            for t in threads: t.start()
+            for t in threads: t.join()
+
+            assert len(results) == 80
+            max_latency = max(r[1] for r in results)
+            assert max_latency < 0.1, f"Status call took too long: {max_latency}s"
+            streamer.stop()
+        finally:
+            vault.close()
+
+
+def test_streamer_deduplication_and_live_fetcher():
+    from mirror_crystal.autonomous_streamer import StreamDeduplicationStore, ArxivLiveApiFetcher
+    with tempfile.TemporaryDirectory() as td:
+        vpath = Path(td) / "test_stream_vault.dcrystal"
+        dedup_path = Path(td) / "test_dedup.sqlite"
+        vault = DiskCrystalVault(vpath)
+        try:
+            # 1. Deduplication store verification
+            store = StreamDeduplicationStore(dedup_path)
+            assert not store.is_seen("paper_sample_alpha")
+            store.mark_seen("paper_sample_alpha", "unit_test")
+            assert store.is_seen("paper_sample_alpha")
+            assert store.count() == 1
+            store.close()
+
+            # 2. Live fetcher with fallback verification
+            cands = ArxivLiveApiFetcher.fetch_live_candidates(max_results=1, timeout=3.0)
+            assert len(cands) >= 1
+            cand = cands[0]
+            assert "arXiv" in cand.prompt or "research" in cand.prompt or len(cand.prompt) > 10
+            assert cand.spdx_license in ("CC-BY-4.0", "Apache-2.0")
+
+            # 3. Streamer with live fetch enabled
+            streamer = AutonomousDatasetStreamer(
+                vault,
+                cadence_seconds=0.5,
+                flush_batch_size=1,
+                enable_live_fetch=True,
+                dedup_db_path=dedup_path,
+            )
+            res = streamer.pulse_once()
+            assert res["evaluated"] >= 1
+            assert res["admitted"] >= 1
+            streamer.close()
+        finally:
+            vault.close()

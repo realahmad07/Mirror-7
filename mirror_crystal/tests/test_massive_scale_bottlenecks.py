@@ -185,3 +185,47 @@ def test_sharded_crystal_router_backend_service_integration(tmp_path: Path):
     q_quant = service.crystal_ask("What is a Hadamard gate?")
     assert "Hadamard gate" in q_quant["answer"]
     assert q_quant["confidence"] >= 0.8
+
+
+def test_export_mmap_index_and_domain_sharding(tmp_path: Path):
+    from mirror_crystal import DiskCrystalVault, MmapPostingsIndex
+    vault_p = tmp_path / "source_vault.dcrystal"
+    vault = DiskCrystalVault(vault_p)
+    try:
+        vault.ingest_pair("What is Grover search?", "Grover search achieves O(sqrt(N)) speedup.", domain="quantum")
+        vault.ingest_pair("What is Needleman-Wunsch algorithm?", "Needleman-Wunsch does global sequence alignment.", domain="bioinformatics")
+        vault.ingest_pair("What is Black-Scholes formula?", "Black-Scholes prices European call and put options.", domain="finance")
+        assert vault.rule_count() == 3
+
+        # 1. Test Domain Sharding
+        shards_dir = tmp_path / "domain_shards"
+        shard_counts = vault.shard_by_domain(shards_dir)
+        assert shard_counts["quantum"] == 1
+        assert shard_counts["bioinformatics"] == 1
+        assert shard_counts["finance"] == 1
+
+        q_shard = DiskCrystalVault(shards_dir / "vault_quantum.dcrystal")
+        assert q_shard.rule_count() == 1
+        res_q = q_shard.respond("What is Grover search?")
+        assert "speedup" in res_q.answer
+        q_shard.close()
+
+        # 2. Test Mmap Binary Index Export and Zero-Copy Lookup
+        mmap_p = tmp_path / "index.mmrules"
+        meta = vault.export_mmap_index(mmap_p)
+        assert meta["token_count"] >= 3
+        assert meta["bytes_written"] > 0
+        assert mmap_p.exists()
+
+        mmap_idx = MmapPostingsIndex(mmap_p)
+        rids_grover = mmap_idx.lookup_rids("grover")
+        assert len(rids_grover) >= 1
+
+        rids_needleman = mmap_idx.lookup_rids("needleman")
+        assert len(rids_needleman) >= 1
+
+        rids_missing = mmap_idx.lookup_rids("unknown_token_xyz")
+        assert rids_missing == []
+        mmap_idx.close()
+    finally:
+        vault.close()

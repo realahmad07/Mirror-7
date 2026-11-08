@@ -4,7 +4,9 @@ import json
 import os
 from dataclasses import asdict, is_dataclass
 from http import HTTPStatus
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from concurrent.futures import ThreadPoolExecutor
+from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
+import threading
 from typing import Any
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -346,17 +348,114 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         return
 
 
+class BoundedThreadPoolServer(HTTPServer):
+    """
+    Production-grade HTTP server utilizing a bounded worker pool and backpressure queue.
+    Guarantees fixed thread boundaries to prevent thread-exhaustion and slowloris attacks.
+    Immediately sheds excess traffic with HTTP 503 Service Unavailable when the queue is saturated.
+    """
+
+    def __init__(
+        self,
+        server_address: tuple[str, int],
+        RequestHandlerClass: type[BaseHTTPRequestHandler],
+        max_workers: int = 32,
+        request_queue_size: int = 256,
+        socket_timeout: float = 30.0,
+        bind_and_activate: bool = True,
+    ) -> None:
+        super().__init__(server_address, RequestHandlerClass, bind_and_activate=bind_and_activate)
+        self.max_workers = int(max(1, max_workers))
+        self.request_queue_size = int(max(1, request_queue_size))
+        self.socket_timeout = float(max(0.5, socket_timeout))
+        self.executor = ThreadPoolExecutor(
+            max_workers=self.max_workers,
+            thread_name_prefix="mirror7_worker",
+        )
+        self._request_semaphore = threading.Semaphore(self.max_workers + self.request_queue_size)
+        self._is_shutting_down = False
+
+    def process_request(self, request: Any, client_address: Any) -> None:
+        if self._is_shutting_down:
+            self._reject_overloaded(request, 503, "Server is shutting down")
+            return
+
+        acquired = self._request_semaphore.acquire(blocking=False)
+        if not acquired:
+            self._reject_overloaded(request, 503, "Worker queue saturated - please retry shortly")
+            return
+
+        try:
+            if hasattr(request, "settimeout"):
+                request.settimeout(self.socket_timeout)
+            self.executor.submit(self._worker_process, request, client_address)
+        except Exception:
+            self._request_semaphore.release()
+            self._reject_overloaded(request, 503, "Failed to schedule worker thread")
+
+    def _reject_overloaded(self, request: Any, status: int, message: str) -> None:
+        try:
+            if hasattr(request, "settimeout"):
+                request.settimeout(2.0)
+            body = f'{{"ok":false,"error":"{message}"}}'.encode("utf-8")
+            header = (
+                f"HTTP/1.1 {status} Service Unavailable\r\n"
+                f"Content-Type: application/json\r\n"
+                f"Content-Length: {len(body)}\r\n"
+                f"Retry-After: 2\r\n"
+                f"Connection: close\r\n\r\n"
+            ).encode("utf-8")
+            request.sendall(header + body)
+        except Exception:
+            pass
+        finally:
+            try:
+                self.shutdown_request(request)
+            except Exception:
+                pass
+
+    def _worker_process(self, request: Any, client_address: Any) -> None:
+        try:
+            self.finish_request(request, client_address)
+            self.shutdown_request(request)
+        except Exception:
+            self.handle_error(request, client_address)
+            try:
+                self.shutdown_request(request)
+            except Exception:
+                pass
+        finally:
+            self._request_semaphore.release()
+
+    def server_close(self) -> None:
+        self._is_shutting_down = True
+        try:
+            self.executor.shutdown(wait=False, cancel_futures=True)
+        except Exception:
+            pass
+        super().server_close()
+
+
 def create_server(
     host: str = "127.0.0.1",
     port: int = 8787,
     service: BackendService | None = None,
     cors_origin: str = "*",
+    max_workers: int = 32,
+    request_queue_size: int = 256,
+    socket_timeout: float = 30.0,
 ):
     if not cors_origin or chr(13) in cors_origin or chr(10) in cors_origin:
         raise ValueError("invalid cors_origin")
     MirrorAPIHandler.service = service or BackendService()
     MirrorAPIHandler.cors_origin = cors_origin
-    return ThreadingHTTPServer((host, port), MirrorAPIHandler)
+    return BoundedThreadPoolServer(
+        (host, port),
+        MirrorAPIHandler,
+        max_workers=max_workers,
+        request_queue_size=request_queue_size,
+        socket_timeout=socket_timeout,
+    )
 
 
 def serve(host: str | None = None, port: int | None = None) -> None:

@@ -10,7 +10,7 @@ from .vertical_blueprints import VerticalBlueprintCurator
 from .roadmap_blueprint_engine import RoadmapBlueprintEngine
 from .bit_signatures import ContextBitTable
 from .dataset_curator import CurationConfig, curate_all_datasets
-from .disk_vault import DiskCrystalVault
+from .disk_vault import DiskCrystalVault, MmapPostingsIndex
 from .engine import CrystalResponse, MirrorCrystalEngine, split_compound_intents
 from .grammar_and_sandbox import ByteMarkovGrammar, ZeroTrustSandboxJudge
 from .lsh_rule_store import CrystalRule, LSHRuleIndex
@@ -74,6 +74,7 @@ __all__ = [
     "CrystalRule",
     "CurationConfig",
     "DiskCrystalVault",
+    "MmapPostingsIndex",
     "DocumentAutoCrystallizer",
     "DreamUtilityPruner",
     "EpistemicConfidenceCalibrator",
