@@ -304,6 +304,7 @@ class MirrorCrystalEngine:
         session_id: str = "default",
         clarified_this_turn: bool = False,
         original_prompt: str = "",
+        detected_lang: str = "en",
     ) -> CrystalResponse:
         t0 = time.perf_counter_ns()
         trace: list[str] = list(pre_trace) if pre_trace else []
@@ -380,19 +381,24 @@ class MirrorCrystalEngine:
 
         # Gate 4: Instantiate winning Lock (binding unseen numbers & verifying any Python code on CPU!)
         q_expanded = self.bit_table.expand_content_tokens(raw_toks)
-        q_salient_cnt = len(set(raw_toks))
         min_lock_score = 0.85 if is_creative_req else 0.22
         for score, rule in cands:
-            if score < min_lock_score:
-                continue
             if oov_entities and rule.num_slots == 0 and not oov_entities.issubset(rule.token_set):
                 trace.append(f"Rejected partial match #{rule.rule_id}: missing OOV proper entity {sorted(oov_entities)}")
                 continue
-            matched_cnt = len(q_expanded & rule.token_set)
-            if EpistemicConfidenceCalibrator.is_false_cousin_overlap(
-                score, matched_salient_count=matched_cnt, query_salient_count=q_salient_cnt, num_slots=rule.num_slots
-            ):
-                trace.append(f"Filtered false-cousin single-token overlap on rule #{rule.rule_id} (score={score:.3f})")
+            ok_match, cal_conf, q_cov, match_reason = EpistemicConfidenceCalibrator.verify_candidate_match(
+                query_text=q_core,
+                original_prompt=orig_p,
+                raw_toks=raw_toks,
+                q_expanded=q_expanded,
+                rule=rule,
+                score=score,
+                bit_table=self.bit_table,
+                detected_lang=detected_lang,
+                min_lock_score=min_lock_score,
+            )
+            if not ok_match:
+                trace.append(f"Rejected partial/false match on rule #{rule.rule_id} ({match_reason})")
                 continue
             instantiated = SlotAbstractor.instantiate(
                 query=q_core,
@@ -409,10 +415,10 @@ class MirrorCrystalEngine:
                 continue
 
             mode_str = "slot_formula_lock" if rule.num_slots > 0 else "direct_crystal_lock"
-            conf_val = round(min(1.0, score), 4)
+            conf_val = cal_conf
             sb_ver = judge_msg != "non_code"
             trace.append(
-                f"Matched CrystalRule #{rule.rule_id} (domain={rule.domain}, bit_score={score:.3f}, slots={rule.num_slots})"
+                f"Matched CrystalRule #{rule.rule_id} (domain={rule.domain}, bit_score={score:.3f}, cov={q_cov:.2f}, slots={rule.num_slots})"
             )
             if not sb_ver:
                 styled_ans, was_styled = self.fluid_composer.realize_grounded_style(orig_p, instantiated, sig2048=raw_sig)
@@ -429,7 +435,9 @@ class MirrorCrystalEngine:
                 latency_ms=round(ms, 3),
                 sandbox_verified=sb_ver,
                 reasoning_trace=trace,
-                epistemic_tier=EpistemicConfidenceCalibrator.classify_tier(conf_val, mode_str, sb_ver),
+                epistemic_tier=EpistemicConfidenceCalibrator.classify_tier(
+                    conf_val, mode_str, sb_ver, query_coverage=q_cov
+                ),
             )
 
         # Gate 5: Right-Brain Creative Synthesis ONLY on explicit creative prompts (CreativeFactualBleedGuard)
@@ -527,7 +535,7 @@ class MirrorCrystalEngine:
         # Gate 1B: Compound Multi-Intent Decomposition (when 2+ sub-questions both match cleanly)
         sub_intents = split_compound_intents(q)
         if len(sub_intents) >= 2:
-            sub_res = [self._respond_atomic(part) for part in sub_intents]
+            sub_res = [self._respond_atomic(part, detected_lang=detected_lang) for part in sub_intents]
             valid_subs = [r for r in sub_res if r.mode != "unmatched_honest_abstain" and r.confidence >= 0.30]
             if len(valid_subs) >= 2:
                 combined_ans = "\n\n".join(f"[{idx + 1}] {r.answer}" for idx, r in enumerate(valid_subs))
@@ -551,7 +559,7 @@ class MirrorCrystalEngine:
         if len(windows) > 1:
             best_win_res: CrystalResponse | None = None
             for win in windows:
-                cand_res = self._respond_atomic(win)
+                cand_res = self._respond_atomic(win, detected_lang=detected_lang)
                 if best_win_res is None or cand_res.confidence > best_win_res.confidence:
                     best_win_res = cand_res
             if best_win_res is not None and best_win_res.mode != "unmatched_honest_abstain":
@@ -573,6 +581,7 @@ class MirrorCrystalEngine:
             session_id=session_id,
             clarified_this_turn=clarified_this_turn,
             original_prompt=q_raw,
+            detected_lang=detected_lang,
         )
 
     def save(self, path: Path | str) -> int:

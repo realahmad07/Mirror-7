@@ -85,12 +85,12 @@ Alongside the neural V6 GPU pipeline, Mirror 7 integrates a standalone, zero-gra
 ### 4.6 Qwen-Math Parity & Claude-Opus Frontier Cognitive Architecture (`Phase 7`)
 Full technical specification: [`docs/13-mirror-qwen-to-opus-evolution.md`](docs/13-mirror-qwen-to-opus-evolution.md) • Telemetry: [`artifacts/mirror_crystal_qwen_opus_benchmark.json`](artifacts/mirror_crystal_qwen_opus_benchmark.json)
 
-To close the capability gap with open-source leaders (**Qwen-2.5-Math**, **Qwen-2.5-Coder**) and frontier models (**Claude 3.5/3.7 Sonnet**, **Claude 3 Opus**), Mirror 7 integrates:
-1. **Dual-Brain Cerebrum $\leftrightarrow$ Crystal Bridge:** Solves multi-step physics/calculus word problems, kinematics derivations, and modular exponentiation with **0% arithmetic hallucination** and `0.76 ms` mean latency.
-2. **Process-Supervision Reward Model (PRM / Math-Shepherd):** Evaluates intermediate reasoning invariants at **`11.86 µs` per step (`84,300` steps/sec)**, pruning mathematical errors early.
-3. **Autonomous TDD Synthesizer with Self-Repair:** Generates boundary unit-test suites, executes in an AST sandbox, diagnoses runtime errors, and performs autonomous self-repair (**`2.50 ms` end-to-end repair**).
+To strengthen independent CPU symbolic reasoning and engineering verification, Mirror 7 integrates:
+1. **Dual-Brain Cerebrum $\leftrightarrow$ Crystal Bridge:** Solves compositional math word problems, kinematics/calculus, number theory, combinatorics, percentages, rates, modular math, and symbolic proofs/counterexamples via exact `Fraction`/CAS execution (`0%` arithmetic hallucination).
+2. **Process-Supervision Reward Model (PRM / Math-Shepherd):** Evaluates intermediate reasoning invariants at **`13.90 µs` per step**, pruning arithmetic/delimiter/division-by-zero errors early.
+3. **Autonomous TDD Synthesizer with Self-Repair:** Generates non-vacuous unit tests, refuses 0-assertion vacuous passes, executes inside an AST sandbox, and performs autonomous AST/MCTS/`ReasoningDiscoveryEngine` self-repair.
 4. **Hierarchical Project State Memory:** 3-tier persistent memory tree (`ProjectMeta`, `FileNodes`, `TurnDiffs`) eliminating quadratic attention bloat across repository-wide multi-turn coding.
-5. **Six-Gate "Quality Over Quantity" Data Hygiene Pipeline:** Permissive ingestion protocol processing **`575.9 samples/sec`** through 6 mandatory gates: SPDX/PII audit, MinHash deduplication, Shannon byte-entropy, pedagogical density scoring, AST compiler check, and 13-gram benchmark decontamination.
+5. **Six-Gate "Quality Over Quantity" Data Hygiene Pipeline & `mirror_eval`:** Enforces SPDX/PII, bounded 4-band LSH near-dedup (`1,479.7 samples/s`), entropy, pedagogy, AST syntax, and probe decontamination, verified by `python -m mirror_eval` (`34/34` independent CPU pillars).
 
 ---
 

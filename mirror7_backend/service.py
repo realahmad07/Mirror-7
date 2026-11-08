@@ -120,6 +120,22 @@ class BackendService:
 
     def crystal_teach(self, question: str, answer: str, test_code: str = "", domain: str = "general") -> bool:
         """Instantly crystallize a verified rule into the live DiskCrystalVault."""
+        from mirror_crystal import SixGateDataHygienePipeline, ZeroTrustSandboxJudge
+
+        combined = f"{question}\n{answer}\n{test_code}"
+        has_pii, pii_reason = SixGateDataHygienePipeline.scan_for_pii(combined)
+        if has_pii:
+            raise ValueError(f"Rejected teaching payload containing PII/secret: {pii_reason}")
+        lower_combined = combined.lower()
+        for probe in SixGateDataHygienePipeline.BENCHMARK_PROBES:
+            if probe.lower() in lower_combined:
+                raise ValueError(f"Rejected contaminated teaching payload (benchmark probe '{probe}')")
+        for block in (ZeroTrustSandboxJudge.extract_python_code(answer), test_code.strip()):
+            if block:
+                safe, reason = ZeroTrustSandboxJudge.is_ast_safe(block)
+                if not safe:
+                    raise ValueError(f"Rejected unsafe Python code in teaching payload: {reason}")
+
         if self.crystal_vault is None:
             from mirror_crystal import MirrorCrystalEngine
             self.crystal_vault = MirrorCrystalEngine()
@@ -143,6 +159,16 @@ class BackendService:
 
     def crystal_auto_ingest_document(self, text: str, title: str = "WebDocument") -> dict[str, int]:
         """Auto-crystallize unstructured Markdown, textbook text, or Python code into the vault."""
+        from mirror_crystal import SixGateDataHygienePipeline
+
+        has_pii, pii_reason = SixGateDataHygienePipeline.scan_for_pii(text)
+        if has_pii:
+            raise ValueError(f"Rejected document containing PII/secret: {pii_reason}")
+        lower_text = text.lower()
+        for probe in SixGateDataHygienePipeline.BENCHMARK_PROBES:
+            if probe.lower() in lower_text:
+                raise ValueError(f"Rejected contaminated document (benchmark probe '{probe}')")
+
         if self.crystal_vault is None:
             from mirror_crystal import MirrorCrystalEngine
             self.crystal_vault = MirrorCrystalEngine()

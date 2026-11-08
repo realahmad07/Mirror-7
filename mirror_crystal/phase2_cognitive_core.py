@@ -26,7 +26,7 @@ import re
 import time
 from typing import Any, Iterable, Mapping, Sequence
 
-from .bit_signatures import ContextBitTable
+from .bit_signatures import ContextBitTable, _STOPWORDS
 from .grammar_and_sandbox import ZeroTrustSandboxJudge
 
 
@@ -793,8 +793,26 @@ class FluentByteRealizer:
         return out
 
 
+_WRAPPER_PROPER_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        "python",
+        "json",
+        "html",
+        "http",
+        "https",
+        "rest",
+        "bash",
+        "linux",
+        "windows",
+        "unicode",
+        "ascii",
+        "utf8",
+    }
+)
+
+
 class EpistemicConfidenceCalibrator:
-    """Phase-3 #5: Calibrated certainty tiers + false-cousin single-token overlap abstention filter."""
+    """Phase-3 #5: Calibrated certainty tiers + false-cousin single-token overlap & coverage abstention filter."""
 
     @staticmethod
     def is_false_cousin_overlap(
@@ -814,28 +832,174 @@ class EpistemicConfidenceCalibrator:
     def extract_oov_proper_entities(original_prompt: str, bit_table: Any) -> set[str]:
         """
         Phase-6 B6-8 Defense: Detect mid-sentence capitalized or alphanumeric proper entities
-        ('Xylofluoride-992', 'Zorgon999') that have df == 0 across the entire vault (even after typo bridging).
+        ('Xylofluoride-992', 'Zorgon999', 'E903') that have df == 0 across the entire vault (even after typo bridging).
         """
         words = re.findall(r"[A-Za-z0-9_'-]+", original_prompt.strip())
         if len(words) < 2:
             return set()
         oov_entities: set[str] = set()
         for w in words[1:]:
-            clean = w.strip("'-_")
-            if len(clean) < 5 or clean.startswith(("__", "vq", "sense_")):
+            if w.startswith(("__", "vq", "sense_")):
                 continue
-            is_proper_or_code = clean[0].isupper() or (any(c.isalpha() for c in clean) and any(c.isdigit() for c in clean))
+            clean = w.strip("'-_")
+            is_alnum_id = any(c.isalpha() for c in clean) and any(c.isdigit() for c in clean)
+            if len(clean) < (4 if is_alnum_id else 5) or clean.startswith(("__", "vq", "sense_")):
+                continue
+            is_proper_or_code = clean[0].isupper() or is_alnum_id
             if not is_proper_or_code:
                 continue
             for sub_tok in bit_table.tokenize(clean):
-                if len(sub_tok) >= 5 and sub_tok.isalpha():
+                if (len(sub_tok) >= 5 and sub_tok.isalpha()) or (is_alnum_id and len(sub_tok) >= 4):
                     resolved = bit_table.resolve_typo_token(sub_tok)
                     if bit_table.token_df.get(resolved, 0) == 0:
                         oov_entities.add(resolved)
         return oov_entities
 
+    @classmethod
+    def verify_candidate_match(
+        cls,
+        *,
+        query_text: str,
+        original_prompt: str,
+        raw_toks: Sequence[str],
+        q_expanded: set[str],
+        rule: Any,
+        score: float,
+        bit_table: Any,
+        detected_lang: str = "en",
+        min_lock_score: float = 0.22,
+    ) -> tuple[bool, float, float, str]:
+        """
+        Validate that a retrieved CrystalRule genuinely answers the query's core subjects,
+        years, and entities rather than hallucinating on partial word overlap.
+
+        Returns:
+            (accepted, calibrated_confidence, query_coverage, reason)
+        """
+        if score < min_lock_score:
+            return False, 0.0, 0.0, f"below_min_score ({score:.3f} < {min_lock_score:.2f})"
+
+        q_salient_cnt = len(set(raw_toks))
+        matched_cnt = len(q_expanded & rule.token_set)
+        if cls.is_false_cousin_overlap(
+            score,
+            matched_salient_count=matched_cnt,
+            query_salient_count=q_salient_cnt,
+            num_slots=rule.num_slots,
+        ):
+            return False, 0.0, 0.0, f"false_cousin_overlap (score={score:.3f})"
+
+        if rule.num_slots > 0:
+            cal = round(min(1.0, score), 4)
+            return True, cal, 1.0, "slot_rule_ok"
+
+        rule_prompt_toks = set(bit_table.tokenize(rule.abstract_prompt))
+        rule_all_vocab: set[str] = set(rule.token_set) | rule_prompt_toks
+        rule_response_toks = set(bit_table.tokenize(rule.abstract_response))
+
+        # Include response tokens ONLY when the rule prompt itself is very short (e.g., "Tell me about python")
+        # or shares an explicit homonym sense lock (`sense_reptile_python`). Also add singularized forms.
+        prompt_content_cnt = sum(1 for t in rule_prompt_toks if t not in _STOPWORDS and len(t) >= 2)
+        q_sense_tags = {t for t in raw_toks if t.startswith("sense_")}
+        shared_sense = bool(q_sense_tags & rule.token_set)
+        if shared_sense or prompt_content_cnt <= 2:
+            rule_match_vocab: set[str] = set(rule_all_vocab) | rule_response_toks
+        else:
+            rule_match_vocab = set(rule_all_vocab)
+        # Light plural normalization so 'snakes'/'jungles' align with 'snake'/'jungle'
+        rule_match_norms = set(rule_match_vocab) | {t[:-1] for t in rule_match_vocab if len(t) > 4 and t.endswith("s")}
+
+        # 1. Explicit standalone 4-digit year guard (e.g. "2026 World Cup" vs generic 1930/1942 rule)
+        q_years = re.findall(r"(?<!-)\b(1[89]\d{2}|20\d{2}|2100)\b(?!-)", query_text)
+        if q_years:
+            rule_text = f"{rule.abstract_prompt} {rule.abstract_response}"
+            if any(yr not in rule_text for yr in q_years):
+                return False, 0.0, 0.0, f"missing_explicit_query_year {q_years}"
+
+        # 2. Mid-sentence capitalized proper entities / domain identifiers must exist in the matched rule
+        # (even if df > 0 elsewhere in a multi-domain vault, e.g. 'Dijkstra' vs 'Fenwick'!).
+        rule_entity_vocab = rule_all_vocab | rule_response_toks
+        words = re.findall(r"[A-Za-z0-9_'-]+", original_prompt.strip())
+        if len(words) >= 2:
+            for w in words[1:]:
+                if w.startswith(("__", "vq", "sense_")):
+                    continue
+                clean = w.strip("'-_")
+                if len(clean) < 4 or clean.startswith(("__", "vq", "sense_")):
+                    continue
+                is_proper_or_id = clean[0].isupper() or (
+                    any(c.isalpha() for c in clean) and any(c.isdigit() for c in clean)
+                )
+                if not is_proper_or_id:
+                    continue
+                for sub_tok in bit_table.tokenize(clean):
+                    if (
+                        len(sub_tok) < 4
+                        or not sub_tok.isascii()
+                        or not any(ch.isalpha() for ch in sub_tok)
+                        or sub_tok in _STOPWORDS
+                        or sub_tok in _WRAPPER_PROPER_ALLOWLIST
+                    ):
+                        continue
+                    resolved = bit_table.resolve_typo_token(sub_tok)
+                    syns = set(bit_table._synonyms.get(resolved, ()))
+                    if resolved not in rule_entity_vocab and not (syns & rule_entity_vocab):
+                        return False, 0.0, 0.0, f"missing_proper_entity '{resolved}'"
+
+        # 3. Salience-weighted query concept recall over unique ASCII content tokens
+        syns_map = getattr(bit_table, "_synonyms", {})
+        df_map = getattr(bit_table, "token_df", {})
+        q_content: list[str] = []
+        seen_qc: set[str] = set()
+        for raw_t in raw_toks:
+            if (
+                raw_t in seen_qc
+                or not raw_t.isascii()
+                or len(raw_t) < 2
+                or raw_t in _STOPWORDS
+                or raw_t.startswith(("__", "vq", "sense_"))
+                or not any(ch.isalpha() for ch in raw_t)
+            ):
+                continue
+            if detected_lang != "en" and (raw_t in _FOREIGN_PARTICLES or df_map.get(raw_t, 0) == 0):
+                continue
+            seen_qc.add(raw_t)
+            q_content.append(raw_t)
+
+        if not q_content:
+            cal = round(min(1.0, score), 4)
+            return True, cal, 1.0, "non_content_ok"
+
+        matched_sal = 0.0
+        total_sal = 0.0
+        for tok in q_content:
+            w = float(bit_table.token_salience(tok))
+            total_sal += w
+            cand_syns = syns_map.get(tok, ())
+            tok_stem = tok[:-1] if len(tok) > 4 and tok.endswith("s") else tok
+            if (
+                tok in rule_match_norms
+                or tok_stem in rule_match_norms
+                or any(s in rule_match_norms for s in cand_syns)
+            ):
+                matched_sal += w
+
+        q_coverage = matched_sal / max(1e-6, total_sal)
+        if len(q_content) >= 3 and q_coverage < 0.48:
+            return False, 0.0, q_coverage, f"low_query_coverage ({q_coverage:.2f} < 0.48)"
+
+        # Calibrate confidence downward when the query mentions unmatched terms
+        cov_factor = 1.0 if q_coverage >= 0.85 else (0.55 + 0.45 * q_coverage)
+        calibrated = round(min(1.0, score * cov_factor), 4)
+        return True, calibrated, round(q_coverage, 4), "verified_match"
+
     @staticmethod
-    def classify_tier(confidence: float, mode: str, sandbox_verified: bool) -> str:
+    def classify_tier(
+        confidence: float,
+        mode: str,
+        sandbox_verified: bool,
+        query_coverage: float = 1.0,
+    ) -> str:
         if mode == "bicameral_creative_synthesis":
             return "creative_synthesis"
         if mode == "clarification_needed":
@@ -851,11 +1015,11 @@ class EpistemicConfidenceCalibrator:
                 "mcts_program_synthesis",
                 "symbolic_cas_exact",
             }
-            or (sandbox_verified and confidence >= 0.60)
-            or confidence >= 0.85
+            or (sandbox_verified and confidence >= 0.60 and query_coverage >= 0.70)
+            or (confidence >= 0.85 and query_coverage >= 0.85)
         ):
             return "verified_exact"
-        if confidence >= 0.52:
+        if confidence >= 0.58 and query_coverage >= 0.70:
             return "high_confidence"
         return "moderate_confidence"
 

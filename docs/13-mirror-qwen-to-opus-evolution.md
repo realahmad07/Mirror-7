@@ -36,25 +36,26 @@ However, both families remain shackled to:
 ```
 
 ### A. `CerebrumCrystalBridge` (Dual-Brain Neural-Symbolic Orchestrator)
-- **Problem Decomposition:** Automatically parses complex word problems (e.g. multi-derivative kinematics, rational algebra, modular exponentiation).
-- **Exact CAS Delegation:** Hands all arithmetic, differentiation, integration, linear systems, and unit conversions to the `SymbolicCASOrgan` (`0%` arithmetic hallucination).
-- **Process-Supervision Integration:** Evaluates each intermediate derivation step with `ProcessRewardVerifier`.
-- **Output Standard:** Emits structured `<think>` reasoning traces and formatted LaTeX equations with `\boxed{...}` answers matching `MATH-500` and `AIME` benchmarks.
+- **Problem Decomposition:** Handles both symbolic expressions and unseen compositional word problems (sequential GSM8K-style quantity chains, percentages, divisor/prime number theory, combinatorics, rate/kinematics with unit conversion, modular remainder phrasing, multi-derivative kinematics chains, and constructive proofs/counterexample refutations).
+- **Exact CAS Delegation:** Hands arithmetic, differentiation, integration, linear systems, and unit conversions to `SymbolicCASOrgan` (`0%` arithmetic hallucination) using exact `Fraction` and integer arithmetic.
+- **Process-Supervision Integration:** Evaluates each intermediate derivation step with `ProcessRewardVerifier`, cleanly distinguishing scalar arithmetic identities from algebraic equations.
+- **Honest Abstention:** Open-ended non-mathematical prose returns `ok=False` (`unrecognized_math_pattern`) rather than guessing a numeric value.
+- **Output Standard:** Emits structured `<think>` reasoning traces and formatted LaTeX equations with `\boxed{...}` answers.
 
 ### B. `ProcessRewardVerifier` (PRM / Math-Shepherd Step Verifier)
-- Evaluates intermediate mathematical derivations step-by-step at **`11.86 µs` per step** (`84,300+` steps/sec on a commodity laptop CPU).
+- Evaluates intermediate mathematical derivations step-by-step at **`13.90 µs` per step** (`71,900+` steps/sec on a commodity laptop CPU).
 - Granular invariants verified per step:
   - Non-empty content and balanced mathematical delimiters (`()`, `[]`, `{}`).
   - Zero-division prevention ($x / 0$).
-  - Exact rational arithmetic equality validation ($A = B \implies \text{eval}(A) \equiv \text{eval}(B)$).
+  - Exact rational arithmetic equality validation ($A = B \implies \text{eval}(A) \equiv \text{eval}(B)$) while skipping algebraic symbol variables safely.
   - Axiomatic probability bounds ($0.0 \le P(E) \le 1.0$).
 
 ### C. `AutonomousTDDEngine` (Compiler-Verified Test-Driven Synthesizer)
-- Implements test-driven development (TDD) for code synthesis:
-  1. **Automated Test Generation:** Generates edge cases (null inputs, boundary conditions, negative numbers, stress inputs, invariants).
-  2. **Sandboxed Execution:** Runs the candidate function and test suite inside `ZeroTrustSandboxJudge` with bounded step execution counters.
-  3. **Traceback Analysis & AST Self-Repair:** If a test raises an exception (e.g. infinite recursion missing base case, off-by-one boundary, unhandled empty list), the engine parses the traceback, applies targeted AST repairs, and re-executes until green.
-  4. **Performance:** Verifies clean implementations in **`1.37 ms`** and performs end-to-end self-repair in **`2.50 ms`**.
+- Implements non-vacuous test-driven development (TDD) for code synthesis:
+  1. **Automated Test Generation:** Generates boundary and invariant unit tests across `sort`, `fib`, `prime`, `reverse`, `gcd`, `lcm`, `factorial`, `palindrome`, `two_sum`, `merge_intervals`, `anagram`, and `binary_search`. Refuses vacuous verification (`verified=False, tests_generated=0`) when an unknown stub has zero executable assertions.
+  2. **Sandboxed Execution:** Runs the candidate function and test suite inside `ZeroTrustSandboxJudge` with AST security allow-lists and bounded step execution counters, never bypassing blocked imports/calls.
+  3. **Multi-Stage Autonomous Self-Repair:** Applies AST repairs (missing base cases, off-by-one bounds, nested distinct-index loop repair), `SandboxMCTSPlanner` mutations, and `ReasoningDiscoveryEngine` strategy synthesis verified strictly against the full test suite.
+  4. **Performance:** Verifies clean implementations in **`1.77 ms`** and performs end-to-end self-repair in **`3.46 ms`**.
 
 ### D. `HierarchicalProjectState` (Opus-Level Persistent Codebase Memory)
 - Replaces quadratic token context growth with a structured 3-tier semantic state:
@@ -65,30 +66,31 @@ However, both families remain shackled to:
 
 ### E. `SixGateDataHygienePipeline` ("Quality Over Quantity")
 - Enforces strict data purification across 6 sequential gates:
-  - **Gate 1 (`SPDX & PII`):** Permits only legally clean licenses (`MIT`, `Apache-2.0`, `BSD`, `CC-BY`, `Public-Domain`) and redacts emails, IPs, and API secrets.
-  - **Gate 2 (`MinHash Deduplication`):** 16/128-hash MinHash Jaccard filter discarding duplicate records.
+  - **Gate 1 (`SPDX & PII`):** Permits only legally clean licenses (`MIT`, `Apache-2.0`, `BSD`, `CC-BY`, `Public-Domain`) and redacts emails, IPs, and API secrets (also enforced on HTTP `/api/crystal/teach` and `/api/crystal/crystallize_doc` ingestion paths).
+  - **Gate 2 (`Bounded LSH & MinHash Deduplication`):** Bounded FIFO cache (`max_seen_cache=100,000`) + 4-band MinHash LSH screen rejecting both exact duplicates and near-duplicates.
   - **Gate 3 (`Shannon Byte-Entropy`):** Rejects low-entropy repetitive boilerplate ($< 3.2$) and high-entropy minified/binary noise ($> 5.8$).
   - **Gate 4 (`Pedagogical Density`):** Scores explanatory density, mathematical rigor, and docstring quality (threshold $\ge 0.55$).
   - **Gate 5 (`AST Compiler`):** Parses candidate code with `ast.parse` to reject uncompilable syntax.
   - **Gate 6 (`Benchmark Decontamination`):** Audits against canonical benchmarks (`HumanEval`, `MBPP`, `GSM8K`, `MATH-500`, `GPQA`) to guarantee zero test-set leakage.
-- Audits candidate datasets at **`575.9` samples/sec** on a commodity CPU.
+- Audits candidate datasets at **`1,479.7` samples/sec** on a commodity CPU.
 
 ---
 
-## 2. Empirical Telemetry Benchmark (`artifacts/mirror_crystal_qwen_opus_benchmark.json`)
+## 2. Empirical Telemetry & Honest Benchmark (`artifacts/mirror_crystal_qwen_opus_benchmark.json` & `mirror_eval`)
 
-Verified directly on an `Intel Core i5-10210U` (`1.60 GHz` laptop CPU, `16 GB RAM`, `0` GPU):
+Verified directly on a commodity laptop CPU (`0` GPU, `0` external LLM weights):
 
 | Subsystem | Metric | Measured Value | Significance |
 |---|---|---:|---|
-| **`CerebrumCrystalBridge`** | Kinematics Multi-Step Calculus | **`2.18 ms`** | Exact $a(1)=-6, a(3)=6$, 0% hallucination |
-| **`CerebrumCrystalBridge`** | Modular Exponentiation ($17^{23} \pmod{10^9+7}$) | **`0.22 ms`** | Exact binary square-and-multiply |
-| **`CerebrumCrystalBridge`** | Direct Symbolic CAS Derivative | **`0.31 ms`** | $4x^3 + 6x$ with finite-difference proof |
-| **`CerebrumCrystalBridge`** | Rational Arithmetic ($3/4 + 5/6$) | **`0.33 ms`** | Exact $19/12$ over Fraction field |
-| **`ProcessRewardVerifier`** | PRM Evaluation Latency | **`11.86 µs`** | **`84,300` steps/second** throughput on CPU |
-| **`AutonomousTDDEngine`** | Clean Code Verification | **`1.37 ms`** | Full test suite execution in sandbox |
-| **`AutonomousTDDEngine`** | Autonomous Self-Repair Loop | **`2.50 ms`** | Fixed recursion missing base case in 2 iterations |
-| **`SixGateDataHygiene`** | 6-Gate Audit Throughput | **`575.9 samples/s`** | Complete 6-gate audit with zero data leaks |
+| **`CerebrumCrystalBridge`** | `mirror_eval` Compositional Math Suite | **`16/16 (100.0%)` (`0.95 ms` mean)** | Unseen word chains, percentages, NT, combinatorics, proofs & abstention |
+| **`CerebrumCrystalBridge`** | Kinematics Multi-Step Calculus | **`2.90 ms`** | Exact $a(1)=-6, a(3)=6$, PRM `1.00` |
+| **`CerebrumCrystalBridge`** | Modular Exponentiation ($17^{23} \pmod{10^9+7}$) | **`0.36 ms`** | Exact modular power (`953268395`) |
+| **`CerebrumCrystalBridge`** | Direct Symbolic CAS Derivative | **`0.43 ms`** | $4x^3 + 6x$ with PRM `1.00` |
+| **`ProcessRewardVerifier`** | PRM Evaluation Latency | **`13.90 µs`** | **`71,900+` steps/second** throughput on CPU |
+| **`AutonomousTDDEngine`** | `mirror_eval` Non-Vacuous TDD Suite | **`7/7 (100.0%)`** | Clean, self-repaired (`two_sum`, `merge_intervals`, `lcm`), rejects unsafe/0-test stubs |
+| **`AutonomousTDDEngine`** | Clean Verification / Self-Repair | **`1.77 ms` / `3.46 ms`** | Full sandbox execution & autonomous repair |
+| **`DiskCrystalVault`** | `mirror_eval` Precision & Abstention | **`10/10 (100.0%)` (`4.43 ms` mean)** | Thread-safe WAL + strict entity/year coverage checks |
+| **`SixGateDataHygiene`** | 6-Gate + LSH Audit Throughput | **`1,479.7 samples/s`** | Bounded FIFO + 4-band LSH near-dedup on CPU |
 
 ---
 
@@ -117,6 +119,7 @@ All Phase 7 subsystems are exposed via REST API on port `8787` and in the intera
 Run the full automated test suite:
 
 ```bash
-python -m pytest mirror_crystal/tests/test_phase7_qwen_opus.py -v
+python -m pytest mirror_crystal/tests mirror_eval -v
+python -m mirror_eval
 python -m mirror_crystal.benchmark_qwen_opus
 ```

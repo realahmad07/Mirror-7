@@ -14,6 +14,7 @@ import json
 import math
 from pathlib import Path
 import sqlite3
+import threading
 import time
 from typing import Any
 import zlib
@@ -52,11 +53,13 @@ class DiskCrystalVault:
         self.max_postings_scan = int(max_postings_scan)
         self.lru_rule_cache_size = int(lru_rule_cache_size)
 
-        self.conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
-        self.conn.execute("PRAGMA journal_mode=WAL;")
-        self.conn.execute("PRAGMA synchronous=NORMAL;")
-        self.conn.execute("PRAGMA temp_store=MEMORY;")
-        self.conn.execute("PRAGMA mmap_size=134217728;")  # 128 MB OS kernel page cache map
+        self._lock = threading.RLock()
+        self._local = threading.local()
+        self._conns: list[sqlite3.Connection] = []
+        self._closed = False
+
+        init_conn = self._open_thread_conn(enable_wal=True)
+        self._local.conn = init_conn
         self._init_schema()
 
         self.bit_table = ContextBitTable(max_frame_df=max_frame_df)
@@ -78,8 +81,31 @@ class DiskCrystalVault:
         self._rule_lru: OrderedDict[int, CrystalRule] = OrderedDict()
         self._load_lightweight_meta()
 
+    def _open_thread_conn(self, enable_wal: bool = False) -> sqlite3.Connection:
+        c = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=5.0)
+        if enable_wal:
+            c.execute("PRAGMA journal_mode=WAL;")
+        c.execute("PRAGMA busy_timeout=5000;")
+        c.execute("PRAGMA synchronous=NORMAL;")
+        c.execute("PRAGMA temp_store=MEMORY;")
+        c.execute("PRAGMA mmap_size=134217728;")  # 128 MB OS kernel page cache map
+        with self._lock:
+            self._conns.append(c)
+        return c
+
+    @property
+    def conn(self) -> sqlite3.Connection:
+        c = getattr(self._local, "conn", None)
+        if c is None or self._closed:
+            if self._closed:
+                raise RuntimeError("DiskCrystalVault is closed.")
+            c = self._open_thread_conn(enable_wal=False)
+            self._local.conn = c
+        return c
+
     def cached_rules_in_ram(self) -> int:
-        return len(self._rule_lru)
+        with self._lock:
+            return len(self._rule_lru)
 
     def _init_schema(self) -> None:
         cur = self.conn.cursor()
@@ -194,31 +220,36 @@ class DiskCrystalVault:
         """Fetch candidate rules using bounded O(1) LRU cache + a single batched SQLite query for misses."""
         out: list[CrystalRule] = []
         misses: list[int] = []
-        for rid in rids:
-            cached = self._rule_lru.get(rid)
-            if cached is not None:
-                self._rule_lru.move_to_end(rid)
-                out.append(cached)
-            else:
-                misses.append(rid)
+        with self._lock:
+            for rid in rids:
+                cached = self._rule_lru.get(rid)
+                if cached is not None:
+                    self._rule_lru.move_to_end(rid)
+                    out.append(cached)
+                else:
+                    misses.append(rid)
 
         if misses:
             qmarks = ",".join("?" for _ in misses)
+            fetched: list[CrystalRule] = []
             for row in self.conn.execute(
                 f"SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules WHERE rule_id IN ({qmarks})",
                 misses,
             ):
-                rule = self._row_to_rule(row)
-                out.append(rule)
-                if self.lru_rule_cache_size > 0:
-                    self._rule_lru[rule.rule_id] = rule
-                    if len(self._rule_lru) > self.lru_rule_cache_size:
-                        self._rule_lru.popitem(last=False)
+                fetched.append(self._row_to_rule(row))
+            with self._lock:
+                for rule in fetched:
+                    out.append(rule)
+                    if self.lru_rule_cache_size > 0:
+                        self._rule_lru[rule.rule_id] = rule
+                        if len(self._rule_lru) > self.lru_rule_cache_size:
+                            self._rule_lru.popitem(last=False)
         return out
 
     def rule_count(self) -> int:
-        row = self.conn.execute("SELECT COUNT(*) FROM rules").fetchone()
-        return int(row[0]) if row else 0
+        with self._lock:
+            row = self.conn.execute("SELECT COUNT(*) FROM rules").fetchone()
+            return int(row[0]) if row else 0
 
     def _merge_postings_to_disk(
         self,
@@ -285,20 +316,21 @@ class DiskCrystalVault:
 
     def observe_unlabeled_text(self, text: str) -> int:
         """Stream unlabeled lines into ContextBitTable & disk causal graph."""
-        temp_index = LSHRuleIndex()
-        count = 0
-        for line in text.splitlines():
-            s = line.strip()
-            if not s:
-                continue
-            self.bit_table.observe_text(s)
-            temp_index.observe_causal_fact(s)
-            self.fluid_composer.observe_corpus_text(s)
-            count += 1
-        with self.conn:
-            self._merge_postings_to_disk({}, {}, temp_index._causal_edges)
-            self._save_lightweight_meta()
-        return count
+        with self._lock:
+            temp_index = LSHRuleIndex()
+            count = 0
+            for line in text.splitlines():
+                s = line.strip()
+                if not s:
+                    continue
+                self.bit_table.observe_text(s)
+                temp_index.observe_causal_fact(s)
+                self.fluid_composer.observe_corpus_text(s)
+                count += 1
+            with self.conn:
+                self._merge_postings_to_disk({}, {}, temp_index._causal_edges)
+                self._save_lightweight_meta()
+            return count
 
     def ingest_pair(
         self,
@@ -311,6 +343,27 @@ class DiskCrystalVault:
         trust_tier: int = 2,
     ) -> bool:
         """Single-item online continual update with trust-tier contradiction supersession (< 25 ms)."""
+        with self._lock:
+            return self._ingest_pair_locked(
+                user_text=user_text,
+                target_text=target_text,
+                think=think,
+                tool=tool,
+                test_code=test_code,
+                domain=domain,
+                trust_tier=trust_tier,
+            )
+
+    def _ingest_pair_locked(
+        self,
+        user_text: str,
+        target_text: str,
+        think: str = "",
+        tool: str = "",
+        test_code: str = "",
+        domain: str = "general",
+        trust_tier: int = 2,
+    ) -> bool:
         u, t = user_text.strip(), target_text.strip()
         if not u or not t:
             return False
@@ -350,10 +403,11 @@ class DiskCrystalVault:
             existing_rule = self._row_to_rule(row_dup)
             rid_existing = existing_rule.rule_id
             if existing_rule.abstract_response == abs_pair.abstract_response:
-                self.conn.execute(
-                    "UPDATE rules SET pass_count = pass_count + ? WHERE rule_id = ?",
-                    (1 + verified_bonus, rid_existing),
-                )
+                with self.conn:
+                    self.conn.execute(
+                        "UPDATE rules SET pass_count = pass_count + ? WHERE rule_id = ?",
+                        (1 + verified_bonus, rid_existing),
+                    )
             elif effective_tier <= existing_rule.trust_tier:
                 # Authorised update supersedes outdated answer cleanly!
                 new_payload = self._pack_rule_payload(
@@ -418,6 +472,21 @@ class DiskCrystalVault:
         fold_synonyms: bool = True,
     ) -> dict[str, Any]:
         """Stream arbitrarily huge .jsonl files in bounded RAM, flushing directly to SQLite B-Trees."""
+        with self._lock:
+            return self._ingest_jsonl_locked(
+                path=path,
+                max_rows=max_rows,
+                batch_flush_rows=batch_flush_rows,
+                fold_synonyms=fold_synonyms,
+            )
+
+    def _ingest_jsonl_locked(
+        self,
+        path: Path | str,
+        max_rows: int | None = None,
+        batch_flush_rows: int = 2500,
+        fold_synonyms: bool = True,
+    ) -> dict[str, Any]:
         fpath = Path(path)
         t0 = time.perf_counter()
         rows_read = 0
@@ -750,6 +819,10 @@ class DiskCrystalVault:
 
     def respond(self, prompt: str, session_id: str = "default") -> CrystalResponse:
         """Out-of-core inference with UniversalConceptHub, CAS, Curiosity, Coreference & <= 64 disk reads."""
+        with self._lock:
+            return self._respond_locked(prompt, session_id=session_id)
+
+    def _respond_locked(self, prompt: str, session_id: str = "default") -> CrystalResponse:
         t0 = time.perf_counter_ns()
         q_raw = prompt.strip()
         if not q_raw:
@@ -809,7 +882,7 @@ class DiskCrystalVault:
 
         sub_intents = split_compound_intents(q)
         if len(sub_intents) >= 2:
-            sub_res = [self._respond_atomic_disk(part) for part in sub_intents]
+            sub_res = [self._respond_atomic_disk(part, detected_lang=detected_lang) for part in sub_intents]
             valid_subs = [r for r in sub_res if r.mode != "unmatched_honest_abstain" and r.confidence >= 0.30]
             if len(valid_subs) >= 2:
                 combined_ans = "\n\n".join(f"[{idx + 1}] {r.answer}" for idx, r in enumerate(valid_subs))
@@ -831,7 +904,7 @@ class DiskCrystalVault:
         if len(windows) > 1:
             best_win: CrystalResponse | None = None
             for win in windows:
-                cand_r = self._respond_atomic_disk(win)
+                cand_r = self._respond_atomic_disk(win, detected_lang=detected_lang)
                 if best_win is None or cand_r.confidence > best_win.confidence:
                     best_win = cand_r
             if best_win is not None and best_win.mode != "unmatched_honest_abstain":
@@ -853,6 +926,7 @@ class DiskCrystalVault:
             session_id=session_id,
             clarified_this_turn=clarified_this_turn,
             original_prompt=q_raw,
+            detected_lang=detected_lang,
         )
 
     def _respond_atomic_disk(
@@ -862,6 +936,7 @@ class DiskCrystalVault:
         session_id: str = "default",
         clarified_this_turn: bool = False,
         original_prompt: str = "",
+        detected_lang: str = "en",
     ) -> CrystalResponse:
         t0 = time.perf_counter_ns()
         trace: list[str] = list(pre_trace) if pre_trace else []
@@ -934,19 +1009,24 @@ class DiskCrystalVault:
                 )
 
         q_expanded = self.bit_table.expand_content_tokens(raw_toks)
-        q_salient_cnt = len(set(raw_toks))
         min_lock_score = 0.85 if is_creative_req else 0.22
         for score, rule in cands:
-            if score < min_lock_score:
-                continue
             if oov_entities and rule.num_slots == 0 and not oov_entities.issubset(rule.token_set):
                 trace.append(f"Rejected partial match #{rule.rule_id}: missing OOV proper entity {sorted(oov_entities)}")
                 continue
-            matched_cnt = len(q_expanded & rule.token_set)
-            if EpistemicConfidenceCalibrator.is_false_cousin_overlap(
-                score, matched_salient_count=matched_cnt, query_salient_count=q_salient_cnt, num_slots=rule.num_slots
-            ):
-                trace.append(f"Filtered false-cousin single-token overlap on rule #{rule.rule_id} (score={score:.3f})")
+            ok_match, cal_conf, q_cov, match_reason = EpistemicConfidenceCalibrator.verify_candidate_match(
+                query_text=q_core,
+                original_prompt=orig_p,
+                raw_toks=raw_toks,
+                q_expanded=q_expanded,
+                rule=rule,
+                score=score,
+                bit_table=self.bit_table,
+                detected_lang=detected_lang,
+                min_lock_score=min_lock_score,
+            )
+            if not ok_match:
+                trace.append(f"Rejected partial/false match on rule #{rule.rule_id} ({match_reason})")
                 continue
             instantiated = SlotAbstractor.instantiate(
                 query=q_core,
@@ -964,10 +1044,10 @@ class DiskCrystalVault:
                 continue
 
             mode_str = "slot_formula_lock" if rule.num_slots > 0 else "direct_crystal_lock"
-            conf_val = round(min(1.0, score), 4)
+            conf_val = cal_conf
             sb_ver = judge_msg != "non_code"
             trace.append(
-                f"Matched DiskVault Rule #{rule.rule_id} (domain={rule.domain}, bit_score={score:.3f}, slots={rule.num_slots})"
+                f"Matched DiskVault Rule #{rule.rule_id} (domain={rule.domain}, bit_score={score:.3f}, cov={q_cov:.2f}, slots={rule.num_slots})"
             )
             if not sb_ver:
                 styled_ans, was_styled = self.fluid_composer.realize_grounded_style(orig_p, instantiated, sig2048=raw_sig)
@@ -984,7 +1064,9 @@ class DiskCrystalVault:
                 latency_ms=round(ms, 3),
                 sandbox_verified=sb_ver,
                 reasoning_trace=trace,
-                epistemic_tier=EpistemicConfidenceCalibrator.classify_tier(conf_val, mode_str, sb_ver),
+                epistemic_tier=EpistemicConfidenceCalibrator.classify_tier(
+                    conf_val, mode_str, sb_ver, query_coverage=q_cov
+                ),
             )
 
         creative_out = self.fluid_composer.synthesize_creative(orig_p, sig2048=raw_sig)
@@ -1016,19 +1098,34 @@ class DiskCrystalVault:
 
     def optimize_disk(self) -> int:
         """Flush dirty metadata + WAL checkpoint so the .dcrystal file is a single portable file on disk."""
-        if self._meta_dirty:
-            with self.conn:
-                self._save_lightweight_meta()
-            self._meta_dirty = False
-        self.conn.execute("PRAGMA wal_checkpoint(TRUNCATE);")
-        return self.db_path.stat().st_size
-
-    def close(self) -> None:
-        try:
+        with self._lock:
             if self._meta_dirty:
                 with self.conn:
                     self._save_lightweight_meta()
                 self._meta_dirty = False
-            self.conn.close()
-        except Exception:
-            pass
+            self.conn.execute("PRAGMA wal_checkpoint(TRUNCATE);")
+            return self.db_path.stat().st_size
+
+    def close(self) -> None:
+        with self._lock:
+            if self._closed:
+                return
+            try:
+                if self._meta_dirty:
+                    with self.conn:
+                        self._save_lightweight_meta()
+                    self._meta_dirty = False
+            except Exception:
+                pass
+            self._closed = True
+            for c in self._conns:
+                try:
+                    c.close()
+                except Exception:
+                    pass
+            self._conns.clear()
+            try:
+                if hasattr(self._local, "conn"):
+                    delattr(self._local, "conn")
+            except Exception:
+                pass

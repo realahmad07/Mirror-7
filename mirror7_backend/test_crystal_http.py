@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import threading
+import urllib.error
 import urllib.request
+
+import pytest
 
 from mirror7_backend.http_server import create_server
 from mirror7_backend.service import BackendService
@@ -150,6 +153,46 @@ def test_crystal_http_server_full_integration(tmp_path: Path):
         assert data_gate["passed"] is True
         assert data_gate["metrics"]["gate1_spdx_pii"] == "PASS"
 
+    finally:
+        server.shutdown()
+
+
+def test_crystal_http_hygiene_and_safety_guards():
+    eng = MirrorCrystalEngine()
+    service = BackendService(crystal_vault=eng, enable_crystal_auto_load=False)
+    server = create_server(port=0, service=service)
+    t = threading.Thread(target=server.serve_forever, daemon=True)
+    t.start()
+    try:
+        # 1. Reject PII leak in /api/crystal/teach with HTTP 400
+        with pytest.raises(urllib.error.HTTPError) as exc_pii:
+            make_request(
+                server,
+                "POST",
+                "/api/crystal/teach",
+                {"question": "Who is admin?", "answer": "Reach admin@secret-internal.org immediately."},
+            )
+        assert exc_pii.value.code == 400
+
+        # 2. Reject unsafe Python code in /api/crystal/teach with HTTP 400
+        with pytest.raises(urllib.error.HTTPError) as exc_unsafe:
+            make_request(
+                server,
+                "POST",
+                "/api/crystal/teach",
+                {"question": "Run shell?", "answer": "```python\nimport os\ndef boom(): return os.getcwd()\n```"},
+            )
+        assert exc_unsafe.value.code == 400
+
+        # 3. Reject benchmark contamination in /api/crystal/crystallize_doc with HTTP 400
+        with pytest.raises(urllib.error.HTTPError) as exc_doc:
+            make_request(
+                server,
+                "POST",
+                "/api/crystal/crystallize_doc",
+                {"title": "Contam", "text": "def has_close_elements(numbers, threshold): return False"},
+            )
+        assert exc_doc.value.code == 400
     finally:
         server.shutdown()
 

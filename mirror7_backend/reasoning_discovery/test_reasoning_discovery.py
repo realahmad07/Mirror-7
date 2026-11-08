@@ -192,3 +192,61 @@ def test_discovery_engine_end_to_end(tmp_path):
     assert cycle_result.best_execution.is_correct is True
     assert len(cycle_result.evaluated_strategies) >= 2
     assert cycle_result.accepted_strategy.strategy_id in cycle_result.novelty_reports
+
+
+def test_strategy_generator_expanded_algorithms():
+    explorer = ProblemExplorer()
+    gen = StrategyGenerator()
+    sandbox = SafeSandbox()
+
+    cases = [
+        (
+            "merge_intervals",
+            "Merge overlapping intervals",
+            [(([ [1, 3], [2, 6], [8, 10] ],), [[1, 6], [8, 10]]), (([],), [])],
+            "merge_intervals",
+        ),
+        (
+            "two_sum",
+            "Find two_sum indices summing to target",
+            [(([3, 2, 4], 6), [1, 2]), (([2, 7, 11, 15], 9), [0, 1])],
+            "two_sum",
+        ),
+        (
+            "lcm",
+            "Compute least common multiple of two integers",
+            [((4, 6), 12), ((0, 5), 0)],
+            "lcm",
+        ),
+        (
+            "gcd",
+            "Compute greatest common divisor",
+            [((14, 28), 14), ((17, 19), 1)],
+            "gcd",
+        ),
+        (
+            "palindrome",
+            "Check palindrome string",
+            [(("racecar",), True), (("hello",), False)],
+            "is_palindrome",
+        ),
+        (
+            "factorial",
+            "Compute factorial of n",
+            [((0,), 1), ((5,), 120)],
+            "factorial",
+        ),
+        (
+            "sort",
+            "Sort list of integers",
+            [(([3, 1, 2],), [1, 2, 3]), (([],), [])],
+            "sort_list",
+        ),
+    ]
+    for pid, obj, samples, expected_ep in cases:
+        prob = explorer.formalize_problem(pid, obj, obj, sample_cases=samples)
+        cands = gen.generate_candidate_strategies(prob)
+        assert any(c.entry_point == expected_ep for c in cands), (pid, [c.entry_point for c in cands])
+        for cand in cands:
+            res = sandbox.execute(cand, prob.test_cases)
+            assert res.is_correct is True, (pid, cand.strategy_id, res.error_message)
