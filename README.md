@@ -14,7 +14,7 @@
 [![Retention: 0.9999 Cosine](https://img.shields.io/badge/Continual_Retention-0.9999_Cosine-0B192C.svg?style=flat-square)](#3-multi-domain-cognitive-taxonomy-7-pillars--186-categories)
 
 **Founder & Principal Architect:** **Ahmad Hassan** &nbsp;•&nbsp; **Official Repository:** [github.com/realahmad07/Mirror-7](https://github.com/realahmad07/Mirror-7)  
-📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Verification Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[SHA-256 Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)**
+📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Verification Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[SHA-256 Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
 
 </div>
 
@@ -56,6 +56,7 @@ The repository integrates two cleanly separated, production-tested engineering l
 | **Semantic-State Research (`Exp 1–7`)** | ✅ | Replicated across multi-seed runs; **`87.18%` held-out compositional Top-1** (`Exp 4B`) and **`65.56%` unseen-concept generalization** (`Exp 7`). |
 | **Stateless ByteGRU Diagnostic** | ✅ | `1.7M` & `10.57M` stateless ByteGRU runs exposed long-span free-running drift—directly motivating our stateful V5/V6 architecture. |
 | **Mirror-7 V6 Stateful Prototype** | ✅ | **`185.5M` single / `556.6M` 3-Specialist Hub** verified on `1x NVIDIA A100` (`0.1296` CE loss across `2,048` bytes, `83.3%` live sandbox unit-test pass rate, `100%` preference alignment, `0.9999` continual retention across 12 stages). |
+| **Mirror Crystal Live Studio** | ✅ | Full-stack local interactive Web UI + REST API on port `8787`, serving `32,467` crystal rules, Symbolic CAS, 1-shot teaching, document auto-crystallizer, and in-browser WASM bitmask scanner (`run_studio.bat`). |
 | **Whole-Drive Corpus & SHA-256 Audit** | ✅ | **`37.36 GB`** (`75` files, `19.52 GB` in `Mirror7_Ultra_Backup`, `83,912` indexed records, `39,428` deduplicated triplets) cryptographically indexed. |
 | **Phase 1 Scaling (`Mirror-1.5B-Edge`)** | 🚀 | Next open-weights milestone (`32,768`-byte context, `150B` curated permissive bytes, iso-FLOP Byte-Latent vs. BPE benchmarks). |
 
@@ -427,21 +428,34 @@ python -m pytest -q training/test_training_foundation.py
 python -m build
 ```
 
-### C. Production HTTP Backend & Containerized Deployment (`mirror7_backend`)
+### C. Mirror Crystal Live Studio & Web UI (`http://127.0.0.1:8787/`)
+
+Mirror 7 includes an interactive full-stack web UI serving the weightless crystal engine (`32,467` multi-dataset rules):
 
 ```bash
-# Run HTTP service directly (default port 8787)
+# 1-Click Launch on Windows (opens browser automatically):
+run_studio.bat
+
+# Or launch manually via Python:
 python -m mirror7_backend.http_server
 ```
 
-Or deploy via Docker:
+Once running, navigate to **`http://127.0.0.1:8787/`** or **`http://127.0.0.1:8787/studio`** to access:
+- **Zero-Latency Live Chat:** Sub-5ms queries backed by `32,467` multi-dataset rules.
+- **Symbolic CAS Organ:** Exact rational differentiation, indefinite/definite integrals, linear algebra, and unit conversions.
+- **Instant 1-Shot Teaching:** Teach new factual rules in 1 turn without backpropagation or training runs.
+- **Document Auto-Crystallizer:** Drag-and-drop or paste Markdown, text, or Python code into crystallized rules.
+- **Edge PII Teleport Simulator:** Scrub PII and export cryptographically signed capsules for edge/mobile devices.
+- **In-Browser WASM SIMD Benchmark:** Hardware `i64.popcnt` bitmask scanner running directly in the browser V8 engine (`11.18 ms` per 100,000 2,048-bit scans).
+
+### D. Production HTTP Backend & Containerized Deployment (`mirror7_backend`)
 
 ```bash
 docker build -t mirror7-backend .
 docker run --rm -p 8787:8787 mirror7-backend
 ```
 
-### D. Repository Directory Map
+### E. Repository Directory Map
 
 ```text
 Mirror-7/

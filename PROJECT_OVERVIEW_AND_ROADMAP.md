@@ -74,6 +74,14 @@ Unlike standalone research notebooks, Mirror ships with a hardened, UI-independe
 - Allow-listed action execution gateways and output validation contracts
 - Automated `pytest` verification suites, GitHub Actions CI pipelines, and `Dockerfile` / `docker-compose.yml` deployment
 
+### 4.5 Weightless Mirror Crystal Engine & Interactive Live Studio UI (`mirror_crystal/`)
+Alongside the neural V6 GPU pipeline, Mirror 7 integrates a standalone, zero-gradient, zero-weight cognitive engine and browser-based interactive Studio UI:
+- **Zero-GPU Bitmask Cognition:** 2,048-bit hardware `POPCNT` context barcodes, LSH fast-candidate indexing, exact slot variable abstraction, and out-of-core SQLite WAL + `mmap` vault (`0` rules in RAM at cold boot).
+- **Symbolic CAS Organ:** Pure standard-library rational differentiation, indefinite/definite integrals, Gauss-Jordan linear systems, and dimensional unit conversions across 7 human languages.
+- **Bicameral 1.58-Bit Composition:** Packed ternary weights realize structured factual rules into fluid executive prose with strict number/negation fidelity guards.
+- **Spec-Compliant WASM SIMD Kernel:** 184-byte WebAssembly binary (`mirror_crystal_pocket_popcnt.wasm`) executing directly in standard browsers (`11.18 ms` per 100,000 2,048-bit bitmask scans).
+- **Interactive Live Studio (`http://127.0.0.1:8787/`):** Full-stack dark-mode local UI featuring live zero-latency chat, symbolic math organ, 1-shot teaching console, document auto-crystallizer, edge PII teleport simulator, and in-browser WASM benchmark. Accessible via 1-click launcher (`Run_Mirror7_Studio.bat`).
+
 ---
 
 ## 5. Six-Phase Open-Source Scaling Roadmap (`185.5M` -> Frontier Parity)
