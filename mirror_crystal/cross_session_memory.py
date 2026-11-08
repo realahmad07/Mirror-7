@@ -105,6 +105,8 @@ class CrossSessionMemoryGraph:
         self.max_entities_per_session = 200
         self.vault_encryption_key = os.getenv("MIRROR_MEMORY_KEY", "m7_memory_vault_secure_key")
         self._undo_stack: Dict[str, List[Dict[str, Any]]] = {}
+        self._entity_cache: Dict[str, Dict[str, Dict[str, Any]]] = {}
+        self._profile_cache: Dict[str, Optional[Dict[str, Any]]] = {}
         self._init_schema()
 
     def _init_schema(self) -> None:
@@ -211,6 +213,7 @@ class CrossSessionMemoryGraph:
                        )""",
                     (session_id,),
                 )
+                self._entity_cache.pop(session_id, None)
 
             if row is not None:
                 old_val = row[0]
@@ -232,6 +235,15 @@ class CrossSessionMemoryGraph:
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)""",
                     (session_id, key_clean, entity_type, db_val_text, val_json, confidence, now, now, ttl_days),
                 )
+
+            if session_id in self._entity_cache:
+                self._entity_cache[session_id][key_clean] = {
+                    "key": key_clean,
+                    "type": entity_type,
+                    "value": val_str,
+                    "confidence": confidence,
+                    "updated_at": now,
+                }
 
         return {
             "session_id": session_id,
@@ -281,21 +293,16 @@ class CrossSessionMemoryGraph:
                 "UPDATE memory_entities SET is_active = 0 WHERE session_id = ? AND entity_key = ?",
                 (session_id, key_clean),
             )
-            return cur.rowcount > 0
+            deleted = cur.rowcount > 0
+            if session_id in self._entity_cache:
+                self._entity_cache[session_id].pop(key_clean, None)
+            return deleted
 
     def list_entities(self, session_id: str, entity_type: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Lists all active entities for a session."""
+        """Lists all active entities for a session with high-speed in-memory caching."""
         with self._lock:
-            cur = self._conn.cursor()
-            if entity_type:
-                cur.execute(
-                    """SELECT entity_key, entity_type, value_text, confidence, updated_at
-                       FROM memory_entities
-                       WHERE session_id = ? AND entity_type = ? AND is_active = 1
-                       ORDER BY updated_at DESC""",
-                    (session_id, entity_type),
-                )
-            else:
+            if session_id not in self._entity_cache:
+                cur = self._conn.cursor()
                 cur.execute(
                     """SELECT entity_key, entity_type, value_text, confidence, updated_at
                        FROM memory_entities
@@ -303,11 +310,24 @@ class CrossSessionMemoryGraph:
                        ORDER BY updated_at DESC""",
                     (session_id,),
                 )
-            rows = cur.fetchall()
-            return [
-                {"key": r[0], "type": r[1], "value": StdlibCipher.decrypt(r[2], self.vault_encryption_key) if r[2].startswith("enc::") else r[2], "confidence": r[3], "updated_at": r[4]}
-                for r in rows
-            ]
+                rows = cur.fetchall()
+                sess_map: Dict[str, Dict[str, Any]] = {}
+                for r in rows:
+                    v_raw = r[2]
+                    v_dec = StdlibCipher.decrypt(v_raw, self.vault_encryption_key) if v_raw.startswith("enc::") else v_raw
+                    sess_map[r[0]] = {
+                        "key": r[0],
+                        "type": r[1],
+                        "value": v_dec,
+                        "confidence": r[3],
+                        "updated_at": r[4],
+                    }
+                self._entity_cache[session_id] = sess_map
+
+            cached_map = self._entity_cache[session_id]
+            if entity_type:
+                return [dict(e) for e in cached_map.values() if e["type"] == entity_type]
+            return [dict(e) for e in cached_map.values()]
 
     # =========================================================================
     # Relational Knowledge Graph Operations
@@ -576,6 +596,8 @@ class CrossSessionMemoryGraph:
             h_count = cur.rowcount
             if session_id in self._undo_stack:
                 del self._undo_stack[session_id]
+            self._entity_cache.pop(session_id, None)
+            self._profile_cache.pop(session_id, None)
 
             return {
                 "entities_purged": e_count,
@@ -653,9 +675,10 @@ class CrossSessionMemoryGraph:
         q_low = query.lower()
         matched_items: List[str] = []
 
+        q_words = set(re.findall(r"[a-z0-9_]+", q_low))
         for e in entities:
-            k = e["key"].replace("_", " ")
-            if k in q_low or any(w in q_low for w in k.split()):
+            k = e["key"]
+            if k in q_words or k.replace("_", " ") in q_low or any(w in q_words for w in k.split("_")):
                 matched_items.append(f"- **{e['key']}**: `{e['value']}` (type: {e['type']})")
 
         profile = self.get_project_profile(session_id)

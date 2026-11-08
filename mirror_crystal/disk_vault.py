@@ -151,6 +151,10 @@ class DiskCrystalVault:
         self._next_rule_id = 0
         self._meta_dirty = False
         self._rule_lru: OrderedDict[int, CrystalRule] = OrderedDict()
+        self._prompt_hash_lru: OrderedDict[bytes, int] = OrderedDict()
+        self._max_prompt_hash_cache: int = 2048
+        self._domain_counts_cache: Optional[dict[str, int]] = None
+        self._trust_tier_counts_cache: Optional[dict[str, int]] = None
         self._load_lightweight_meta()
 
     def _open_thread_conn(self, enable_wal: bool = False) -> sqlite3.Connection:
@@ -222,7 +226,12 @@ class DiskCrystalVault:
         cur = self.conn.cursor()
         row_stats = cur.execute("SELECT val FROM meta WHERE key = 'stats'").fetchone()
         if row_stats is not None:
-            self.stats.update(json.loads(zlib.decompress(row_stats[0]).decode("utf-8")))
+            loaded_stats = json.loads(zlib.decompress(row_stats[0]).decode("utf-8"))
+            self.stats.update(loaded_stats)
+            if "domain_counts" in loaded_stats and isinstance(loaded_stats["domain_counts"], dict):
+                self._domain_counts_cache = dict(loaded_stats["domain_counts"])
+            if "trust_tier_counts" in loaded_stats and isinstance(loaded_stats["trust_tier_counts"], dict):
+                self._trust_tier_counts_cache = dict(loaded_stats["trust_tier_counts"])
         row_bt = cur.execute("SELECT val FROM meta WHERE key = 'bit_table'").fetchone()
         if row_bt is not None:
             self.bit_table = ContextBitTable.from_state_dict(
@@ -268,12 +277,18 @@ class DiskCrystalVault:
         }
         return zlib.compress(json.dumps(obj, separators=(",", ":")).encode("utf-8"), level=6)
 
-    @staticmethod
-    def _row_to_rule(row: tuple[Any, ...]) -> CrystalRule:
+    def _row_to_rule(self, row: tuple[Any, ...]) -> CrystalRule:
         rid, sig_bytes, num_slots, pass_c, fail_c, payload = row
+        rid_int = int(rid)
+        if hasattr(self, "_rule_lru") and self.lru_rule_cache_size > 0:
+            cached = self._rule_lru.get(rid_int)
+            if cached is not None:
+                self._rule_lru.move_to_end(rid_int)
+                return cached
+
         d = json.loads(zlib.decompress(payload).decode("utf-8"))
-        return CrystalRule(
-            rule_id=int(rid),
+        rule = CrystalRule(
+            rule_id=rid_int,
             signature=int.from_bytes(sig_bytes, "little"),
             salient_tokens=tuple(d["toks"]),
             abstract_prompt=d["ap"],
@@ -285,8 +300,13 @@ class DiskCrystalVault:
             fail_count=int(fail_c),
             domain=d.get("dom", "general"),
             trust_tier=int(d.get("tt", 2)),
-            updated_seq=int(d.get("seq", int(rid) + 1)),
+            updated_seq=int(d.get("seq", rid_int + 1)),
         )
+        if hasattr(self, "_rule_lru") and self.lru_rule_cache_size > 0:
+            self._rule_lru[rid_int] = rule
+            if len(self._rule_lru) > self.lru_rule_cache_size:
+                self._rule_lru.popitem(last=False)
+        return rule
 
     def _fetch_rules_batch(self, rids: list[int]) -> list[CrystalRule]:
         """Fetch candidate rules using bounded O(1) LRU cache + a single batched SQLite query for misses."""
@@ -1212,13 +1232,23 @@ class DiskCrystalVault:
                 candidate_hashes.append(self._prompt_hash(abs_pair_exact.abstract_prompt.strip().lower()))
 
             for phash_exact in candidate_hashes:
-                row_exact = self.conn.execute(
-                    "SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules WHERE prompt_hash = ? ORDER BY pass_count DESC, rule_id DESC",
-                    (phash_exact,),
-                ).fetchone()
-                if row_exact is not None:
-                    rule_exact = self._row_to_rule(row_exact)
-                    if rule_exact.active:
+                rule_exact = None
+                cached_rid = self._prompt_hash_lru.get(phash_exact)
+                if cached_rid is not None:
+                    self._prompt_hash_lru.move_to_end(phash_exact)
+                    rule_exact = self._rule_lru.get(cached_rid)
+
+                if rule_exact is None:
+                    row_exact = self.conn.execute(
+                        "SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules WHERE prompt_hash = ? ORDER BY pass_count DESC, rule_id DESC",
+                        (phash_exact,),
+                    ).fetchone()
+                    if row_exact is not None:
+                        rule_exact = self._row_to_rule(row_exact)
+                        self._prompt_hash_lru[phash_exact] = rule_exact.rule_id
+                        if len(self._prompt_hash_lru) > self._max_prompt_hash_cache:
+                            self._prompt_hash_lru.popitem(last=False)
+                if rule_exact is not None and rule_exact.active:
                         instantiated = SlotAbstractor.instantiate(
                             query=q_core,
                             num_slots=rule_exact.num_slots,
@@ -1392,22 +1422,30 @@ class DiskCrystalVault:
         )
 
     def get_trust_tier_counts(self) -> dict[str, int]:
-        """Return rule counts grouped by trust_tier (1=verified, 2=curated, 3=unverified)."""
+        """Return rule counts grouped by trust_tier (O(1) memory cached)."""
         with self._lock:
+            if self._trust_tier_counts_cache is not None:
+                return dict(self._trust_tier_counts_cache)
             counts: dict[str, int] = {}
             for (payload,) in self.conn.execute("SELECT payload FROM rules"):
                 tier = str(json.loads(zlib.decompress(payload).decode("utf-8")).get("tt", 2))
                 counts[tier] = counts.get(tier, 0) + 1
-            return counts
+            self._trust_tier_counts_cache = dict(counts)
+            self.stats["trust_tier_counts"] = dict(counts)
+            return dict(counts)
 
     def get_domain_counts(self) -> dict[str, int]:
-        """Return rule counts grouped by domain label."""
+        """Return rule counts grouped by domain label (O(1) memory cached)."""
         with self._lock:
+            if self._domain_counts_cache is not None:
+                return dict(self._domain_counts_cache)
             counts: dict[str, int] = {}
             for (payload,) in self.conn.execute("SELECT payload FROM rules"):
                 dom = str(json.loads(zlib.decompress(payload).decode("utf-8")).get("dom", "general"))
                 counts[dom] = counts.get(dom, 0) + 1
-            return counts
+            self._domain_counts_cache = dict(counts)
+            self.stats["domain_counts"] = dict(counts)
+            return dict(counts)
 
     def purge_matching_rules(self, signatures: Any, check_prompt: bool = False) -> dict[str, int]:
         """Remove rules whose response (or optionally prompt) contains any stale/banned signature and prune postings."""
