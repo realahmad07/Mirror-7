@@ -1,0 +1,52 @@
+{
+  "title": "Mirror 7 VIRA 15-Stage Roadmap Curation Report",
+  "timestamp": "2026-11-08T16:59:27Z",
+  "total_candidates": 769,
+  "clean_records_passed": 717,
+  "candidates_by_stage": {
+    "Stage 1: Foundation": 150,
+    "Stage 2: Conversational": 89,
+    "Stage 3: Instruction Following": 18,
+    "Stage 4: Logic & Reasoning": 150,
+    "Stage 5: Mathematical": 150,
+    "Stage 6: Scientific": 150,
+    "Stage 7: Quantum Specialization": 6,
+    "Stage 8: Metacognitive": 4,
+    "Stage 9: Active Thinking": 3,
+    "Stage 10: Memory Intelligence": 3,
+    "Stage 11: Autonomous Planning": 2,
+    "Stage 12: Coding Intelligence": 4,
+    "Stage 13: Safety & Alignment": 4,
+    "Stage 14: Human Preference": 33,
+    "Stage 15: Continuous Learning": 3
+  },
+  "clean_by_stage": {
+    "STAGE_1_FOUNDATION": 150,
+    "STAGE_2_CONVERSATIONAL": 89,
+    "STAGE_3_INSTRUCTION_FOLLOWING": 9,
+    "STAGE_4_LOGIC_REASONING": 108,
+    "STAGE_5_MATHEMATICAL": 150,
+    "STAGE_6_SCIENTIFIC": 149,
+    "STAGE_7_QUANTUM": 6,
+    "STAGE_8_METACOGNITIVE": 4,
+    "STAGE_9_ACTIVE_THINKING": 3,
+    "STAGE_10_MEMORY": 3,
+    "STAGE_11_AUTONOMOUS_PLANNING": 2,
+    "STAGE_12_CODING": 4,
+    "STAGE_13_SAFETY": 4,
+    "STAGE_14_PREFERENCE": 33,
+    "STAGE_15_CONTINUOUS_LEARNING": 3
+  },
+  "rejections": {
+    "Gate 2 (Deduplication)": 52
+  },
+  "vault_stats": {
+    "new_rules": 66,
+    "duplicates_skipped": 651,
+    "sandbox_rejected": 0,
+    "total_processed": 717
+  },
+  "vault_total_rules": 38450,
+  "elapsed_seconds": 29.29,
+  "stages_covered": 15
+}

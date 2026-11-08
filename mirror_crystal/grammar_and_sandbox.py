@@ -175,9 +175,16 @@ class ZeroTrustSandboxJudge:
 
     @classmethod
     def extract_python_code(cls, response_text: str) -> str:
-        fenced = re.findall(r"```(?:python)?\s*(.*?)```", response_text, flags=re.DOTALL)
+        # Match explicitly tagged python blocks
+        fenced = re.findall(r"```(?:python|py)\b[^\n]*\n(.*?)```", response_text, flags=re.DOTALL)
         if fenced:
             return fenced[0].strip()
+        # Match untagged code blocks only if they begin with python syntax
+        untagged = re.findall(r"```[ \t]*\n(.*?)```", response_text, flags=re.DOTALL)
+        for block in untagged:
+            stripped = block.strip()
+            if any(stripped.startswith(k) for k in ("def ", "class ", "import ", "from ", "#")):
+                return stripped
         cleaned = re.sub(r"<think>.*?</think>", "", response_text, flags=re.DOTALL).strip()
         if any(cleaned.startswith(k) for k in ("def ", "class ", "import ", "from ")):
             return cleaned

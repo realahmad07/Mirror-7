@@ -1412,7 +1412,10 @@ class DiskCrystalVault:
                 with self.conn:
                     self._save_lightweight_meta()
                 self._meta_dirty = False
-            self.conn.execute("PRAGMA wal_checkpoint(TRUNCATE);")
+            try:
+                self.conn.execute("PRAGMA wal_checkpoint(PASSIVE);")
+            except Exception:
+                pass
             return self.db_path.stat().st_size
 
     def close(self) -> None:

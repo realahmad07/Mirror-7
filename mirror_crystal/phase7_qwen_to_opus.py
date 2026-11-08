@@ -2138,11 +2138,16 @@ class SixGateDataHygienePipeline:
         """
         score = 0.5
         # Educational formatting markers
-        if any(m in text for m in ("Step", "Proof", "Derivation", "Example", "Theorem", "Analysis")):
+        if any(m in text for m in ("Step", "Proof", "Derivation", "Example", "Theorem", "Analysis", "Explanation", "Definition", "Principle", "Reasoning", "Overview", "Summary", "Feature")):
             score += 0.15
+        elif any(w in text.lower() for w in ("because", "therefore", "in order to", "for instance", "specifically", "as a result")):
+            score += 0.1
         if re.search(r"\$|\\boxed|\\frac|\bO\(", text):
             score += 0.15
         if "```" in text or "def " in text:
+            score += 0.1
+        # Structured markdown headings or lists
+        if re.search(r"(?:^|\n)\s*(?:###|\d+\.|\*|-)\s+", text):
             score += 0.1
         # Penalize excessive repetition or single-line answers
         if len(text.splitlines()) < 2:
