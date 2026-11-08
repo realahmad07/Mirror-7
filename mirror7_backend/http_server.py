@@ -28,6 +28,18 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             return [self._json_safe(v) for v in value]
         return value
 
+    def _send_bytes(self, status: int, data: bytes, content_type: str = "text/html; charset=utf-8") -> None:
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Access-Control-Allow-Origin", self.cors_origin)
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.end_headers()
+        self.wfile.write(data)
+
     def _send(self, status: int, payload: dict[str, Any]) -> None:
         safe_payload = self._json_safe(payload)
         body = b"" if status == HTTPStatus.NO_CONTENT else json.dumps(
@@ -82,6 +94,25 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             self._send(500, {"ok": False, "error": "service unavailable"})
             return
         path = urlparse(self.path).path
+        if path in {"/", "/studio", "/studio.html"}:
+            from pathlib import Path
+            studio_p = Path(__file__).parent / "studio.html"
+            if studio_p.exists():
+                self._send_bytes(200, studio_p.read_bytes(), "text/html; charset=utf-8")
+                return
+            self._send(404, {"ok": False, "error": "studio.html not found"})
+            return
+        if path == "/api/crystal/wasm":
+            from pathlib import Path
+            from mirror_crystal import WasmPocketCompiler
+            wasm_p = Path("artifacts/mirror_crystal_pocket_popcnt.wasm")
+            wasm_bytes = wasm_p.read_bytes() if wasm_p.exists() else WasmPocketCompiler.compile_pocket_wasm_bytes()
+            self._send_bytes(200, wasm_bytes, "application/wasm")
+            return
+        if path == "/api/crystal/status":
+            st = dict(service.status())
+            self._send(200, {"ok": True, "crystal": st.get("crystal", {})})
+            return
         if path == "/api/health":
             self._send(200, {"ok": True, "service": "mirror7", "status": service.status()})
             return
@@ -107,6 +138,36 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             payload = self._read_json()
             path = urlparse(self.path).path
             parts = [p for p in path.split("/") if p]
+
+            if parts == ["api", "crystal", "ask"]:
+                prompt = str(payload.get("prompt", ""))
+                session_id = str(payload.get("session_id", "studio_web"))
+                res = service.crystal_ask(prompt, session_id=session_id)
+                self._send(200, res)
+                return
+
+            if parts == ["api", "crystal", "teach"]:
+                q = str(payload.get("question", "") or payload.get("prompt", ""))
+                a = str(payload.get("answer", "") or payload.get("response", ""))
+                tc = str(payload.get("test_code", ""))
+                dom = str(payload.get("domain", "studio_teach"))
+                added = service.crystal_teach(q, a, test_code=tc, domain=dom)
+                self._send(200, {"ok": True, "crystallized": added})
+                return
+
+            if parts == ["api", "crystal", "teleport"]:
+                scrubbed = str(payload.get("scrubbed_prompt", "") or payload.get("prompt", ""))
+                dev_id = str(payload.get("device_id", "pocket_studio"))
+                pkt = service.crystal_teleport(scrubbed, device_id=dev_id)
+                self._send(200, pkt)
+                return
+
+            if parts == ["api", "crystal", "crystallize_doc"]:
+                txt = str(payload.get("text", "") or payload.get("content", ""))
+                title = str(payload.get("title", "StudioDoc"))
+                stats = service.crystal_auto_ingest_document(txt, title=title)
+                self._send(200, {"ok": True, "stats": stats})
+                return
 
             if parts == ["api", "sessions"]:
                 session_id = self._session_id(str(payload.get("session_id", "")))

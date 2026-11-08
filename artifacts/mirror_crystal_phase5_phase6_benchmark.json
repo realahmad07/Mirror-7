@@ -1,0 +1,50 @@
+{
+  "all_phase5_phase6_live_benchmarks_passed": true,
+  "vault_rules_tested_against": 32464,
+  "wasm_pocket_module": "artifacts/mirror_crystal_pocket_popcnt.wasm",
+  "cases": {
+    "01_prior_32k_canary_and_typo_lock_intact": {
+      "passed": true,
+      "canary_latency_ms": 30.351,
+      "typo_latency_ms": 6.947
+    },
+    "02_symbolic_cas_multilingual_and_complexity_guard": {
+      "passed": true,
+      "diff_latency_ms": 0.805,
+      "linear_system_latency_ms": 0.65
+    },
+    "03_bicameral_grounded_compose_with_fact_fidelity_guard": {
+      "passed": true,
+      "latency_ms": 4.013
+    },
+    "04_bicameral_creative_synthesis_and_zero_vault_bleed": {
+      "passed": true,
+      "story_latency_ms": 3.205
+    },
+    "05_active_curiosity_clarifier_and_loop_guard": {
+      "passed": true,
+      "turn1_latency_ms": 3.026,
+      "turn2_latency_ms": 1.028
+    },
+    "06_document_and_code_auto_crystallizer_on_disk": {
+      "passed": true
+    },
+    "07_real_png_wav_codecs_and_png_bomb_guard": {
+      "passed": true,
+      "png_bytes": 78,
+      "wav_bytes": 684
+    },
+    "08_sharded_router_wasm_v8_and_proof_carrying_capsules": {
+      "passed": true,
+      "shard_counts_500_real_rows": {
+        "code": 146,
+        "math_quantum": 343,
+        "systems": 0,
+        "general": 11
+      },
+      "shard_ingest_sec": 1.88,
+      "wasm_binary_bytes": 184,
+      "v8_wasm_100k_2048bit_popcnt_ms": 11.179
+    }
+  }
+}

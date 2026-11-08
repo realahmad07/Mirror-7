@@ -20,7 +20,9 @@ private_founder_vault/
 training/data/*.jsonl
 
 # Artifacts policy:
-# Upload ALL verification logs, benchmark JSONs, diagnostic reports, and 1 compact (3.66 MB) reference .pt
-# Skip redundant multi-epoch smoke .pt checkpoints (>50 MB combined)
+# Upload ALL verification logs, benchmark JSONs, diagnostic reports, compact .mcrystal CPU brain (~4.0 MB), and 1 compact (3.66 MB) reference .pt
+# Skip redundant multi-epoch smoke .pt checkpoints and heavy local multi-dataset .dcrystal SQLite vaults
 artifacts/*.pt
+artifacts/*.dcrystal*
 !artifacts/mirror7_native_conversation_v5_ep5.best.pt
+!artifacts/mirror_crystal_v1.mcrystal

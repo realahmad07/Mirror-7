@@ -54,6 +54,13 @@ The operation changes the language realization component only. It does not repla
 | POST | /api/sessions/{id}/action | Invoke configured action gateway. |
 | DELETE | /api/sessions/{id} | Close session. |
 | DELETE | /api/sessions/{id}/checkpoint | Delete checkpoint. |
+| GET | / or /studio | Mirror Crystal Live Studio interactive browser application. |
+| GET | /api/crystal/status | Mirror Crystal vault status, rule count, and telemetry. |
+| GET | /api/crystal/wasm | Serves 184-byte WebAssembly SIMD POPCNT kernel (`application/wasm`). |
+| POST | /api/crystal/ask | Query Mirror Crystal vault (factual locks, CAS, 1.58-bit style, story). |
+| POST | /api/crystal/teach | Instant 1-shot continual rule crystallization into disk vault. |
+| POST | /api/crystal/teleport | Weak-device micro-crystal teleportation with HMAC-SHA256 signature. |
+| POST | /api/crystal/crystallize_doc | Auto-crystallize raw Markdown or Python source without .jsonl. |
 
 ## HTTP safety boundary
 

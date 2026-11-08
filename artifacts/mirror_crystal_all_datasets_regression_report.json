@@ -1,0 +1,165 @@
+{
+  "all_18_regression_scenarios_passed": true,
+  "scenarios_total": 18,
+  "scenarios_passed": 18,
+  "raw_jsonl_files_count": 5,
+  "raw_jsonl_total_mb": 94.331,
+  "total_rows_streamed": 49372,
+  "total_unique_rules_on_disk": 32458,
+  "total_duplicates_skipped": 16925,
+  "dream_cycle_telemetry": {
+    "dreams_crystallized": 1,
+    "valid_shortcuts_found": 1,
+    "cycles_pruned": 2,
+    "bloat_pruned": 0,
+    "candidates_explored": 10,
+    "elapsed_ms": 2.825
+  },
+  "total_streaming_ingest_sec": 113.498,
+  "disk_vault_size_mb": 44.0,
+  "cold_boot_rules_loaded_in_ram": 0,
+  "cold_boot_time_ms": 1549.043,
+  "cold_boot_python_ram_mb": 18.027,
+  "peak_python_ram_during_queries_mb": 51.784,
+  "lru_cached_rules_in_ram_after_all_queries": 256,
+  "per_file_ingestion": [
+    {
+      "file": "training/data/mirror_complete_master_v2.jsonl",
+      "rows_ingested": 6697,
+      "new_rules_added": 6697,
+      "duplicates_skipped_in_file": 0,
+      "total_vault_rules_on_disk": 6699,
+      "synonym_bridges_folded": 0,
+      "elapsed_sec": 10.482,
+      "rows_per_sec_cpu": 638.9
+    },
+    {
+      "file": "training/data/mirror_extreme_quality_master_v1.jsonl",
+      "rows_ingested": 6264,
+      "new_rules_added": 4377,
+      "duplicates_skipped_in_file": 1887,
+      "total_vault_rules_on_disk": 11076,
+      "synonym_bridges_folded": 0,
+      "elapsed_sec": 27.737,
+      "rows_per_sec_cpu": 225.8
+    },
+    {
+      "file": "training/data/mirror_oasst2_curated_v1.jsonl",
+      "rows_ingested": 13158,
+      "new_rules_added": 9372,
+      "duplicates_skipped_in_file": 3786,
+      "total_vault_rules_on_disk": 20448,
+      "synonym_bridges_folded": 0,
+      "elapsed_sec": 22.56,
+      "rows_per_sec_cpu": 583.3
+    },
+    {
+      "file": "training/data/mirror_quantum_math_reasoning_v1.jsonl",
+      "rows_ingested": 6264,
+      "new_rules_added": 0,
+      "duplicates_skipped_in_file": 6264,
+      "total_vault_rules_on_disk": 20448,
+      "synonym_bridges_folded": 0,
+      "elapsed_sec": 24.154,
+      "rows_per_sec_cpu": 259.3
+    },
+    {
+      "file": "training/data/pre_Quantum_dataset.jsonl",
+      "rows_ingested": 16989,
+      "new_rules_added": 12001,
+      "duplicates_skipped_in_file": 4988,
+      "total_vault_rules_on_disk": 32449,
+      "synonym_bridges_folded": 82,
+      "elapsed_sec": 26.985,
+      "rows_per_sec_cpu": 629.6
+    }
+  ],
+  "regression_scenarios": {
+    "case_01_canary_zero_forgetting_after_53k_rows": {
+      "passed": true,
+      "latency_ms": 44.65,
+      "mode": "direct_crystal_lock",
+      "epistemic_tier": "high_confidence"
+    },
+    "case_02_unseen_large_int_formula_amidst_full_corpus": {
+      "passed": true,
+      "expected": 240178839,
+      "answer": "The exact modular result of 73^89 mod 1000000007 is 240178839.",
+      "latency_ms": 20.899
+    },
+    "case_03_duplicate_dataset_deduplication": {
+      "passed": true,
+      "duplicates_caught": 6264,
+      "new_rules_added": 0
+    },
+    "case_04_quantum_grover_vs_shor_disambiguation": {
+      "passed": true,
+      "grover_latency_ms": 18.149,
+      "shor_latency_ms": 21.959
+    },
+    "case_05_disk_multi_hop_causal_chaining": {
+      "passed": true,
+      "mode": "multi_hop_rule_chain",
+      "latency_ms": 15.452
+    },
+    "case_06_multi_session_constraint_and_verified_limiter": {
+      "passed": true,
+      "prod_latency_ms": 0.727
+    },
+    "case_07_general_cs_knowledge_retrieval": {
+      "passed": true,
+      "confidence": 0.5769,
+      "latency_ms": 27.883
+    },
+    "case_08_live_incremental_disk_teaching": {
+      "passed": true,
+      "teach_write_ms": 16.774,
+      "query_latency_ms": 24.122
+    },
+    "case_09_zero_trust_sandbox_quarantine": {
+      "passed": true
+    },
+    "case_10_adversarial_utf8_and_honest_abstention": {
+      "passed": true
+    },
+    "case_11_perceptual_vq_lens_lighting_and_rotation_invariance": {
+      "passed": true,
+      "latency_ms": 19.231
+    },
+    "case_12_sandbox_mcts_multi_rule_program_synthesis": {
+      "passed": true,
+      "latency_ms": 166.47
+    },
+    "case_13_bounded_loop_step_guard_anti_hang": {
+      "passed": true,
+      "abort_latency_ms": 5.765
+    },
+    "case_14_coreference_and_topic_shift_decay_guard": {
+      "passed": true,
+      "followup_latency_ms": 14.844
+    },
+    "case_15_homonym_polysemy_sense_disambiguation": {
+      "passed": true
+    },
+    "case_16_nightly_dream_synthesizer_and_cycle_pruner": {
+      "passed": true,
+      "dream_telemetry": {
+        "dreams_crystallized": 1,
+        "valid_shortcuts_found": 1,
+        "cycles_pruned": 2,
+        "bloat_pruned": 0,
+        "candidates_explored": 10,
+        "elapsed_ms": 2.825
+      }
+    },
+    "case_17_universal_concept_hub_urdu_chinese_roman_math": {
+      "passed": true,
+      "ur_latency_ms": 25.297,
+      "zh_latency_ms": 17.5
+    },
+    "case_18_typo_spell_bridge_and_split_brain_pocket_teleport": {
+      "passed": true,
+      "typo_latency_ms": 57.386
+    }
+  }
+}

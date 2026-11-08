@@ -16,18 +16,32 @@ class BackendMetrics:
             "steps_succeeded": 0,
             "steps_failed": 0,
         }
+        self._crystal_counters = {
+            "crystal_queries_total": 0,
+            "crystal_rules_taught": 0,
+            "crystal_teleports_total": 0,
+        }
 
     def increment(self, name: str) -> None:
         with self._lock:
-            if name not in self._counters:
+            if name in self._counters:
+                self._counters[name] += 1
+            elif name in self._crystal_counters:
+                self._crystal_counters[name] += 1
+            else:
                 raise KeyError(f"unknown metric: {name}")
-            self._counters[name] += 1
 
     def snapshot(self) -> dict[str, int]:
         with self._lock:
             return dict(self._counters)
 
+    def crystal_snapshot(self) -> dict[str, int]:
+        with self._lock:
+            return dict(self._crystal_counters)
+
     def reset(self) -> None:
         with self._lock:
             for name in self._counters:
                 self._counters[name] = 0
+            for name in self._crystal_counters:
+                self._crystal_counters[name] = 0

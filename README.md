@@ -30,6 +30,7 @@ The repository integrates two cleanly separated, production-tested engineering l
 |---|---|---|
 | **1. Mirror Runtime & Production Backend** | UI-independent stateful session lifecycle, persistent memory, allow-listed action gateways, realization contracts, output validation, Prometheus/health telemetry, Docker deployment, and HTTP API. | [`mirror7_backend/`](./mirror7_backend) • [`Dockerfile`](./Dockerfile) • [`docker-compose.yml`](./docker-compose.yml) |
 | **2. Byte-Native Stateful Learned Models** | Controlled semantic-state transition networks (`Experiments 1–7`) and the **Mirror-7 V6 Master Prototype (`185.5M` single specialist / `556.6M` 3-specialist hub)** verified on `NVIDIA A100-SXM4-40GB`. | [`training/`](./training) • [`colab_backup/`](./colab_backup) • [`artifacts/`](./artifacts) |
+| **3. Mirror Crystal & CPU-First Engines** | **Zero-weight, zero-gradient CPU crystallization engine (`mirror_crystal/`)** + **`1.58`-bit / parallel-scan CPU autonomous subsystem (`training/cpu_autonomous_engine.py`)** running on commodity laptops (`0` CUDA required). | [`mirror_crystal/`](./mirror_crystal) • [`docs/10-mirror-crystal-weightless-engine.md`](docs/10-mirror-crystal-weightless-engine.md) |
 
 ---
 
@@ -42,6 +43,7 @@ The repository integrates two cleanly separated, production-tested engineering l
 | [Project Overview](docs/01-project-overview.md) | [Repository Organization](docs/07-repository-organization.md) | [Experiments 1–7](docs/research/README.md) |
 | [System Architecture](docs/02-system-architecture.md) | [Documented Limitations](docs/08-limitations.md) | [Phase Roadmap](docs/09-roadmap.md) |
 | [Documentation Index](docs/README.md) | [Contributing Guide](CONTRIBUTING.md) | [A100 V6 Verification Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md) |
+| [Mirror Crystal (0-Weight CPU Engine)](docs/10-mirror-crystal-weightless-engine.md) | [CPU Autonomous Engine (`1.58`-bit)](training/cpu_autonomous_engine.py) | [Mirror Crystal CPU Telemetry](artifacts/mirror_crystal_hardware_benchmark.json) |
 
 ---
 
@@ -70,6 +72,7 @@ The repository integrates two cleanly separated, production-tested engineering l
 7. [Six-Phase Open-Source Company Scaling Roadmap (`185.5M` → `236B` Frontier)](#7-six-phase-open-source-company-scaling-roadmap-1855m--236b-frontier)
 8. [Quickstart: Standalone V6 Inference, HTTP Backend, Testing & Docker](#8-quickstart-standalone-v6-inference-http-backend-testing--docker)
 9. [Research Governance, Intellectual Property Scope & Citation](#9-research-governance-intellectual-property-scope--citation)
+10. [Mirror Crystal & CPU-First Autonomous Engines (Zero-GPU Track)](#10-mirror-crystal--cpu-first-autonomous-engines-zero-gpu-track)
 
 ---
 
@@ -443,6 +446,7 @@ docker run --rm -p 8787:8787 mirror7-backend
 ```text
 Mirror-7/
 ├── mirror7_backend/                  # Production UI-independent stateful runtime, HTTP API, actions & persistence
+├── mirror_crystal/                   # Zero-weight, zero-gradient CPU crystallization engine (2,048-bit POPCNT + LSH + Slot Math)
 ├── training/                         # Byte-native V3/V4/V5/V6 architectures, RLVR/DPO loops, Specialist Hub & tests
 │   ├── native_conversation_v5.py     # Stateful Bidirectional Byte Encoder-Decoder + Associative Memory + MoE
 │   ├── architecture_v6_rlvr_dpo_hub.py # V6 RoPE-2048, execution-guided RLVR/GRPO, <tool_call> sandbox & DPO
@@ -465,6 +469,40 @@ Mirror-7/
 > [!IMPORTANT]
 > **Open-Source Release & Core IP Governance:**  
 > Mirror releases model checkpoints, standalone inference runtimes (`colab_backup/`, `mirror7_backend/`), benchmark evaluation harnesses, and empirical telemetry under the permissive **`Apache-2.0` License**. To protect core project intellectual property during phased scaling, proprietary internal subspace-consolidation operators, adaptive sequence-compression mechanics, and internal curriculum synthesis formulas remain confidential while all inputs, outputs, execution sandboxes, and benchmark metrics remain 100% reproducible and auditable.
+
+---
+
+## 10. Mirror Crystal & CPU-First Autonomous Engines (Zero-GPU Track)
+
+Alongside our GPU-trained V6 byte-stateful neural checkpoints, Mirror 7 ships two complementary **CPU-native intelligence tracks** verified directly on a commodity `Intel Core i5-10210U` (`1.60 GHz` 4-core laptop CPU, `16 GB RAM`, `0` CUDA):
+
+### A. `mirror_crystal/` — Standalone Zero-Weight, Zero-Gradient Crystallization Engine
+Full documentation: **[`docs/10-mirror-crystal-weightless-engine.md`](docs/10-mirror-crystal-weightless-engine.md)** • Telemetry: **[`artifacts/mirror_crystal_hardware_benchmark.json`](artifacts/mirror_crystal_hardware_benchmark.json)**
+
+Replaces floating-point weight matrices and iterative backpropagation with **2,048-bit Context Barcodes (`int.bit_count()` hardware `POPCNT`)**, **1-Shot Variable/Formula Slot Abstraction (`{v0}`, `{v1}`)**, **`array('I')` Locality-Sensitive Rule Indexing (`LSH`)**, **Multi-Hop Causal Lock Chaining**, and **Zero-Trust CPU AST/Sandbox Reality Verification** in pure Python 3.11+ standard library:
+
+- **Single-Pass Streaming Ingestion:** Ingested **`6,697` training rows** (`mirror_complete_master_v2.jsonl`, `6.84 MB`) in **`10.10 s` (`663.3 rows/sec`)** on `i5-10210U` CPU into a **`4.005 MB`** compressed brain ([`artifacts/mirror_crystal_v1.mcrystal`](artifacts/mirror_crystal_v1.mcrystal)) with **`0` floating-point weights**.
+- **Sub-4ms CPU Inference & Zero Forgetting:** **`3.45 ms`** mean query latency, **`0%` catastrophic forgetting** across sequential updates, exact **1-shot unseen integer formula generalization** (`17^19 mod 1000000007` -> solves unseen `41^53 mod 1000000007 = 354849446`), and verified multi-hop rule chaining.
+- **Out-of-Core `.dcrystal` Vault + Phase-2/3/4 Cognitive & Bottleneck Defenses ([`docs/11-mirror-crystal-phase2-phase3-evolution.md`](docs/11-mirror-crystal-phase2-phase3-evolution.md)):** Streams all **`5` local `.jsonl` datasets (`94.33 MB` / `49,372` train rows -> `32,450+` deduplicated rules)** into an SQLite WAL + `mmap` vault (`0` rules loaded in RAM at cold boot), adding `PocketCrystalClient` (`< 20 MB` RAM + `HMAC-SHA256` capsules + PII scrubber), `PerceptualVQLens` (`INT8` `D4`-invariant image/signal VQ), `SandboxMCTSPlanner` (UCB1 CPU code synthesis + `BoundedLoopStepGuard`), `CoreferenceAndSenseTracker` (`TopicShiftDecayGuard` + homonym senses), `NightlyDreamSynthesizer` (`DreamUtilityPruner`), `MorphologicalFuzzySpellBridge` (typo recovery), and `UniversalConceptHub` (zero-duplication multilingual math & science).
+- **Phase-5 & Phase-6 Bicameral Composer, Symbolic CAS, Sensory Codecs, Sharded Scale & `184`-Byte WASM Kernel ([`docs/12-mirror-crystal-phase5-phase6-bicameral-scale.md`](docs/12-mirror-crystal-phase5-phase6-bicameral-scale.md)):** Adds `SymbolicCASOrgan` (`0.65–0.81 ms` exact rational calculus, linear systems & unit conversions across 7 languages), `1.58`-bit `TernaryFluidComposer` (`FactFidelityGuard` + `CreativeFactualBleedGuard`), `ActiveCuriosityPlanner` (`CuriosityLoopGuard`), `DocumentAutoCrystallizer` (`.md`/`.txt`/`.py`), pure-stdlib `.png`/`.wav` `SensoryCodec` (`PNGDecompressionBombGuard`), `ShardedCrystalRouter` (`< 0.15 ms` bitmask routing + cold-shard hints), Proof-Carrying Rule Capsules, and [`mirror_crystal_pocket_popcnt.wasm`](artifacts/mirror_crystal_pocket_popcnt.wasm) (`11.18 ms` per `100,000` `2,048`-bit `POPCNT`s in V8).
+
+```bash
+# Run tests, hardware benchmark, single-pass .jsonl training, or interactive CLI chat on any CPU:
+python -m pytest -q mirror_crystal
+python -m mirror_crystal benchmark --max-rows 7125
+python -m mirror_crystal query --brain artifacts/mirror_crystal_v1.mcrystal --prompt "Compute 41^53 mod 1000000007"
+python -m mirror_crystal chat --brain artifacts/mirror_crystal_v1.mcrystal
+```
+
+### B. `training/cpu_autonomous_engine.py` — `1.58`-Bit & Parallel-Scan CPU Neural Subsystem
+Telemetry: **[`artifacts/cpu_autonomous_engine_benchmark.json`](artifacts/cpu_autonomous_engine_benchmark.json)**
+
+Eliminates sequential RNN bottlenecks and dense FP32 RAM overhead for local CPU adaptation:
+- **`ParallelByteScanLayer`:** Tree-structured parallel prefix scan (`11` parallel depth steps across `2,048` bytes) running **`19.24x` faster** than sequential `nn.GRUCell` on CPU (`23.62 ms` vs. `454.51 ms`).
+- **`BitLinear158` (`{-1, 0, +1}`) + `ProductKeyMemoryBank` (`65,536` slots):** **`16.0x` weight compression** and **`6.14x` faster** $O(\sqrt{N})$ associative memory lookup.
+- **`AutonomousWakeSleepCPUTrainer` & `VerifiedSkillForge`:** Execution-verified Wake/Sleep LoRA consolidation (`0.9991` anchor cosine retention) + zero-trust AST skill synthesis (`56.28x` measured algorithmic speedup from $O(n^2) \to O(n \log n)$).
+
+---
 
 ### Citation
 

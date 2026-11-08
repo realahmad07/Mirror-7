@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
 
 [tool.setuptools.packages.find]
-include = ["mirror7_backend*"]
+include = ["mirror7_backend*", "mirror_crystal*"]
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -25,4 +25,5 @@ testpaths = [
   "phase341_pre_gpu_readiness",
   "phase342_release_boundary",
   "training",
+  "mirror_crystal",
 ]

@@ -291,13 +291,15 @@ Invoke-SafeBatchPush `
         "training",
         "colab_backup",
         "mirror7_backend",
+        "mirror_crystal",
+        ".github",
         "pyproject.toml",
         "requirements-training.txt",
         "requirements-response-realizer.txt",
         "Dockerfile",
         "docker-compose.yml"
     ) `
-    -CommitMessage "feat(architecture): sync Colab V5/V6 byte-native stateful training, standalone inference, and hub modules"
+    -CommitMessage "feat(architecture): sync V5/V6 modules, CPU Autonomous Engine, and Mirror Crystal zero-weight CPU engine"
 
 Invoke-SafeBatchPush `
     -StepLabel "Step 4/4" `

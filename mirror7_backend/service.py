@@ -18,9 +18,9 @@ from phase357_response_generation_interface import (
 
 
 class BackendService:
-    """UI-independent orchestration facade for the Mirror 7 backend."""
+    """UI-independent orchestration facade for the Mirror 7 backend with optional Mirror Crystal Engine."""
 
-    VERSION = 4
+    VERSION = 5
 
     def __init__(
         self,
@@ -32,6 +32,9 @@ class BackendService:
         generation_config: ResponseGenerationConfig | None = None,
         max_sessions: int = 128,
         metrics: BackendMetrics | None = None,
+        crystal_vault: Any | None = None,
+        crystal_node: Any | None = None,
+        enable_crystal_auto_load: bool = True,
     ):
         if max_sessions < 1:
             raise ValueError("max_sessions must be positive")
@@ -46,6 +49,83 @@ class BackendService:
         self._active: dict[str, int] = {}
         self._closing: set[str] = set()
         self._condition = Condition(RLock())
+
+        self.crystal_vault = crystal_vault
+        self.crystal_node = crystal_node
+        if self.crystal_vault is None and enable_crystal_auto_load:
+            self._init_default_crystal()
+        if self.crystal_vault is not None and self.crystal_node is None:
+            from mirror_crystal import CloudCrystalNode
+            self.crystal_node = CloudCrystalNode(self.crystal_vault)
+
+    def _init_default_crystal(self) -> None:
+        try:
+            from pathlib import Path
+            from mirror_crystal import DiskCrystalVault
+            vault_p = Path("artifacts/mirror_crystal_all_datasets.dcrystal")
+            if vault_p.exists():
+                self.crystal_vault = DiskCrystalVault(vault_p, lru_rule_cache_size=256)
+        except Exception:
+            self.crystal_vault = None
+
+    def crystal_ask(self, prompt: str, session_id: str = "default") -> dict[str, Any]:
+        """Query the backing Mirror Crystal Vault or fallback to empty abstention."""
+        if self.crystal_vault is None:
+            return {
+                "answer": "Mirror Crystal Vault is not initialized.",
+                "confidence": 0.0,
+                "mode": "unmatched_honest_abstain",
+                "matched_rule_id": None,
+                "latency_ms": 0.0,
+                "sandbox_verified": False,
+                "reasoning_trace": ["Vault not mounted."],
+                "epistemic_tier": "honest_abstain",
+            }
+        res = self.crystal_vault.respond(prompt, session_id=session_id)
+        self.metrics.increment("crystal_queries_total")
+        return {
+            "answer": res.answer,
+            "confidence": res.confidence,
+            "mode": res.mode,
+            "matched_rule_id": res.matched_rule_id,
+            "latency_ms": res.latency_ms,
+            "sandbox_verified": res.sandbox_verified,
+            "reasoning_trace": res.reasoning_trace,
+            "epistemic_tier": res.epistemic_tier,
+        }
+
+    def crystal_teach(self, question: str, answer: str, test_code: str = "", domain: str = "general") -> bool:
+        """Instantly crystallize a verified rule into the live DiskCrystalVault."""
+        if self.crystal_vault is None:
+            from mirror_crystal import MirrorCrystalEngine
+            self.crystal_vault = MirrorCrystalEngine()
+            from mirror_crystal import CloudCrystalNode
+            self.crystal_node = CloudCrystalNode(self.crystal_vault)
+        added = self.crystal_vault.ingest_pair(question, answer, test_code=test_code, domain=domain)
+        self.metrics.increment("crystal_rules_taught")
+        return added
+
+    def crystal_teleport(self, scrubbed_prompt: str, device_id: str = "pocket_web") -> dict[str, Any]:
+        """Teleport an HMAC-signed rule capsule to edge devices with token-bucket rate limiting."""
+        if self.crystal_node is None:
+            if self.crystal_vault is not None:
+                from mirror_crystal import CloudCrystalNode
+                self.crystal_node = CloudCrystalNode(self.crystal_vault)
+            else:
+                return {"status": "error", "answer": "No crystal node active", "capsule": None, "cdn_cached": False, "cloud_latency_ms": 0.0}
+        pkt = self.crystal_node.handle_teleport_query(scrubbed_prompt, device_id=device_id)
+        self.metrics.increment("crystal_teleports_total")
+        return pkt
+
+    def crystal_auto_ingest_document(self, text: str, title: str = "WebDocument") -> dict[str, int]:
+        """Auto-crystallize unstructured Markdown, textbook text, or Python code into the vault."""
+        if self.crystal_vault is None:
+            from mirror_crystal import MirrorCrystalEngine
+            self.crystal_vault = MirrorCrystalEngine()
+        if hasattr(self.crystal_vault, "ingest_document"):
+            return self.crystal_vault.ingest_document(text, title=title)
+        from mirror_crystal import DocumentAutoCrystallizer
+        return DocumentAutoCrystallizer.ingest_document_text(self.crystal_vault, text, title=title)
 
     def _register(self, session_id: str, session: BackendSession) -> BackendSession:
         if session_id in self._sessions:
@@ -187,6 +267,17 @@ class BackendService:
 
     def status(self) -> Mapping[str, Any]:
         with self._condition:
+            crystal_info: dict[str, Any] = {
+                "active": self.crystal_vault is not None,
+                "metrics": self.metrics.crystal_snapshot(),
+            }
+            if self.crystal_vault is not None:
+                if hasattr(self.crystal_vault, "rule_count"):
+                    crystal_info["rule_count"] = self.crystal_vault.rule_count()
+                elif hasattr(self.crystal_vault, "rule_index"):
+                    crystal_info["rule_count"] = len(self.crystal_vault.rule_index.rules)
+                if hasattr(self.crystal_vault, "db_path"):
+                    crystal_info["vault_path"] = str(self.crystal_vault.db_path)
             return {
                 "version": self.VERSION,
                 "sessions": len(self._sessions),
@@ -197,5 +288,6 @@ class BackendService:
                 "persistence": self.checkpoint_store is not None,
                 "actions": self.action_gateway is not None,
                 "response_generation": self.response_generator is not None,
+                "crystal": crystal_info,
                 "metrics": self.metrics.snapshot(),
             }
