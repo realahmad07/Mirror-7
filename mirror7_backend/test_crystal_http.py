@@ -309,10 +309,88 @@ def test_streamer_and_memory_http_endpoints(tmp_path: Path):
 
         # Check that port 9443 was auto-extracted and stored
         code_ent2, ent_res2, _ = make_request(server, "GET", "/api/memory/entities?session_id=sess_test")
-        assert any(e["key"] == "database_port" and str(e["value"]) == "9443" for e in ent_res2["entities"]) and any(e["key"] == "s3_bucket" and e["value"] == "telemetry-logs" for e in ent_res2["entities"])
+        assert any(e["key"] in ("server_port", "database_port") and str(e["value"]) == "9443" for e in ent_res2["entities"]) and any(e["key"] == "s3_bucket" and e["value"] == "telemetry-logs" for e in ent_res2["entities"])
     finally:
         server.shutdown()
         if service._memory_graph is not None:
             service._memory_graph.close()
         if service.crystal_vault is not None and hasattr(service.crystal_vault, 'close'):
+            service.crystal_vault.close()
+
+def test_bottlenecks_9_to_13_http_endpoints(tmp_path: Path):
+    from mirror_crystal.cross_session_memory import CrossSessionMemoryGraph
+    eng = MirrorCrystalEngine()
+    db_path = tmp_path / "test_b9_13.sqlite"
+    service = BackendService(crystal_vault=eng, enable_crystal_auto_load=False)
+    service._memory_graph = CrossSessionMemoryGraph(db_path=db_path)
+    server = create_server(port=0, service=service)
+    t = threading.Thread(target=server.serve_forever, daemon=True)
+    t.start()
+    try:
+        # 1. Coverage Map (Bottleneck 9)
+        code_cov, cov_data, _ = make_request(server, "GET", "/api/crystal/coverage")
+        assert code_cov == 200
+        assert cov_data["ok"] is True
+        assert "active_domains" in cov_data
+        assert "telemetry" in cov_data
+        assert "quantum_computing" in cov_data["active_domains"]
+        assert "bioinformatics" in cov_data["active_domains"]
+
+        # 2. Abstention and Teach-Me Template (Bottleneck 9)
+        unknown_q = "What is the thermodynamic entropy of a Kerr-Newman singularity in d dimensions?"
+        code_ask, ask_data, _ = make_request(server, "POST", "/api/crystal/ask", {"prompt": unknown_q, "consent_log": True})
+        assert code_ask == 200
+        assert ask_data["abstained"] is True
+        assert ask_data["can_teach"] is True
+        assert ask_data["teach_template"]["question"] == unknown_q
+
+        # 3. Context-Aware Extraction & Secret Scrubbing (Bottleneck 11 & 12)
+        secret_prompt = "App server on port 7070 using secret api key sk-live-999999999988888"
+        code_sec, sec_data, _ = make_request(server, "POST", "/api/crystal/ask", {"prompt": secret_prompt, "session_id": "b11_sess"})
+        assert code_sec == 200
+
+        code_ents, ents_res, _ = make_request(server, "GET", "/api/memory/entities?session_id=b11_sess")
+        assert code_ents == 200
+        ents = ents_res["entities"]
+        # Verify secret was scrubbed
+        assert not any("sk-live" in str(e["value"]) for e in ents)
+        # Verify context-aware port is server_port
+        server_port_ent = next((e for e in ents if e["key"] == "server_port"), None)
+        assert server_port_ent is not None
+        assert str(server_port_ent["value"]) == "7070"
+
+        # 4. Undo and Confirm (Bottleneck 11)
+        code_undo, undo_data, _ = make_request(server, "POST", "/api/memory/undo", {"session_id": "b11_sess"})
+        assert code_undo == 200
+        assert undo_data["ok"] is True
+
+        code_conf, conf_data, _ = make_request(server, "POST", "/api/memory/confirm", {"session_id": "b11_sess", "key": "server_port"})
+        assert code_conf == 200
+
+        # 5. GDPR Export & Purge (Bottleneck 12)
+        code_exp, exp_data, _ = make_request(server, "GET", "/api/memory/gdpr/export?session_id=b11_sess")
+        assert code_exp == 200
+        assert exp_data["ok"] is True
+        assert "entities" in exp_data["export"]
+
+        code_purge, purge_data, _ = make_request(server, "POST", "/api/memory/gdpr/purge", {"session_id": "b11_sess"})
+        assert code_purge == 200
+        assert purge_data["ok"] is True
+        assert purge_data["purged"]["entities_purged"] >= 0
+
+        # 6. Compaction and Quota (Bottleneck 13)
+        code_comp, comp_data, _ = make_request(server, "POST", "/api/memory/compact", {"session_id": "b11_sess"})
+        assert code_comp == 200
+        assert comp_data["ok"] is True
+        assert "inactive_entities_purged" in comp_data["compacted"]
+
+        # 7. Telemetry updated
+        code_cov2, cov_data2, _ = make_request(server, "GET", "/api/crystal/coverage")
+        assert code_cov2 == 200
+        assert cov_data2["telemetry"]["queries_abstained"] >= 1
+    finally:
+        server.shutdown()
+        if service._memory_graph is not None:
+            service._memory_graph.close()
+        if service.crystal_vault is not None and hasattr(service.crystal_vault, "close"):
             service.crystal_vault.close()

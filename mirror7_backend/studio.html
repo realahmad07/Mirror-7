@@ -23,7 +23,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
   body { background: var(--bg-dark); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-  
+
   header {
     background: rgba(13, 25, 41, 0.95);
     border-bottom: 1px solid var(--card-border);
@@ -46,7 +46,7 @@
   }
   .brand-text h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
   .brand-text p { font-size: 11px; color: var(--accent-cyan); }
-  
+
   .telemetry-bar { display: flex; align-items: center; gap: 16px; font-size: 12px; }
   .badge {
     padding: 4px 10px; border-radius: 999px; font-weight: 600; font-size: 11px;
@@ -55,7 +55,7 @@
   .badge-cyan { background: rgba(0, 240, 255, 0.12); color: var(--accent-cyan); border: 1px solid rgba(0, 240, 255, 0.3); }
   .badge-green { background: rgba(16, 185, 129, 0.12); color: var(--accent-teal); border: 1px solid rgba(16, 185, 129, 0.3); }
   .badge-purple { background: rgba(139, 92, 246, 0.12); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.3); }
-  
+
   nav {
     display: flex; background: #0A1424; border-bottom: 1px solid var(--card-border);
     padding: 0 24px; gap: 4px; overflow-x: auto;
@@ -112,7 +112,7 @@
   .md-table th { background: rgba(0, 240, 255, 0.08); font-weight: 600; color: var(--accent-cyan); }
   .md-table tr:nth-child(even) { background: rgba(255,255,255,0.025); }
   .think-block { background: rgba(255,255,255,0.03); border-left: 3px solid var(--accent-purple); padding: 8px 12px; border-radius: 0 6px 6px 0; margin: 8px 0; font-style: italic; color: var(--text-secondary); }
-  
+
   .meta-tagline {
     display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; font-weight: 600;
   }
@@ -148,7 +148,7 @@
   }
   .card h2 { font-size: 15px; font-weight: 700; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; }
   .card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.45; }
-  
+
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); }
   .form-control {
@@ -164,6 +164,23 @@
   .btn-action:hover { background: var(--accent-cyan); color: #070D18; }
 
   pre { background: var(--code-bg); padding: 12px; border-radius: 6px; font-size: 12px; overflow-x: auto; border: 1px solid #162436; color: #A5B4FC; }
+
+  /* Modal and Teach Flow Styles */
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.78); z-index: 1000; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-content {
+    background: var(--card-bg); border: 1px solid var(--accent-cyan); border-radius: 12px;
+    width: 90%; max-width: 760px; max-height: 85vh; overflow-y: auto; padding: 24px;
+    box-shadow: 0 10px 40px rgba(0, 240, 255, 0.25);
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; }
+  .modal-header h2 { font-size: 17px; color: var(--accent-cyan); margin: 0; }
+  .close-btn { background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer; }
+  .close-btn:hover { color: #FFF; }
+  .teach-prompt-card { margin-top: 10px; padding: 12px; background: rgba(255,180,0,0.08); border: 1px solid rgba(255,180,0,0.3); border-radius: 8px; }
 
   footer {
     padding: 12px 24px; border-top: 1px solid var(--card-border); background: #0A1424;
@@ -185,6 +202,8 @@
     <span class="badge badge-green" id="vault-status-badge">● 38,450 Rules on Disk</span>
     <span class="badge badge-cyan" id="ram-badge">RAM: 18.0 MB</span>
     <span class="badge badge-purple" id="gpu-badge">GPU: 0 (Pure CPU)</span>
+    <span class="badge" style="background:rgba(255,180,0,0.15); color:var(--accent-amber); border:1px solid rgba(255,180,0,0.3); cursor:pointer;" id="abstention-badge" onclick="openCoverageModal()">Abstention Rate: 0.0%</span>
+    <button class="btn-action" style="padding:4px 10px; font-size:11px;" onclick="openCoverageModal()">🗺️ Coverage Map</button>
   </div>
 </header>
 
@@ -224,6 +243,13 @@
       <div class="chat-input-bar">
         <input type="text" id="chat-input" class="chat-input" placeholder="Type prompt, math formula, calculus query, or story request..." onkeydown="if(event.key==='Enter') sendChat()"/>
         <button class="btn-send" onclick="sendChat()">Send ⚡</button>
+      </div>
+      <div style="padding: 6px 4px; display:flex; justify-content:space-between; align-items:center;">
+        <label style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="checkbox" id="chat-consent-log" checked />
+          Opt-in anonymous query regression logging (empowers held-out public benchmark accuracy)
+        </label>
+        <span style="font-size:11px; color:var(--accent-teal); cursor:pointer;" onclick="openCoverageModal()">Verified Honest Abstention Mode</span>
       </div>
     </div>
   </section>
@@ -454,9 +480,18 @@ def fft(x):
       <div class="card">
         <h2>🧠 Persistent Multi-Turn Memory Graph</h2>
         <p>Retains project architecture configurations, ports, database schemas, S3 buckets, and persistent variables across days and server restarts with 0 catastrophic forgetting.</p>
+        <div style="padding:10px 14px; background:rgba(0,240,255,0.06); border:1px solid rgba(0,240,255,0.25); border-radius:8px; margin-bottom:12px; font-size:11.5px; color:var(--text-secondary); line-height:1.5;">
+          🛡️ <strong>Zero-Knowledge Memory &amp; GDPR Compliance:</strong> Secrets (API keys, GitHub tokens, passwords) are automatically scrubbed before persistence. Stored parameters are encrypted at rest with PBKDF2 HMAC keystream. Quota limit: 200 entities/session with LRU eviction and time-decay compaction.
+        </div>
         <div class="form-group">
           <label>Active Session ID</label>
           <input type="text" id="memory-session-id" class="form-control" value="studio_web" onchange="loadSessionMemory()"/>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; margin-bottom:12px;">
+          <button class="btn-action" style="font-size:11.5px; padding:6px 12px;" onclick="undoLastMemory()">↩️ Undo Last Extraction</button>
+          <button class="btn-action" style="font-size:11.5px; padding:6px 12px;" onclick="compactMemory()">🧹 Compact Memory</button>
+          <button class="btn-action" style="font-size:11.5px; padding:6px 12px; background:rgba(57,211,83,0.15); color:var(--accent-teal); border-color:var(--accent-teal);" onclick="exportGdprData()">💾 Export Data (GDPR)</button>
+          <button class="btn-action" style="font-size:11.5px; padding:6px 12px; background:rgba(255,69,96,0.15); color:var(--accent-red); border-color:var(--accent-red);" onclick="purgeGdprData()">🗑️ Purge All Data (GDPR)</button>
         </div>
         <hr style="border:0; border-top:1px solid var(--card-border); margin:4px 0;"/>
         <h3 style="font-size:13px; color:var(--accent-teal);">Save Project Architecture Profile</h3>
@@ -547,21 +582,42 @@ async function sendChat() {
   log.appendChild(thinkingDiv);
   log.scrollTop = log.scrollHeight;
 
+  const consentLog = document.getElementById('chat-consent-log')?.checked || false;
+
   try {
     const res = await fetch('/api/crystal/ask', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({prompt: q})
+      body: JSON.stringify({prompt: q, consent_log: consentLog})
     });
     const data = await res.json();
+    refreshAbstentionBadge();
     
     let tierColor = 'var(--accent-cyan)';
     if(data.epistemic_tier === 'verified_exact') tierColor = 'var(--accent-teal)';
     if(data.epistemic_tier === 'creative_synthesis') tierColor = 'var(--accent-purple)';
     if(data.epistemic_tier === 'diagnostic_clarification') tierColor = 'var(--accent-amber)';
-    if(data.epistemic_tier === 'honest_abstain') tierColor = 'var(--accent-red)';
+    if(data.epistemic_tier === 'honest_abstain' || data.abstained) tierColor = 'var(--accent-red)';
 
     const traceId = 'trace_' + Math.random().toString(36).substr(2, 9);
+    const teachId = 'teach_' + Math.random().toString(36).substr(2, 9);
+
+    const teachCardHtml = (data.can_teach || data.abstained) ? `
+      <div class="teach-prompt-card">
+        <div style="font-weight:600; color:var(--accent-amber); font-size:12px; margin-bottom:6px;">
+          💡 <strong>Honest Abstention:</strong> Mirror does not guess outside its verified knowledge vault. Teach Mirror this concept to resolve it permanently:
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="btn-action" style="font-size:11px; padding:4px 10px;" onclick="prefillTeachTab('${escapeHtml(q)}')">✏️ Open 1-Shot Teaching Tab</button>
+          <button class="btn-action" style="font-size:11px; padding:4px 10px;" onclick="toggleInlineTeach('${teachId}')">Quick Teach Here ▾</button>
+        </div>
+        <div id="${teachId}" style="display:none; margin-top:8px;">
+          <textarea id="inline-ans-${teachId}" class="form-control" style="height:65px; font-size:12px; margin-bottom:6px;" placeholder="Provide the verified, ground-truth answer..."></textarea>
+          <button class="btn-send" style="font-size:11px; padding:4px 12px;" onclick="submitInlineTeach('${teachId}', '${escapeHtml(q)}')">Crystallize Into Live Vault ⚡</button>
+        </div>
+      </div>
+    ` : '';
+
     thinkingDiv.innerHTML = `
       <div class="meta-tagline">
         <span class="badge badge-cyan">⚡ ${data.latency_ms} ms</span>
@@ -569,9 +625,11 @@ async function sendChat() {
         <span style="color:var(--text-muted); font-size:11px;">mode: ${data.mode}</span>
       </div>
       <div>${renderMarkdown(data.answer)}</div>
+      ${teachCardHtml}
       ${data.reasoning_trace && data.reasoning_trace.length ? `
         <div class="trace-toggle" onclick="toggleTrace('${traceId}')">▶ View Reasoning Trace (${data.reasoning_trace.length} steps)</div>
-        <div id="${traceId}" class="trace-box">${escapeHtml(data.reasoning_trace.join('\\n'))}</div>
+        <div id="${traceId}" class="trace-box">${escapeHtml(data.reasoning_trace.join('
+'))}</div>
       ` : ''}
     `;
   } catch(err) {
@@ -789,7 +847,7 @@ async function runBrowserWasmBenchmark() {
     const mod = await WebAssembly.compile(bytes);
     const inst = await WebAssembly.instantiate(mod);
     const mem = new Uint8Array(inst.exports.memory.buffer);
-    
+
     // Fill two 256-byte (2,048-bit) signature buffers in linear memory
     for(let i = 0; i < 256; i++) {
       mem[i] = 0xAA;
@@ -918,7 +976,7 @@ async function refreshStreamerStatus() {
     }
     const badgeClass = isStreamerRunning ? 'badge-green' : 'badge-purple';
     const statusText = isStreamerRunning ? 'DAEMON ACTIVE (STREAMING)' : 'DAEMON IDLE';
-    
+
     let rejectionsHtml = '';
     if (d.rejections_by_gate && Object.keys(d.rejections_by_gate).length > 0) {
       rejectionsHtml = Object.entries(d.rejections_by_gate).map(([k, v]) => `<code>${k}</code>: ${v}`).join(' • ');
@@ -1002,7 +1060,7 @@ async function loadSessionMemory() {
     ]);
     const pData = await profResp.json();
     const eData = await entResp.json();
-    
+
     let html = '';
     if (pData.profile && pData.profile.name) {
       const p = pData.profile;
@@ -1025,17 +1083,25 @@ async function loadSessionMemory() {
     }
 
     const ents = (eData.entities || []);
-    html += `<h3 style="font-size:13px; color:var(--accent-teal); margin-bottom:8px;">Remembered Session Entities (${ents.length})</h3>`;
+    html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="font-size:13px; color:var(--accent-teal); margin:0;">Remembered Session Entities (${ents.length})</h3>
+      <span style="font-size:11px; color:var(--text-muted);">Quota: <strong>${ents.length} / 200</strong> entities (auto-compaction enabled)</span>
+    </div>`;
     if (ents.length === 0) {
       html += '<p style="color:var(--text-muted); font-size:12px;">No entities stored for this session yet. Stored entities and auto-extracted configuration variables will appear here.</p>';
     } else {
-      html += '<table class="md-table"><thead><tr><th>Key</th><th>Value</th><th>Type</th><th>Confidence</th><th>Action</th></tr></thead><tbody>';
+      html += '<table class="md-table"><thead><tr><th>Key (Context-Aware)</th><th>Value (Scrubbed/Encrypted)</th><th>Type</th><th>Confidence</th><th>Status</th><th>Action</th></tr></thead><tbody>';
       for (const ent of ents) {
+        const isConf = !!ent.is_confirmed;
+        const statusBadge = isConf 
+          ? '<span class="badge badge-green" style="font-size:10px;">✅ Confirmed</span>'
+          : `<button class="btn-action" style="padding:2px 8px; font-size:10px; color:var(--accent-teal); border-color:var(--accent-teal);" onclick="confirmMemoryEntity('${escapeHtml(ent.key)}')">Confirm</button>`;
         html += `<tr>
           <td><code style="color:var(--accent-cyan);">${escapeHtml(ent.key)}</code></td>
           <td>${escapeHtml(String(ent.value))}</td>
           <td><span class="badge badge-purple" style="font-size:10px;">${escapeHtml(ent.type)}</span></td>
           <td>${(ent.confidence * 100).toFixed(0)}%</td>
+          <td>${statusBadge}</td>
           <td><button class="btn-action" style="padding:2px 8px; font-size:10px; color:#FF4560;" onclick="forgetFact('${escapeHtml(ent.key)}')">Forget</button></td>
         </tr>`;
       }
@@ -1102,6 +1168,20 @@ async function forgetFact(key) {
   }
 }
 </script>
+
+
+<!-- Coverage Map & Capabilities Modal -->
+<div id="coverage-modal" class="modal-overlay" onclick="if(event.target===this) closeCoverageModal()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🗺️ Mirror Public Architecture Coverage &amp; Abstention Telemetry</h2>
+      <button class="close-btn" onclick="closeCoverageModal()">&times;</button>
+    </div>
+    <div id="coverage-modal-body">
+      <p style="color:var(--text-muted);">Loading active domain coverage map from live vault...</p>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

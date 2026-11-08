@@ -18,6 +18,8 @@ class BackendMetrics:
         }
         self._crystal_counters = {
             "crystal_queries_total": 0,
+            "crystal_queries_answered": 0,
+            "crystal_queries_abstained": 0,
             "crystal_rules_taught": 0,
             "crystal_teleports_total": 0,
         }
@@ -30,6 +32,14 @@ class BackendMetrics:
                 self._crystal_counters[name] += 1
             else:
                 raise KeyError(f"unknown metric: {name}")
+
+    def get(self, name: str) -> int:
+        with self._lock:
+            if name in self._counters:
+                return self._counters[name]
+            if name in self._crystal_counters:
+                return self._crystal_counters[name]
+            return 0
 
     def snapshot(self) -> dict[str, int]:
         with self._lock:

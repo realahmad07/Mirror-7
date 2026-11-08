@@ -115,6 +115,14 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             st = dict(service.status())
             self._send(200, {"ok": True, "crystal": st.get("crystal", {})})
             return
+        if path == "/api/crystal/coverage":
+            self._send(200, service.crystal_coverage_map())
+            return
+        if path == "/api/memory/gdpr/export":
+            parsed_qs = parse_qs(urlparse(self.path).query)
+            sess = parsed_qs.get("session_id", ["studio_web"])[0]
+            self._send(200, {"ok": True, "export": service.memory_export_gdpr(sess)})
+            return
         if path == "/api/streamer/status":
             self._send(200, service.streamer_status())
             return
@@ -158,7 +166,8 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             if parts == ["api", "crystal", "ask"]:
                 prompt = str(payload.get("prompt", ""))
                 session_id = str(payload.get("session_id", "studio_web"))
-                res = service.crystal_ask(prompt, session_id=session_id)
+                consent_log = bool(payload.get("consent_log", False))
+                res = service.crystal_ask(prompt, session_id=session_id, consent_log=consent_log)
                 self._send(200, res)
                 return
 
@@ -237,6 +246,31 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 k = str(payload.get("key", ""))
                 deleted = service.memory_forget(sess, k)
                 self._send(200, {"ok": True, "deleted": deleted})
+                return
+
+            if parts == ["api", "memory", "undo"]:
+                sess = str(payload.get("session_id", "studio_web"))
+                undone = service.memory_undo(sess)
+                self._send(200, {"ok": True, "undone": undone})
+                return
+
+            if parts == ["api", "memory", "confirm"]:
+                sess = str(payload.get("session_id", "studio_web"))
+                k = str(payload.get("key", ""))
+                confirmed = service.memory_confirm(sess, k)
+                self._send(200, {"ok": True, "confirmed": confirmed})
+                return
+
+            if parts == ["api", "memory", "gdpr", "purge"]:
+                sess = str(payload.get("session_id", "studio_web"))
+                purged = service.memory_purge_gdpr(sess)
+                self._send(200, {"ok": True, "purged": purged})
+                return
+
+            if parts == ["api", "memory", "compact"]:
+                sess = payload.get("session_id")
+                compacted = service.memory_compact(session_id=str(sess) if sess else None)
+                self._send(200, {"ok": True, "compacted": compacted})
                 return
 
             if parts == ["api", "memory", "profile"]:
