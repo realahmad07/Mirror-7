@@ -1059,7 +1059,8 @@ class DiskCrystalVault:
                     mv = memoryview(blob).cast("I")
                     if n_rids > 1024:
                         stride = max(1, n_rids // 1024)
-                        view = mv[::stride][:1024]
+                        tail_len = min(256, n_rids)
+                        view = list(mv[::stride][:768]) + list(mv[-tail_len:])
                     else:
                         view = mv
                     w = max(1, int(4.0 * self.bit_table.token_salience(tok)))

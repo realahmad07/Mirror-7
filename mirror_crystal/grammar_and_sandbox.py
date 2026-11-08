@@ -7,10 +7,13 @@ from __future__ import annotations
 import ast
 import bisect
 import builtins
+import cmath
 import collections
 import copy
 import csv
 import dataclasses
+import decimal
+import enum
 import fractions
 import functools
 import heapq
@@ -18,6 +21,8 @@ import io
 import itertools
 import json
 import math
+import operator
+import queue
 import random
 import re
 import statistics
@@ -30,6 +35,11 @@ from typing import Any
 _ALLOWED_IMPORTS: frozenset[str] = frozenset(
     {
         "math",
+        "cmath",
+        "decimal",
+        "operator",
+        "queue",
+        "enum",
         "heapq",
         "collections",
         "bisect",
@@ -251,6 +261,11 @@ class ZeroTrustSandboxJudge:
 
         mod_map = {
             "math": math,
+            "cmath": cmath,
+            "decimal": decimal,
+            "operator": operator,
+            "queue": queue,
+            "enum": enum,
             "heapq": heapq,
             "collections": collections,
             "bisect": bisect,
@@ -272,6 +287,7 @@ class ZeroTrustSandboxJudge:
             "all": all,
             "any": any,
             "bool": bool,
+            "complex": complex,
             "dict": dict,
             "divmod": divmod,
             "enumerate": enumerate,

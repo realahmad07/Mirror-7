@@ -554,6 +554,334 @@ assert max_sliding_window([1, -1], 1) == [1, -1]
         "domain": "algorithms",
         "trust_tier": 1,
     },
+    {
+        "prompt": "Write a python function to find the next greater element for each element in an array.",
+        "response": '''def next_greater_elements(nums: list[int]) -> list[int]:
+    """Find the next greater element for each element in nums using a monotonic stack in O(N)."""
+    if not nums:
+        return []
+    res = [-1] * len(nums)
+    stack: list[int] = []
+    for i, x in enumerate(nums):
+        while stack and nums[stack[-1]] < x:
+            prev_idx = stack.pop()
+            res[prev_idx] = x
+        stack.append(i)
+    return res
+''',
+        "test_code": '''
+assert next_greater_elements([2, 1, 2, 4, 3]) == [4, 2, 4, -1, -1]
+assert next_greater_elements([4, 3, 2, 1]) == [-1, -1, -1, -1]
+assert next_greater_elements([1, 2, 3, 4]) == [2, 3, 4, -1]
+assert next_greater_elements([]) == []
+''',
+        "domain": "algorithms",
+        "trust_tier": 1,
+        "aliases": [
+            "Next greater element using monotonic stack in Python.",
+            "Find the next greater element for every item in an array in Python.",
+        ],
+    },
+    {
+        "prompt": "Write a python function to implement a Fenwick tree (Binary Indexed Tree) with update and prefix_sum.",
+        "response": '''class FenwickTree:
+    """Binary Indexed Tree (Fenwick Tree) for O(log N) prefix sums and point updates."""
+    def __init__(self, size: int):
+        self.size = size
+        self.tree = [0] * (size + 1)
+
+    def update(self, i: int, delta: int) -> None:
+        """Add delta to element at 1-based index i."""
+        while i <= self.size:
+            self.tree[i] += delta
+            i += i & (-i)
+
+    def prefix_sum(self, i: int) -> int:
+        """Compute cumulative sum from index 1 to i."""
+        s = 0
+        while i > 0:
+            s += self.tree[i]
+            i -= i & (-i)
+        return s
+
+    def range_sum(self, left: int, right: int) -> int:
+        """Compute sum in 1-based range [left, right]."""
+        if left > right:
+            return 0
+        return self.prefix_sum(right) - self.prefix_sum(left - 1)
+''',
+        "test_code": '''
+ft = FenwickTree(6)
+ft.update(1, 3)
+ft.update(2, 2)
+ft.update(3, -1)
+ft.update(4, 6)
+ft.update(5, 5)
+ft.update(6, 4)
+assert ft.prefix_sum(3) == 4
+assert ft.range_sum(2, 5) == 12
+assert ft.range_sum(1, 6) == 19
+''',
+        "domain": "algorithms",
+        "trust_tier": 1,
+        "aliases": [
+            "Implement a Binary Indexed Tree (Fenwick Tree) in Python.",
+            "Write a python class for Fenwick Tree with update and prefix sum.",
+        ],
+    },
+    {
+        "prompt": "Write a python function to compute the Segment Tree with point update and range sum query.",
+        "response": '''class SegmentTree:
+    """Segment Tree for efficient O(log N) range sum queries and point updates."""
+    def __init__(self, nums: list[int]):
+        self.n = len(nums)
+        self.tree = [0] * (4 * max(1, self.n))
+        if self.n > 0:
+            self._build(nums, 0, 0, self.n - 1)
+
+    def _build(self, nums: list[int], node: int, start: int, end: int) -> None:
+        if start == end:
+            self.tree[node] = nums[start]
+            return
+        mid = (start + end) // 2
+        self._build(nums, 2 * node + 1, start, mid)
+        self._build(nums, 2 * node + 2, mid + 1, end)
+        self.tree[node] = self.tree[2 * node + 1] + self.tree[2 * node + 2]
+
+    def update(self, idx: int, val: int) -> None:
+        """Update value at index idx to val."""
+        def _update(node: int, start: int, end: int):
+            if start == end:
+                self.tree[node] = val
+                return
+            mid = (start + end) // 2
+            if start <= idx <= mid:
+                _update(2 * node + 1, start, mid)
+            else:
+                _update(2 * node + 2, mid + 1, end)
+            self.tree[node] = self.tree[2 * node + 1] + self.tree[2 * node + 2]
+        if 0 <= idx < self.n:
+            _update(0, 0, self.n - 1)
+
+    def query(self, left: int, right: int) -> int:
+        """Query sum in range [left, right] inclusive."""
+        def _query(node: int, start: int, end: int, l: int, r: int) -> int:
+            if r < start or end < l:
+                return 0
+            if l <= start and end <= r:
+                return self.tree[node]
+            mid = (start + end) // 2
+            return _query(2 * node + 1, start, mid, l, r) + _query(2 * node + 2, mid + 1, end, l, r)
+        if self.n == 0 or left > right:
+            return 0
+        return _query(0, 0, self.n - 1, left, right)
+''',
+        "test_code": '''
+st = SegmentTree([1, 3, 5, 7, 9, 11])
+assert st.query(1, 3) == 15
+st.update(1, 10)
+assert st.query(1, 3) == 22
+assert st.query(0, 5) == 43
+''',
+        "domain": "algorithms",
+        "trust_tier": 1,
+        "aliases": [
+            "Implement a Segment Tree in Python with range query and point update.",
+            "Write a python SegmentTree class for range sum query.",
+        ],
+    },
+    {
+        "prompt": "Write a python function to implement Manachers algorithm for finding the longest palindromic substring in ON time.",
+        "response": '''def manacher_longest_palindrome(s: str) -> str:
+    """Find the longest palindromic substring in O(N) linear time using Manacher's algorithm."""
+    if not s:
+        return ""
+    t = "^#" + "#".join(s) + "#$"
+    p = [0] * len(t)
+    c = 0
+    r = 0
+    for i in range(1, len(t) - 1):
+        i_mirror = 2 * c - i
+        if r > i:
+            p[i] = min(r - i, p[i_mirror])
+        else:
+            p[i] = 0
+        while t[i + 1 + p[i]] == t[i - 1 - p[i]]:
+            p[i] += 1
+        if i + p[i] > r:
+            c = i
+            r = i + p[i]
+
+    max_len = 0
+    center_index = 0
+    for i in range(1, len(t) - 1):
+        if p[i] > max_len:
+            max_len = p[i]
+            center_index = i
+
+    start = (center_index - 1 - max_len) // 2
+    return s[start:start + max_len]
+''',
+        "test_code": '''
+assert manacher_longest_palindrome("babad") in ("bab", "aba")
+assert manacher_longest_palindrome("cbbd") == "bb"
+assert manacher_longest_palindrome("racecar") == "racecar"
+assert manacher_longest_palindrome("a") == "a"
+assert manacher_longest_palindrome("") == ""
+''',
+        "domain": "algorithms",
+        "trust_tier": 1,
+        "aliases": [
+            "Implement Manacher's algorithm for longest palindromic substring in Python.",
+            "Longest palindromic substring in linear O(N) time with Manacher algorithm.",
+        ],
+    },
+    {
+        "prompt": "Write a python function for Cooley-Tukey Fast Fourier Transform (FFT).",
+        "response": '''import cmath
+
+def fft(x: list[complex]) -> list[complex]:
+    """Cooley-Tukey Radix-2 Fast Fourier Transform (FFT) in O(N log N) time."""
+    n = len(x)
+    if n <= 1:
+        return list(x)
+    if (n & (n - 1)) != 0:
+        next_pow2 = 1 << (n - 1).bit_length()
+        x = list(x) + [0j] * (next_pow2 - n)
+        n = next_pow2
+
+    even = fft(x[0::2])
+    odd = fft(x[1::2])
+    factor = [cmath.exp(-2j * cmath.pi * k / n) for k in range(n // 2)]
+    return [even[k] + factor[k] * odd[k] for k in range(n // 2)] + \\
+           [even[k] - factor[k] * odd[k] for k in range(n // 2)]
+
+def ifft(x: list[complex]) -> list[complex]:
+    """Inverse Fast Fourier Transform."""
+    n = len(x)
+    x_conj = [complex(val).conjugate() for val in x]
+    transformed = fft(x_conj)
+    return [val.conjugate() / n for val in transformed]
+''',
+        "test_code": '''
+signal = [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+spectrum = fft(signal)
+recovered = ifft(spectrum)
+for orig, rec in zip(signal, recovered):
+    assert abs(orig - rec.real) < 1e-4
+''',
+        "domain": "algorithms",
+        "trust_tier": 1,
+        "aliases": [
+            "Cooley-Tukey FFT algorithm implementation in Python.",
+            "Fast Fourier Transform and Inverse FFT in pure Python.",
+        ],
+    },
+    {
+        "prompt": "Write a python function for numerical integration using Simpsons 1/3 rule.",
+        "response": '''import math
+import typing
+
+def simpson_integration(f: typing.Callable[[float], float], a: float, b: float, n: int = 100) -> float:
+    """Approximate the definite integral of f from a to b using Simpson's 1/3 rule with n subintervals."""
+    if n % 2 != 0:
+        n += 1
+    h = (b - a) / n
+    s = f(a) + f(b)
+    for i in range(1, n, 2):
+        s += 4.0 * f(a + i * h)
+    for i in range(2, n, 2):
+        s += 2.0 * f(a + i * h)
+    return s * (h / 3.0)
+''',
+        "test_code": '''
+val1 = simpson_integration(lambda x: x * x, 0.0, 1.0, 100)
+assert abs(val1 - (1.0 / 3.0)) < 1e-4
+val2 = simpson_integration(math.sin, 0.0, math.pi, 100)
+assert abs(val2 - 2.0) < 1e-4
+''',
+        "domain": "algorithms",
+        "trust_tier": 1,
+        "aliases": [
+            "Numerical integration with Simpson's rule in Python.",
+            "Simpson 1/3 rule function for definite integrals in Python.",
+        ],
+    },
+    {
+        "prompt": "Write a python function to implement topological sort on a directed acyclic graph (DAG).",
+        "response": '''from collections import deque
+
+def kahn_topological_sort(num_nodes: int, edges: list[tuple[int, int]]) -> list[int]:
+    """Perform topological sort on a DAG using Kahn's algorithm (in-degree BFS). Returns [] if cycle exists."""
+    in_degree = [0] * num_nodes
+    adj: list[list[int]] = [[] for _ in range(num_nodes)]
+    for u, v in edges:
+        adj[u].append(v)
+        in_degree[v] += 1
+
+    q: deque[int] = deque([i for i in range(num_nodes) if in_degree[i] == 0])
+    order = []
+    while q:
+        node = q.popleft()
+        order.append(node)
+        for neighbor in adj[node]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                q.append(neighbor)
+
+    if len(order) != num_nodes:
+        return []
+    return order
+''',
+        "test_code": '''
+edges = [(0, 1), (0, 2), (1, 3), (2, 3)]
+res = kahn_topological_sort(4, edges)
+assert res.index(0) < res.index(1) and res.index(0) < res.index(2)
+assert res.index(1) < res.index(3) and res.index(2) < res.index(3)
+assert kahn_topological_sort(2, [(0, 1), (1, 0)]) == []
+''',
+        "domain": "algorithms",
+        "trust_tier": 1,
+        "aliases": [
+            "Topological sorting algorithm using in-degree BFS in Python.",
+            "Kahn's algorithm for topological sorting in Python.",
+        ],
+    },
+    {
+        "prompt": "Write a python function for breadth first search (BFS) shortest path in an unweighted graph.",
+        "response": '''from collections import deque
+
+def bfs_shortest_path(graph: dict[int, list[int]], start: int, target: int) -> list[int]:
+    """Find the shortest path from start to target in an unweighted graph using BFS."""
+    if start == target:
+        return [start]
+    visited = {start}
+    queue: deque[list[int]] = deque([[start]])
+    while queue:
+        path = queue.popleft()
+        current = path[-1]
+        for neighbor in graph.get(current, []):
+            if neighbor not in visited:
+                new_path = path + [neighbor]
+                if neighbor == target:
+                    return new_path
+                visited.add(neighbor)
+                queue.append(new_path)
+    return []
+''',
+        "test_code": '''
+adj = {1: [2, 3], 2: [1, 4], 3: [1, 4, 5], 4: [2, 3, 6], 5: [3], 6: [4]}
+assert bfs_shortest_path(adj, 1, 6) in ([1, 2, 4, 6], [1, 3, 4, 6])
+assert bfs_shortest_path(adj, 1, 5) == [1, 3, 5]
+assert bfs_shortest_path(adj, 1, 99) == []
+''',
+        "domain": "algorithms",
+        "trust_tier": 1,
+        "aliases": [
+            "Breadth first search shortest path algorithm in Python.",
+            "Find shortest path in unweighted graph with BFS.",
+        ],
+    },
 ]
 
 

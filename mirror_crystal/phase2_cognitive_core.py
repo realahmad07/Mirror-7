@@ -253,7 +253,7 @@ _SENSE_DISAMBIGUATION_RULES: tuple[tuple[frozenset[str], frozenset[str], str], .
     ),
     (
         frozenset({"tree", "trees"}),
-        frozenset({"binary", "node", "nodes", "bst", "avl", "traversal", "heap", "pointer", "recursion", "graph", "search", "balanced"}),
+        frozenset({"binary", "node", "nodes", "bst", "avl", "traversal", "heap", "pointer", "recursion", "graph", "search", "balanced", "segment", "fenwick", "prefix", "interval", "trie", "spanning", "btree", "root", "leaf", "subtree"}),
         "sense_cs_tree",
     ),
     (
@@ -917,6 +917,48 @@ _WRAPPER_PROPER_ALLOWLIST: frozenset[str] = frozenset(
         "queries",
         "schema",
         "schemas",
+        "bfs",
+        "dfs",
+        "dag",
+        "lca",
+        "dp",
+        "kmp",
+        "fft",
+        "ifft",
+        "fenwick",
+        "manacher",
+        "levenshtein",
+        "simpson",
+        "euler",
+        "gcd",
+        "lcm",
+        "heap",
+        "heaps",
+        "minheap",
+        "maxheap",
+        "priorityqueue",
+        "segmenttree",
+        "xml",
+        "yaml",
+        "toml",
+        "json",
+        "fifo",
+        "lifo",
+        "ast",
+        "regexp",
+        "decimal",
+        "cmath",
+        "operator",
+        "enum",
+        "code",
+        "coding",
+        "program",
+        "script",
+        "scripting",
+        "implement",
+        "implementation",
+        "solution",
+        "complexity",
     }
 )
 
@@ -954,7 +996,7 @@ class EpistemicConfidenceCalibrator:
             return True
         q_low = query.lower()
         if re.search(
-            r"\b(def\b|class\b|import\b|python|function|algorithm|leetcode|dataframe|sql|csv|quicksort|mergesort|binary search|longest palindromic|two sum|fibonacci|linked list|binary tree|recursion|dynamic programming|palindrome)\b",
+            r"\b(def\b|class\b|import\b|python|code|coding|program|programming|script|scripting|function|method|algorithm|implement|implementation|solution|leetcode|dataframe|sql|csv|regex|quicksort|mergesort|binary search|longest palindromic|two sum|fibonacci|linked list|binary tree|recursion|recursive|dynamic programming|palindrome|cache|lru|stack|queue|deque|trie|graph|bfs|dfs|heap|priority queue|fenwick|segment tree|fft|simpson|matrix|array|data structure)\b",
             q_low,
         ):
             return True
@@ -1169,11 +1211,11 @@ class EpistemicConfidenceCalibrator:
                 "mcts_program_synthesis",
                 "symbolic_cas_exact",
             }
-            or (sandbox_verified and confidence >= 0.60 and query_coverage >= 0.70)
+            or (sandbox_verified and confidence >= 0.60 and query_coverage >= 0.50)
             or (confidence >= 0.85 and query_coverage >= 0.85)
         ):
             return "verified_exact"
-        if confidence >= 0.58 and query_coverage >= 0.70:
+        if sandbox_verified or (confidence >= 0.58 and query_coverage >= 0.70):
             return "high_confidence"
         return "moderate_confidence"
 

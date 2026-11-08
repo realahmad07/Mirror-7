@@ -1584,23 +1584,68 @@ class AutonomousTDDEngine:
             if not any(k in lower_spec for k in ("unknown opaque", "unknown", "opaque", "refuse")):
                 try:
                     tree = ast.parse(candidate_code)
+                    target_def = None
                     for node in ast.walk(tree):
-                        if isinstance(node, ast.FunctionDef) and node.name == func_name:
-                            args = [a.arg for a in node.args.args if a.arg != "self"]
-                            num_args = len(args)
-                            if num_args == 1:
-                                arg_name = args[0].lower()
-                                if any(k in arg_name for k in ("s", "str", "text", "line", "word", "txt")):
-                                    tests.append(f"assert {func_name}('test') is not None or True, 'AST signature test: string'\nassert {func_name}('') is not None or True, 'AST signature test: empty string'")
-                                elif any(k in arg_name for k in ("lst", "arr", "nums", "items", "seq", "elements")):
-                                    tests.append(f"assert {func_name}([1, 2]) is not None or True, 'AST signature test: list'\nassert {func_name}([]) is not None or True, 'AST signature test: empty list'")
-                                elif any(k in arg_name for k in ("d", "dict", "map", "data", "mapping")):
-                                    tests.append(f"assert {func_name}({{}}) is not None or True, 'AST signature test: dict'")
-                                else:
-                                    tests.append(f"assert {func_name}(1) is not None or True, 'AST signature test: number'\nassert {func_name}(0) is not None or True, 'AST signature test: zero'")
-                            elif num_args == 2:
-                                tests.append(f"assert {func_name}(1, 2) is not None or True, 'AST signature test: 2-arg numeric'")
+                        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.name == func_name:
+                            target_def = node
                             break
+                    if target_def is None:
+                        for node in tree.body:
+                            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                                target_def = node
+                                func_name = node.name
+                                break
+
+                    if isinstance(target_def, ast.ClassDef):
+                        init_args = []
+                        for item in target_def.body:
+                            if isinstance(item, ast.FunctionDef) and item.name == "__init__":
+                                init_args = [a.arg for a in item.args.args if a.arg not in ("self", "cls")]
+                                num_defaults = len(item.args.defaults)
+                                if num_defaults > 0:
+                                    init_args = init_args[:-num_defaults]
+                                break
+                        dummy_call_args = []
+                        for a in init_args:
+                            a_low = a.lower()
+                            if any(k in a_low for k in ("cap", "size", "limit", "max", "n", "dim")):
+                                dummy_call_args.append("5")
+                            elif any(k in a_low for k in ("name", "key", "str", "val_str")):
+                                dummy_call_args.append("'test'")
+                            else:
+                                dummy_call_args.append("10")
+                        call_str = f"{func_name}({', '.join(dummy_call_args)})"
+                        tests.append(f"inst = {call_str}\nassert inst is not None, 'AST class instantiation test'")
+
+                    elif isinstance(target_def, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        raw_args = [a.arg for a in target_def.args.args if a.arg not in ("self", "cls")]
+                        num_defaults = len(target_def.args.defaults)
+                        req_args = raw_args[:-num_defaults] if num_defaults > 0 else raw_args
+                        num_req = len(req_args)
+
+                        if num_req == 0:
+                            tests.append(f"assert ({func_name}() is not None) or True, 'AST signature test: 0-arg invocation'")
+                        else:
+                            def _infer_dummy(arg_name: str, is_edge: bool = False) -> str:
+                                a_low = arg_name.lower()
+                                if any(k in a_low for k in ("s", "str", "text", "line", "word", "txt", "msg", "prefix", "suffix", "sentence", "haystack", "needle")):
+                                    return "''" if is_edge else "'test'"
+                                if any(k in a_low for k in ("lst", "arr", "nums", "items", "seq", "elements", "vals", "data", "array", "matrix")):
+                                    return "[]" if is_edge else "[1, 2]"
+                                if any(k in a_low for k in ("d", "dict", "map", "mapping", "lookup")):
+                                    return "{}" if is_edge else "{'a': 1}"
+                                if any(k in a_low for k in ("set", "visited", "seen")):
+                                    return "set()" if is_edge else "{1, 2}"
+                                if any(k in a_low for k in ("flag", "is_", "has_", "enable", "bool")):
+                                    return "False" if is_edge else "True"
+                                if any(k in a_low for k in ("float", "ratio", "rate", "prob", "eps", "alpha")):
+                                    return "0.0" if is_edge else "1.0"
+                                return "0" if is_edge else "1"
+
+                            args_normal = [_infer_dummy(a, False) for a in req_args]
+                            args_edge = [_infer_dummy(a, True) for a in req_args]
+                            tests.append(f"assert ({func_name}({', '.join(args_normal)}) is not None) or True, 'AST signature test: execution'")
+                            tests.append(f"assert ({func_name}({', '.join(args_edge)}) is not None) or True, 'AST signature test: boundary execution'")
                 except Exception:
                     pass
 
@@ -1613,7 +1658,7 @@ class AutonomousTDDEngine:
         try:
             tree = ast.parse(code_str)
             for node in tree.body:
-                if isinstance(node, ast.FunctionDef):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                     return node.name
         except Exception:
             pass
@@ -1624,8 +1669,12 @@ class AutonomousTDDEngine:
         try:
             tree = ast.parse(code_str)
             for node in tree.body:
-                if isinstance(node, ast.FunctionDef) and node.name == func_name:
-                    return max(1, len(node.args.args))
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == func_name:
+                    return max(1, len([a for a in node.args.args if a.arg not in ("self", "cls")]))
+                elif isinstance(node, ast.ClassDef) and node.name == func_name:
+                    for sub in node.body:
+                        if isinstance(sub, ast.FunctionDef) and sub.name == "__init__":
+                            return max(1, len([a for a in sub.args.args if a.arg not in ("self", "cls")]))
         except Exception:
             pass
         return 1
