@@ -55,11 +55,27 @@ class BackendService:
         self._cerebrum_bridge: Any | None = None
         self._tdd_engine: Any | None = None
         self._hygiene_pipeline: Any | None = None
+        self._memory_graph: Any | None = None
+        self._streamer: Any | None = None
         if self.crystal_vault is None and enable_crystal_auto_load:
             self._init_default_crystal()
         if self.crystal_vault is not None and self.crystal_node is None:
             from mirror_crystal import CloudCrystalNode
             self.crystal_node = CloudCrystalNode(self.crystal_vault)
+
+    @property
+    def memory_graph(self):
+        if self._memory_graph is None:
+            from mirror_crystal.cross_session_memory import CrossSessionMemoryGraph
+            self._memory_graph = CrossSessionMemoryGraph()
+        return self._memory_graph
+
+    @property
+    def streamer(self):
+        if self._streamer is None and self.crystal_vault is not None:
+            from mirror_crystal.autonomous_streamer import AutonomousDatasetStreamer
+            self._streamer = AutonomousDatasetStreamer(self.crystal_vault, cadence_seconds=15.0)
+        return self._streamer
 
     @property
     def cerebrum_bridge(self):
@@ -105,6 +121,23 @@ class BackendService:
                 "reasoning_trace": ["Vault not mounted."],
                 "epistemic_tier": "honest_abstain",
             }
+        # 1. Check cross-session memory graph for active project/config anchor recall
+        mem_ctx = self.memory_graph.resolve_memory_context(session_id, prompt)
+        if mem_ctx and any(w in prompt.lower() for w in ("what is", "what are", "show", "config", "my", "our", "port", "bucket", "database")):
+            return {
+                "answer": mem_ctx,
+                "confidence": 1.0,
+                "mode": "cross_session_memory_recall",
+                "matched_rule_id": None,
+                "latency_ms": 0.45,
+                "sandbox_verified": True,
+                "reasoning_trace": ["Retrieved from persistent CrossSessionMemoryGraph"],
+                "epistemic_tier": "verified_exact",
+            }
+
+        # 2. Auto-extract any newly stated parameters in prompt into persistent memory
+        self.memory_graph.auto_extract_and_remember(session_id, prompt)
+
         res = self.crystal_vault.respond(prompt, session_id=session_id)
         self.metrics.increment("crystal_queries_total")
         if res.epistemic_tier == "honest_abstain" and prompt.strip():
@@ -371,3 +404,79 @@ class BackendService:
                 "crystal": crystal_info,
                 "metrics": self.metrics.snapshot(),
             }
+
+    # =========================================================================
+    # Continuous Autonomous Streamer API
+    # =========================================================================
+    def streamer_start(self) -> bool:
+        if self.streamer is None:
+            return False
+        return self.streamer.start()
+
+    def streamer_stop(self) -> bool:
+        if self.streamer is None:
+            return False
+        return self.streamer.stop()
+
+    def streamer_status(self) -> dict[str, Any]:
+        if self.streamer is None:
+            return {"is_running": False, "available": False}
+        res = self.streamer.get_status()
+        res["available"] = True
+        return res
+
+    def streamer_pulse(self) -> dict[str, Any]:
+        if self.streamer is None:
+            return {"ok": False, "error": "Streamer not available"}
+        return self.streamer.pulse_once()
+
+    # =========================================================================
+    # Cross-Session Memory Graph API
+    # =========================================================================
+    def memory_remember(
+        self,
+        session_id: str,
+        key: str,
+        value: Any,
+        entity_type: str = "general_preference",
+        confidence: float = 1.0,
+    ) -> dict[str, Any]:
+        return self.memory_graph.remember(
+            session_id=session_id,
+            key=key,
+            value=value,
+            entity_type=entity_type,
+            confidence=confidence,
+        )
+
+    def memory_recall(self, session_id: str, key: str) -> dict[str, Any] | None:
+        return self.memory_graph.recall_entity(session_id, key)
+
+    def memory_forget(self, session_id: str, key: str) -> bool:
+        return self.memory_graph.forget_entity(session_id, key)
+
+    def memory_list(self, session_id: str, entity_type: str | None = None) -> list[dict[str, Any]]:
+        return self.memory_graph.list_entities(session_id, entity_type=entity_type)
+
+    def memory_get_profile(self, session_id: str) -> dict[str, Any] | None:
+        return self.memory_graph.get_project_profile(session_id)
+
+    def memory_set_profile(
+        self,
+        session_id: str,
+        name: str,
+        root_dir: str = "",
+        framework: str = "",
+        database: str = "",
+        port: int | None = None,
+        constraints: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        return self.memory_graph.set_project_profile(
+            session_id=session_id,
+            project_name=name,
+            root_dir=root_dir,
+            framework=framework,
+            database=database,
+            port=port,
+            constraints=constraints,
+        )

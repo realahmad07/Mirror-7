@@ -237,5 +237,82 @@ def test_crystal_http_server_real_vault_autoload():
         assert q_data["latency_ms"] < 100.0
     finally:
         server.shutdown()
-        if service.crystal_vault is not None:
+        if service.crystal_vault is not None and hasattr(service.crystal_vault, 'close'):
+            service.crystal_vault.close()
+
+
+def test_streamer_and_memory_http_endpoints(tmp_path: Path):
+    from mirror_crystal.cross_session_memory import CrossSessionMemoryGraph
+    eng = MirrorCrystalEngine()
+    db_path = tmp_path / "test_mem.sqlite"
+    service = BackendService(crystal_vault=eng, enable_crystal_auto_load=False)
+    service._memory_graph = CrossSessionMemoryGraph(db_path=db_path)
+    server = create_server(port=0, service=service)
+    t = threading.Thread(target=server.serve_forever, daemon=True)
+    t.start()
+    try:
+        # 1. Streamer Status
+        code, st, _ = make_request(server, "GET", "/api/streamer/status")
+        assert code == 200
+        assert "is_running" in st
+
+        # 2. Streamer Pulse
+        code_p, p_data, _ = make_request(server, "POST", "/api/streamer/pulse", {})
+        assert code_p == 200
+        assert "admitted" in p_data
+
+        # 3. Memory Profile POST & GET
+        prof_req = {
+            "session_id": "sess_test",
+            "name": "ECommerceEngine",
+            "framework": "FastAPI",
+            "database": "PostgreSQL",
+            "port": 8080,
+        }
+        code_prof, prof_res, _ = make_request(server, "POST", "/api/memory/profile", prof_req)
+        assert code_prof == 200
+        assert prof_res["ok"] is True
+        assert prof_res["profile"]["name"] == "ECommerceEngine"
+
+        code_gprof, gprof_res, _ = make_request(server, "GET", "/api/memory/profile?session_id=sess_test")
+        assert code_gprof == 200
+        assert gprof_res["profile"]["framework"] == "FastAPI"
+
+        # 4. Memory Remember POST & Entities GET
+        rem_req = {
+            "session_id": "sess_test",
+            "key": "deploy_target",
+            "value": "us-east-1-cluster",
+            "entity_type": "infrastructure",
+        }
+        code_rem, rem_res, _ = make_request(server, "POST", "/api/memory/remember", rem_req)
+        assert code_rem == 200
+        assert rem_res["ok"] is True
+
+        code_ent, ent_res, _ = make_request(server, "GET", "/api/memory/entities?session_id=sess_test")
+        assert code_ent == 200
+        assert any(e["key"] == "deploy_target" for e in ent_res["entities"])
+
+        # 5. Memory Forget POST
+        f_req = {"session_id": "sess_test", "key": "deploy_target"}
+        code_f, f_res, _ = make_request(server, "POST", "/api/memory/forget", f_req)
+        assert code_f == 200
+        assert f_res["deleted"] is True
+
+        # 6. Ask with Auto-Extraction
+        ask_req = {
+            "session_id": "sess_test",
+            "prompt": "Our analytics server runs on port 9443 with s3 bucket telemetry-logs",
+        }
+        code_ask, ask_res, _ = make_request(server, "POST", "/api/crystal/ask", ask_req)
+        assert code_ask == 200
+
+        # Check that port 9443 was auto-extracted and stored
+        code_ent2, ent_res2, _ = make_request(server, "GET", "/api/memory/entities?session_id=sess_test")
+        assert any(e["key"] == "database_port" and str(e["value"]) == "9443" for e in ent_res2["entities"]) and any(e["key"] == "s3_bucket" and e["value"] == "telemetry-logs" for e in ent_res2["entities"])
+    finally:
+        server.shutdown()
+        if service._memory_graph is not None:
+            service._memory_graph.close()
+        if service.crystal_vault is not None and hasattr(service.crystal_vault, 'close'):
             service.crystal_vault.close()

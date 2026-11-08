@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import ast
 import bisect
+import builtins
 import collections
 import fractions
 import functools
@@ -272,9 +273,11 @@ class ZeroTrustSandboxJudge:
             "KeyError": KeyError,
             "RuntimeError": RuntimeError,
             "AssertionError": AssertionError,
+            "object": object,
+            "__build_class__": builtins.__build_class__,
             "__import__": lambda name, *a, **k: mod_map[name.split(".")[0]],
         }
-        ns: dict[str, Any] = {"__builtins__": safe_builtins, "_mc_step_tick": _mc_step_tick}
+        ns: dict[str, Any] = {"__builtins__": safe_builtins, "__name__": "__main__", "_mc_step_tick": _mc_step_tick}
         buf = io.StringIO()
         try:
             with redirect_stdout(buf):

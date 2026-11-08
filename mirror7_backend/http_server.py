@@ -6,7 +6,7 @@ from dataclasses import asdict, is_dataclass
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 from .actions import ActionDenied
 from .persistence import CheckpointError
@@ -113,6 +113,20 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             st = dict(service.status())
             self._send(200, {"ok": True, "crystal": st.get("crystal", {})})
             return
+        if path == "/api/streamer/status":
+            self._send(200, service.streamer_status())
+            return
+        if path == "/api/memory/entities":
+            parsed_qs = parse_qs(urlparse(self.path).query)
+            sess = parsed_qs.get("session_id", ["studio_web"])[0]
+            etype = parsed_qs.get("entity_type", [None])[0]
+            self._send(200, {"ok": True, "entities": service.memory_list(sess, entity_type=etype)})
+            return
+        if path == "/api/memory/profile":
+            parsed_qs = parse_qs(urlparse(self.path).query)
+            sess = parsed_qs.get("session_id", ["studio_web"])[0]
+            self._send(200, {"ok": True, "profile": service.memory_get_profile(sess)})
+            return
         if path == "/api/health":
             self._send(200, {"ok": True, "service": "mirror7", "status": service.status()})
             return
@@ -188,6 +202,54 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 spdx = str(payload.get("spdx", "MIT") or payload.get("license", "MIT"))
                 res = service.six_gate_audit(text, spdx_license=spdx)
                 self._send(200, res)
+                return
+
+            if parts == ["api", "streamer", "start"]:
+                sec = float(payload.get("interval_seconds", 30.0))
+                service.streamer_start(interval_seconds=sec)
+                self._send(200, service.streamer_status())
+                return
+
+            if parts == ["api", "streamer", "stop"]:
+                service.streamer_stop()
+                self._send(200, service.streamer_status())
+                return
+
+            if parts == ["api", "streamer", "pulse"]:
+                res = service.streamer_pulse()
+                self._send(200, res)
+                return
+
+            if parts == ["api", "memory", "remember"]:
+                sess = str(payload.get("session_id", "studio_web"))
+                k = str(payload.get("key", ""))
+                v = payload.get("value")
+                etype = str(payload.get("entity_type", "general_preference"))
+                conf = float(payload.get("confidence", 1.0))
+                ent = service.memory_remember(sess, k, v, entity_type=etype, confidence=conf)
+                self._send(200, {"ok": True, "entity": ent})
+                return
+
+            if parts == ["api", "memory", "forget"]:
+                sess = str(payload.get("session_id", "studio_web"))
+                k = str(payload.get("key", ""))
+                deleted = service.memory_forget(sess, k)
+                self._send(200, {"ok": True, "deleted": deleted})
+                return
+
+            if parts == ["api", "memory", "profile"]:
+                sess = str(payload.get("session_id", "studio_web"))
+                name = str(payload.get("name", "DefaultProject"))
+                root = str(payload.get("root_dir", ""))
+                fw = str(payload.get("framework", ""))
+                db = str(payload.get("database", ""))
+                p_raw = payload.get("port")
+                port = int(p_raw) if p_raw is not None else None
+                constraints = payload.get("constraints")
+                prof = service.memory_set_profile(
+                    sess, name=name, root_dir=root, framework=fw, database=db, port=port, constraints=constraints
+                )
+                self._send(200, {"ok": True, "profile": prof})
                 return
 
             if parts == ["api", "sessions"]:

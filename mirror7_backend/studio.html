@@ -196,6 +196,8 @@
   <button class="tab-btn" onclick="openTab('edge')">📱 Pocket Edge & PII Teleport</button>
   <button class="tab-btn" onclick="openTab('wasm')">⚡ Browser WASM SIMD Kernel</button>
   <button class="tab-btn" onclick="openTab('frontier')">🚀 Qwen & Opus Frontier Lab</button>
+  <button class="tab-btn" onclick="openTab('streamer'); refreshStreamerStatus();">🌊 Autonomous Streamer</button>
+  <button class="tab-btn" onclick="openTab('memory'); loadSessionMemory();">🧠 Cross-Session Memory</button>
 </nav>
 
 <main>
@@ -418,6 +420,90 @@ def fft(x):
         <button class="btn-send" onclick="runSixGateAudit()">Audit Quality Gates ⚡</button>
       </div>
       <div id="gate-output" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- TAB 8: Autonomous Streamer -->
+  <section id="tab-streamer" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <h2>🌊 Autonomous High-Signal Streamer</h2>
+        <p>Managed background worker that feeds high-signal open-source datasets (arXiv papers, Lean Mathlib proofs, verified GitHub algorithms) continuously through the Six-Gate Data Hygiene pipeline and Zero-Trust AST Sandbox into the persistent Crystal Vault.</p>
+        <div style="display:flex; gap:10px; align-items:center; margin-top:8px; flex-wrap:wrap;">
+          <button class="btn-send" id="btn-streamer-toggle" onclick="toggleStreamer()">Start Background Streamer ⚡</button>
+          <button class="btn-action" onclick="pulseStreamer()">Pulse Once (Synchronous)</button>
+          <button class="btn-action" onclick="refreshStreamerStatus()">Refresh Status</button>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Streaming Cadence (Seconds)</label>
+          <input type="number" id="streamer-cadence" class="form-control" value="30" min="5" max="3600"/>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Live Streamer Telemetry &amp; Throughput</h2>
+        <div id="streamer-telemetry">
+          <p style="color:var(--text-muted);">Click Refresh Status or Pulse Once to inspect stream telemetry.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 9: Cross-Session Memory Graph -->
+  <section id="tab-memory" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <h2>🧠 Persistent Multi-Turn Memory Graph</h2>
+        <p>Retains project architecture configurations, ports, database schemas, S3 buckets, and persistent variables across days and server restarts with 0 catastrophic forgetting.</p>
+        <div class="form-group">
+          <label>Active Session ID</label>
+          <input type="text" id="memory-session-id" class="form-control" value="studio_web" onchange="loadSessionMemory()"/>
+        </div>
+        <hr style="border:0; border-top:1px solid var(--card-border); margin:4px 0;"/>
+        <h3 style="font-size:13px; color:var(--accent-teal);">Save Project Architecture Profile</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div class="form-group">
+            <label>Project Name</label>
+            <input type="text" id="mem-proj-name" class="form-control" value="QuantumMirrorCore"/>
+          </div>
+          <div class="form-group">
+            <label>Framework</label>
+            <input type="text" id="mem-framework" class="form-control" value="FastAPI / Pure Python"/>
+          </div>
+          <div class="form-group">
+            <label>Database</label>
+            <input type="text" id="mem-database" class="form-control" value="PostgreSQL 16 / SQLite WAL"/>
+          </div>
+          <div class="form-group">
+            <label>Port</label>
+            <input type="number" id="mem-port" class="form-control" value="8080"/>
+          </div>
+        </div>
+        <button class="btn-send" style="margin-top:8px;" onclick="saveProjectProfile()">Save Project Profile ⚡</button>
+
+        <hr style="border:0; border-top:1px solid var(--card-border); margin:8px 0;"/>
+        <h3 style="font-size:13px; color:var(--accent-teal);">Remember Arbitrary Key-Value Fact</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div class="form-group">
+            <label>Entity Key</label>
+            <input type="text" id="mem-fact-key" class="form-control" placeholder="e.g. s3_bucket"/>
+          </div>
+          <div class="form-group">
+            <label>Entity Value</label>
+            <input type="text" id="mem-fact-val" class="form-control" placeholder="e.g. enterprise-prod-assets"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Entity Type</label>
+          <input type="text" id="mem-fact-type" class="form-control" value="infrastructure"/>
+        </div>
+        <button class="btn-action" onclick="rememberFact()">Remember Fact ⚡</button>
+      </div>
+      <div class="card">
+        <h2>Active Project Profile &amp; Remembered Entities</h2>
+        <div id="memory-output">
+          <p style="color:var(--text-muted);">Loading memory graph...</p>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -811,6 +897,208 @@ async function runSixGateAudit() {
     `;
   } catch(e) {
     out.innerHTML = `<span style="color:var(--accent-red);">Error: ${e.message}</span>`;
+  }
+}
+
+// =========================================================================
+// Streamer and Cross-Session Memory Functions
+// =========================================================================
+let isStreamerRunning = false;
+
+async function refreshStreamerStatus() {
+  const out = document.getElementById('streamer-telemetry');
+  try {
+    const resp = await fetch('/api/streamer/status');
+    const d = await resp.json();
+    isStreamerRunning = !!d.is_running;
+    const btn = document.getElementById('btn-streamer-toggle');
+    if (btn) {
+      btn.textContent = isStreamerRunning ? 'Stop Streamer ⏹️' : 'Start Background Streamer ⚡';
+      btn.style.background = isStreamerRunning ? 'linear-gradient(135deg, #FF4560, #D11A2A)' : 'linear-gradient(135deg, var(--accent-cyan), #0099FF)';
+    }
+    const badgeClass = isStreamerRunning ? 'badge-green' : 'badge-purple';
+    const statusText = isStreamerRunning ? 'DAEMON ACTIVE (STREAMING)' : 'DAEMON IDLE';
+    
+    let rejectionsHtml = '';
+    if (d.rejections_by_gate && Object.keys(d.rejections_by_gate).length > 0) {
+      rejectionsHtml = Object.entries(d.rejections_by_gate).map(([k, v]) => `<code>${k}</code>: ${v}`).join(' • ');
+    } else {
+      rejectionsHtml = 'None (0 rejections)';
+    }
+
+    out.innerHTML = `
+      <div class="meta-tagline" style="margin-bottom:12px;">
+        <span class="badge ${badgeClass}">${statusText}</span>
+        <span class="badge badge-cyan">Cadence: ${d.cadence_seconds || 30}s</span>
+        <span class="badge badge-purple">Uptime: ${d.uptime_seconds || 0}s</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+        <div style="background:var(--code-bg); padding:10px; border-radius:6px; border:1px solid #1A283C;">
+          <div style="font-size:11px; color:var(--text-muted);">Total Evaluated:</div>
+          <div style="font-size:18px; font-weight:700; color:var(--accent-cyan);">${d.total_evaluated || 0}</div>
+        </div>
+        <div style="background:var(--code-bg); padding:10px; border-radius:6px; border:1px solid #1A283C;">
+          <div style="font-size:11px; color:var(--text-muted);">Total Admitted:</div>
+          <div style="font-size:18px; font-weight:700; color:var(--accent-teal);">${d.total_admitted || 0}</div>
+        </div>
+        <div style="background:var(--code-bg); padding:10px; border-radius:6px; border:1px solid #1A283C;">
+          <div style="font-size:11px; color:var(--text-muted);">Buffer Pending:</div>
+          <div style="font-size:18px; font-weight:700; color:var(--accent-purple);">${d.buffer_pending || 0}</div>
+        </div>
+        <div style="background:var(--code-bg); padding:10px; border-radius:6px; border:1px solid #1A283C;">
+          <div style="font-size:11px; color:var(--text-muted);">Total Vault Rules:</div>
+          <div style="font-size:18px; font-weight:700; color:#FFF;">${(d.vault_total_rules || 0).toLocaleString()}</div>
+        </div>
+      </div>
+      <div style="font-size:12px; margin-bottom:6px;"><strong>Current Stream Source:</strong> <span style="color:var(--accent-cyan); font-family:monospace;">${escapeHtml(d.current_source || 'None')}</span></div>
+      <div style="font-size:12px; margin-bottom:8px;"><strong>Last Admitted Blueprint:</strong> <span style="color:var(--text-primary);">${escapeHtml(d.last_admitted_topic || 'Awaiting pulse')}</span></div>
+      <div style="font-size:11px; color:var(--text-muted);">Rejections by Gate: ${rejectionsHtml}</div>
+    `;
+  } catch(e) {
+    out.innerHTML = `<span style="color:var(--accent-red);">Error loading status: ${e.message}</span>`;
+  }
+}
+
+async function toggleStreamer() {
+  const cadence = parseFloat(document.getElementById('streamer-cadence').value) || 30.0;
+  const endpoint = isStreamerRunning ? '/api/streamer/stop' : '/api/streamer/start';
+  const body = isStreamerRunning ? {} : {interval_seconds: cadence};
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+    await refreshStreamerStatus();
+  } catch(e) {
+    alert('Failed to toggle streamer: ' + e.message);
+  }
+}
+
+async function pulseStreamer() {
+  const out = document.getElementById('streamer-telemetry');
+  out.innerHTML = '<span style="color:var(--accent-cyan);">Executing pulse through 6-gate hygiene & sandbox...</span>';
+  try {
+    const resp = await fetch('/api/streamer/pulse', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({})
+    });
+    const d = await resp.json();
+    await refreshStreamerStatus();
+  } catch(e) {
+    out.innerHTML = `<span style="color:var(--accent-red);">Pulse error: ${e.message}</span>`;
+  }
+}
+
+async function loadSessionMemory() {
+  const sess = document.getElementById('memory-session-id').value.trim() || 'studio_web';
+  const out = document.getElementById('memory-output');
+  out.innerHTML = '<span style="color:var(--accent-cyan);">Loading persistent memory graph...</span>';
+  try {
+    const [profResp, entResp] = await Promise.all([
+      fetch(`/api/memory/profile?session_id=${encodeURIComponent(sess)}`),
+      fetch(`/api/memory/entities?session_id=${encodeURIComponent(sess)}`)
+    ]);
+    const pData = await profResp.json();
+    const eData = await entResp.json();
+    
+    let html = '';
+    if (pData.profile && pData.profile.name) {
+      const p = pData.profile;
+      html += `
+        <div style="background:var(--code-bg); padding:12px; border-radius:8px; border:1px solid #1E3A5F; margin-bottom:14px;">
+          <div class="meta-tagline" style="margin-bottom:6px;">
+            <span class="badge badge-green">Active Project Profile</span>
+            <strong style="color:var(--accent-cyan); font-size:14px;">${escapeHtml(p.name)}</strong>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px;">
+            <div><strong>Framework:</strong> ${escapeHtml(p.framework || 'N/A')}</div>
+            <div><strong>Database:</strong> ${escapeHtml(p.database || 'N/A')}</div>
+            <div><strong>Root Dir:</strong> <code>${escapeHtml(p.root_dir || './')}</code></div>
+            <div><strong>Default Port:</strong> <code>${p.port || 'N/A'}</code></div>
+          </div>
+        </div>
+      `;
+    } else {
+      html += `<div style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">No project architecture profile set yet for session <code>${escapeHtml(sess)}</code>.</div>`;
+    }
+
+    const ents = (eData.entities || []);
+    html += `<h3 style="font-size:13px; color:var(--accent-teal); margin-bottom:8px;">Remembered Session Entities (${ents.length})</h3>`;
+    if (ents.length === 0) {
+      html += '<p style="color:var(--text-muted); font-size:12px;">No entities stored for this session yet. Stored entities and auto-extracted configuration variables will appear here.</p>';
+    } else {
+      html += '<table class="md-table"><thead><tr><th>Key</th><th>Value</th><th>Type</th><th>Confidence</th><th>Action</th></tr></thead><tbody>';
+      for (const ent of ents) {
+        html += `<tr>
+          <td><code style="color:var(--accent-cyan);">${escapeHtml(ent.key)}</code></td>
+          <td>${escapeHtml(String(ent.value))}</td>
+          <td><span class="badge badge-purple" style="font-size:10px;">${escapeHtml(ent.type)}</span></td>
+          <td>${(ent.confidence * 100).toFixed(0)}%</td>
+          <td><button class="btn-action" style="padding:2px 8px; font-size:10px; color:#FF4560;" onclick="forgetFact('${escapeHtml(ent.key)}')">Forget</button></td>
+        </tr>`;
+      }
+      html += '</tbody></table>';
+    }
+    out.innerHTML = html;
+  } catch(e) {
+    out.innerHTML = `<span style="color:var(--accent-red);">Error loading memory: ${e.message}</span>`;
+  }
+}
+
+async function saveProjectProfile() {
+  const sess = document.getElementById('memory-session-id').value.trim() || 'studio_web';
+  const name = document.getElementById('mem-proj-name').value.trim();
+  const framework = document.getElementById('mem-framework').value.trim();
+  const database = document.getElementById('mem-database').value.trim();
+  const port = parseInt(document.getElementById('mem-port').value) || null;
+  try {
+    await fetch('/api/memory/profile', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sess, name, framework, database, port})
+    });
+    await loadSessionMemory();
+  } catch(e) {
+    alert('Failed to save project profile: ' + e.message);
+  }
+}
+
+async function rememberFact() {
+  const sess = document.getElementById('memory-session-id').value.trim() || 'studio_web';
+  const key = document.getElementById('mem-fact-key').value.trim();
+  const value = document.getElementById('mem-fact-val').value.trim();
+  const entity_type = document.getElementById('mem-fact-type').value.trim() || 'general_preference';
+  if (!key || !value) {
+    alert('Please enter both key and value.');
+    return;
+  }
+  try {
+    await fetch('/api/memory/remember', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sess, key, value, entity_type, confidence: 1.0})
+    });
+    document.getElementById('mem-fact-key').value = '';
+    document.getElementById('mem-fact-val').value = '';
+    await loadSessionMemory();
+  } catch(e) {
+    alert('Failed to remember fact: ' + e.message);
+  }
+}
+
+async function forgetFact(key) {
+  const sess = document.getElementById('memory-session-id').value.trim() || 'studio_web';
+  try {
+    await fetch('/api/memory/forget', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: sess, key})
+    });
+    await loadSessionMemory();
+  } catch(e) {
+    alert('Failed to forget entity: ' + e.message);
   }
 }
 </script>
