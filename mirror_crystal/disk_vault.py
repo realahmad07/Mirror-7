@@ -465,6 +465,165 @@ class DiskCrystalVault:
             self._meta_dirty = True
         return True
 
+    def ingest_batch(
+        self,
+        items: Sequence[dict[str, Any]],
+        batch_size: int = 5000,
+        verify_math: bool = True,
+    ) -> dict[str, int]:
+        """High-throughput bulk ingestion with transaction batching and execution truth arbitration."""
+        with self._lock:
+            return self._ingest_batch_locked(items, batch_size=batch_size, verify_math=verify_math)
+
+    def _ingest_batch_locked(
+        self,
+        items: Sequence[dict[str, Any]],
+        batch_size: int = 5000,
+        verify_math: bool = True,
+    ) -> dict[str, int]:
+        new_rules = 0
+        duplicates_skipped = 0
+        sandbox_rejected = 0
+
+        rule_batch: list[tuple[Any, ...]] = []
+        reinforce_batch: list[tuple[int, int]] = []
+        tok_delta: dict[str, array] = defaultdict(lambda: array("I"))
+        band_delta: dict[int, array] = defaultdict(lambda: array("I"))
+        temp_causal = LSHRuleIndex()
+        seen_batch_hashes: dict[bytes, int] = {}
+
+        def _flush() -> None:
+            if not rule_batch and not reinforce_batch and not temp_causal._causal_edges:
+                return
+            with self.conn:
+                if rule_batch:
+                    self.conn.executemany(
+                        "INSERT OR IGNORE INTO rules(rule_id, prompt_hash, sig_bytes, num_slots, pass_count, fail_count, payload) VALUES (?,?,?,?,?,?,?)",
+                        rule_batch,
+                    )
+                if reinforce_batch:
+                    self.conn.executemany(
+                        "UPDATE rules SET pass_count = pass_count + ? WHERE rule_id = ?",
+                        reinforce_batch,
+                    )
+                self._merge_postings_to_disk(tok_delta, band_delta, temp_causal._causal_edges)
+            rule_batch.clear()
+            reinforce_batch.clear()
+            tok_delta.clear()
+            band_delta.clear()
+            temp_causal._causal_edges.clear()
+            seen_batch_hashes.clear()
+
+        for item in items:
+            u_raw = str(item.get("prompt") or item.get("question") or item.get("user") or "").strip()
+            r_raw = str(item.get("response") or item.get("answer") or item.get("target") or "").strip()
+            if not u_raw or not r_raw:
+                continue
+            think = str(item.get("think") or "")
+            tool = str(item.get("tool") or "")
+            test_c = str(item.get("test_code") or "")
+            dom = str(item.get("domain") or "general")
+            trust_tier = int(item.get("trust_tier", 2))
+
+            self.stats["pairs_seen"] += 1
+            self.bit_table.observe_text(u_raw)
+            self.bit_table.observe_text(r_raw)
+            self.fluid_composer.observe_corpus_text(r_raw[:400])
+            full_resp = f"<think> {think.strip()} </think>\n{r_raw}" if think.strip() and "<think>" not in r_raw else r_raw
+
+            verified_bonus = 0
+            if test_c.strip():
+                ok, _ = ZeroTrustSandboxJudge.verify_code_and_test(full_resp, test_code=test_c)
+                if not ok:
+                    sandbox_rejected += 1
+                    self.stats["sandbox_rejected_rules"] += 1
+                    continue
+                verified_bonus = 5
+                self.stats["sandbox_verified_rules"] += 1
+
+            effective_tier = 1 if verified_bonus > 0 else trust_tier
+
+            if len(full_resp) <= 140:
+                temp_causal.observe_causal_fact(full_resp)
+
+            abs_pair = SlotAbstractor.abstract_pair(u_raw, full_resp, tool=tool)
+            sense_tags = CoreferenceAndSenseTracker.detect_sense_tags(abs_pair.abstract_prompt, context_hint=full_resp)
+            for st in sense_tags:
+                self.bit_table.observe_text(st)
+            sense_sfx = f" {' '.join(sorted(sense_tags))}" if sense_tags else ""
+            phash = self._prompt_hash(abs_pair.abstract_prompt.strip().lower() + sense_sfx)
+
+            if phash in seen_batch_hashes:
+                duplicates_skipped += 1
+                reinforce_batch.append((1 + verified_bonus, seen_batch_hashes[phash]))
+                continue
+
+            row_dup = self.conn.execute(
+                "SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules WHERE prompt_hash = ?",
+                (phash,),
+            ).fetchone()
+
+            if row_dup is not None:
+                duplicates_skipped += 1
+                existing_rule = self._row_to_rule(row_dup)
+                rid_existing = existing_rule.rule_id
+                seen_batch_hashes[phash] = rid_existing
+                if existing_rule.abstract_response == abs_pair.abstract_response:
+                    reinforce_batch.append((1 + verified_bonus, rid_existing))
+                elif effective_tier <= existing_rule.trust_tier:
+                    new_payload = self._pack_rule_payload(
+                        existing_rule.salient_tokens,
+                        abs_pair.abstract_prompt,
+                        abs_pair.abstract_response,
+                        abs_pair.abstract_tool,
+                        abs_pair.derived_expr,
+                        dom,
+                        trust_tier=effective_tier,
+                        updated_seq=self.stats["pairs_seen"],
+                    )
+                    with self.conn:
+                        self.conn.execute(
+                            "UPDATE rules SET num_slots = ?, pass_count = pass_count + ?, payload = ? WHERE rule_id = ?",
+                            (abs_pair.num_slots, 1 + verified_bonus, new_payload, rid_existing),
+                        )
+                continue
+
+            sig, chosen_toks = self.bit_table.encode_text_signature(abs_pair.abstract_prompt + sense_sfx)
+            salient = tuple(sorted(set(chosen_toks), key=self.bit_table.token_salience, reverse=True)[:14])
+            rid = self._next_rule_id
+            self._next_rule_id += 1
+            seen_batch_hashes[phash] = rid
+
+            payload = self._pack_rule_payload(
+                salient,
+                abs_pair.abstract_prompt,
+                abs_pair.abstract_response,
+                abs_pair.abstract_tool,
+                abs_pair.derived_expr,
+                dom,
+                trust_tier=effective_tier,
+                updated_seq=self.stats["pairs_seen"],
+            )
+
+            rule_batch.append((rid, phash, sig.to_bytes(256, "little"), abs_pair.num_slots, 1 + verified_bonus, 0, payload))
+            for tok in salient:
+                tok_delta[tok].append(rid)
+            for band in LSHRuleIndex._lsh_bands(sig):
+                band_delta[band].append(rid)
+
+            new_rules += 1
+            if len(rule_batch) >= batch_size:
+                _flush()
+
+        _flush()
+        self._save_lightweight_meta()
+        return {
+            "new_rules": new_rules,
+            "duplicates_skipped": duplicates_skipped,
+            "sandbox_rejected": sandbox_rejected,
+            "total_processed": len(items),
+        }
+
     def ingest_jsonl(
         self,
         path: Path | str,
@@ -716,8 +875,14 @@ class DiskCrystalVault:
                     n_rids = len(blob) // 4
                     if len(candidate_hits) >= 96 and n_rids > 512:
                         break
+                    if len(candidate_hits) >= 256:
+                        break
                     mv = memoryview(blob).cast("I")
-                    view = mv[-1024:] if n_rids > 1024 else mv
+                    if n_rids > 1024:
+                        stride = max(1, n_rids // 1024)
+                        view = mv[::stride][:1024]
+                    else:
+                        view = mv
                     w = max(1, int(4.0 * self.bit_table.token_salience(tok)))
                     if tok in raw_q_set:
                         w *= 2
@@ -964,42 +1129,47 @@ class DiskCrystalVault:
         orig_p = original_prompt or q
 
         q_core = self.fluid_composer.strip_style_framing(q)
-        if not self.fluid_composer.is_explicit_creative_request(orig_p):
-            abs_pair_exact = SlotAbstractor.abstract_pair(q_core, "")
-            phash_exact = self._prompt_hash(abs_pair_exact.abstract_prompt.strip().lower())
-            row_exact = self.conn.execute(
-                "SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules WHERE prompt_hash = ?",
-                (phash_exact,),
-            ).fetchone()
-            if row_exact is not None:
-                rule_exact = self._row_to_rule(row_exact)
-                if rule_exact.active:
-                    instantiated = SlotAbstractor.instantiate(
-                        query=q_core,
-                        num_slots=rule_exact.num_slots,
-                        abstract_response=rule_exact.abstract_response,
-                        derived_expr=rule_exact.derived_expr,
-                    )
-                    if instantiated is not None:
-                        ok_ex, j_msg = ZeroTrustSandboxJudge.verify_code_and_test(instantiated)
-                        if ok_ex:
-                            ms = (time.perf_counter_ns() - t0) / 1_000_000.0
-                            mode_str = "slot_formula_lock" if rule_exact.num_slots > 0 else "direct_crystal_lock"
-                            trace.append(f"O(1) Exact Prompt Hash Hit #{rule_exact.rule_id} (domain={rule_exact.domain})")
-                            return CrystalResponse(
-                                answer=instantiated,
-                                confidence=1.0,
-                                mode=mode_str,
-                                matched_rule_id=rule_exact.rule_id,
-                                latency_ms=round(ms, 3),
-                                sandbox_verified=j_msg != "non_code",
-                                reasoning_trace=trace,
-                                epistemic_tier="verified_exact",
-                            )
-
         q_sense, sense_tags = self.coref_tracker.enrich_for_query(q_core, known_vocab=self.bit_table.token_df)
         if sense_tags:
             trace.append(f"Disambiguated homonym sense -> {', '.join(sense_tags)}")
+        sense_sfx = f" {' '.join(sorted(sense_tags))}" if sense_tags else ""
+
+        if not self.fluid_composer.is_explicit_creative_request(orig_p):
+            abs_pair_exact = SlotAbstractor.abstract_pair(q_core, "")
+            candidate_hashes = [self._prompt_hash(abs_pair_exact.abstract_prompt.strip().lower() + sense_sfx)]
+            if sense_sfx:
+                candidate_hashes.append(self._prompt_hash(abs_pair_exact.abstract_prompt.strip().lower()))
+
+            for phash_exact in candidate_hashes:
+                row_exact = self.conn.execute(
+                    "SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules WHERE prompt_hash = ? ORDER BY pass_count DESC, rule_id DESC",
+                    (phash_exact,),
+                ).fetchone()
+                if row_exact is not None:
+                    rule_exact = self._row_to_rule(row_exact)
+                    if rule_exact.active:
+                        instantiated = SlotAbstractor.instantiate(
+                            query=q_core,
+                            num_slots=rule_exact.num_slots,
+                            abstract_response=rule_exact.abstract_response,
+                            derived_expr=rule_exact.derived_expr,
+                        )
+                        if instantiated is not None:
+                            ok_ex, j_msg = ZeroTrustSandboxJudge.verify_code_and_test(instantiated)
+                            if ok_ex:
+                                ms = (time.perf_counter_ns() - t0) / 1_000_000.0
+                                mode_str = "slot_formula_lock" if rule_exact.num_slots > 0 else "direct_crystal_lock"
+                                trace.append(f"O(1) Exact Prompt Hash Hit #{rule_exact.rule_id} (domain={rule_exact.domain})")
+                                return CrystalResponse(
+                                    answer=instantiated,
+                                    confidence=1.0,
+                                    mode=mode_str,
+                                    matched_rule_id=rule_exact.rule_id,
+                                    latency_ms=round(ms, 3),
+                                    sandbox_verified=j_msg != "non_code",
+                                    reasoning_trace=trace,
+                                    epistemic_tier="verified_exact",
+                                )
 
         raw_sig, raw_toks = self.bit_table.encode_text_signature(q_sense)
         cands_raw = self._query_disk_candidates(raw_sig, raw_toks, top_k=4)

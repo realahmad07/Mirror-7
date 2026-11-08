@@ -361,6 +361,12 @@ class ShardedCrystalRouter:
         }
         self.save_manifest()
 
+    def rule_count(self) -> int:
+        return sum(self.shard_counts.values())
+
+    def total_rule_count(self) -> int:
+        return self.rule_count()
+
     def _get_vault(self, shard_id: str) -> DiskCrystalVault:
         if shard_id in self._open_vaults:
             self._open_vaults.move_to_end(shard_id)

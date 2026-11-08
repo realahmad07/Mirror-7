@@ -243,7 +243,7 @@ _SENSE_DISAMBIGUATION_RULES: tuple[tuple[frozenset[str], frozenset[str], str], .
     ),
     (
         frozenset({"python"}),
-        frozenset({"code", "def", "function", "list", "dict", "import", "script", "pip", "gil", "interpreter", "programming", "class", "syntax"}),
+        frozenset({"code", "def", "function", "list", "dict", "import", "script", "pip", "gil", "interpreter", "programming", "class", "syntax", "loop", "while", "for", "array", "slice", "reverse"}),
         "sense_code_python",
     ),
     (

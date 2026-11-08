@@ -1904,6 +1904,61 @@ class GateAuditResult:
     metrics: Dict[str, Any]
 
 
+class ScalableBloomFilter:
+    """
+    Constant-memory Scalable Bloom Filter in pure Python standard library.
+    Uses Kirsch-Mitzenmacher double-hashing:
+      h_i(x) = (h1(x) + i * h2(x)) % m
+    Permits tracking millions of document fingerprints in a compact bytearray with < 0.1% false-positive rate.
+    """
+
+    def __init__(self, capacity: int = 500_000, error_rate: float = 0.001) -> None:
+        self.capacity = max(1000, int(capacity))
+        self.error_rate = min(0.1, max(1e-6, float(error_rate)))
+        num_bits = int(-self.capacity * math.log(self.error_rate) / (math.log(2) ** 2))
+        self.size_bits = max(64, num_bits)
+        self.size_bytes = (self.size_bits + 7) // 8
+        self._bits = bytearray(self.size_bytes)
+        self.num_hashes = max(1, min(16, int((self.size_bits / self.capacity) * math.log(2))))
+        self.count = 0
+
+    def _hashes(self, key: str | bytes) -> Tuple[int, int]:
+        raw = key.encode("utf-8") if isinstance(key, str) else key
+        h = hashlib.sha256(raw).digest()
+        h1 = int.from_bytes(h[:8], "little")
+        h2 = int.from_bytes(h[8:16], "little") | 1
+        return h1, h2
+
+    def add(self, key: str | bytes) -> None:
+        h1, h2 = self._hashes(key)
+        for i in range(self.num_hashes):
+            bit_idx = (h1 + i * h2) % self.size_bits
+            byte_idx = bit_idx // 8
+            bit_offset = bit_idx % 8
+            self._bits[byte_idx] |= (1 << bit_offset)
+        self.count += 1
+
+    def contains(self, key: str | bytes) -> bool:
+        h1, h2 = self._hashes(key)
+        for i in range(self.num_hashes):
+            bit_idx = (h1 + i * h2) % self.size_bits
+            byte_idx = bit_idx // 8
+            bit_offset = bit_idx % 8
+            if not (self._bits[byte_idx] & (1 << bit_offset)):
+                return False
+        return True
+
+    def __contains__(self, key: str | bytes) -> bool:
+        return self.contains(key)
+
+    def bit_count(self) -> int:
+        return sum(b.bit_count() for b in self._bits)
+
+    def clear(self) -> None:
+        self._bits = bytearray(self.size_bytes)
+        self.count = 0
+
+
 class SixGateDataHygienePipeline:
     """
     Enforces the 'Quality Over Quantity' permissive ingestion protocol:
@@ -1949,17 +2004,20 @@ class SixGateDataHygienePipeline:
         max_entropy: float = 5.8,
         min_pedagogy: float = 0.55,
         max_seen_cache: int = 100_000,
+        bloom_capacity: int = 500_000,
     ):
         self.min_entropy = min_entropy
         self.max_entropy = max_entropy
         self.min_pedagogy = min_pedagogy
         self.max_seen_cache = max(1, int(max_seen_cache))
+        self.bloom_filter = ScalableBloomFilter(capacity=max(self.max_seen_cache, bloom_capacity))
         self._seen_minhashes: set[int] = set()
         self._seen_order: deque[int] = deque()
         self._seen_vectors: Dict[int, Tuple[int, ...]] = {}
         self._lsh_bands: Dict[Tuple[int, Tuple[int, ...]], Set[int]] = {}
 
     def clear_seen(self) -> None:
+        self.bloom_filter.clear()
         self._seen_minhashes.clear()
         self._seen_order.clear()
         self._seen_vectors.clear()
@@ -2010,6 +2068,10 @@ class SixGateDataHygienePipeline:
         if not self._seen_minhashes and (self._seen_order or self._seen_vectors):
             self.clear_seen()
 
+        norm_t = text.strip().lower()
+        if self.bloom_filter.contains(norm_t):
+            return "Duplicate exact text fingerprint found in Bloom filter"
+
         vec = self.compute_minhash_vector(text, num_perm=16)
         mh = hash(vec)
         if mh in self._seen_minhashes:
@@ -2042,6 +2104,7 @@ class SixGateDataHygienePipeline:
                         if not bucket:
                             del self._lsh_bands[old_key]
 
+        self.bloom_filter.add(norm_t)
         self._seen_minhashes.add(mh)
         self._seen_order.append(mh)
         self._seen_vectors[mh] = vec
@@ -2149,3 +2212,5 @@ class SixGateDataHygienePipeline:
             rejection_reason=None,
             metrics=metrics,
         )
+
+    audit_sample = audit_record
