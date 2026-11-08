@@ -86,11 +86,21 @@ def morph_byte_signature(token: str) -> int:
     h_full = _fast_hash64(b)
     bits |= 1 << (h_full & 1023)
     bits |= 1 << ((h_full >> 11) & 1023)
+    # Sliding 2-byte sub-grams (catches transposition & 1-char edits)
+    for i in range(max(0, n - 1)):
+        gram = b[i : i + 2]
+        h = _fast_hash64(gram)
+        bits |= 1 << (h & 1023)
     # Sliding 3-byte morphological sub-grams so inflections ("entangle"/"entangled") share bits
     for i in range(max(0, n - 2)):
         gram = b[i : i + 3]
         h = _fast_hash64(gram)
-        bits |= 1 << (h & 1023)
+        bits |= 1 << ((h ^ 0x5555) & 1023)
+    # Sliding 4-byte sub-grams for root stem alignment
+    for i in range(max(0, n - 3)):
+        gram = b[i : i + 4]
+        h = _fast_hash64(gram)
+        bits |= 1 << ((h ^ 0xAAAA) & 1023)
     return bits
 
 
@@ -150,6 +160,7 @@ class ContextBitTable:
         self._synonyms: dict[str, tuple[str, ...]] = {}
         # Phase-3 MorphologicalFuzzySpellBridge: (first_char, length) -> known alphabetic tokens
         self._spell_buckets: dict[tuple[str, int], list[str]] = defaultdict(list)
+        self._ngram_to_tokens: dict[str, set[str]] = defaultdict(set)
         self._typo_cache: dict[str, str] = {}
 
     def _register_spell_token(self, tok: str) -> None:
@@ -160,6 +171,11 @@ class ContextBitTable:
                 bucket.append(tok)
                 if self._typo_cache:
                     self._typo_cache.clear()
+            if len(self._ngram_to_tokens) < 131_072:
+                for i in range(len(tok) - 2):
+                    ng = tok[i : i + 3]
+                    if len(self._ngram_to_tokens[ng]) < 64:
+                        self._ngram_to_tokens[ng].add(tok)
 
     def resolve_typo_token(self, tok: str) -> str:
         """Bridge OOV keyboard typos ('grvoer', 'quantm', 'serach') to canonical vocab in < 0.1 ms."""
@@ -186,6 +202,16 @@ class ContextBitTable:
             for c_tr in self._spell_buckets.get((tok[1], tlen), ()):
                 if len(c_tr) >= 2 and c_tr[0] == tok[1] and c_tr[1] == tok[0]:
                     candidates.append(c_tr)
+        if hasattr(self, "_ngram_to_tokens") and self._ngram_to_tokens:
+            cand_counts: dict[str, int] = defaultdict(int)
+            for i in range(len(tok) - 2):
+                ng = tok[i : i + 3]
+                for c in self._ngram_to_tokens.get(ng, ()):
+                    if abs(len(c) - tlen) <= 2:
+                        cand_counts[c] += 1
+            for c, cnt in cand_counts.items():
+                if cnt >= 2:
+                    candidates.append(c)
 
         best_key: tuple[int, int, int, str] | None = None
         tok_chars = frozenset(tok)

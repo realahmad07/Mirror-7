@@ -87,6 +87,39 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             raise ValueError("invalid session_id")
         return session_id
 
+    def _handle_sse_stream(self, prompt: str, session_id: str = "studio_stream") -> None:
+        service = self.service
+        if service is None:
+            self._send(500, {"ok": False, "error": "service unavailable"})
+            return
+        res = service.crystal_ask(prompt, session_id=session_id)
+        full_text = res.get("answer", "")
+
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Connection", "keep-alive")
+        self.send_header("Access-Control-Allow-Origin", self.cors_origin)
+        self.end_headers()
+
+        tokens = full_text.split(" ")
+        for i, tok in enumerate(tokens):
+            chunk = tok + (" " if i < len(tokens) - 1 else "")
+            evt = json.dumps({"chunk": chunk, "done": False}, ensure_ascii=False)
+            self.wfile.write(f"data: {evt}\n\n".encode("utf-8"))
+            self.wfile.flush()
+
+        final_meta = {
+            "done": True,
+            "confidence": res.get("confidence", 0.0),
+            "matched_rule_id": res.get("matched_rule_id"),
+            "mode": res.get("mode"),
+            "latency_ms": res.get("latency_ms", 0.0),
+            "epistemic_tier": res.get("epistemic_tier"),
+        }
+        self.wfile.write(f"data: {json.dumps(final_meta, ensure_ascii=False)}\n\n".encode("utf-8"))
+        self.wfile.flush()
+
     def do_OPTIONS(self) -> None:
         self._send(HTTPStatus.NO_CONTENT, {})
 
@@ -154,6 +187,12 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 "status": service.status(),
             })
             return
+        if path == "/api/crystal/stream":
+            qs = parse_qs(urlparse(self.path).query)
+            prompt = qs.get("q", [""])[0] or qs.get("prompt", [""])[0]
+            session_id = qs.get("session_id", ["studio_stream"])[0]
+            self._handle_sse_stream(prompt, session_id=session_id)
+            return
         if path == "/api/status":
             self._send(200, dict(service.status()))
             return
@@ -176,6 +215,25 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             payload = self._read_json()
             path = urlparse(self.path).path
             parts = [p for p in path.split("/") if p]
+
+            if parts == ["api", "crystal", "stream"]:
+                prompt = str(payload.get("prompt", "") or payload.get("query", ""))
+                session_id = str(payload.get("session_id", "studio_stream"))
+                self._handle_sse_stream(prompt, session_id=session_id)
+                return
+
+            if parts == ["api", "crystal", "ingest_path"]:
+                path_to_ingest = str(payload.get("path", ""))
+                dom = payload.get("domain")
+                res = service.crystal_ingest_path(path_to_ingest, domain=dom)
+                self._send(200, res)
+                return
+
+            if parts == ["api", "memory", "consolidate"]:
+                min_conf = float(payload.get("min_confidence", 0.85))
+                res = service.memory_dream_consolidation(min_confidence=min_conf)
+                self._send(200, res)
+                return
 
             if parts == ["api", "crystal", "ask"]:
                 prompt = str(payload.get("prompt", ""))

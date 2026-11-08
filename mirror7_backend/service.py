@@ -648,3 +648,30 @@ class BackendService:
             return self.crystal_vault.generate_gap_fill_prompt(topic=topic)
         return ""
 
+    def crystal_ingest_path(self, path: str, domain: str | None = None) -> dict[str, Any]:
+        """Ingests a file or entire directory into the vault using DocumentAutoCrystallizer."""
+        if self.crystal_vault is None:
+            return {"ok": False, "error": "Vault not mounted"}
+        from pathlib import Path
+        from mirror_crystal.phase5_bicameral_and_cas import DocumentAutoCrystallizer
+        p = Path(path)
+        if not p.exists():
+            return {"ok": False, "error": f"Path not found: {path}"}
+        if p.is_dir():
+            stats = DocumentAutoCrystallizer.ingest_directory(self.crystal_vault, p, domain=domain)
+        else:
+            stats = DocumentAutoCrystallizer.ingest_file(self.crystal_vault, p, domain=domain)
+        return {"ok": True, "stats": stats}
+
+    def memory_dream_consolidation(self, min_confidence: float = 0.85) -> dict[str, Any]:
+        """Consolidates high-confidence persistent memories into permanent crystal rules (Memory Dreaming)."""
+        if self.crystal_vault is None:
+            return {"ok": False, "error": "Vault not mounted"}
+        from mirror_crystal.cross_session_memory import CrossSessionMemoryGraph
+        mem = CrossSessionMemoryGraph()
+        try:
+            stats = mem.consolidate_to_vault(self.crystal_vault, min_confidence=min_confidence)
+            return {"ok": True, "stats": stats}
+        finally:
+            mem.close()
+

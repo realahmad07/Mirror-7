@@ -1300,6 +1300,10 @@ class ActiveCuriosityPlanner:
         query_substantive = {t for t in query_salient_tokens if t not in self._GENERIC_DISCRIM and len(t) >= 3 and not t.isdigit()}
         if not query_substantive or not (t0 & query_substantive) or not (t1 & query_substantive):
             return None
+        cov0 = len(t0 & query_substantive) / max(1, len(query_substantive))
+        cov1 = len(t1 & query_substantive) / max(1, len(query_substantive))
+        if cov0 < 0.60 or cov1 < 0.60:
+            return None
         rem0 = t0 - query_salient_tokens - self._GENERIC_DISCRIM
         rem1 = t1 - query_salient_tokens - self._GENERIC_DISCRIM
         if not rem0 or not rem1:
@@ -1482,3 +1486,37 @@ class DocumentAutoCrystallizer:
         if p.suffix.lower() == ".py":
             return cls.ingest_python_source(target_brain, content, module_name=p.stem, domain=dom)
         return cls.ingest_document_text(target_brain, content, title=p.stem, domain=dom)
+
+    @classmethod
+    def ingest_directory(
+        cls,
+        target_brain: Any,
+        directory_path: Path | str,
+        domain: str | None = None,
+        recursive: bool = True,
+        extensions: tuple[str, ...] = (".md", ".txt", ".rst", ".py", ".json"),
+    ) -> dict[str, int]:
+        d = Path(directory_path)
+        stats = {
+            "files_processed": 0,
+            "sections_crystallized": 0,
+            "definitions_crystallized": 0,
+            "code_blocks_verified": 0,
+            "boilerplate_skipped": 0,
+            "errors": 0,
+        }
+        if not d.exists() or not d.is_dir():
+            return stats
+
+        pattern = "**/*" if recursive else "*"
+        for f in sorted(d.glob(pattern)):
+            if f.is_file() and f.suffix.lower() in extensions:
+                try:
+                    f_stats = cls.ingest_file(target_brain, f, domain=domain or f"doc:{f.stem}")
+                    stats["files_processed"] += 1
+                    for k in ("sections_crystallized", "definitions_crystallized", "code_blocks_verified", "boilerplate_skipped"):
+                        if k in f_stats:
+                            stats[k] += f_stats[k]
+                except Exception:
+                    stats["errors"] += 1
+        return stats

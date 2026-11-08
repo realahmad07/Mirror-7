@@ -160,7 +160,7 @@ class DiskCrystalVault:
         self._load_lightweight_meta()
 
     def _open_thread_conn(self, enable_wal: bool = False) -> sqlite3.Connection:
-        c = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=30.0)
+        c = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=30.0, isolation_level=None)
         c.execute("PRAGMA journal_mode=WAL;")
         c.execute("PRAGMA busy_timeout=15000;")
         c.execute("PRAGMA synchronous=NORMAL;")
@@ -1130,6 +1130,66 @@ class DiskCrystalVault:
         scored.sort(key=lambda item: (item[0], item[1].updated_seq), reverse=True)
         return scored[:top_k]
 
+    _PAT_POSSESSIVE = re.compile(
+        r"^(?:what|which|who)\s+is\s+the\s+(?P<rel>[a-zA-Z0-9_ ]+?)\s+of\s+(?P<subj>[a-zA-Z0-9_ ]+?)(?:'s|’s)\s+(?P<inner_rel>[a-zA-Z0-9_ ]+?)\??$",
+        re.I
+    )
+    _PAT_OF_THE = re.compile(
+        r"^(?:what|which|who)\s+is\s+the\s+(?P<rel>[a-zA-Z0-9_ ]+?)\s+of\s+the\s+(?P<inner_rel>[a-zA-Z0-9_ ]+?)\s+of\s+(?P<subj>[a-zA-Z0-9_ ]+?)\??$",
+        re.I
+    )
+    _PAT_WHERE = re.compile(
+        r"^(?:what|which|who)\s+is\s+the\s+(?P<rel>[a-zA-Z0-9_ ]+?)\s+of\s+the\s+(?P<ent>[a-zA-Z0-9_ ]+?)\s+where\s+(?P<subj>.+?)\s+(?P<verb>(?:was|is|were)\s+[a-z]+|[a-z]+ed)\??$",
+        re.I
+    )
+
+    def _try_multi_hop_relational(self, query: str, session_id: str = "default") -> tuple[str, list[str]] | None:
+        q = query.strip()
+        m_poss = self._PAT_POSSESSIVE.match(q)
+        m_of = self._PAT_OF_THE.match(q)
+        m_where = self._PAT_WHERE.match(q)
+
+        hop1_q = None
+        rel = None
+        if m_poss:
+            d = m_poss.groupdict()
+            rel = d['rel'].strip()
+            hop1_q = f"What is the {d['inner_rel'].strip()} of {d['subj'].strip()}?"
+        elif m_of:
+            d = m_of.groupdict()
+            rel = d['rel'].strip()
+            hop1_q = f"What is the {d['inner_rel'].strip()} of {d['subj'].strip()}?"
+        elif m_where:
+            d = m_where.groupdict()
+            rel = d['rel'].strip()
+            hop1_q = f"Where {d['verb'].strip()} {d['subj'].strip()}?"
+
+        if not hop1_q:
+            return None
+
+        resp1 = self.respond(hop1_q, session_id=session_id)
+        if resp1.confidence < 0.65 or not resp1.answer:
+            return None
+
+        ans1 = resp1.answer.strip()
+        m_is = re.search(r"\b(?:is|was|are|were)\s+([A-Z][a-zA-Z0-9_ ]+?)(?:\.|\$|,|;)", ans1)
+        if m_is:
+            ent_cand = m_is.group(1).strip()
+        elif len(ans1.split()) <= 4:
+            ent_cand = ans1.rstrip(".").strip()
+        else:
+            return None
+
+        hop2_q = f"What is the {rel} of {ent_cand}?"
+        resp2 = self.respond(hop2_q, session_id=session_id)
+        if resp2.confidence < 0.65 or not resp2.answer:
+            return None
+
+        ans2 = resp2.answer.strip()
+        lead2 = ans2[0].lower() + ans2[1:] if ans2.startswith("The ") else ans2
+        combined_ans = f"{ans1.rstrip('.')}, and {lead2}"
+        return combined_ans, [f"Hop 1 ({hop1_q}) -> {ans1}", f"Hop 2 ({hop2_q}) -> {ans2}"]
+
     def _chain_infer_disk(self, query: str, max_hops: int = 4) -> tuple[str, list[str]] | None:
         q_norm = LSHRuleIndex._normalize_entity(query)
         q_expanded = self.bit_table.expand_content_tokens(self.bit_table.tokenize(query))
@@ -1388,6 +1448,22 @@ class DiskCrystalVault:
         else:
             cands = cands_raw
 
+        # Multi-Hop Relational Knowledge Chaining
+        relational_hop = self._try_multi_hop_relational(q_core, session_id=session_id)
+        if relational_hop is not None:
+            conclusion, hop_facts = relational_hop
+            ms = (time.perf_counter_ns() - t0) / 1_000_000.0
+            return CrystalResponse(
+                answer=conclusion,
+                confidence=0.92,
+                mode="multi_hop_relational_chain",
+                matched_rule_id=None,
+                latency_ms=round(ms, 3),
+                sandbox_verified=True,
+                reasoning_trace=trace + hop_facts,
+                epistemic_tier="verified_exact",
+            )
+
         best_score = cands[0][0] if cands else 0.0
         if best_score < 0.72:
             chained = self._chain_infer_disk(q_core)
@@ -1427,6 +1503,31 @@ class DiskCrystalVault:
                     latency_ms=round(ms, 3),
                     sandbox_verified=False,
                     reasoning_trace=trace + cur_trace,
+                    epistemic_tier="diagnostic_clarification",
+                )
+
+        if len(cands) >= 2 and (cands[0][0] - cands[1][0] <= 0.035) and cands[0][0] >= 0.60:
+            c1, c2 = cands[0][1], cands[1][1]
+            if c1.domain != c2.domain or c1.abstract_response != c2.abstract_response:
+                ms = (time.perf_counter_ns() - t0) / 1_000_000.0
+                p1_desc = c1.abstract_prompt.split('\n')[0][:80]
+                p2_desc = c2.abstract_prompt.split('\n')[0][:80]
+                return CrystalResponse(
+                    answer=(
+                        f"Did you mean:\n"
+                        f"1. [{c1.domain}] {p1_desc}\n"
+                        f"2. [{c2.domain}] {p2_desc}\n"
+                        f"Please specify which one you'd like to explore."
+                    ),
+                    confidence=round((cands[0][0] + cands[1][0]) / 2.0, 4),
+                    mode="clarification_needed",
+                    matched_rule_id=None,
+                    latency_ms=round(ms, 3),
+                    sandbox_verified=False,
+                    reasoning_trace=trace + [
+                        f"Ambiguity detected: Rule #{c1.rule_id} ({c1.domain}) vs "
+                        f"Rule #{c2.rule_id} ({c2.domain}) delta <= 0.035"
+                    ],
                     epistemic_tier="diagnostic_clarification",
                 )
 
@@ -1871,7 +1972,9 @@ QUALITY RULES:
                     self._save_lightweight_meta()
                 self._meta_dirty = False
             try:
+                self.conn.commit()
                 self.conn.execute("PRAGMA wal_checkpoint(PASSIVE);")
+                self.conn.commit()
             except Exception:
                 pass
             return self.db_path.stat().st_size

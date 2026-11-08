@@ -129,6 +129,8 @@ def run_interactive(session_id: str = "cli_local"):
             print("  /compact                     - Run SQLite VACUUM and reclaim free disk space")
             print("  /gaps                        - View top unanswered topics logged from user queries")
             print("  /gap_prompt [topic]          - Generate ready-to-run ChatGPT prompt to fill missing knowledge")
+            print("  /ingest <path> [domain]      - Zero-prompt ingestion of markdown/code file or directory")
+            print("  /dream [min_confidence]      - Consolidate session memories into permanent crystal rules")
             print("  /web                         - Print instructions to launch the Web Studio")
             print()
             continue
@@ -286,6 +288,30 @@ def run_interactive(session_id: str = "cli_local"):
             print("\n--- READY-TO-RUN CHATGPT PROMPT ---")
             print(prompt)
             print("-----------------------------------\n")
+            continue
+
+        if low.startswith("/ingest "):
+            parts = raw.split(None, 2)
+            p_arg = parts[1].strip()
+            d_arg = parts[2].strip() if len(parts) > 2 else None
+            res = svc.crystal_ingest_path(p_arg, domain=d_arg)
+            if res.get("ok"):
+                st = res.get("stats", {})
+                print(f"[INGEST SUCCESS] Path '{p_arg}' ingested! Stats: {st}\n")
+            else:
+                print(f"[INGEST ERROR] {res.get('error')}\n")
+            continue
+
+        if low in {"/dream", "dream"} or low.startswith("/dream "):
+            parts = raw.split()
+            conf = float(parts[1]) if len(parts) > 1 else 0.85
+            print(f"Consolidating active memories into Crystal Rules (min confidence: {conf})...")
+            res = svc.memory_dream_consolidation(min_confidence=conf)
+            if res.get("ok"):
+                st = res.get("stats", {})
+                print(f"[DREAM SUCCESS] Crystallized {st.get('rules_crystallized', 0)} new permanent rules from memories! (Scanned: {st.get('entities_scanned', 0)})\n")
+            else:
+                print(f"[DREAM ERROR] {res.get('error')}\n")
             continue
 
         # Standard Query

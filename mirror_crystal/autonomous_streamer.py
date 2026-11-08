@@ -395,7 +395,7 @@ class AutonomousDatasetStreamer:
         vault: DiskCrystalVault,
         cadence_seconds: float = 10.0,
         flush_batch_size: int = 10,
-        enable_live_fetch: bool = True,
+        enable_live_fetch: bool = False,
         dedup_db_path: Optional[Path | str] = None,
     ) -> None:
         self.vault = vault
@@ -586,8 +586,6 @@ class AutonomousDatasetStreamer:
             rules_added = 0
             if hasattr(self.vault, "ingest_batch"):
                 stats = self.vault.ingest_batch(to_commit, batch_size=500)
-                if hasattr(self.vault, "optimize_disk"):
-                    self.vault.optimize_disk()
                 rules_added = stats.get("new_rules", 0)
             elif hasattr(self.vault, "ingest_pair"):
                 for item in to_commit:

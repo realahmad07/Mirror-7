@@ -692,6 +692,63 @@ class CrossSessionMemoryGraph:
 
         return "### Active Cross-Session Memory Anchors\n" + "\n".join(matched_items)
 
+    def consolidate_to_vault(
+        self,
+        vault: Any,
+        min_confidence: float = 0.85,
+        limit: int = 1000,
+    ) -> Dict[str, Any]:
+        """
+        Consolidates high-confidence persistent memories and entity attributes into
+        first-class immutable DiskCrystalVault rules (Memory Dreaming).
+        """
+        stats = {
+            "entities_scanned": 0,
+            "rules_crystallized": 0,
+            "duplicates_or_low_conf": 0,
+        }
+        with self._lock:
+            cursor = self._conn.execute(
+                """
+                SELECT session_id, entity_key, value_text, confidence, updated_at
+                FROM memory_entities
+                WHERE is_active = 1 AND confidence >= ?
+                ORDER BY confidence DESC
+                LIMIT ?
+                """,
+                (float(min_confidence), int(limit)),
+            )
+            rows = cursor.fetchall()
+
+        for session_id, key, val, conf, _ in rows:
+            stats["entities_scanned"] += 1
+            try:
+                decrypted_val = StdlibCipher.decrypt(val, key_str=self.vault_encryption_key)
+            except Exception:
+                decrypted_val = val
+
+            clean_entity = session_id.replace("_", " ").strip()
+            clean_key = key.replace("_", " ").strip()
+            prompt = f"What is the {clean_key} of {clean_entity}?"
+            response = f"The {clean_key} of {clean_entity} is {decrypted_val}."
+            domain = f"memory_{session_id}"
+
+            if hasattr(vault, "ingest_pair"):
+                added = vault.ingest_pair(
+                    user_text=prompt,
+                    target_text=response,
+                    domain=domain,
+                    trust_tier=2,
+                )
+                if added:
+                    stats["rules_crystallized"] += 1
+                else:
+                    stats["duplicates_or_low_conf"] += 1
+            else:
+                stats["duplicates_or_low_conf"] += 1
+
+        return stats
+
     def close(self) -> None:
         """Closes the underlying SQLite connection cleanly."""
         with self._lock:
