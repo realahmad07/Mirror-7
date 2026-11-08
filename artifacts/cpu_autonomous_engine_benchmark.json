@@ -1,0 +1,46 @@
+{
+  "verified_on_device": "CPU (0 GPUs)",
+  "pytest_suite": "training/test_cpu_autonomous_engine.py (6/6 PASSED)",
+  "ternary_1_58bit": {
+    "num_weights": 1048576,
+    "fp32_bytes": 4194304,
+    "packed_2bit_bytes": 262148,
+    "compression_vs_fp32": 16.0,
+    "zero_sparsity_fraction": 0.25
+  },
+  "pkm_65536_slots": {
+    "dense_65k_lookup_ms": 8.472,
+    "pkm_sublinear_lookup_ms": 1.381,
+    "lookup_speedup_x": 6.14,
+    "instant_0_backprop_write_ms": 1.554
+  },
+  "sequence_2048_bytes": {
+    "seq_len_bytes": 2048,
+    "hidden_dim": 512,
+    "sequential_gru_cpu_ms": 626.21,
+    "parallel_patched_scan_cpu_ms": 32.55,
+    "cpu_speedup_x": 19.24
+  },
+  "self_code_recruitment_upgrade": {
+    "v1_O_n2_us": 12021.12,
+    "v2_O_nlogn_us": 213.58,
+    "self_upgrade_speedup_x": 56.28
+  },
+  "autonomous_wake_sleep_cycle": {
+    "challenges_evaluated": 3,
+    "episodic_instant_writes": 3,
+    "recruited_skills": [
+      "lis_length",
+      "fast_mod_exp",
+      "topo_sort_kahn"
+    ],
+    "verified_preference_pairs": 2,
+    "trainable_lora_params": 4096,
+    "initial_preference_margin": -0.00522,
+    "final_preference_margin": 0.38707,
+    "anchor_retention_cosine": 0.999148,
+    "regression_rolled_back": false,
+    "sleep_consolidation_ms": 4513.62,
+    "total_cycle_cpu_ms": 4532.36
+  }
+}

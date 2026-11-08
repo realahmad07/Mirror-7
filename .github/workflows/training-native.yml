@@ -38,4 +38,4 @@ jobs:
       - name: Compile training code
         run: python -m compileall -q training
       - name: Native-brain tests
-        run: python -m pytest -q training/test_native_brain.py training/test_experiment6_learned_operations.py
+        run: python -m pytest -q training/test_native_brain.py training/test_experiment6_learned_operations.py training/test_cpu_autonomous_engine.py
