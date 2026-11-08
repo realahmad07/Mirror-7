@@ -123,6 +123,12 @@ def run_interactive(session_id: str = "cli_local"):
             print("  /forget <key>                - Remove entity from Memory Graph")
             print("  /undo                        - Undo last memory mutation")
             print("  /status                      - Show engine health and cache statistics")
+            print("  /downvote <id>               - Downvote and auto-retire false or broken rules")
+            print("  /upvote <id>                 - Upvote verified rules")
+            print("  /purge_domain <domain>       - Surgically delete all rules from a domain")
+            print("  /compact                     - Run SQLite VACUUM and reclaim free disk space")
+            print("  /gaps                        - View top unanswered topics logged from user queries")
+            print("  /gap_prompt [topic]          - Generate ready-to-run ChatGPT prompt to fill missing knowledge")
             print("  /web                         - Print instructions to launch the Web Studio")
             print()
             continue
@@ -228,6 +234,58 @@ def run_interactive(session_id: str = "cli_local"):
                 print(f"[MEMORY UNDO] Successfully restored previous state for key: {undone.get('key')}\n")
             else:
                 print("Undo stack is empty.\n")
+            continue
+
+        if low.startswith("/downvote "):
+            try:
+                rid = int(raw.split()[1])
+                fb = svc.crystal_feedback(rid, is_positive=False)
+                print(f"[FEEDBACK] Rule #{rid} downvoted! (pass: {fb.get('pass_count')}, fail: {fb.get('fail_count')}, active: {fb.get('active')})\n")
+            except Exception as e:
+                print(f"Error downvoting: {e}\n")
+            continue
+
+        if low.startswith("/upvote "):
+            try:
+                rid = int(raw.split()[1])
+                fb = svc.crystal_feedback(rid, is_positive=True)
+                print(f"[FEEDBACK] Rule #{rid} upvoted! (pass: {fb.get('pass_count')}, fail: {fb.get('fail_count')}, active: {fb.get('active')})\n")
+            except Exception as e:
+                print(f"Error upvoting: {e}\n")
+            continue
+
+        if low.startswith("/purge_domain "):
+            dom = raw.split(None, 1)[1].strip()
+            res = svc.crystal_purge_domain(dom)
+            print(f"[PURGE] Domain '{dom}' purged! {res.get('purged_rules', 0)} rules removed from vault.\n")
+            continue
+
+        if low in {"/compact", "compact"}:
+            print("Compacting vault on disk (VACUUM)...")
+            res = svc.crystal_compact()
+            print(f"[COMPACTION COMPLETE] {res.get('mb_before')} MB -> {res.get('mb_after')} MB (Reclaimed {res.get('bytes_reclaimed', 0):,} bytes)\n")
+            continue
+
+        if low in {"/gaps", "gaps"}:
+            gaps = svc.crystal_get_gaps(limit=5)
+            print("\n=== LOGGED COVERAGE GAPS (Missing Topics) ===")
+            if not gaps:
+                print("No coverage gaps logged yet! As users ask unanswered questions, they appear here.")
+            else:
+                for g in gaps:
+                    print(f"  * Topic: '{g['topic']}' ({g['unanswered_count']} unanswered query occurrences)")
+                    for q in g.get('sample_queries', [])[:2]:
+                        print(f"      - {q}")
+            print("=============================================\n")
+            continue
+
+        if low.startswith("/gap_prompt"):
+            parts = raw.split(None, 1)
+            t = parts[1].strip() if len(parts) > 1 else None
+            prompt = svc.crystal_gap_prompt(topic=t)
+            print("\n--- READY-TO-RUN CHATGPT PROMPT ---")
+            print(prompt)
+            print("-----------------------------------\n")
             continue
 
         # Standard Query

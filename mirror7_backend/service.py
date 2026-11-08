@@ -57,11 +57,18 @@ class BackendService:
         self._hygiene_pipeline: Any | None = None
         self._memory_graph: Any | None = None
         self._streamer: Any | None = None
+        self._is_ready: bool = False
+        self._warmup_ms: float = 0.0
         if self.crystal_vault is None and enable_crystal_auto_load:
             self._init_default_crystal()
         if self.crystal_vault is not None and self.crystal_node is None:
             from mirror_crystal import CloudCrystalNode
             self.crystal_node = CloudCrystalNode(self.crystal_vault)
+        if enable_crystal_auto_load:
+            try:
+                self.warmup()
+            except Exception:
+                pass
 
     @property
     def memory_graph(self):
@@ -104,7 +111,9 @@ class BackendService:
             from mirror_crystal import DiskCrystalVault
             vault_p = Path("artifacts/mirror_crystal_all_datasets.dcrystal")
             if vault_p.exists():
-                self.crystal_vault = DiskCrystalVault(vault_p, lru_rule_cache_size=256)
+                import os
+                cache_sz = int(os.getenv("MIRROR_RULE_CACHE_SIZE", "8192"))
+                self.crystal_vault = DiskCrystalVault(vault_p, lru_rule_cache_size=cache_sz)
         except Exception:
             self.crystal_vault = None
 
@@ -579,3 +588,63 @@ class BackendService:
 
     def memory_compact(self, session_id: Optional[str] = None) -> dict[str, int]:
         return self.memory_graph.compact_memory(session_id=session_id)
+
+    @property
+    def is_ready(self) -> bool:
+        return getattr(self, "_is_ready", False)
+
+    @property
+    def warmup_ms(self) -> float:
+        return getattr(self, "_warmup_ms", 0.0)
+
+    def warmup(self) -> dict[str, Any]:
+        """Pre-warm DiskCrystalVault, OS page cache, and CrossSessionMemoryGraph."""
+        import time
+        t0 = time.perf_counter()
+        if self.crystal_vault is not None:
+            if hasattr(self.crystal_vault, "get_domain_counts"):
+                self.crystal_vault.get_domain_counts()
+                self.crystal_vault.get_trust_tier_counts()
+            self.crystal_vault.respond("warmup prime query")
+        _ = self.memory_graph.list_entities("warmup_session")
+        dur_ms = round((time.perf_counter() - t0) * 1000, 2)
+        self._is_ready = True
+        self._warmup_ms = dur_ms
+        return {"ready": True, "warmup_ms": dur_ms, "rules": self.crystal_vault.rule_count() if self.crystal_vault else 0}
+
+    def crystal_feedback(self, rule_id: int, is_positive: bool = True) -> dict[str, Any]:
+        """Record user feedback (upvote/downvote) on a specific rule."""
+        if self.crystal_vault is not None and hasattr(self.crystal_vault, "record_feedback"):
+            return self.crystal_vault.record_feedback(rule_id, is_positive=is_positive)
+        return {"ok": False, "error": "Vault does not support feedback"}
+
+    def crystal_purge_domain(self, domain: str) -> dict[str, Any]:
+        """Purge all rules belonging to a domain."""
+        if self.crystal_vault is not None and hasattr(self.crystal_vault, "purge_by_domain"):
+            return self.crystal_vault.purge_by_domain(domain)
+        return {"ok": False, "error": "Vault does not support domain purge"}
+
+    def crystal_delete_rule(self, rule_id: int) -> bool:
+        """Delete a rule by ID."""
+        if self.crystal_vault is not None and hasattr(self.crystal_vault, "delete_rule"):
+            return self.crystal_vault.delete_rule(rule_id)
+        return False
+
+    def crystal_compact(self) -> dict[str, Any]:
+        """Compact vault database and reclaim disk space."""
+        if self.crystal_vault is not None and hasattr(self.crystal_vault, "compact"):
+            return self.crystal_vault.compact()
+        return {"ok": False, "error": "Vault does not support compaction"}
+
+    def crystal_get_gaps(self, limit: int = 10) -> list[dict[str, Any]]:
+        """Get top missing coverage gaps."""
+        if self.crystal_vault is not None and hasattr(self.crystal_vault, "get_coverage_gaps"):
+            return self.crystal_vault.get_coverage_gaps(limit=limit)
+        return []
+
+    def crystal_gap_prompt(self, topic: str | None = None) -> str:
+        """Generate ChatGPT prompt to fill coverage gaps."""
+        if self.crystal_vault is not None and hasattr(self.crystal_vault, "generate_gap_fill_prompt"):
+            return self.crystal_vault.generate_gap_fill_prompt(topic=topic)
+        return ""
+

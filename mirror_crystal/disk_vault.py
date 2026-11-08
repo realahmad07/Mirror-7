@@ -13,6 +13,7 @@ import hashlib
 import json
 import math
 import mmap
+import os
 from pathlib import Path
 import struct
 import re
@@ -123,7 +124,8 @@ class DiskCrystalVault:
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.max_postings_scan = int(max_postings_scan)
-        self.lru_rule_cache_size = int(lru_rule_cache_size)
+        env_cache = os.getenv("MIRROR_RULE_CACHE_SIZE")
+        self.lru_rule_cache_size = int(env_cache) if env_cache else (int(lru_rule_cache_size) if int(lru_rule_cache_size) > 1024 else 8192)
 
         self._lock = threading.RLock()
         self._local = threading.local()
@@ -152,7 +154,7 @@ class DiskCrystalVault:
         self._meta_dirty = False
         self._rule_lru: OrderedDict[int, CrystalRule] = OrderedDict()
         self._prompt_hash_lru: OrderedDict[bytes, int] = OrderedDict()
-        self._max_prompt_hash_cache: int = 2048
+        self._max_prompt_hash_cache: int = int(os.getenv("MIRROR_PROMPT_HASH_CACHE_SIZE", "8192"))
         self._domain_counts_cache: Optional[dict[str, int]] = None
         self._trust_tier_counts_cache: Optional[dict[str, int]] = None
         self._load_lightweight_meta()
@@ -164,7 +166,8 @@ class DiskCrystalVault:
         c.execute("PRAGMA busy_timeout=15000;")
         c.execute("PRAGMA synchronous=NORMAL;")
         c.execute("PRAGMA temp_store=MEMORY;")
-        c.execute("PRAGMA mmap_size=134217728;")  # 128 MB OS kernel page cache map
+        c.execute("PRAGMA mmap_size=268435456;")  # 256 MB OS kernel page cache map
+        c.execute("PRAGMA cache_size=-64000;")   # 64 MB SQLite page cache
         with self._lock:
             self._conns.append(c)
         return c
@@ -217,6 +220,18 @@ class DiskCrystalVault:
                 heads_json TEXT NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_rules_num_slots ON rules(num_slots) WHERE num_slots > 0;
+            CREATE TABLE IF NOT EXISTS prompt_aliases (
+                alias_hash BLOB PRIMARY KEY,
+                rule_id INTEGER NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_prompt_aliases_rid ON prompt_aliases(rule_id);
+            CREATE TABLE IF NOT EXISTS unanswered_queries (
+                query_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                query_text TEXT NOT NULL,
+                inferred_domain TEXT NOT NULL,
+                created_at REAL NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_unanswered_domain ON unanswered_queries(inferred_domain);
             """
         )
         self.conn.commit()
@@ -342,6 +357,26 @@ class DiskCrystalVault:
         with self._lock:
             row = self.conn.execute("SELECT COUNT(*) FROM rules").fetchone()
             return int(row[0]) if row else 0
+
+    def get_rule(self, rule_id: int) -> Optional[CrystalRule]:
+        """Fetch a single rule by rule_id via LRU cache first, then single-row SQLite query."""
+        with self._lock:
+            cached = self._rule_lru.get(rule_id)
+            if cached is not None:
+                self._rule_lru.move_to_end(rule_id)
+                return cached
+            row = self.conn.execute(
+                "SELECT rule_id, sig_bytes, num_slots, pass_count, fail_count, payload FROM rules WHERE rule_id = ?",
+                (rule_id,),
+            ).fetchone()
+            if row is not None:
+                rule = self._row_to_rule(row)
+                if self.lru_rule_cache_size > 0:
+                    self._rule_lru[rule.rule_id] = rule
+                    if len(self._rule_lru) > self.lru_rule_cache_size:
+                        self._rule_lru.popitem(last=False)
+                return rule
+            return None
 
     def _merge_postings_to_disk(
         self,
@@ -526,6 +561,33 @@ class DiskCrystalVault:
 
         sig, chosen_toks = self.bit_table.encode_text_signature(abs_pair.abstract_prompt + sense_sfx)
         salient = tuple(sorted(set(chosen_toks), key=self.bit_table.token_salience, reverse=True)[:14])
+
+        row_alias = self.conn.execute("SELECT rule_id FROM prompt_aliases WHERE alias_hash = ?", (phash,)).fetchone()
+        if row_alias is not None:
+            with self.conn:
+                self.conn.execute(
+                    "UPDATE rules SET pass_count = pass_count + ? WHERE rule_id = ?",
+                    (1 + verified_bonus, int(row_alias[0])),
+                )
+            self.stats["duplicates_skipped"] += 1
+            return False
+
+        cands = self._query_disk_candidates(sig, salient[:8], top_k=3)
+        for cand_score, cand_rule in cands:
+            if cand_rule.abstract_response.strip().lower() == abs_pair.abstract_response.strip().lower():
+                with self.conn:
+                    self.conn.execute(
+                        "INSERT OR IGNORE INTO prompt_aliases(alias_hash, rule_id) VALUES (?, ?)",
+                        (phash, cand_rule.rule_id),
+                    )
+                    self.conn.execute(
+                        "UPDATE rules SET pass_count = pass_count + ? WHERE rule_id = ?",
+                        (1 + verified_bonus, cand_rule.rule_id),
+                    )
+                self.stats["duplicates_skipped"] += 1
+                self.stats["synonym_bridges_folded"] = self.stats.get("synonym_bridges_folded", 0) + 1
+                return False
+
         rid = self._next_rule_id
         self._next_rule_id += 1
 
@@ -586,24 +648,28 @@ class DiskCrystalVault:
         def _flush() -> None:
             if not rule_batch and not reinforce_batch and not temp_causal._causal_edges:
                 return
-            with self.conn:
-                if rule_batch:
-                    self.conn.executemany(
-                        "INSERT OR IGNORE INTO rules(rule_id, prompt_hash, sig_bytes, num_slots, pass_count, fail_count, payload) VALUES (?,?,?,?,?,?,?)",
-                        rule_batch,
-                    )
-                if reinforce_batch:
-                    self.conn.executemany(
-                        "UPDATE rules SET pass_count = pass_count + ? WHERE rule_id = ?",
-                        reinforce_batch,
-                    )
-                self._merge_postings_to_disk(tok_delta, band_delta, temp_causal._causal_edges)
-            rule_batch.clear()
-            reinforce_batch.clear()
-            tok_delta.clear()
-            band_delta.clear()
-            temp_causal._causal_edges.clear()
-            seen_batch_hashes.clear()
+            with self._lock:
+                with self.conn:
+                    if rule_batch:
+                        self.conn.executemany(
+                            "INSERT OR IGNORE INTO rules(rule_id, prompt_hash, sig_bytes, num_slots, pass_count, fail_count, payload) VALUES (?,?,?,?,?,?,?)",
+                            rule_batch,
+                        )
+                    if reinforce_batch:
+                        self.conn.executemany(
+                            "UPDATE rules SET pass_count = pass_count + ? WHERE rule_id = ?",
+                            reinforce_batch,
+                        )
+                    self._merge_postings_to_disk(tok_delta, band_delta, temp_causal._causal_edges)
+                rule_batch.clear()
+                reinforce_batch.clear()
+                tok_delta.clear()
+                band_delta.clear()
+                temp_causal._causal_edges.clear()
+                seen_batch_hashes.clear()
+                self._domain_counts_cache = None
+                self._trust_tier_counts_cache = None
+            time.sleep(0.001)  # Cooperative yield to reader threads
 
         for item in items:
             u_raw = str(item.get("prompt") or item.get("question") or item.get("user") or "").strip()
@@ -723,13 +789,12 @@ class DiskCrystalVault:
         fold_synonyms: bool = True,
     ) -> dict[str, Any]:
         """Stream arbitrarily huge .jsonl files in bounded RAM, flushing directly to SQLite B-Trees."""
-        with self._lock:
-            return self._ingest_jsonl_locked(
-                path=path,
-                max_rows=max_rows,
-                batch_flush_rows=batch_flush_rows,
-                fold_synonyms=fold_synonyms,
-            )
+        return self._ingest_jsonl_locked(
+            path=path,
+            max_rows=max_rows,
+            batch_flush_rows=batch_flush_rows,
+            fold_synonyms=fold_synonyms,
+        )
 
     def _ingest_jsonl_locked(
         self,
@@ -825,8 +890,30 @@ class DiskCrystalVault:
                 dups_this_file += 1
                 return
 
+            row_alias = self.conn.execute("SELECT rule_id FROM prompt_aliases WHERE alias_hash = ?", (phash,)).fetchone()
+            if row_alias is not None:
+                reinforce_batch.append((1 + verified_bonus, int(row_alias[0])))
+                self.stats["duplicates_skipped"] += 1
+                dups_this_file += 1
+                return
+
             sig, chosen_toks = self.bit_table.encode_text_signature(abs_pair.abstract_prompt + sense_sfx)
             salient = tuple(sorted(set(chosen_toks), key=self.bit_table.token_salience, reverse=True)[:14])
+
+            # Semantic paraphrase deduplication
+            if fold_synonyms:
+                cands = self._query_disk_candidates(sig, salient[:8], top_k=2)
+                for cand_score, cand_rule in cands:
+                    if cand_rule.abstract_response.strip().lower() == abs_pair.abstract_response.strip().lower():
+                        self.conn.execute(
+                            "INSERT OR IGNORE INTO prompt_aliases(alias_hash, rule_id) VALUES (?, ?)",
+                            (phash, cand_rule.rule_id),
+                        )
+                        reinforce_batch.append((1 + verified_bonus, cand_rule.rule_id))
+                        self.stats["duplicates_skipped"] += 1
+                        self.stats["synonym_bridges_folded"] += 1
+                        dups_this_file += 1
+                        return
             rid = self._next_rule_id
             self._next_rule_id += 1
             seen_batch_hashes[phash] = rid
@@ -906,10 +993,12 @@ class DiskCrystalVault:
 
         _flush()
         merged_syns = self.bit_table.fold_equivalences() if fold_synonyms else 0
-        with self.conn:
-            self._save_lightweight_meta()
-        self._meta_dirty = False
-        self._rule_lru.clear()
+        if new_rules_this_file > 0 or self._meta_dirty:
+            with self._lock:
+                with self.conn:
+                    self._save_lightweight_meta()
+                self._meta_dirty = False
+                self._rule_lru.clear()
 
         elapsed_s = max(1e-6, time.perf_counter() - t0)
         repo_root = Path(__file__).resolve().parents[1]
@@ -1248,6 +1337,15 @@ class DiskCrystalVault:
                         self._prompt_hash_lru[phash_exact] = rule_exact.rule_id
                         if len(self._prompt_hash_lru) > self._max_prompt_hash_cache:
                             self._prompt_hash_lru.popitem(last=False)
+                    else:
+                        row_alias = self.conn.execute(
+                            "SELECT rule_id FROM prompt_aliases WHERE alias_hash = ?",
+                            (phash_exact,),
+                        ).fetchone()
+                        if row_alias is not None:
+                            rule_exact = self.get_rule(int(row_alias[0]))
+                            if rule_exact is not None:
+                                self._prompt_hash_lru[phash_exact] = rule_exact.rule_id
                 if rule_exact is not None and rule_exact.active:
                         instantiated = SlotAbstractor.instantiate(
                             query=q_core,
@@ -1410,6 +1508,15 @@ class DiskCrystalVault:
             )
 
         ms = (time.perf_counter_ns() - t0) / 1_000_000.0
+        try:
+            inferred_dom = self._infer_topic(q_core)
+            self.conn.execute(
+                "INSERT INTO unanswered_queries(query_text, inferred_domain, created_at) VALUES (?, ?, ?)",
+                (q_core[:256], inferred_dom, time.time()),
+            )
+            self.conn.commit()
+        except Exception:
+            pass
         return CrystalResponse(
             answer="No verified Crystal Rule matched above threshold yet — feed one example to crystallize instantly.",
             confidence=0.0,
@@ -1446,6 +1553,168 @@ class DiskCrystalVault:
             self._domain_counts_cache = dict(counts)
             self.stats["domain_counts"] = dict(counts)
             return dict(counts)
+
+    def record_feedback(self, rule_id: int, is_positive: bool = True) -> dict[str, Any]:
+        """Record user feedback (upvote / downvote). Auto-deactivates if downvoted."""
+        with self._lock:
+            cur = self.conn.cursor()
+            row = cur.execute(
+                "SELECT pass_count, fail_count, payload FROM rules WHERE rule_id = ?",
+                (rule_id,),
+            ).fetchone()
+            if not row:
+                return {"ok": False, "error": f"Rule #{rule_id} not found"}
+            pc, fc, payload = row
+            if is_positive:
+                pc += 1
+            else:
+                fc += 1
+            active = (fc <= pc) and (fc < 3)
+            cur.execute(
+                "UPDATE rules SET pass_count = ?, fail_count = ? WHERE rule_id = ?",
+                (pc, fc, rule_id),
+            )
+            self.conn.commit()
+            self._rule_lru.pop(rule_id, None)
+            return {
+                "ok": True,
+                "rule_id": rule_id,
+                "pass_count": pc,
+                "fail_count": fc,
+                "active": active,
+                "feedback": "upvote" if is_positive else "downvote",
+            }
+
+    def purge_by_domain(self, domain: str) -> dict[str, Any]:
+        """Surgically remove all rules belonging to a specific domain."""
+        with self._lock:
+            cur = self.conn.cursor()
+            rids_to_del = []
+            for (rid, payload) in cur.execute("SELECT rule_id, payload FROM rules").fetchall():
+                try:
+                    d = json.loads(zlib.decompress(payload).decode("utf-8"))
+                    if d.get("dom", "") == domain:
+                        rids_to_del.append(rid)
+                except Exception:
+                    pass
+            purged = 0
+            if rids_to_del:
+                qmarks = ",".join("?" for _ in rids_to_del)
+                cur.execute(f"DELETE FROM rules WHERE rule_id IN ({qmarks})", rids_to_del)
+                cur.execute(f"DELETE FROM prompt_aliases WHERE rule_id IN ({qmarks})", rids_to_del)
+                for r in rids_to_del:
+                    self._rule_lru.pop(r, None)
+                purged = len(rids_to_del)
+                self.conn.commit()
+                self._domain_counts_cache = None
+                self._trust_tier_counts_cache = None
+            return {"ok": True, "domain": domain, "purged_rules": purged}
+
+    def delete_rule(self, rule_id: int) -> bool:
+        """Delete a single rule by ID."""
+        with self._lock:
+            cur = self.conn.cursor()
+            cur.execute("DELETE FROM rules WHERE rule_id = ?", (rule_id,))
+            cur.execute("DELETE FROM prompt_aliases WHERE rule_id = ?", (rule_id,))
+            deleted = cur.rowcount > 0
+            if deleted:
+                self._rule_lru.pop(rule_id, None)
+                self.conn.commit()
+                self._domain_counts_cache = None
+                self._trust_tier_counts_cache = None
+            return deleted
+
+    def compact(self) -> dict[str, Any]:
+        """Compacts the SQLite database and executes VACUUM to reclaim disk space."""
+        with self._lock:
+            b_before = self.db_path.stat().st_size if self.db_path.exists() else 0
+            cur = self.conn.cursor()
+            cur.execute("PRAGMA auto_vacuum = INCREMENTAL;")
+            cur.execute("PRAGMA incremental_vacuum;")
+            self.conn.commit()
+            cur.execute("PRAGMA wal_checkpoint(TRUNCATE);")
+            cur.execute("VACUUM;")
+            b_after = self.db_path.stat().st_size if self.db_path.exists() else 0
+            return {
+                "bytes_before": b_before,
+                "bytes_after": b_after,
+                "bytes_reclaimed": max(0, b_before - b_after),
+                "mb_before": round(b_before / (1024 * 1024), 2),
+                "mb_after": round(b_after / (1024 * 1024), 2),
+            }
+
+    @staticmethod
+    def _infer_topic(query: str) -> str:
+        q_low = query.lower()
+        if any(w in q_low for w in ("integral", "derivative", "equation", "algebra", "matrix", "prime", "divisors", "polynomial", "calculus", "geometry", "triangle")):
+            return "math"
+        if any(w in q_low for w in ("python", "code", "function", "class", "algorithm", "async", "thread", "bug", "sql", "git", "docker", "rust", "c++")):
+            return "programming"
+        if any(w in q_low for w in ("quantum", "physics", "velocity", "energy", "electron", "gravity", "relativity", "force", "photon", "particle", "newton")):
+            return "physics"
+        if any(w in q_low for w in ("cell", "dna", "gene", "protein", "organism", "mitochondria", "biology", "bacteria", "enzyme")):
+            return "biology"
+        if any(w in q_low for w in ("history", "century", "war", "king", "empire", "president", "treaty", "revolution", "dynasty")):
+            return "history"
+        if any(w in q_low for w in ("capital", "country", "river", "mountain", "ocean", "geography", "continent", "border")):
+            return "geography"
+        if any(w in q_low for w in ("money", "stock", "inflation", "gdp", "market", "economy", "interest", "bank")):
+            return "finance"
+        words = [w for w in re.findall(r"[a-z]{4,}", q_low) if w not in ("what", "when", "where", "which", "could", "would", "should", "about", "there", "their")]
+        return words[0] if words else "general"
+
+    def get_coverage_gaps(self, limit: int = 10) -> list[dict[str, Any]]:
+        with self._lock:
+            try:
+                cur = self.conn.cursor()
+                rows = cur.execute(
+                    """
+                    SELECT inferred_domain, COUNT(*) as cnt, GROUP_CONCAT(query_text, ' || ') as samples
+                    FROM unanswered_queries
+                    GROUP BY inferred_domain
+                    ORDER BY cnt DESC
+                    LIMIT ?
+                    """,
+                    (limit,),
+                ).fetchall()
+                out = []
+                for r in rows:
+                    samples = [s.strip() for s in (r[2] or "").split(" || ") if s.strip()][:4]
+                    out.append({
+                        "topic": r[0],
+                        "unanswered_count": int(r[1]),
+                        "sample_queries": samples,
+                    })
+                return out
+            except Exception:
+                return []
+
+    def generate_gap_fill_prompt(self, topic: Optional[str] = None) -> str:
+        gaps = self.get_coverage_gaps(limit=5)
+        target = topic or (gaps[0]["topic"] if gaps else "science_and_technology")
+        samples_text = ""
+        for g in gaps:
+            if g["topic"].lower() == target.lower() and g["sample_queries"]:
+                samples_text = "\n".join(f"- {q}" for q in g["sample_queries"][:4])
+                break
+        prompt = f"""You are building a high-quality question-answer dataset for a retrieval-based AI.
+Topic: {target}
+Generate 150 entries.
+
+OUTPUT FORMAT (strict):
+- JSONL only: one JSON object per line, no array brackets, no markdown, no code fences.
+- Each line: {{"question": "...", "answer": "...", "domain": "{target.lower().replace(' ', '_')}", "trust_tier": 2}}
+
+QUALITY RULES:
+1. Facts must be correct, well-established and verifiable.
+2. Each question must stand alone.
+3. Answers: 1-4 sentences, direct first, then brief explanation.
+4. No duplicate entries.
+5. Difficulty: 30% beginner, 50% intermediate, 20% advanced.
+"""
+        if samples_text:
+            prompt += f"\nHere are actual user questions Mirror was asked but could not answer:\n{samples_text}\n"
+        return prompt
 
     def purge_matching_rules(self, signatures: Any, check_prompt: bool = False) -> dict[str, int]:
         """Remove rules whose response (or optionally prompt) contains any stale/banned signature and prune postings."""

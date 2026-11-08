@@ -137,8 +137,22 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             sess = parsed_qs.get("session_id", ["studio_web"])[0]
             self._send(200, {"ok": True, "profile": service.memory_get_profile(sess)})
             return
+        if path == "/api/crystal/gaps":
+            self._send(200, {"ok": True, "gaps": service.crystal_get_gaps()})
+            return
+        if path == "/api/crystal/gap_prompt":
+            parsed_qs = parse_qs(urlparse(self.path).query)
+            t = parsed_qs.get("topic", [None])[0]
+            self._send(200, {"ok": True, "prompt": service.crystal_gap_prompt(topic=t)})
+            return
         if path == "/api/health":
-            self._send(200, {"ok": True, "service": "mirror7", "status": service.status()})
+            self._send(200, {
+                "ok": True,
+                "service": "mirror7",
+                "ready": getattr(service, "is_ready", True),
+                "warmup_ms": getattr(service, "warmup_ms", 0.0),
+                "status": service.status(),
+            })
             return
         if path == "/api/status":
             self._send(200, dict(service.status()))
@@ -168,6 +182,24 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 session_id = str(payload.get("session_id", "studio_web"))
                 consent_log = bool(payload.get("consent_log", False))
                 res = service.crystal_ask(prompt, session_id=session_id, consent_log=consent_log)
+                self._send(200, res)
+                return
+
+            if parts in (["api", "crystal", "feedback"], ["api", "crystal", "downvote"]):
+                rid = int(payload.get("rule_id", 0))
+                pos = bool(payload.get("is_positive", False if parts == ["api", "crystal", "downvote"] else True))
+                res = service.crystal_feedback(rid, is_positive=pos)
+                self._send(200, res)
+                return
+
+            if parts == ["api", "crystal", "purge_domain"]:
+                dom = str(payload.get("domain", ""))
+                res = service.crystal_purge_domain(dom)
+                self._send(200, res)
+                return
+
+            if parts == ["api", "crystal", "compact"]:
+                res = service.crystal_compact()
                 self._send(200, res)
                 return
 
