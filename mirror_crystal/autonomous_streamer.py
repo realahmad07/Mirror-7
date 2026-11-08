@@ -399,7 +399,7 @@ class AutonomousDatasetStreamer:
         dedup_db_path: Optional[Path | str] = None,
     ) -> None:
         self.vault = vault
-        self.cadence_seconds = max(1.0, float(cadence_seconds))
+        self.cadence_seconds = max(0.05, float(cadence_seconds))
         self.flush_batch_size = max(1, int(flush_batch_size))
         self.enable_live_fetch = bool(enable_live_fetch)
         self.hygiene = SixGateDataHygienePipeline()
