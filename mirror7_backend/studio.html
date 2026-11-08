@@ -93,6 +93,25 @@
   .msg-bubble { max-width: 85%; padding: 12px 16px; border-radius: 10px; font-size: 13.5px; line-height: 1.5; }
   .msg-user { align-self: flex-end; background: var(--user-msg); border: 1px solid #1E3A5F; color: #FFF; border-bottom-right-radius: 2px; }
   .msg-assistant { align-self: flex-start; background: var(--assistant-msg); border: 1px solid var(--card-border); border-bottom-left-radius: 2px; }
+
+  /* Structured Markdown & Alignment Styles */
+  .md-rendered { font-size: 13.5px; line-height: 1.6; color: var(--text-primary); }
+  .md-p { margin: 8px 0; }
+  .md-h2 { font-size: 16px; font-weight: 700; color: var(--accent-cyan); margin: 12px 0 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
+  .md-h3 { font-size: 15px; font-weight: 700; color: var(--accent-teal); margin: 10px 0 5px 0; }
+  .md-h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 8px 0 4px 0; }
+  .md-list, .md-ol { margin: 6px 0 8px 22px; padding: 0; }
+  .md-list li, .md-ol li { margin-bottom: 5px; line-height: 1.55; }
+  .inline-code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 12px; color: #58A6FF; }
+  .code-wrapper { margin: 10px 0; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
+  .code-header { background: #182232; padding: 4px 10px; font-size: 11px; text-transform: uppercase; color: var(--accent-cyan); font-family: monospace; }
+  .code-block { margin: 0; padding: 10px 14px; background: #080E18; color: #E6EDF3; font-family: 'Consolas', 'Monaco', monospace; font-size: 12.5px; overflow-x: auto; line-height: 1.45; }
+  .boxed-answer { display: inline-block; padding: 3px 10px; border: 2px solid var(--accent-teal); background: rgba(57,211,83,0.12); font-weight: 700; border-radius: 5px; color: #39D353; margin: 6px 0; font-size: 14px; }
+  .md-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12.5px; border-radius: 6px; overflow: hidden; }
+  .md-table th, .md-table td { border: 1px solid rgba(255,255,255,0.12); padding: 7px 12px; text-align: left; }
+  .md-table th { background: rgba(0, 240, 255, 0.08); font-weight: 600; color: var(--accent-cyan); }
+  .md-table tr:nth-child(even) { background: rgba(255,255,255,0.025); }
+  .think-block { background: rgba(255,255,255,0.03); border-left: 3px solid var(--accent-purple); padding: 8px 12px; border-radius: 0 6px 6px 0; margin: 8px 0; font-style: italic; color: var(--text-secondary); }
   
   .meta-tagline {
     display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; font-weight: 600;
@@ -463,7 +482,7 @@ async function sendChat() {
         <span class="badge" style="background:rgba(255,255,255,0.08); color:${tierColor}; border:1px solid ${tierColor};">${data.epistemic_tier}</span>
         <span style="color:var(--text-muted); font-size:11px;">mode: ${data.mode}</span>
       </div>
-      <div>${escapeHtml(data.answer).replace(/\\n/g, '<br/>')}</div>
+      <div>${renderMarkdown(data.answer)}</div>
       ${data.reasoning_trace && data.reasoning_trace.length ? `
         <div class="trace-toggle" onclick="toggleTrace('${traceId}')">▶ View Reasoning Trace (${data.reasoning_trace.length} steps)</div>
         <div id="${traceId}" class="trace-box">${escapeHtml(data.reasoning_trace.join('\\n'))}</div>
@@ -478,6 +497,104 @@ async function sendChat() {
 function toggleTrace(id) {
   const el = document.getElementById(id);
   el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+
+function renderMarkdown(raw) {
+  if (!raw) return '';
+  let txt = escapeHtml(raw);
+
+  // 0. <think> blocks
+  txt = txt.replace(/&lt;think&gt;([\s\S]*?)&lt;\/think&gt;/gi, function(match, inner) {
+    return `<div class="think-block"><span style="color:var(--accent-purple); font-weight:600; font-style:normal;">💭 Internal Reasoning Scratchpad:</span><br/>${inner.trim().replace(/\n/g, '<br/>')}</div>`;
+  });
+
+  // 1. Code blocks: ```lang ... ```
+  txt = txt.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, function(match, lang, code) {
+    return `<div class="code-wrapper"><div class="code-header">${lang || 'code'}</div><pre class="code-block"><code>${code.trim()}</code></pre></div>`;
+  });
+
+  // 2. Inline code: `code`
+  txt = txt.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+  // 3. LaTeX boxed answers: \boxed{...} or $$ ... $$
+  txt = txt.replace(/\\boxed\{([^\}]+)\}/g, '<span class="boxed-answer">$1</span>');
+  txt = txt.replace(/\$\$([\s\S]*?)\$\$/g, '<div style="text-align:center; margin:8px 0;">$1</div>');
+
+  // 4. Headings: ###, ##, #
+  txt = txt.replace(/^### (.*$)/gim, '<h4 class="md-h4">$1</h4>');
+  txt = txt.replace(/^## (.*$)/gim, '<h3 class="md-h3">$1</h3>');
+  txt = txt.replace(/^# (.*$)/gim, '<h2 class="md-h2">$1</h2>');
+
+  // 5. Bold & Italic
+  txt = txt.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  txt = txt.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+  // 6. Tables: lines starting and ending with |
+  const lines = txt.split('\n');
+  let inTable = false;
+  let tableHtml = '';
+  let outLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith('|') && line.endsWith('|')) {
+      if (/^\|[\s:-|-]+\|$/.test(line)) {
+        continue;
+      }
+      const cells = line.slice(1, -1).split('|').map(c => c.trim());
+      if (!inTable) {
+        inTable = true;
+        tableHtml = '<table class="md-table"><thead><tr>' + cells.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+      } else {
+        tableHtml += '<tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>';
+      }
+    } else {
+      if (inTable) {
+        inTable = false;
+        tableHtml += '</tbody></table>';
+        outLines.push(tableHtml);
+        tableHtml = '';
+      }
+      outLines.push(lines[i]);
+    }
+  }
+  if (inTable) {
+    tableHtml += '</tbody></table>';
+    outLines.push(tableHtml);
+  }
+
+  // 7. Lists (numbered and bullets)
+  let processed = [];
+  let inUl = false;
+  let inOl = false;
+
+  for (let i = 0; i < outLines.length; i++) {
+    const l = outLines[i];
+    const bulletMatch = l.match(/^\s*[-*]\s+(.*)$/);
+    const numMatch = l.match(/^\s*(\d+)\.\s+(.*)$/);
+
+    if (bulletMatch) {
+      if (inOl) { processed.push('</ol>'); inOl = false; }
+      if (!inUl) { processed.push('<ul class="md-list">'); inUl = true; }
+      processed.push(`<li>${bulletMatch[1]}</li>`);
+    } else if (numMatch) {
+      if (inUl) { processed.push('</ul>'); inUl = false; }
+      if (!inOl) { processed.push('<ol class="md-ol">'); inOl = true; }
+      processed.push(`<li>${numMatch[2]}</li>`);
+    } else {
+      if (inUl) { processed.push('</ul>'); inUl = false; }
+      if (inOl) { processed.push('</ol>'); inOl = false; }
+      processed.push(l);
+    }
+  }
+  if (inUl) processed.push('</ul>');
+  if (inOl) processed.push('</ol>');
+
+  let result = processed.join('\n');
+  result = result.replace(/\n{2,}/g, '</p><p class="md-p">');
+  result = result.replace(/\n/g, '<br/>');
+  return `<div class="md-rendered"><p class="md-p">${result}</p></div>`;
 }
 
 function escapeHtml(text) {
@@ -497,7 +614,7 @@ async function runCAS(expr) {
     });
     const d = await res.json();
     out.innerHTML = `
-      <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">${escapeHtml(d.answer)}</div>
+      <div>${renderMarkdown(d.answer)}</div>
       <div class="meta-tagline">
         <span class="badge badge-green">Exact Rational Truth</span>
         <span class="badge badge-cyan">⚡ ${d.latency_ms} ms</span>
@@ -630,7 +747,7 @@ async function runCerebrumSolve() {
           <span class="badge badge-purple">${d.latency_ms.toFixed(2)} ms</span>
         </div>
         <div style="font-size:15px; font-weight:700; color:var(--accent-cyan); margin-bottom:8px;">Answer: ${escapeHtml(d.answer)}</div>
-        <pre style="max-height:160px;">${escapeHtml(d.formatted_solution)}</pre>
+        <div>${renderMarkdown(d.formatted_solution)}</div>
       `;
     } else {
       out.innerHTML = `<span style="color:var(--accent-amber);">CAS Note: ${d.answer}</span>`;

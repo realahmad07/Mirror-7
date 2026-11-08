@@ -111,7 +111,7 @@ class BackendService:
             math_res = self.cerebrum_bridge.solve(prompt)
             if math_res.get("ok") and float(math_res.get("prm_reward", 0.0)) >= 0.80:
                 return {
-                    "answer": str(math_res.get("formatted_response") or math_res["answer"]),
+                    "answer": str(math_res.get("formatted_solution") or math_res.get("formatted_response") or math_res["answer"]),
                     "confidence": round(float(math_res["prm_reward"]), 4),
                     "mode": f"cerebrum_{math_res.get('strategy', 'exact')}",
                     "matched_rule_id": None,
