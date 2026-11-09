@@ -9,10 +9,11 @@ from .persistence import CheckpointStore, CheckpointError
 from .actions import ActionGateway, ActionPolicy, ActionDenied
 from .service import BackendService
 from .response_engine import UnifiedResponseEngine
+from .cognitive_orchestrator import UnifiedCognitiveOrchestrator
 
 __all__ = [
     "BackendSession", "BackendResult",
     "CheckpointStore", "CheckpointError",
     "ActionGateway", "ActionPolicy", "ActionDenied",
-    "BackendService", "UnifiedResponseEngine",
+    "BackendService", "UnifiedResponseEngine", "UnifiedCognitiveOrchestrator",
 ]
