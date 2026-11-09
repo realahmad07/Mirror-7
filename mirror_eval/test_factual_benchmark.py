@@ -15,6 +15,7 @@ def _reviewer(ident):
     return {
         "reviewer_id": ident,
         "independent": True,
+        "method": "independent_source_comparison",
         "decision": "approve",
         "reviewed_at": "2026-11-09T12:00:00+00:00",
     }
@@ -29,6 +30,7 @@ def _case(case_id, answerable, answer):
         "source_publisher": "Fixture Authority",
         "source_url": "https://example.org/frozen-fixture",
         "source_locator": "Section 1",
+        "license_spdx": "NOASSERTION",
         "source_quote": quote,
         "source_excerpt_sha256": sha256(quote.encode()).hexdigest(),
         "source_retrieved_at": "2026-11-09T12:00:00+00:00",
