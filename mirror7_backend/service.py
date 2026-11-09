@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 from threading import Condition, RLock
 from typing import Any, Callable, Mapping
 
