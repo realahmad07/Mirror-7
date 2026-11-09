@@ -230,3 +230,30 @@ def test_tdd_generate_route_uses_native_builder_and_rejects_unsupported_requests
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+def test_normal_qna_returns_native_code_only_after_tdd_passes():
+    from .service import BackendService
+
+    service = BackendService(enable_crystal_auto_load=False)
+    server = create_server(port=0, service=service)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        status, result = request(
+            server,
+            "POST",
+            "/api/crystal/ask",
+            {"prompt": "Write Python code to add two numbers"},
+        )
+        assert status == 200
+        assert result["answer_qualification"] == "verified_task_result"
+        assert result["task_result_verified"] is True
+        assert result["task_code_verified"] is True
+        assert "def add(a, b)" in result["answer"]
+        assert result["code_verification"]["tests_generated"] == 3
+        assert result["code_verification"]["tests_passed"] == 3
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
