@@ -27,6 +27,7 @@ class UnifiedCognitiveOrchestrator:
         math_confidence_threshold: float = 0.80,
         code_generation_provider: Callable[[str], Any] | None = None,
         synthesis_provider: Callable[[dict[str, Any]], Any] | None = None,
+        universal_engine_provider: Callable[[], Any] | None = None,
     ) -> None:
         if not 0.0 <= math_confidence_threshold <= 1.0:
             raise ValueError("math_confidence_threshold must be between 0 and 1")
@@ -36,6 +37,7 @@ class UnifiedCognitiveOrchestrator:
         self._code_provider = code_provider
         self._code_generation_provider = code_generation_provider
         self._synthesis_provider = synthesis_provider
+        self._universal_engine_provider = universal_engine_provider
         self.metrics = metrics
         self.math_confidence_threshold = math_confidence_threshold
         self.synthesizer = EvidenceSynthesisEngine()
@@ -159,6 +161,39 @@ class UnifiedCognitiveOrchestrator:
         generated_code = None
         code_generation = None
         code_verification = None
+        universal_execution = None
+
+        if self._universal_engine_provider is not None:
+            try:
+                universal_execution = self._universal_engine_provider().solve_prompt(prompt)
+                sources_consulted.append("universal_intelligence")
+                verification = universal_execution.get("verification") or {}
+                if (
+                    universal_execution.get("verified") is True
+                    and verification.get("level") == "formally_verified"
+                ):
+                    evidence.append(self._candidate(
+                        "universal_capability_composition",
+                        universal_execution.get("answer", ""),
+                        1.0,
+                        "formally_verified_composition",
+                        True,
+                        {
+                            "plan": universal_execution.get("plan"),
+                            "verification": verification,
+                        },
+                    ))
+                elif universal_execution.get("candidate_outputs"):
+                    computed_candidates.append(self._candidate(
+                        "universal_capability_composition",
+                        universal_execution.get("answer", ""),
+                        0.0,
+                        "unverified_composition",
+                        False,
+                        {"status": universal_execution.get("status")},
+                    ))
+            except Exception as exc:
+                errors.append({"source": "universal_intelligence", "error": type(exc).__name__})
 
         try:
             memory = self._memory_provider()
@@ -325,6 +360,7 @@ class UnifiedCognitiveOrchestrator:
             "sources_consulted": list(dict.fromkeys(sources_consulted)),
             "evidence": evidence,
             "computed_candidates": computed_candidates,
+            "universal_execution": universal_execution,
             "synthesis": synthesis,
             "generated_code": generated_code,
             "code_generation": code_generation,
