@@ -175,6 +175,8 @@ These are the nine engineering layers that now form Mirror's shared knowledge-to
 **Acceptance scope:** all nine engineering layers above pass the combined integration test and active repository CI. This proves the implemented contracts and a bounded end-to-end execution path; it does not establish AGI, unrestricted language understanding, broad cross-domain transfer, autonomous source-code invention, or open-world continuous improvement.
 
 ## Newly integrated: Knowledge-to-UOL and counterexample-guided synthesis
+**Integration verification:** the follow-up fix commit `25def7c` passed the full active GitHub CI workflow: 275 Mirror Crystal/evaluation tests, 45 backend tests, 4 release-boundary tests, 3 training-foundation tests, 3 free-running evaluator tests, and package build. [CI run](https://github.com/realahmad07/Mirror-7/actions/runs/42667036649) · [Security Guard](https://github.com/realahmad07/Mirror-7/actions/runs/42667036152).
+
 
 The current implementation adds a shared route from the canonical knowledge store into Mirror's operational language, followed by bounded counterexample-guided discovery:
 

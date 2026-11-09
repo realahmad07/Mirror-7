@@ -108,7 +108,7 @@ Focused isolated tests: **15 passed**. Full repository CI remains the integratio
 
 ## Universal operational construction — Phase 1 and Phase 2
 
-**Status: IMPLEMENTED — full CI acceptance is being checked on the integration commit.**
+**Status: PASS — implementation commit `25def7cbeb07f38cd5bc1709670cbe61358b1a70` passed active GitHub CI and Security Guard.**
 
 | Phase | Implementation | Boundary |
 |---|---|---|
@@ -116,3 +116,17 @@ Focused isolated tests: **15 passed**. Full repository CI remains the integratio
 | 2 — Counterexample-guided synthesis | Bounded CEGIS tests candidates against a host-supplied oracle, adds observed counterexamples to training constraints, and repeats while preserving a disjoint held-out set. | Finite probes do not prove general correctness. Candidate capabilities remain UNVERIFIED until independent verification and promotion. |
 
 See [Phase 1–2 implementation details](docs/27-phase1-knowledge-to-uol-and-phase2-cegis.md).
+
+
+### Phase 1–2 CI evidence
+
+- Mirror Crystal and CPU evaluation: **275 passed**.
+- Backend: **45 passed**.
+- Backend smoke and release boundary: **4 passed**.
+- Training foundation: **3 passed**.
+- Free-running evaluator: **3 passed**.
+- Package build: **PASS**.
+- Security Guard: **PASS**.
+
+CI: https://github.com/realahmad07/Mirror-7/actions/runs/42667036649  
+Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42667036152
