@@ -31,6 +31,9 @@ class BackendService:
         metrics: BackendMetrics | None = None,
         crystal_vault: Any | None = None,
         crystal_node: Any | None = None,
+        capability_execution_engine: Any | None = None,
+        independent_verification_engine: Any | None = None,
+        required_verification_checks: Mapping[str, tuple[str, ...]] | None = None,
         enable_crystal_auto_load: bool = True,
     ):
         if max_sessions < 1:
@@ -42,7 +45,11 @@ class BackendService:
         self.response_engine = UnifiedResponseEngine(
             response_generator, config=self.generation_config
         )
-        self.code_generation_provider = code_generation_provider
+        if code_generation_provider is None:
+            from .native_code_generation import NativeCodeGenerationProvider
+            self.code_generation_provider = NativeCodeGenerationProvider()
+        else:
+            self.code_generation_provider = code_generation_provider
         self.evidence_synthesis_provider = evidence_synthesis_provider
         self.max_sessions = max_sessions
         self.metrics = metrics or BackendMetrics()
@@ -53,6 +60,14 @@ class BackendService:
 
         self.crystal_vault = crystal_vault
         self.crystal_node = crystal_node
+        self.capability_execution_engine = capability_execution_engine
+        self.independent_verification_engine = independent_verification_engine
+        if required_verification_checks is not None and not isinstance(required_verification_checks, Mapping):
+            raise TypeError("required_verification_checks must be a mapping")
+        self.required_verification_checks = {
+            str(key): tuple(str(item) for item in values)
+            for key, values in (required_verification_checks or {}).items()
+        }
         self._cerebrum_bridge: Any | None = None
         self._tdd_engine: Any | None = None
         self._hygiene_pipeline: Any | None = None
@@ -166,7 +181,10 @@ class BackendService:
         if self._universal_intelligence_pipeline is None:
             from .universal_intelligence import UniversalIntelligencePipeline
             self._universal_intelligence_pipeline = UniversalIntelligencePipeline(
-                vault_provider=lambda: self.crystal_vault
+                vault_provider=lambda: self.crystal_vault,
+                execution_engine=self.capability_execution_engine,
+                verification_engine=self.independent_verification_engine,
+                required_verification_checks=self.required_verification_checks,
             )
         return self._universal_intelligence_pipeline
 
@@ -301,22 +319,26 @@ class BackendService:
                 "verification": None,
             }
         generated = self.code_generation_provider(prompt)
-        if isinstance(generated, Mapping):
-            candidate = generated.get("code") or generated.get("final_code")
-        else:
-            candidate = generated
+        metadata = dict(generated) if isinstance(generated, Mapping) else {}
+        candidate = metadata.get("code") or metadata.get("final_code") if metadata else generated
         if not isinstance(candidate, str) or not candidate.strip():
             return {
                 "ok": False,
                 "verified": False,
-                "error": "Code-generation provider returned no source code.",
+                "error": metadata.get("needs_input") or metadata.get("reason") or (
+                    "The native code builder does not yet support this request."
+                ),
+                "needs_input": metadata.get("needs_input"),
                 "final_code": None,
                 "verification": None,
+                "generation_kind": metadata.get("generation_kind"),
             }
+        effective_spec = spec_desc or str(metadata.get("spec_desc") or "")
+        effective_tests = explicit_tests or str(metadata.get("tests") or "")
         report = self.tdd_engine.run_tdd_cycle(
             candidate.strip(),
-            spec_desc=spec_desc,
-            explicit_tests=explicit_tests,
+            spec_desc=effective_spec,
+            explicit_tests=effective_tests,
         )
         payload = asdict(report) if hasattr(report, "__dataclass_fields__") else dict(report)
         tests_generated = int(payload.get("tests_generated", 0) or 0)
@@ -332,6 +354,7 @@ class BackendService:
             "verified": verified,
             "final_code": payload.get("final_code", candidate.strip()),
             "verification": payload,
+            "generation_kind": metadata.get("generation_kind"),
         }
 
     def six_gate_audit(self, text: str, spdx_license: str = "MIT") -> dict[str, Any]:
