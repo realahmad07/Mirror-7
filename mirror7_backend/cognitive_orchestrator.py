@@ -25,7 +25,6 @@ class UnifiedCognitiveOrchestrator:
         code_provider: Callable[[], Any],
         metrics: Any | None = None,
         math_confidence_threshold: float = 0.80,
-        code_generation_provider: Callable[[str], Any] | None = None,
         synthesis_provider: Callable[[dict[str, Any]], Any] | None = None,
         universal_engine_provider: Callable[[], Any] | None = None,
     ) -> None:
@@ -35,7 +34,6 @@ class UnifiedCognitiveOrchestrator:
         self._memory_provider = memory_provider
         self._reasoning_provider = reasoning_provider
         self._code_provider = code_provider
-        self._code_generation_provider = code_generation_provider
         self._synthesis_provider = synthesis_provider
         self._universal_engine_provider = universal_engine_provider
         self.metrics = metrics
@@ -302,22 +300,17 @@ class UnifiedCognitiveOrchestrator:
             and self._is_code_request(prompt)
         )
         if should_generate_code:
-            if self._code_generation_provider is not None:
-                try:
-                    sources_consulted.append("code_generation")
-                    generated = self._code_generation_provider(prompt)
-                    if isinstance(generated, Mapping):
-                        generated_code = generated.get("code") or generated.get("final_code")
-                    else:
-                        generated_code = generated
-                    if generated_code is not None:
-                        generated_code = str(generated_code).strip()
-                    code_generation = {"available": True, "generated": bool(generated_code)}
-                except Exception as exc:
-                    errors.append({"source": "code_generation", "error": type(exc).__name__})
-                    code_generation = {"available": True, "generated": False}
-            else:
-                code_generation = {"available": False, "generated": False}
+            # The universal engine is the only generator. When its native capability
+            # library lacks a construction path, report the exact capability gap;
+            # never call a remote or injected model as a fallback.
+            code_generation = {
+                "available": True,
+                "generated": False,
+                "origin": "mirror_native_capability_gap",
+                "capability_gaps": list(
+                    (universal_execution or {}).get("capability_gaps", [])
+                ),
+            }
 
         code_to_test = None if native_program_verified else (candidate_code or generated_code)
         if code_to_test:
