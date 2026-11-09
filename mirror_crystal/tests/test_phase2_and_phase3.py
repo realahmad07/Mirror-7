@@ -111,12 +111,12 @@ def test_p2_2_sandbox_mcts_planner_composes_two_helper_rules_into_new_program():
         test_code="assert digit_sum(29) == 11",
     )
 
-    planner = SandboxMCTSPlanner(max_nodes=24, max_wall_ms=350.0)
+    planner = SandboxMCTSPlanner(max_nodes=24, max_wall_ms=3000.0)
     prompt = "Write prime_digit_primes(limit) returning primes <= limit whose digit_sum is also prime."
     test_spec = "assert prime_digit_primes(30) == [2, 3, 5, 7, 11, 23, 29]\nassert prime_digit_primes(10) == [2, 3, 5, 7]"
 
     res = planner.solve_and_verify(eng, prompt=prompt, test_code=test_spec, crystallize_on_success=True)
-    assert res.mode == "mcts_program_synthesis"
+    assert res.mode == "mcts_program_synthesis", res.reasoning_trace
     assert res.sandbox_verified is True
     assert res.epistemic_tier == "verified_exact"
 

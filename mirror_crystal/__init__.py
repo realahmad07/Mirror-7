@@ -5,6 +5,8 @@ Author: Ahmad Hassan | Repository: https://github.com/realahmad07/Mirror-7 | Lic
 from __future__ import annotations
 
 from .autonomous_streamer import AutonomousDatasetStreamer
+from .answer_verification import BlueprintAnswerVerifier, BlueprintVerificationReport
+from .blueprint_runtime import BlueprintCompositionEngine, BlueprintCompositionError, BlueprintCompositionResult
 from .blueprint_contracts import (
     Blueprint, BlueprintDependencyGraph, BlueprintKind, BlueprintProvenance,
     BlueprintValidationError, EvidenceLevel, VerificationEvidence,
@@ -67,6 +69,11 @@ from .slot_abstractor import AbstractedPair, SlotAbstractor
 __all__ = [
     "AbstractedPair",
     "Blueprint",
+    "BlueprintAnswerVerifier",
+    "BlueprintVerificationReport",
+    "BlueprintCompositionEngine",
+    "BlueprintCompositionError",
+    "BlueprintCompositionResult",
     "BlueprintDependencyGraph",
     "BlueprintKind",
     "BlueprintProvenance",
