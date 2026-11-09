@@ -1116,6 +1116,8 @@ class UniversalIntelligenceEngine:
         """
         if not callable(candidate_runner) or not callable(independent_check):
             raise TypeError("candidate_runner and independent_check must be callable")
+        runner_fingerprint = self._callable_fingerprint(candidate_runner)
+        verifier_fingerprint = self._callable_fingerprint(independent_check)
         seed_values = tuple(sorted({int(seed) for seed in seeds}))
         base_cases = tuple(cases)
         held_cases = tuple(held_out_cases)
@@ -1173,6 +1175,8 @@ class UniversalIntelligenceEngine:
             failures.append("adversarial_suite_missing")
         if not str(independent_verifier).strip():
             failures.append("independent_verifier_identity_missing")
+        if candidate_runner is independent_check or runner_fingerprint == verifier_fingerprint:
+            failures.append("independent_verifier_must_be_distinct_from_candidate_runner")
 
         run_digest = hashlib.sha256(
             canonical_json({
@@ -1186,8 +1190,8 @@ class UniversalIntelligenceEngine:
                 "base_case_count": len(base_cases),
                 "held_out_case_count": len(held_cases),
                 "adversarial_case_count": len(adversarial),
-                "candidate_runner_sha256": self._callable_fingerprint(candidate_runner),
-                "independent_verifier_sha256": self._callable_fingerprint(independent_check),
+                "candidate_runner_sha256": runner_fingerprint,
+                "independent_verifier_sha256": verifier_fingerprint,
             }).encode("utf-8")
         ).hexdigest()
         unsigned = LearningGateReport(
@@ -1203,8 +1207,8 @@ class UniversalIntelligenceEngine:
             base_case_count=len(base_cases),
             held_out_case_count=len(held_cases),
             adversarial_case_count=len(adversarial),
-            candidate_runner_sha256=self._callable_fingerprint(candidate_runner),
-            independent_verifier_sha256=self._callable_fingerprint(independent_check),
+            candidate_runner_sha256=runner_fingerprint,
+            independent_verifier_sha256=verifier_fingerprint,
         )
         signed = replace(unsigned, attestation=self._sign_learning_gate(unsigned))
         # A signed failed report stays failed; attestation proves execution, not success.
