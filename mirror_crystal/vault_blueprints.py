@@ -318,9 +318,9 @@ class VaultBlueprintRuntimeMixin:
                 epistemic_tier="honest_abstain",
             )
 
-        all_blueprints = self.list_blueprints()
+        composed_ids = set(composition.blueprint_ids)
         composed_blueprints = [
-            item for item in all_blueprints if item.blueprint_id in set(composition.blueprint_ids)
+            item for item in all_blueprints if item.blueprint_id in composed_ids
         ]
         verification_reports = []
         claim_reports = []
