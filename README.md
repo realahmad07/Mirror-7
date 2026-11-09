@@ -99,6 +99,80 @@ $$\text{Latency}_{\text{Crystal}} = \mathcal{O}(1) \text{ Hash} + \mathcal{O}(\l
 
 ---
 
+## Universal Intelligence Architecture & Nine-Phase Roadmap
+
+This is the target flow for one shared intelligence engine across programming, mathematics, physics, biology, engineering, and future domains. Requests are represented through a common structure, decomposed into connected tasks, solved by composing capabilities, and routed through domain-appropriate independent verification.
+
+### End-to-End Universal Intelligence Flow
+
+```mermaid
+flowchart TB
+    U["User Request"] --> I["Universal Task Interpreter"]
+    I --> T["TaskSpec: Goal, Context, Constraints"]
+    T --> K["Domain & Knowledge Identification"]
+    K --> UR["Universal Representation Layer"]
+
+    UR --> ERS["Entities, Relations & Structures"]
+    UR --> FRC["Facts, Rules & Constraints"]
+    UR --> PFO["Procedures, Formulas & Operators"]
+    UR --> EUP["Evidence, Uncertainty & Provenance"]
+
+    ERS --> TD["Task Decomposer"]
+    FRC --> TD
+    PFO --> TD
+    EUP --> TD
+    TD --> DAG["Task DAG: Smaller Connected Tasks"]
+    DAG --> CE["Capability Composition Engine"]
+    CE --> C["Candidate Solution / Structured Plan"]
+
+    C --> DE["Domain Execution & Evaluation"]
+    DE --> CODE["Code: Execute in Sandbox"]
+    DE --> MATH["Math: Prove and Calculate"]
+    DE --> SCI["Science: Test Models and Hypotheses"]
+    DE --> ENG["Engineering: Simulate and Validate"]
+    DE --> OTH["Other Domains: Domain-Specific Evaluation"]
+
+    CODE --> IV["Independent Verification"]
+    MATH --> IV
+    SCI --> IV
+    ENG --> IV
+    OTH --> IV
+    IV --> PASS{"Verification Passed?"}
+
+    PASS -->|Yes| GEN["Generalize Successful Capability"]
+    GEN --> STORE["Store with Evidence and Lineage"]
+    STORE --> TEST["Regression and Unseen Tests"]
+    TEST --> GROW["Verified Knowledge & Capability Growth"]
+    GROW --> RESPONSE["Final Response"]
+    GROW --> REG["Verified Capability Registry"]
+    REG --> CE
+
+    PASS -->|No| DIAG["Diagnose Failed Component"]
+    DIAG --> REPAIR["Repair or Recompose"]
+    REPAIR --> CE
+```
+
+### Nine-Phase Implementation Roadmap
+
+Each phase is a gate: its completion condition must be met before it is treated as a trusted foundation for the next stage.
+
+| Phase | What we build | Completion condition |
+|---|---|---|
+| **1. Knowledge foundation** | Trustworthy knowledge, canonical blueprints, provenance, contradiction handling | Knowledge can be distinguished from assumptions and unsupported claims |
+| **2. Universal representation** | A common structure for facts, relationships, rules, constraints, formulas, procedures and operations | Different domains can be represented without redesigning the intelligence engine |
+| **3. Task understanding** | Universal TaskSpec and task decomposition | Complex requests become accurate, connected subtasks |
+| **4. Capability system** | Verified reusable capabilities with typed inputs, outputs, dependencies and contracts | Capabilities work independently and have evidence |
+| **5. Composition engine** | Capability matching, compatibility checking, planning and combinational search | Mirror can construct solutions it has never stored as complete blueprints |
+| **6. Universal verification** | Independent evaluation with domain-specific execution, proof, simulation and evidence checks | Solutions are tested using methods appropriate to their domain |
+| **7. Self-improvement** | Failure diagnosis, targeted repair, abstraction and capability learning | Successful solutions become reusable, tested capabilities |
+| **8. Cross-domain intelligence** | Transfer of useful structures and methods between domains | Mirror can apply a verified method in a different domain when appropriate |
+| **9. Continuous expansion** | More knowledge, capabilities, benchmarks and increasingly difficult tasks | Performance improves on genuinely unseen problems |
+
+**Core cycle:** Knowledge → Capabilities → Composition → Verification → Learning → Future Composition.
+
+
+---
+
 ## Current Status & Prototype Milestones (From Scratch to Now)
 
 The evolution of Mirror 7 from scratch to the current state-of-the-art production milestone:
