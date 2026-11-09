@@ -258,7 +258,7 @@ class UniversalTaskInterpreter:
         re.IGNORECASE,
     )
     _DOMAIN_TERMS = {
-        "programming": ("code", "function", "program", "calculator", "api", "script", "software"),
+        "programming": ("code", "function", "program", "calculator", "api", "script", "software", "sort", "sorting", "algorithm"),
         "mathematics": ("math", "calculate", "equation", "matrix", "integral", "derivative", "probability"),
         "physics": ("physics", "force", "velocity", "energy", "momentum", "quantum"),
         "biology": ("biology", "cell", "gene", "protein", "organism", "ecosystem"),
@@ -318,6 +318,36 @@ class UniversalTaskInterpreter:
                 domain="programming",
                 required_outputs={"code": "string", "program_ir": "mapping"},
                 required_capability_tags=("program.calculator.synthesize",),
+                subtasks=(subtask,),
+                context={"tests": tests, "artifact_type": "python_source"},
+            )
+
+        if (
+            domain == "programming"
+            and re.search(r"\\b(build|create|make|write|implement)\\b", lower)
+            and re.search(r"\\b(sort|sorting)\\b", lower)
+        ):
+            tests = (
+                'assert bubble_sort([3, 1, 2]) == [1, 2, 3]\\n'
+                'assert bubble_sort([]) == []\\n'
+                'assert bubble_sort([5, 5, -1]) == [-1, 5, 5]\\n'
+                'assert bubble_sort([1]) == [1]\\n'
+            )
+            subtask = SubtaskSpec(
+                subtask_id="synthesize_bubble_sort",
+                goal="Construct a stable bubble-sort function from Mirror-native typed control-flow and sequence operators.",
+                domain="programming",
+                capability_tags=("program.sort.bubble.synthesize",),
+                capability_id="program.sort.bubble.synthesize",
+                output_schema={"code": "string", "program_ir": "mapping"},
+            )
+            return TaskSpec(
+                task_id=stable_id("task", {"request": text, "artifact": "native_bubble_sort"}),
+                request=text,
+                goal="Build an executable bubble-sort function for numeric sequences.",
+                domain="programming",
+                required_outputs={"code": "string", "program_ir": "mapping"},
+                required_capability_tags=("program.sort.bubble.synthesize",),
                 subtasks=(subtask,),
                 context={"tests": tests, "artifact_type": "python_source"},
             )
@@ -1112,6 +1142,15 @@ class UniversalIntelligenceEngine:
             ("program.calculator.synthesize", "program.construct", "program.ast"),
             lambda _values: program_synthesizer.build_calculator(),
         ))
+        definitions.append((
+            "program.sort.bubble.synthesize",
+            "Synthesize a bubble-sort function from Mirror-native loops, comparisons, and sequence operations",
+            "programming",
+            {},
+            {"code": "string", "program_ir": "mapping"},
+            ("program.sort.bubble.synthesize", "program.construct", "program.ast", "sequence", "control_flow"),
+            lambda _values: program_synthesizer.build_bubble_sort(),
+        ))
         for capability_id, name, domain, inputs, outputs, tags, handler in definitions:
             spec = CapabilitySpec(
                 capability_id=capability_id,
@@ -1142,6 +1181,7 @@ class UniversalIntelligenceEngine:
                     "sequence.sum": ({"items": [1, 2, 3]}, {"result": 6.0}),
                     "text.concatenate": ({"left": "mi", "right": "rror"}, {"result": "mirror"}),
                     "program.calculator.synthesize": ({}, None),
+                    "program.sort.bubble.synthesize": ({}, None),
                 }
                 probe, expected = probes[cid]
                 output = fn(probe)
@@ -1153,6 +1193,13 @@ class UniversalIntelligenceEngine:
                         and "def calculate" in output["code"]
                         and set(output.get("program_ir", {}).get("operations", ()))
                         == {"add", "subtract", "multiply", "divide"}
+                    )
+                if cid == "program.sort.bubble.synthesize":
+                    return (
+                        isinstance(output.get("code"), str)
+                        and "def bubble_sort" in output["code"]
+                        and "for " in output["code"]
+                        and "if " in output["code"]
                     )
                 return dict(output) == expected
             self.registry.register(spec, handler, self_test=self_test)
