@@ -51,16 +51,17 @@ Retrieval, storage, composition, execution, and response realization should be i
 1. Extracted shared response types, session memory, and compound-intent splitting. The disk vault now imports these shared primitives directly.
 2. Added a canonical blueprint contract and dependency graph, plus conservative legacy adapters.
 3. Centralized epistemic tier policy. Deterministic operations and test-passing synthesis can be exact; retrieval-only facts and factual chains cannot.
-4. Added focused regression tests for contract round-trips, evidence invariants, dependency resolution, module compatibility, and epistemic labeling.
+4. Added focused regression tests for contract round-trips, evidence invariants, dependency resolution, module compatibility, epistemic labeling, and the isolated backend query coordinator.
 
 ## Remaining migration plan
 
-1. **Storage boundary:** move SQLite schema, transactions, LRU and index persistence behind a repository interface.
-2. **Retrieval boundary:** implement a common candidate interface so memory and disk engines share matching and abstention policy.
-3. **Composition boundary:** replace implicit rule chaining with explicit dependencies, preconditions, and postconditions.
-4. **Execution boundary:** isolate deterministic formula interpreters and replace in-process code execution with an OS-level sandbox for untrusted programs.
-5. **Answer validation:** attach source/evidence pointers to factual claims or mark them as inference; add contradiction and freshness checks.
-6. **Evaluation:** add external, held-out, adversarial, multilingual and regression suites. Report accuracy, unsupported-answer rate, abstention quality, calibration and latency separately.
+1. **Backend facade:** move teaching/ingestion, memory, streamer, and session lifecycle into separate coordinators; the query path is now separated.
+2. **Storage boundary:** move SQLite schema, transactions, LRU and index persistence behind a repository interface.
+3. **Retrieval boundary:** implement a common candidate interface so memory and disk engines share matching and abstention policy.
+4. **Composition boundary:** replace implicit rule chaining with explicit dependencies, preconditions, and postconditions.
+5. **Execution boundary:** isolate deterministic formula interpreters and replace in-process code execution with an OS-level sandbox for untrusted programs.
+6. **Answer validation:** attach source/evidence pointers to factual claims or mark them as inference; add contradiction and freshness checks.
+7. **Evaluation:** add external, held-out, adversarial, multilingual and regression suites. Report accuracy, unsupported-answer rate, abstention quality, calibration and latency separately.
 
 ## Current capability boundary
 
