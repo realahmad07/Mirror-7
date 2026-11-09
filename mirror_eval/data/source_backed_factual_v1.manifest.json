@@ -3,7 +3,7 @@
   "version": 1,
   "split": "test",
   "dataset_file": "source_backed_factual_v1.jsonl",
-  "dataset_sha256": "PENDING",
+  "dataset_sha256": "81a74a95b2b4fb5def1506e6768b9aa11640b371d283eb527fa72c895613d483",
   "review_status": "pending_independent_review",
   "required_distinct_independent_reviewers_per_claim": 2,
   "required_distinct_independent_case_reviewers": 2,
