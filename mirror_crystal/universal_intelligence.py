@@ -9,6 +9,8 @@ from __future__ import annotations
 from dataclasses import asdict, replace
 from decimal import Decimal, InvalidOperation
 import hashlib
+import hmac
+import secrets
 import re
 from typing import Any, Callable, Mapping
 
@@ -767,8 +769,13 @@ class UniversalVerifier:
 class CapabilityLearningEngine:
     """Promote a reusable composition only after multi-seed, held-out and adversarial gates."""
 
-    def __init__(self, registry: CapabilityRegistry) -> None:
+    def __init__(
+        self,
+        registry: CapabilityRegistry,
+        gate_authorizer: Callable[[LearningGateReport], bool] | None = None,
+    ) -> None:
         self.registry = registry
+        self._gate_authorizer = gate_authorizer
 
     def promote(
         self,
@@ -778,10 +785,10 @@ class CapabilityLearningEngine:
         *,
         persist: Callable[[CapabilitySpec], Any] | None = None,
     ) -> CapabilitySpec:
-        if not gate.passed:
+        if self._gate_authorizer is None or not self._gate_authorizer(gate):
             raise CapabilityError(
-                "capability learning gate failed: requires >=3 passing cases, >=3 seeds, "
-                "held-out pass, adversarial pass, an independent verifier, and no failures"
+                "capability learning requires a Mirror-attested run of >=3 cases across "
+                ">=3 seeds, held-out and adversarial evaluations, and an independent verifier"
             )
         learned = replace(
             spec,
@@ -794,7 +801,11 @@ class CapabilityLearningEngine:
                 held_out_passed=True,
                 adversarial_passed=True,
                 seed_count=gate.seed_count,
-                details={"case_count": gate.cases_generated, "learning_gate": "v1"},
+                details={
+                    "case_count": gate.cases_generated,
+                    "learning_gate": "v2",
+                    "run_digest": gate.run_digest,
+                },
             ),
         )
         self.registry.register(learned, handler)
@@ -871,13 +882,145 @@ class UniversalIntelligenceEngine:
         self.planner = UniversalTaskPlanner(self.registry)
         self.executor = UniversalExecutionEngine(self.registry)
         self.verifier = verifier or UniversalVerifier()
-        self.learner = CapabilityLearningEngine(self.registry)
+        self._learning_gate_key = secrets.token_bytes(32)
+        self.learner = CapabilityLearningEngine(self.registry, self._is_learning_gate_attested)
         self.transfer = CrossDomainTransferEngine()
         self.curriculum = UniversalTaskCurriculum(self.registry)
         self.interpreter = UniversalTaskInterpreter()
         self._domain_adapters: set[str] = set()
         if install_primitives:
             self._install_primitives()
+
+    @staticmethod
+    def _learning_gate_payload(report: LearningGateReport) -> str:
+        payload = asdict(report)
+        payload.pop("attestation", None)
+        return canonical_json(payload)
+
+    def _sign_learning_gate(self, report: LearningGateReport) -> str:
+        return hmac.new(
+            self._learning_gate_key,
+            self._learning_gate_payload(report).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def _is_learning_gate_attested(self, report: LearningGateReport) -> bool:
+        if not isinstance(report, LearningGateReport) or not report.passed:
+            return False
+        expected = self._sign_learning_gate(report)
+        return hmac.compare_digest(report.attestation, expected)
+
+    def _require_learning_gate(self, report: LearningGateReport) -> None:
+        if not self._is_learning_gate_attested(report):
+            raise CapabilityError(
+                "learning gate is missing a valid Mirror run attestation; "
+                "construct it with evaluate_learning_gate() on this engine instance"
+            )
+
+    def evaluate_learning_gate(
+        self,
+        candidate: Any,
+        cases: tuple[Any, ...] | list[Any],
+        seeds: tuple[int, ...] | list[int],
+        held_out_cases: tuple[Any, ...] | list[Any],
+        adversarial_cases: tuple[Any, ...] | list[Any],
+        *,
+        independent_verifier: str,
+        candidate_runner: Callable[[Any, Any, int], Any],
+        independent_check: Callable[[Any, Any, Any, str], bool | tuple[bool, str]],
+    ) -> LearningGateReport:
+        """Run the candidate through base, held-out and adversarial cases, then attest outcomes.
+
+        candidate_runner(candidate, case, seed) executes the proposed capability.
+        independent_check(candidate, case, output, suite_name) independently judges
+        the result. Any exception, failed judgment, missing suite, or insufficient
+        seeds produces a non-promotable report.
+        """
+        if not callable(candidate_runner) or not callable(independent_check):
+            raise TypeError("candidate_runner and independent_check must be callable")
+        seed_values = tuple(sorted({int(seed) for seed in seeds}))
+        base_cases = tuple(cases)
+        held_cases = tuple(held_out_cases)
+        adversarial = tuple(adversarial_cases)
+        failures: list[str] = []
+        passed_count = 0
+        total_count = 0
+        held_out_passed = bool(held_cases) and bool(seed_values)
+        adversarial_passed = bool(adversarial) and bool(seed_values)
+        outcomes: list[dict[str, Any]] = []
+
+        def run_suite(name: str, suite: tuple[Any, ...]) -> bool:
+            suite_ok = bool(suite) and len(seed_values) >= 1
+            for case_index, case in enumerate(suite):
+                for seed in seed_values:
+                    try:
+                        output = candidate_runner(candidate, case, seed)
+                        verdict = independent_check(candidate, case, output, name)
+                        if isinstance(verdict, tuple):
+                            accepted = bool(verdict[0])
+                            detail = str(verdict[1]) if len(verdict) > 1 else ""
+                        else:
+                            accepted = bool(verdict)
+                            detail = ""
+                    except Exception as exc:
+                        accepted = False
+                        detail = type(exc).__name__
+                    outcomes.append({
+                        "suite": name,
+                        "case_index": case_index,
+                        "seed": seed,
+                        "passed": accepted,
+                        "detail": detail,
+                    })
+                    if not accepted:
+                        suite_ok = False
+                        failures.append(f"{name}:case_{case_index}:seed_{seed}:{detail or 'failed'}")
+                    if name == "base":
+                        nonlocal_passed[0] += int(accepted)
+                        nonlocal_total[0] += 1
+            return suite_ok
+
+        nonlocal_passed = [0]
+        nonlocal_total = [0]
+        base_ok = run_suite("base", base_cases) if len(seed_values) >= 3 else False
+        held_out_passed = run_suite("held_out", held_cases) if len(seed_values) >= 3 else False
+        adversarial_passed = run_suite("adversarial", adversarial) if len(seed_values) >= 3 else False
+        if len(base_cases) < 3:
+            failures.append("base_suite_requires_at_least_3_cases")
+        if len(seed_values) < 3:
+            failures.append("learning_gate_requires_at_least_3_seeds")
+        if not held_cases:
+            failures.append("held_out_suite_missing")
+        if not adversarial:
+            failures.append("adversarial_suite_missing")
+        if not independent_verifier.strip():
+            failures.append("independent_verifier_identity_missing")
+
+        run_digest = hashlib.sha256(
+            canonical_json({
+                "candidate": candidate if isinstance(candidate, (str, int, float, bool, dict, list, tuple, type(None))) else repr(candidate),
+                "base_cases": base_cases,
+                "held_out_cases": held_cases,
+                "adversarial_cases": adversarial,
+                "seeds": seed_values,
+                "outcomes": outcomes,
+                "independent_verifier": independent_verifier,
+            }).encode("utf-8")
+        ).hexdigest()
+        unsigned = LearningGateReport(
+            cases_generated=nonlocal_total[0],
+            cases_passed=nonlocal_passed[0],
+            seed_count=len(seed_values),
+            held_out_passed=held_out_passed,
+            adversarial_passed=adversarial_passed,
+            independent_verifier=str(independent_verifier),
+            failures=tuple(failures),
+            run_digest=run_digest,
+            attestation="",
+        )
+        signed = replace(unsigned, attestation=self._sign_learning_gate(unsigned))
+        # A signed failed report stays failed; attestation proves execution, not success.
+        return signed
 
     @staticmethod
     def _numeric(value: Any) -> Decimal:
@@ -1201,8 +1344,7 @@ class UniversalIntelligenceEngine:
             raise TypeError("task must be TaskSpec or a mapping")
         if result.get("verified") is not True or result.get("status") != "verified":
             raise CapabilityError("only independently verified compositions can be proposed for learning")
-        if not gate.passed:
-            raise CapabilityError("learning gate has not passed")
+        self._require_learning_gate(gate)
         plan_data = result.get("plan") or {}
         plan_steps = plan_data.get("steps") or []
         if not plan_steps:
@@ -1314,9 +1456,8 @@ class UniversalIntelligenceEngine:
         source = self.registry.get(source_id)
         if source is None or self.registry.handler(source_id) is None:
             raise CapabilityError("source executor is unavailable for transfer retesting")
-        # Reuse is permitted only after all target-domain gates pass; evidence is newly earned.
-        if not gate.passed:
-            raise CapabilityError("target-domain transfer verification gate failed")
+        # Reuse is permitted only after this engine has executed the target-domain gate.
+        self._require_learning_gate(gate)
         promoted = replace(
             proposal,
             evidence=EvidenceRecord(
