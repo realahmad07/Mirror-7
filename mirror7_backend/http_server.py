@@ -318,6 +318,14 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 self._send(200, res)
                 return
 
+            if parts == ["api", "universal", "solve"]:
+                task = payload.get("task")
+                if task is None:
+                    task = str(payload.get("prompt", ""))
+                res = service.universal_solve(task)
+                self._send(200, res)
+                return
+
             if parts == ["api", "tdd", "synthesize"]:
                 code = str(payload.get("code", "") or payload.get("candidate_code", ""))
                 spec = str(payload.get("spec", "") or payload.get("spec_desc", ""))
