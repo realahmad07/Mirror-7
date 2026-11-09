@@ -176,6 +176,10 @@ class BackendService:
         from mirror_crystal.universal_representation import canonical_json
         if not capability.evidence.independently_reproduced:
             raise ValueError("only independently reproduced capabilities may be persisted")
+        if not self.universal_intelligence._verify_persisted_capability(capability):
+            raise ValueError(
+                "capability persistence requires a valid MIRROR_CAPABILITY_ATTESTATION_KEY signature"
+            )
         payload = canonical_json(capability.to_dict())
         prompt = capability.name
         blueprint = Blueprint(
