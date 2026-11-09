@@ -27,6 +27,7 @@ class UnifiedCognitiveOrchestrator:
         math_confidence_threshold: float = 0.80,
         code_generation_provider: Callable[[str], Any] | None = None,
         synthesis_provider: Callable[[dict[str, Any]], Any] | None = None,
+        universal_intelligence_provider: Callable[[], Any] | None = None,
     ) -> None:
         if not 0.0 <= math_confidence_threshold <= 1.0:
             raise ValueError("math_confidence_threshold must be between 0 and 1")
@@ -36,6 +37,7 @@ class UnifiedCognitiveOrchestrator:
         self._code_provider = code_provider
         self._code_generation_provider = code_generation_provider
         self._synthesis_provider = synthesis_provider
+        self._universal_intelligence_provider = universal_intelligence_provider
         self.metrics = metrics
         self.math_confidence_threshold = math_confidence_threshold
         self.synthesizer = EvidenceSynthesisEngine()
@@ -147,6 +149,7 @@ class UnifiedCognitiveOrchestrator:
         spec_desc: str = "",
         explicit_tests: str = "",
         consent_log: bool = False,
+        universal_options: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         if not isinstance(prompt, str) or not prompt.strip():
             raise ValueError("prompt must be a non-empty string")
@@ -159,6 +162,7 @@ class UnifiedCognitiveOrchestrator:
         generated_code = None
         code_generation = None
         code_verification = None
+        universal_report = None
 
         try:
             memory = self._memory_provider()
@@ -193,6 +197,16 @@ class UnifiedCognitiveOrchestrator:
                     ))
         except Exception as exc:
             errors.append({"source": "crystal_knowledge", "error": type(exc).__name__})
+
+        if self._universal_intelligence_provider is not None:
+            try:
+                universal_pipeline = self._universal_intelligence_provider()
+                if universal_pipeline is not None:
+                    options = dict(universal_options or {})
+                    universal_report = universal_pipeline.analyze(prompt, **options)
+                    sources_consulted.append("universal_intelligence")
+            except Exception as exc:
+                errors.append({"source": "universal_intelligence", "error": type(exc).__name__})
 
         if self._is_math_query(prompt):
             try:
@@ -329,6 +343,7 @@ class UnifiedCognitiveOrchestrator:
             "generated_code": generated_code,
             "code_generation": code_generation,
             "code_verification": code_verification,
+            "universal_intelligence": universal_report,
             "conflict": conflict,
             "errors": errors,
             "can_teach": abstained,
