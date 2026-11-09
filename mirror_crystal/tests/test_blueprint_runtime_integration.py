@@ -163,3 +163,22 @@ def test_ast_gate_still_blocks_unsafe_imports():
     ok, message = ZeroTrustSandboxJudge.verify_code_and_test("import os\nprint('x')")
     assert not ok
     assert "Blocked import" in message
+
+
+def test_child_sandbox_accepts_typed_helper_and_generator_expression():
+    from mirror_crystal import ZeroTrustSandboxJudge
+
+    code = """def is_prime(n: int) -> bool:
+    if n < 2:
+        return False
+    for k in range(2, int(n ** 0.5) + 1):
+        if n % k == 0:
+            return False
+    return True
+
+def digit_sum(n: int) -> int:
+    return sum(int(ch) for ch in str(abs(n)))
+"""
+    checks = "assert is_prime(2) and is_prime(13) and not is_prime(9)\nassert digit_sum(29) == 11"
+    ok, message = ZeroTrustSandboxJudge.verify_code_and_test(code, test_code=checks)
+    assert ok, message
