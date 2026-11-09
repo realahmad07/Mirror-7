@@ -11,7 +11,7 @@ from mirror_crystal.blueprint_contracts import VerificationEvidence
 
 
 def _claim_evidence(blueprint_id: str, reviewer_id: str) -> ClaimEvidence:
-    quote = "The 404 status code means the origin server did not find a current representation for the target resource."
+    quote = "The 404 (Not Found) status code indicates that the origin server did not find a current representation for the target resource"
     return ClaimEvidence(
         blueprint_id=blueprint_id,
         claim_id="http-404-core",
@@ -20,7 +20,7 @@ def _claim_evidence(blueprint_id: str, reviewer_id: str) -> ClaimEvidence:
         source_url="https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.5",
         source_locator="RFC 9110, Section 15.5.5",
         source_quote=quote,
-        source_excerpt_sha256=sha256(quote.encode()).hexdigest(),
+        source_excerpt_sha256="94d738e5a1212d798bf3fc3161c95f26f996997e6d993d9037c6c347f68c24e9",
         source_retrieved_at="2026-11-09T12:00:00+05:00",
         license_spdx="NOASSERTION",
         reviewer_id=reviewer_id,
