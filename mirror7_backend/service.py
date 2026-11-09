@@ -187,7 +187,9 @@ class BackendService:
             intent="universal_capability.v1",
             prompt_pattern=prompt,
             response_template=payload,
-            dependencies=tuple(capability.dependencies),
+            # Executable capability dependencies live in the typed CapabilitySpec payload.
+            # Canonical blueprint dependencies must reference blueprint ids, so avoid dangling ids.
+            dependencies=(),
             provenance=BlueprintProvenance(
                 source="mirror_universal_capability_learning",
                 source_ref=capability.capability_id,
