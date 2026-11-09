@@ -627,3 +627,44 @@ def test_retrieved_legacy_knowledge_is_exposed_as_context_not_promoted_to_capabi
     assert result["retrieved_knowledge"][0]["node_id"] == "legacy:cell_context"
     assert result["retrieved_knowledge"][0]["verification_level"] == "unverified"
     assert engine.registry.handler("legacy:cell_context") is None
+
+
+def test_persisted_capability_signature_detects_tampering_and_wrong_key(monkeypatch):
+    monkeypatch.setenv("MIRROR_CAPABILITY_ATTESTATION_KEY", "mirror-test-persistent-capability-key-2026")
+    engine = UniversalIntelligenceEngine()
+    task = TaskSpec(
+        task_id="persist:sum-signed",
+        request="Add inputs",
+        goal="Add two numbers",
+        domain="mathematics",
+        inputs={"left": 4, "right": 8},
+        input_schema={"left": "number", "right": "number"},
+        required_outputs={"result": "number"},
+        required_capability_tags=("numeric.add",),
+        subtasks=(
+            SubtaskSpec(
+                "sum", "Add left and right", "mathematics",
+                ("numeric.add",), "numeric.add",
+                {"left": "input:left", "right": "input:right"},
+                {"result": "number"},
+            ),
+        ),
+    )
+    result = engine.solve(task)
+    learned = engine.promote_verified_composition(
+        task,
+        result,
+        strict_gate(engine, engine.composition_learning_candidate(result)),
+        persist=lambda _spec: None,
+    )
+    assert engine._verify_persisted_capability(learned) is True
+
+    details = dict(learned.evidence.details)
+    details["capability_attestation"] = "0" * 64
+    tampered = replace(learned, evidence=replace(learned.evidence, details=details))
+    assert engine._verify_persisted_capability(tampered) is False
+
+    monkeypatch.setenv("MIRROR_CAPABILITY_ATTESTATION_KEY", "another-test-persistent-capability-key")
+    other_engine = UniversalIntelligenceEngine()
+    assert other_engine._verify_persisted_capability(learned) is False
+    assert other_engine._build_handler_from_implementation(learned) is None
