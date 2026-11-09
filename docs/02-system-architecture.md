@@ -30,9 +30,10 @@ Mirror now has a domain-neutral representation and capability engine under
 | Transfer Engine | Copies capability structure to a new domain without copying its proof; target-domain re-verification is required. |
 
 The first native operators cover arithmetic, comparisons, boolean logic, sequences,
-and text. Native Python calculator synthesis builds Python AST from typed ProgramIR
-and sends it to Mirror's existing TDD sandbox. This path does not require an
-external code-generation model.
+and text. Native Python synthesis builds calculator and bubble-sort programs from
+typed ProgramIR (including comparisons, assignments, conditionals, and bounded
+loops), emits Python AST, and sends the result to Mirror's existing TDD sandbox.
+This path does not require an external code-generation model.
 
 Legacy blueprints are indexed as knowledge but do not become executors
 automatically. Unknown or unsupported tasks return an explicit capability gap.
