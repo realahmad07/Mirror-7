@@ -12,6 +12,34 @@
 | Training | Learned model experiments and dataset tooling. |
 | UI | External presentation layer, intentionally decoupled. |
 
+## Universal compositional intelligence
+
+Mirror now has a domain-neutral representation and capability engine under
+`mirror_crystal/universal_representation.py` and
+`mirror_crystal/universal_intelligence.py`.
+
+| Shared component | Responsibility |
+|---|---|
+| Universal Representation | Typed facts, rules, constraints, formulas, procedures, capabilities, observations, evidence, goals, and artifacts with provenance. |
+| Task Interpreter | Converts recognized requests or domain-adapter output into a versioned TaskSpec. |
+| Capability Registry | Separates searchable knowledge from trusted executable capabilities. |
+| Task Planner | Builds dependency-ordered task graphs and matches typed capability contracts. |
+| Execution Engine | Binds inputs and prior outputs, validates types, and invokes local Mirror operators. |
+| Universal Verifier | Enforces output schemas/acceptance criteria and invokes domain-specific independent verification. |
+| Learning Engine | Promotes replayable compositions only after multi-seed, held-out, adversarial independent evaluation. |
+| Transfer Engine | Copies capability structure to a new domain without copying its proof; target-domain re-verification is required. |
+
+The first native operators cover arithmetic, comparisons, boolean logic, sequences,
+and text. Native Python calculator synthesis builds Python AST from typed ProgramIR
+and sends it to Mirror's existing TDD sandbox. This path does not require an
+external code-generation model.
+
+Legacy blueprints are indexed as knowledge but do not become executors
+automatically. Unknown or unsupported tasks return an explicit capability gap.
+
+See [Universal Compositional Intelligence](./18-universal-compositional-intelligence.md)
+for the contracts, runtime flow, API, tests, and current scope.
+
 ## Backend orchestration
 
 mirror7_backend/service.py is the main backend facade.
