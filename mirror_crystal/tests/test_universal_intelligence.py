@@ -398,3 +398,29 @@ def test_natural_language_calculator_request_uses_mirror_native_ast_and_tdd():
     assert "program.calculator.synthesize" in [
         step["capability_id"] for step in result["executions"]
     ]
+
+
+def test_generic_domain_execution_without_acceptance_criteria_is_not_verified():
+    engine = UniversalIntelligenceEngine()
+    task = TaskSpec(
+        task_id="unverified-general",
+        request="Do something",
+        goal="Use a general primitive",
+        domain="general",
+        inputs={"left": True, "right": False},
+        subtasks=(
+            SubtaskSpec(
+                subtask_id="and",
+                goal="Conjoin booleans",
+                domain="general",
+                capability_tags=("logic.and",),
+                capability_id="logic.and",
+                input_bindings={"left": "input:left", "right": "input:right"},
+                output_schema={"result": "boolean"},
+            ),
+        ),
+    )
+    result = engine.solve(task)
+    assert result["status"] == "verification_failed"
+    assert result["verified"] is False
+    assert "generic_verification_requires_acceptance_criteria" in result["verification"]["checks_failed"]
