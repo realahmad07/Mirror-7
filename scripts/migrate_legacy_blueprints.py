@@ -30,6 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--vault", required=True, type=Path, help="Path to an existing .dcrystal SQLite vault")
     parser.add_argument("--page-size", type=int, default=500)
+    parser.add_argument("--backup-path", type=Path, help="Optional backup path (default: <vault>.pre-blueprint-migration.bak)")
     parser.add_argument("--apply", action="store_true", help="Apply the additive migration (default: dry-run)")
     parser.add_argument("--review-manifest", type=Path, help="JSONL of independently reviewed ClaimEvidence records")
     parser.add_argument(
@@ -50,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.apply:
         # Use SQLite read-only URI so even opening a legacy vault cannot run schema migrations.
-        uri = f"file:{args.vault.resolve().as_posix()}?mode=ro"
+        uri = args.vault.resolve().as_uri() + "?mode=ro"
         with sqlite3.connect(uri, uri=True) as read_only:
             tables = {row[0] for row in read_only.execute(
                 "SELECT name FROM sqlite_master WHERE type='table'"
@@ -74,8 +75,23 @@ def main(argv: list[str] | None = None) -> int:
         }, indent=2))
         return 0
 
+    backup_path = args.backup_path or Path(str(args.vault) + ".pre-blueprint-migration.bak")
+    if backup_path.exists():
+        parser.error(f"backup already exists; choose another --backup-path: {backup_path}")
+    backup_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with sqlite3.connect(f"file:{args.vault.resolve().as_posix()}?mode=ro", uri=True) as source_conn:
+            with sqlite3.connect(backup_path) as backup_conn:
+                source_conn.backup(backup_conn)
+                check = backup_conn.execute("PRAGMA integrity_check").fetchone()
+                if not check or check[0] != "ok":
+                    raise RuntimeError(f"backup integrity check failed: {check}")
+    except Exception as exc:
+        parser.error(f"could not create a verified pre-migration backup: {exc}")
+
     vault = DiskCrystalVault(args.vault)
     try:
+        original_rule_count = vault.rule_count()
         cursor = -1
         migrated = 0
         scanned = 0
@@ -107,14 +123,27 @@ def main(argv: list[str] | None = None) -> int:
                     pending[blueprint_id] = str(exc)
 
         vault.optimize_disk()
+        final_rule_count = vault.rule_count()
+        integrity = vault.conn.execute("PRAGMA integrity_check").fetchone()
+        if final_rule_count != original_rule_count:
+            raise RuntimeError(
+                f"legacy rule count changed during migration: {original_rule_count} -> {final_rule_count}"
+            )
+        if not integrity or integrity[0] != "ok":
+            raise RuntimeError(f"vault integrity check failed after migration: {integrity}")
+        total_blueprints = int(vault.conn.execute("SELECT COUNT(*) FROM blueprints").fetchone()[0])
         print(json.dumps({
             "mode": "applied",
+            "backup_path": str(backup_path),
             "legacy_rules_scanned": scanned,
             "canonical_blueprints_added": migrated,
             "claim_review_records_stored": evidence_stored,
             "independently_reviewed_blueprints_promoted": promoted,
             "pending_blueprints": pending,
-            "total_blueprints": len(vault.list_blueprints(limit=10000)),
+            "total_blueprints": total_blueprints,
+            "legacy_rule_count_before": original_rule_count,
+            "legacy_rule_count_after": final_rule_count,
+            "sqlite_integrity_check": integrity[0],
             "legacy_rules_preserved": True,
         }, indent=2))
         return 0
