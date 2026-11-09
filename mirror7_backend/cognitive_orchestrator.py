@@ -242,19 +242,30 @@ class UnifiedCognitiveOrchestrator:
             except Exception as exc:
                 errors.append({"source": "reasoning", "error": type(exc).__name__})
 
-        should_generate_code = candidate_code is None and self._is_code_request(prompt)
-        if should_generate_code:
+        generation_metadata: dict[str, Any] = {}
+        generation_needs_input = None
+        if candidate_code is None and self._is_code_request(prompt):
             if self._code_generation_provider is not None:
                 try:
                     sources_consulted.append("code_generation")
                     generated = self._code_generation_provider(prompt)
                     if isinstance(generated, Mapping):
+                        generation_metadata = dict(generated)
                         generated_code = generated.get("code") or generated.get("final_code")
                     else:
                         generated_code = generated
                     if generated_code is not None:
                         generated_code = str(generated_code).strip()
-                    code_generation = {"available": True, "generated": bool(generated_code)}
+                    generation_needs_input = generation_metadata.get("needs_input")
+                    code_generation = {
+                        "available": True,
+                        "generated": bool(generated_code),
+                        "generation_kind": generation_metadata.get("generation_kind"),
+                    }
+                    if generation_needs_input:
+                        code_generation["needs_input"] = str(generation_needs_input)
+                    if not generated_code and generation_metadata.get("reason"):
+                        code_generation["reason"] = str(generation_metadata["reason"])
                 except Exception as exc:
                     errors.append({"source": "code_generation", "error": type(exc).__name__})
                     code_generation = {"available": True, "generated": False}
@@ -267,8 +278,8 @@ class UnifiedCognitiveOrchestrator:
                 sources_consulted.append("code_verification")
                 raw_report = self._code_provider().run_tdd_cycle(
                     str(code_to_test),
-                    spec_desc=spec_desc,
-                    explicit_tests=explicit_tests,
+                    spec_desc=spec_desc or str(generation_metadata.get("spec_desc") or ""),
+                    explicit_tests=explicit_tests or str(generation_metadata.get("tests") or ""),
                 )
                 code_verification = self._code_report_dict(raw_report)
             except Exception as exc:
@@ -283,7 +294,27 @@ class UnifiedCognitiveOrchestrator:
         )
         conflict = bool(synthesis["conflict"])
         verified_answer = bool(synthesis["verified"] and synthesis["answer"] and not conflict)
-        abstained = not verified_answer
+        universal_execution = (
+            universal_report.get("execution", {})
+            if isinstance(universal_report, Mapping) else {}
+        )
+        task_execution_verified = bool(
+            isinstance(universal_execution, Mapping)
+            and universal_execution.get("status") == "succeeded"
+            and universal_execution.get("verified") is True
+            and universal_execution.get("verification", {}).get("verified") is True
+        )
+        task_code_verified = bool(
+            generated_code
+            and code_verification
+            and code_verification.get("verified") is True
+            and int(code_verification.get("tests_generated", 0) or 0) > 0
+            and int(code_verification.get("tests_passed", 0) or 0)
+                == int(code_verification.get("tests_generated", 0) or 0)
+        )
+        task_result_verified = task_execution_verified or task_code_verified
+        clarification_required = bool(generation_needs_input)
+        abstained = not (verified_answer or task_result_verified or clarification_required)
         candidate = max(
             evidence + computed_candidates,
             key=lambda item: item["confidence"],
@@ -302,36 +333,71 @@ class UnifiedCognitiveOrchestrator:
             except Exception:
                 pass
 
+        if conflict:
+            final_answer = "Conflicting verified claims; Mirror abstains."
+            qualification = "conflicting_evidence"
+        elif verified_answer:
+            final_answer = synthesis["answer"]
+            qualification = "verified"
+        elif task_code_verified:
+            final_code = str(code_verification.get("final_code") or generated_code)
+            final_answer = (
+                "Generated and tested Python code:\n\n"
+                + "\`\`\`python\n" + final_code + "\n\`\`\`"
+            )
+            qualification = "verified_task_result"
+        elif task_execution_verified:
+            final_answer = (
+                "The requested task was completed and independently verified. "
+                "Verified outputs: " + repr(universal_execution.get("verified_outputs", {}))
+            )
+            qualification = "verified_task_result"
+        elif clarification_required:
+            final_answer = str(generation_needs_input)
+            qualification = "clarification_required"
+        elif code_generation and code_generation.get("available") and not code_generation.get("generated"):
+            final_answer = str(
+                code_generation.get("reason")
+                or "Mirror's native code writer does not support this request yet."
+            )
+            qualification = "unsupported_task"
+        elif candidate:
+            final_answer = (
+                "UNVERIFIED CANDIDATE — not independently verified.\n\n"
+                + candidate["answer"]
+            )
+            qualification = "unverified_candidate"
+        else:
+            final_answer = "Insufficient independently verified evidence."
+            qualification = "no_candidate"
+
         return {
-            "answer": (
-                "Conflicting verified claims; Mirror abstains."
-                if conflict else (
-                    synthesis["answer"] if verified_answer
-                    else (
-                        "UNVERIFIED CANDIDATE — not independently verified.\\n\\n"
-                        + candidate["answer"]
-                        if candidate else "Insufficient independently verified evidence."
-                    )
-                )
-            ),
-            "answer_qualification": (
-                "verified" if verified_answer else (
-                    "conflicting_evidence" if conflict else (
-                        "unverified_candidate" if candidate else "no_candidate"
-                    )
-                )
-            ),
+            "answer": final_answer,
+            "answer_qualification": qualification,
             "confidence": 0.0 if abstained else min(
                 (item["confidence"] for item in evidence if item["verified"]),
                 default=0.0,
             ),
-            "mode": "unified_claim_synthesis",
-            "epistemic_tier": "conflicting_verified_evidence" if conflict else (
-                "verified_claim_synthesis" if verified_answer else "honest_abstain"
+            "mode": "unified_task_and_claim_synthesis",
+            "epistemic_tier": (
+                "conflicting_verified_evidence" if conflict else (
+                    "verified_claim_synthesis" if verified_answer else (
+                        "verified_task_result" if task_result_verified else "honest_abstain"
+                    )
+                )
             ),
             "verified": verified_answer,
+            "task_result_verified": task_result_verified,
+            "task_code_verified": task_code_verified,
+            "task_execution_verified": task_execution_verified,
             "abstained": abstained,
-            "verification_status": "verified" if verified_answer else "not_independently_verified",
+            "verification_status": (
+                "verified" if verified_answer else (
+                    "task_verified" if task_result_verified else (
+                        "clarification_required" if clarification_required else "not_independently_verified"
+                    )
+                )
+            ),
             "candidate_answer": candidate["answer"] if candidate else None,
             "candidate_source": candidate["source"] if candidate else None,
             "memory_context": memory_context,
@@ -344,6 +410,7 @@ class UnifiedCognitiveOrchestrator:
             "code_generation": code_generation,
             "code_verification": code_verification,
             "universal_intelligence": universal_report,
+            "task_execution": universal_execution,
             "conflict": conflict,
             "errors": errors,
             "can_teach": abstained,
