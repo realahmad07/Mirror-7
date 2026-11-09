@@ -35,7 +35,9 @@
     "source_supported_method_candidates": 26,
     "family_count": 320,
     "context_count": 32,
-    "evidence": "canonical unverified; proposed tests not executed"
+    "evidence": "canonical unverified; proposed tests not executed",
+    "bytes": 2630000,
+    "sha256": "5b6e6f940f6d3fa09e4fb3f9b8292a31b3be1aeb965dc137fab53a8e340a6f14"
   },
   "uploaded_content": {
     "triplets": {
