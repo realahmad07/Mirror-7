@@ -204,3 +204,29 @@ def test_aead_cipher_uses_random_nonces_and_detects_tampering():
     tampered = payload[:-2] + ("AA" if payload[-2:] != "AA" else "BB")
     with pytest.raises(Exception):
         StdlibCipher.decrypt(prefix + ":" + tampered, key)
+
+
+def test_nested_credentials_are_scrubbed_from_auxiliary_json(tmp_path):
+    import json
+    from mirror_crystal.cross_session_memory import CrossSessionMemoryGraph
+
+    mem = CrossSessionMemoryGraph(tmp_path / "nested-secrets.sqlite")
+    try:
+        secret = "sk-" + ("Z" * 36)
+        mem.remember(
+            "session",
+            "general_config",
+            {"api_key": secret, "service": {"name": "mirror"}},
+            entity_type="general",
+        )
+        row = mem._conn.execute(
+            "SELECT value_text, value_json FROM memory_entities "
+            "WHERE session_id = 'session' AND entity_key = 'general_config'"
+        ).fetchone()
+        assert secret not in row[0]
+        assert secret not in row[1]
+        parsed = json.loads(row[1])
+        assert parsed["api_key"] == "[REDACTED_SECRET]"
+        assert parsed["service"]["name"] == "mirror"
+    finally:
+        mem.close()
