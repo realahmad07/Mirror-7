@@ -40,8 +40,9 @@ The universal request path does not call an external code-generation model or
 provider. It uses Mirror's typed `ProgramIR`, native Python AST construction,
 local capability composition, and existing TDD sandbox.
 
-The first shipped construction path is a calculator composed from typed
-addition, subtraction, multiplication, and division operators. Generated code is
+The first shipped construction paths are a calculator composed from typed
+arithmetic dispatch and a bubble-sort function composed from local sequence,
+comparison, assignment, conditional, and loop operators. Generated code is
 compiled and tested with non-vacuous assertions before it is returned as a
 verified execution artifact. The TDD sandbox remains the execution boundary.
 
@@ -52,9 +53,10 @@ instead of silently falling back to an external model. The old injected
 `code_generation_provider` dependency has been removed from the cognitive and
 backend generation path.
 
-The first ProgramIR is deliberately limited. Loops, classes, data structures,
-multi-file projects, and broader native constructs require additional typed IR
-nodes, composition rules, and independent tests. Passing the current calculator
+The first ProgramIR supports expressions, assignments, conditionals, bounded
+range loops and sequence operations. Classes, dictionaries, general while-loops,
+recursion, modules/packages, multi-file projects and broader native constructs
+require additional typed IR nodes, composition rules and independent tests. Passing the current calculator
 tests does not establish general-purpose code-generation ability.
 
 ## 4. Memory encryption and API boundary
