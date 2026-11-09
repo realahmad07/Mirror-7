@@ -203,7 +203,8 @@ def unsafe_backdoor():
 
     r_fn = eng.respond("Write Python function cube_plus_two: Compute x cubed plus two.")
     assert "x ** 3 + 2" in r_fn.answer
-    assert r_fn.epistemic_tier == "verified_exact"
+    # Code execution is evidence within this bounded check, not a formal proof.
+    assert r_fn.epistemic_tier == "high_confidence"
 
 
 def test_p5_9_pure_stdlib_png_and_wav_sensory_roundtrip_invariance(tmp_path: Path) -> None:

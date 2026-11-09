@@ -4,7 +4,6 @@ Streams .jsonl, .txt, .md, and .py files in 1 pass on CPU with < 1 ms query late
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
 import re
@@ -31,21 +30,6 @@ from .slot_abstractor import SlotAbstractor
 from .intent import split_compound_intents
 from .response_types import CrystalResponse
 from .session_memory import BinarySessionMemory
-
-
-@dataclass(frozen=True)
-class CrystalResponse:
-    answer: str
-    confidence: float
-    mode: str
-    matched_rule_id: int | None
-    latency_ms: float
-    sandbox_verified: bool
-    reasoning_trace: list[str]
-    epistemic_tier: str = "high_confidence"
-
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
 
 
 class MirrorCrystalEngine:

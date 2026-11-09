@@ -29,6 +29,10 @@ class EpistemicTierPolicy:
         if mode in cls.EXACT_MODES:
             return "verified_exact"
         if mode in cls.RETRIEVAL_ONLY_MODES:
+            # Executed code/template output can earn high confidence, but a retrieved
+            # factual statement or chained assertion still cannot become a proof.
+            if mode in {"direct_crystal_lock", "slot_template_lock"} and sandbox_verified:
+                return "high_confidence"
             return "moderate_confidence"
         if sandbox_verified or (score >= 0.58 and coverage >= 0.70):
             return "high_confidence"
