@@ -655,7 +655,35 @@ class UniversalVerifier:
             domain_name = "generic_contract"
         else:
             domain_name = task.domain
-        passed, checks_passed, checks_failed = domain_verifier(task, plan, executions, outputs)
+        domain_passed, domain_checks_passed, domain_checks_failed = domain_verifier(
+            task, plan, executions, outputs
+        )
+
+        # Mandatory output contracts and acceptance criteria cannot be bypassed by
+        # a domain adapter. The adapter adds an independent check; it never replaces
+        # the shared type/contract gate.
+        contract_passed: list[str] = []
+        contract_failed: list[str] = []
+        final_values = outputs.get("final", {})
+        for name, expected_type in task.required_outputs.items():
+            if name not in final_values:
+                contract_failed.append(f"required_output_missing:{name}")
+            elif not value_matches_type(final_values[name], expected_type):
+                contract_failed.append(f"required_output_wrong_type:{name}:{expected_type}")
+            else:
+                contract_passed.append(f"required_output_type:{name}:{expected_type}")
+        all_criteria = task.acceptance_criteria + tuple(
+            criterion
+            for subtask in task.subtasks
+            for criterion in subtask.acceptance_criteria
+        )
+        criterion_passed, criterion_failed = self._check_criteria(all_criteria, outputs)
+        contract_passed.extend(criterion_passed)
+        contract_failed.extend(criterion_failed)
+
+        passed = domain_passed and not contract_failed
+        checks_passed = tuple(contract_passed) + tuple(domain_checks_passed)
+        checks_failed = tuple(contract_failed) + tuple(domain_checks_failed)
         level = (
             VerificationLevel.FORMALLY_VERIFIED
             if passed and domain_name == "mathematics"
