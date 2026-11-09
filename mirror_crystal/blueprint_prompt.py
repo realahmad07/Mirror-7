@@ -20,11 +20,11 @@ def blueprint_prompt_fields(pattern: str) -> tuple[str, str]:
     key = normalize_blueprint_text(pattern)
     literal_prefix = _SLOT_RE.split(str(pattern), maxsplit=1)[0]
     prefix_tokens = normalize_blueprint_text(literal_prefix).split()
-    return key, " ".join(prefix_tokens[:2])
+    return key, " ".join(prefix_tokens[:1])
 
 
 def blueprint_query_prefix(prompt: str) -> str:
-    return " ".join(normalize_blueprint_text(prompt).split()[:2])
+    return " ".join(normalize_blueprint_text(prompt).split()[:1])
 
 
 def match_blueprint_prompt(pattern: str, prompt: str) -> dict[str, Any] | None:
