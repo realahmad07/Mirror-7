@@ -1,31 +1,40 @@
-import tempfile
-import shutil
-import pytest
 from pathlib import Path
 
 from mirror_crystal.disk_vault import DiskCrystalVault
 from mirror7_backend.service import BackendService
 
 
-def test_bottleneck_fixes():
-    temp_dir = tempfile.mkdtemp()
-    try:
-        vault_path = Path(temp_dir) / "test.dcrystal"
-        shutil.copy2("artifacts/mirror_crystal_all_datasets.dcrystal", vault_path)
+def _seed_test_vault(vault: DiskCrystalVault) -> None:
+    # A tiny deterministic fixture replaces the workstation-only production vault.
+    assert vault.ingest_pair(
+        "What is SQLite write-ahead logging?",
+        "SQLite WAL records changes before applying them to the main database file.",
+        domain="systems",
+    )
+    assert vault.ingest_pair(
+        "What is a deterministic blueprint rule?",
+        "A deterministic blueprint rule maps a defined input condition to a reproducible output.",
+        domain="general",
+    )
 
-        vault = DiskCrystalVault(vault_path, lru_rule_cache_size=4096)
+
+def test_bottleneck_fixes(tmp_path: Path):
+    vault_path = tmp_path / "test.dcrystal"
+    vault = DiskCrystalVault(vault_path, lru_rule_cache_size=4096)
+    try:
+        _seed_test_vault(vault)
 
         # 1. Test Rule Cache Size
         assert vault.lru_rule_cache_size == 4096
 
         # 2. Test Feedback API (upvote / downvote)
-        r = vault.get_rule(1)
-        if r is not None:
-            pc, fc = r.pass_count, r.fail_count
-            res_up = vault.record_feedback(1, is_positive=True)
-            assert res_up["pass_count"] == pc + 1
-            res_down = vault.record_feedback(1, is_positive=False)
-            assert res_down["fail_count"] == fc + 1
+        rule = vault.get_rule(1)
+        assert rule is not None
+        pass_count, fail_count = rule.pass_count, rule.fail_count
+        res_up = vault.record_feedback(1, is_positive=True)
+        assert res_up["pass_count"] == pass_count + 1
+        res_down = vault.record_feedback(1, is_positive=False)
+        assert res_down["fail_count"] == fail_count + 1
 
         # 3. Test Coverage Gaps on abstention
         res_abs = vault.respond("Who won the 2045 lunar marathon championship?")
@@ -39,7 +48,7 @@ def test_bottleneck_fixes():
         r1_added = vault.ingest_pair(
             "Who wrote the novel Pride and Prejudice?",
             "Jane Austen wrote Pride and Prejudice, published in 1813.",
-            domain="literature"
+            domain="literature",
         )
         assert r1_added is True
         count1 = vault.rule_count()
@@ -48,7 +57,7 @@ def test_bottleneck_fixes():
         r2_added = vault.ingest_pair(
             "Which author wrote the novel Pride and Prejudice?",
             "Jane Austen wrote Pride and Prejudice, published in 1813.",
-            domain="literature"
+            domain="literature",
         )
         assert r2_added is False  # Folded as synonym bridge!
         assert vault.rule_count() == count1
@@ -61,15 +70,19 @@ def test_bottleneck_fixes():
         c_res = vault.compact()
         assert "bytes_reclaimed" in c_res
         assert c_res["mb_after"] <= c_res["mb_before"]
-
-        vault.close()
     finally:
-        shutil.rmtree(temp_dir, ignore_errors=True)
+        vault.close()
 
 
-def test_service_readiness_and_warmup():
-    svc = BackendService(enable_crystal_auto_load=True)
-    warm_res = svc.warmup()
-    assert warm_res["ready"] is True
-    assert svc.is_ready is True
-    assert svc.warmup_ms > 0
+def test_service_readiness_and_warmup(tmp_path: Path):
+    vault = DiskCrystalVault(tmp_path / "warmup.dcrystal")
+    try:
+        _seed_test_vault(vault)
+        svc = BackendService(crystal_vault=vault, enable_crystal_auto_load=False)
+        warm_res = svc.warmup()
+        assert warm_res["ready"] is True
+        assert svc.is_ready is True
+        assert svc.warmup_ms > 0
+        assert warm_res["rules"] == 2
+    finally:
+        vault.close()
