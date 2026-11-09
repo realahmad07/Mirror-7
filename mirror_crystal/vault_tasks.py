@@ -1,6 +1,8 @@
 """Persist understood task specifications in the universal representation graph."""
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from .task_understanding import TaskSpec
 from .universal_representation import (
     EpistemicStatus,
@@ -93,6 +95,6 @@ class VaultTaskRuntimeMixin:
         if node.content.get("node_role") != "task":
             return None
         payload = node.content.get("task_spec")
-        if not isinstance(payload, dict):
+        if not isinstance(payload, Mapping):
             return None
         return TaskSpec.from_dict(payload)
