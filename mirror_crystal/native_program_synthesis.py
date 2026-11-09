@@ -84,12 +84,22 @@ class PythonASTCompiler:
     }
     _UNARY_OPERATORS = {"not": ast.Not, "negate": ast.USub}
     _SAFE_CALLS = {"len", "list", "range", "min", "max", "sum", "abs"}
+    _FORBIDDEN_IDENTIFIERS = {
+        "eval", "exec", "compile", "open", "__import__", "input",
+        "globals", "locals", "vars", "getattr", "setattr", "delattr",
+        "breakpoint", "exit", "quit", "_mc_step_tick",
+    }
     _SAFE_EXCEPTIONS = {"ValueError", "TypeError", "ZeroDivisionError"}
 
     @staticmethod
     def _name(identifier: str, *, store: bool = False) -> ast.Name:
-        if not isinstance(identifier, str) or not identifier.isidentifier():
-            raise ValueError(f"invalid identifier: {identifier}")
+        if (
+            not isinstance(identifier, str)
+            or not identifier.isidentifier()
+            or identifier in PythonASTCompiler._FORBIDDEN_IDENTIFIERS
+            or (identifier.startswith("__") and identifier.endswith("__"))
+        ):
+            raise ValueError(f"invalid or forbidden identifier: {identifier}")
         return ast.Name(id=identifier, ctx=ast.Store() if store else ast.Load())
 
     def _expression(self, expr: ProgramExpression, *, store: bool = False) -> ast.expr:
@@ -264,12 +274,11 @@ class PythonASTCompiler:
 
         definitions: list[ast.stmt] = []
         for function in program.functions:
-            if not function.name.isidentifier():
-                raise ValueError(f"invalid function name: {function.name}")
+            self._name(function.name)
             if len(set(function.parameters)) != len(function.parameters):
                 raise ValueError("function parameters must be unique")
-            if any(not name.isidentifier() for name in function.parameters):
-                raise ValueError("function parameters must be valid identifiers")
+            for parameter in function.parameters:
+                self._name(parameter)
             if function.statements:
                 body = [self._statement(item) for item in function.statements]
             else:
