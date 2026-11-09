@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import os
+import sqlite3
 
 import pytest
 
@@ -182,3 +183,60 @@ def digit_sum(n: int) -> int:
     checks = "assert is_prime(2) and is_prime(13) and not is_prime(9)\nassert digit_sum(29) == 11"
     ok, message = ZeroTrustSandboxJudge.verify_code_and_test(code, test_code=checks)
     assert ok, message
+
+
+def test_default_respond_path_prefers_canonical_blueprint_slot_match(tmp_path):
+    vault = DiskCrystalVault(tmp_path / "vault.dcrystal")
+    try:
+        blueprint = make_blueprint("default-dispatch", "The answer is {v1}.")
+        vault.store_blueprint(blueprint)
+        response = vault.respond("request 42")
+        assert response.mode == "blueprint_composition_unverified"
+        assert response.answer == "The answer is 42."
+        assert response.epistemic_tier == "unverified"
+    finally:
+        vault.close()
+
+
+def test_default_respond_abstains_on_multiple_blueprint_matches(tmp_path):
+    vault = DiskCrystalVault(tmp_path / "vault.dcrystal")
+    try:
+        vault.store_blueprint(make_blueprint("choice-a", "A"))
+        vault.store_blueprint(make_blueprint("choice-b", "B"))
+        response = vault.respond("request 42")
+        assert response.mode == "blueprint_prompt_ambiguous"
+        assert response.epistemic_tier == "honest_abstain"
+    finally:
+        vault.close()
+
+
+def test_old_blueprint_table_is_additively_migrated_for_prompt_dispatch(tmp_path):
+    db_path = tmp_path / "legacy-blueprints.dcrystal"
+    blueprint = make_blueprint("preexisting", "Stored value {v1}.")
+    with sqlite3.connect(db_path) as conn:
+        conn.execute(
+            "CREATE TABLE blueprints (blueprint_id TEXT PRIMARY KEY, domain TEXT NOT NULL, "
+            "intent TEXT NOT NULL, kind TEXT NOT NULL, canonical_json TEXT NOT NULL, updated_at REAL NOT NULL)"
+        )
+        conn.execute(
+            "INSERT INTO blueprints VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                blueprint.blueprint_id,
+                blueprint.domain,
+                blueprint.intent,
+                blueprint.kind.value,
+                blueprint.canonical_json(),
+                1.0,
+            ),
+        )
+        conn.commit()
+
+    vault = DiskCrystalVault(db_path)
+    try:
+        response = vault.respond("request migrated")
+        assert response.mode == "blueprint_composition_unverified"
+        assert response.answer == "Stored value migrated."
+        columns = {row[1] for row in vault.conn.execute("PRAGMA table_info(blueprints)")}
+        assert {"prompt_key", "prompt_prefix"}.issubset(columns)
+    finally:
+        vault.close()

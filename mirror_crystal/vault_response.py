@@ -18,6 +18,9 @@ class VaultResponseMixin:
     def respond(self, prompt: str, session_id: str = "default") -> CrystalResponse:
         """Out-of-core inference with UniversalConceptHub, CAS, Curiosity, Coreference & <= 64 disk reads."""
         with self._lock:
+            blueprint_response = self.respond_from_blueprint_prompt(prompt)
+            if blueprint_response is not None:
+                return blueprint_response
             return self._respond_locked(prompt, session_id=session_id)
 
     def _respond_locked(self, prompt: str, session_id: str = "default") -> CrystalResponse:

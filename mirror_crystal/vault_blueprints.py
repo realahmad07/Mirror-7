@@ -7,6 +7,7 @@ from typing import Any, Callable, Iterable, Mapping
 
 from .answer_verification import BlueprintAnswerVerifier
 from .blueprint_contracts import Blueprint, BlueprintValidationError
+from .blueprint_prompt import blueprint_query_prefix, blueprint_prompt_fields, match_blueprint_prompt
 from .blueprint_runtime import BlueprintCompositionEngine, BlueprintCompositionError
 from .response_types import CrystalResponse
 
@@ -24,18 +25,59 @@ class VaultBlueprintRuntimeMixin:
         with self._lock:
             with self.conn:
                 self.conn.execute(
-                    "INSERT OR REPLACE INTO blueprints(blueprint_id, domain, intent, kind, canonical_json, updated_at) "
-                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    "INSERT OR REPLACE INTO blueprints("
+                    "blueprint_id, domain, intent, kind, canonical_json, prompt_key, prompt_prefix, updated_at"
+                    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     (
                         blueprint.blueprint_id,
                         blueprint.domain,
                         blueprint.intent,
                         blueprint.kind.value,
                         blueprint.canonical_json(),
+                        *blueprint_prompt_fields(blueprint.prompt_pattern),
                         time.time(),
                     ),
                 )
         return blueprint.blueprint_id
+
+    def find_blueprint_matches(self, prompt: str, *, limit: int = 512) -> list[tuple[Blueprint, dict[str, Any]]]:
+        """Find canonical blueprints matching a full literal/slot prompt pattern."""
+        prefix = blueprint_query_prefix(prompt)
+        rows = self.conn.execute(
+            "SELECT canonical_json FROM blueprints WHERE prompt_prefix = ? OR prompt_prefix = '' "
+            "ORDER BY blueprint_id LIMIT ?",
+            (prefix, max(1, min(int(limit), 2048))),
+        ).fetchall()
+        matches: list[tuple[Blueprint, dict[str, Any]]] = []
+        for (canonical_json,) in rows:
+            try:
+                blueprint = Blueprint.from_dict(json.loads(canonical_json))
+            except (TypeError, ValueError, json.JSONDecodeError):
+                continue
+            values = match_blueprint_prompt(blueprint.prompt_pattern, prompt)
+            if values is not None:
+                matches.append((blueprint, values))
+        return matches
+
+    def respond_from_blueprint_prompt(self, prompt: str) -> CrystalResponse | None:
+        """Use a uniquely matching canonical blueprint before the legacy retrieval path."""
+        matches = self.find_blueprint_matches(prompt)
+        if not matches:
+            return None
+        if len(matches) != 1:
+            ids = [blueprint.blueprint_id for blueprint, _ in matches[:12]]
+            return CrystalResponse(
+                answer="Multiple canonical blueprints match this request. Mirror abstained rather than selecting one silently.",
+                confidence=0.0,
+                mode="blueprint_prompt_ambiguous",
+                matched_rule_id=None,
+                latency_ms=0.0,
+                sandbox_verified=False,
+                reasoning_trace=["Ambiguous canonical prompt matches: " + ", ".join(ids)],
+                epistemic_tier="honest_abstain",
+            )
+        blueprint, values = matches[0]
+        return self.respond_blueprint(blueprint.blueprint_id, values=values)
 
     def get_blueprint(self, blueprint_id: str) -> Blueprint | None:
         row = self.conn.execute(
