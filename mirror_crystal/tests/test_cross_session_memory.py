@@ -175,3 +175,32 @@ def test_context_extraction_privacy_gdpr_and_compaction():
             assert compact_res["inactive_entities_purged"] >= 1
         finally:
             mem.close()
+
+
+def test_sensitive_memory_requires_a_configured_key(tmp_path):
+    import pytest
+
+    mem = CrossSessionMemoryGraph(tmp_path / "no-key.sqlite")
+    try:
+        with pytest.raises(ValueError, match="MIRROR_MEMORY_KEY"):
+            mem.remember("session", "api_token", "token-value", entity_type="credential")
+    finally:
+        mem.close()
+
+
+def test_aead_cipher_uses_random_nonces_and_detects_tampering():
+    import pytest
+    from mirror_crystal.cross_session_memory import StdlibCipher
+
+    key = "correct-horse-battery-staple-and-more"
+    first = StdlibCipher.encrypt("private value", key)
+    second = StdlibCipher.encrypt("private value", key)
+    assert first.startswith("aead:v1:")
+    assert second.startswith("aead:v1:")
+    assert first != second
+    assert StdlibCipher.decrypt(first, key) == "private value"
+
+    prefix, payload = first.rsplit(":", 1)
+    tampered = payload[:-2] + ("AA" if payload[-2:] != "AA" else "BB")
+    with pytest.raises(Exception):
+        StdlibCipher.decrypt(prefix + ":" + tampered, key)
