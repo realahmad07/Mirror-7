@@ -8,10 +8,11 @@ from .runtime import BackendSession, BackendResult
 from .persistence import CheckpointStore, CheckpointError
 from .actions import ActionGateway, ActionPolicy, ActionDenied
 from .service import BackendService
+from .response_engine import UnifiedResponseEngine
 
 __all__ = [
     "BackendSession", "BackendResult",
     "CheckpointStore", "CheckpointError",
     "ActionGateway", "ActionPolicy", "ActionDenied",
-    "BackendService",
+    "BackendService", "UnifiedResponseEngine",
 ]
