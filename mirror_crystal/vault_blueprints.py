@@ -13,7 +13,7 @@ from .blueprint_contracts import (
     EvidenceLevel, VerificationEvidence,
 )
 from .claim_verification import ClaimEvidence, ClaimEvidenceError, ClaimEvidenceVerifier
-from .blueprint_prompt import blueprint_query_prefix, blueprint_prompt_fields, match_blueprint_prompt
+from .blueprint_prompt import blueprint_query_prefixes, blueprint_prompt_fields, match_blueprint_prompt
 from .blueprint_runtime import BlueprintCompositionEngine, BlueprintCompositionError
 from .response_types import CrystalResponse
 
@@ -46,14 +46,24 @@ class VaultBlueprintRuntimeMixin:
                 )
         return blueprint.blueprint_id
 
-    def find_blueprint_matches(self, prompt: str, *, limit: int = 512) -> list[tuple[Blueprint, dict[str, Any]]]:
+    def find_blueprint_matches(self, prompt: str, *, limit: int = 10000) -> list[tuple[Blueprint, dict[str, Any]]]:
         """Find canonical blueprints matching a full literal/slot prompt pattern."""
-        prefix = blueprint_query_prefix(prompt)
-        rows = self.conn.execute(
-            "SELECT canonical_json FROM blueprints WHERE prompt_prefix = ? OR prompt_prefix = '' "
-            "ORDER BY blueprint_id LIMIT ?",
-            (prefix, max(1, min(int(limit), 2048))),
-        ).fetchall()
+        prefixes = blueprint_query_prefixes(prompt)
+        if prefixes:
+            placeholders = ", ".join("?" for _ in prefixes)
+            query = (
+                "SELECT canonical_json FROM blueprints "
+                f"WHERE prompt_prefix IN ({placeholders}) OR prompt_prefix = '' "
+                "ORDER BY blueprint_id LIMIT ?"
+            )
+            params = (*prefixes, max(1, min(int(limit), 100_000)))
+        else:
+            query = (
+                "SELECT canonical_json FROM blueprints WHERE prompt_prefix = '' "
+                "ORDER BY blueprint_id LIMIT ?"
+            )
+            params = (max(1, min(int(limit), 100_000)),)
+        rows = self.conn.execute(query, params).fetchall()
         matches: list[tuple[Blueprint, dict[str, Any]]] = []
         for (canonical_json,) in rows:
             try:
