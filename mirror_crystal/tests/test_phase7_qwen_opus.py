@@ -87,6 +87,13 @@ def test_cerebrum_crystal_bridge_multi_step_math():
     assert res4["ok"] is True
     assert res4["answer"] == "19/12"
 
+    # 5. Prime factorization: guard the Python 3.11 LaTeX formatting path.
+    res5 = bridge.solve("Find the prime factorization of 84")
+    assert res5["ok"] is True
+    assert res5["strategy"] == "number_theory_cas"
+    assert res5["answer"] == "2 * 2 * 3 * 7"
+    assert r"84 = 2 \times 2 \times 3 \times 7" in res5["formatted_solution"]
+
 
 def test_autonomous_tdd_engine_normal_and_self_repair():
     tdd = AutonomousTDDEngine(max_repairs=3)
