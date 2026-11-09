@@ -142,8 +142,12 @@ def test_math_prm_result_is_a_candidate_not_independent_proof():
     result = make(reasoner=reasoner).ask("Calculate 6 times 7")
 
     assert reasoner.calls == ["Calculate 6 times 7"]
-    assert result["answer"] == "Insufficient independently verified evidence."
+    assert result["answer"].startswith("UNVERIFIED CANDIDATE — not independently verified.")
+    assert "42" in result["answer"]
+    assert result["answer_qualification"] == "unverified_candidate"
     assert result["verified"] is False
+    assert result["abstained"] is True
+    assert result["confidence"] == 0.0
     assert result["candidate_answer"] == "42"
     assert result["computed_candidates"][0]["epistemic_tier"] == "computed_candidate"
 
