@@ -47,7 +47,8 @@ def test_vault_abstains_on_missing_entities_years_and_low_coverage(tmp_path: Pat
 
         # True match succeeds cleanly
         r_sky = vault.respond("Why is the sky blue?")
-        assert r_sky.epistemic_tier in {"verified_exact", "high_confidence"}
+        # A retrieved factual match is useful, but retrieval does not prove its truth.
+        assert r_sky.epistemic_tier == "moderate_confidence"
         assert "blue" in r_sky.answer.lower()
 
         # Missing algorithm entity ('Dijkstra') must abstain instead of returning Fenwick
