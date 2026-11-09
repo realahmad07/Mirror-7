@@ -8,7 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-import sys
+import sqlite3
 
 from mirror_crystal import DiskCrystalVault
 from mirror_crystal.claim_verification import ClaimEvidence, ClaimEvidenceError
@@ -47,25 +47,35 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--promote-reviewed requires both --apply and --review-manifest")
 
     manifest_rows = _read_manifest(args.review_manifest) if args.review_manifest else []
+
+    if not args.apply:
+        # Use SQLite read-only URI so even opening a legacy vault cannot run schema migrations.
+        uri = f"file:{args.vault.resolve().as_posix()}?mode=ro"
+        with sqlite3.connect(uri, uri=True) as read_only:
+            tables = {row[0] for row in read_only.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            )}
+            total_rules = int(read_only.execute("SELECT COUNT(*) FROM rules").fetchone()[0]) if "rules" in tables else 0
+            total_blueprints = (
+                int(read_only.execute("SELECT COUNT(*) FROM blueprints").fetchone()[0])
+                if "blueprints" in tables else 0
+            )
+        missing = max(0, total_rules - total_blueprints)
+        print(json.dumps({
+            "mode": "dry_run",
+            "vault": str(args.vault),
+            "legacy_rules": total_rules,
+            "canonical_blueprints": total_blueprints,
+            "legacy_rules_not_yet_backfilled_lower_bound": missing,
+            "review_manifest_records": len(manifest_rows),
+            "promotion_will_occur": False,
+            "vault_opened_read_only": True,
+            "warning": "Dry-run makes no schema or data changes. Legacy trust_tier never becomes verification evidence.",
+        }, indent=2))
+        return 0
+
     vault = DiskCrystalVault(args.vault)
     try:
-        total_rules = vault.rule_count()
-        total_blueprints = len(vault.list_blueprints(limit=10000))
-        missing = max(0, total_rules - total_blueprints)
-
-        if not args.apply:
-            print(json.dumps({
-                "mode": "dry_run",
-                "vault": str(args.vault),
-                "legacy_rules": total_rules,
-                "canonical_blueprints": total_blueprints,
-                "legacy_rules_not_yet_backfilled_lower_bound": missing,
-                "review_manifest_records": len(manifest_rows),
-                "promotion_will_occur": False,
-                "warning": "Dry-run does not change the vault. Legacy trust_tier never becomes verification evidence.",
-            }, indent=2))
-            return 0
-
         cursor = -1
         migrated = 0
         scanned = 0
