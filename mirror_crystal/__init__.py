@@ -91,6 +91,19 @@ from .capability_composition import (
     CapabilityCompositionPlanner, CompositionPlan, CompositionPlanningError,
     InputBinding, PlanStatus, PlanStep,
 )
+from .execution import (
+    CapabilityExecutionEngine, ExecutionError, ExecutionPolicy, ExecutionStatus,
+    NativeOperationRegistry, PlanExecutionReport, StepExecutionResult,
+)
+from .verification import (
+    CapabilityVerification, CheckResult, IndependentCheck,
+    IndependentVerificationEngine, IndependentVerifierRegistry,
+    VerificationContext, VerificationError, VerificationReport, VerificationStatus,
+)
+from .capability_learning import (
+    CapabilityLearningEngine, CapabilityLearningError,
+    CapabilityLearningObservation, CapabilityLearningProposal,
+)
 from .task_understanding import (
     ConstraintKind,
     TaskConstraint,
@@ -117,6 +130,26 @@ __all__ = [
     "InputBinding",
     "PlanStatus",
     "PlanStep",
+    "CapabilityExecutionEngine",
+    "ExecutionError",
+    "ExecutionPolicy",
+    "ExecutionStatus",
+    "NativeOperationRegistry",
+    "PlanExecutionReport",
+    "StepExecutionResult",
+    "CapabilityVerification",
+    "CheckResult",
+    "IndependentCheck",
+    "IndependentVerificationEngine",
+    "IndependentVerifierRegistry",
+    "VerificationContext",
+    "VerificationError",
+    "VerificationReport",
+    "VerificationStatus",
+    "CapabilityLearningEngine",
+    "CapabilityLearningError",
+    "CapabilityLearningObservation",
+    "CapabilityLearningProposal",
     "AbstractedPair",
     "EpistemicStatus",
     "RepresentationConflictError",

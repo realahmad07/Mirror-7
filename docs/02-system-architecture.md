@@ -10,6 +10,9 @@
 | Capability contracts and registry | Stores reusable domain-neutral operations with typed input/output ports, preconditions, dependencies, provenance, and explicit verification evidence. |
 | Capability matching | Matches each task unit to domain/intent-compatible capabilities and reports missing inputs and evidence eligibility without executing anything. |
 | Capability composition planning | Builds a bounded typed dependency plan, rejects unverified or unbound operations, and records postconditions as future verification requirements. |
+| Controlled capability execution | Executes only explicitly registered native handlers in bounded child processes, validates typed inputs/outputs, and stops on first failure. |
+| Independent outcome verification | Uses separately registered checks to verify each executed step and declared postconditions; execution success alone is not proof. |
+| Evidence-gated capability learning | Proposes reusable composite capabilities only after repeated structurally identical plans succeed on distinct tasks and pass multiple independent verifiers. |
 | Mirror runtime | Session-level state and research-engine orchestration. |
 | Backend service | Lifecycle, persistence, actions, metrics, response generation, and capacity. |
 | HTTP boundary | Stable JSON API for the UI/client. |

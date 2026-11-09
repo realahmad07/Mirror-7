@@ -21,6 +21,12 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [15 — Source evidence, benchmark and sandbox](15-source-evidence-benchmark-and-sandbox.md) | Legacy migration, claim-level review, frozen factual evaluation and container isolation. |
 | [16 — Universal representation layer](16-universal-representation-layer.md) | Domain-neutral typed nodes, relations, epistemic status, uncertainty, provenance and disk-backed graph persistence. |
 | [17 — Universal task understanding](17-task-understanding.md) | Request-to-TaskSpec interpretation, explicit constraints/context, ambiguity tracking and dependency-linked subtasks. |
+| [18 — Capability contracts and registry](18-capability-contracts-and-registry.md) | Typed reusable operations, provenance, explicit verification evidence and durable registration. |
+| [19 — Capability matching](19-capability-matching.md) | Domain/intent candidate ranking, typed input compatibility and evidence eligibility. |
+| [20 — Capability composition planning](20-capability-composition-planning.md) | Typed dependency plans, port bindings, prerequisite gates and bounded search. |
+| [21 — Controlled capability execution](21-controlled-capability-execution.md) | Bounded process execution of explicitly registered native handlers with fail-fast output validation. |
+| [22 — Independent outcome verification](22-independent-outcome-verification.md) | Separate check registries, step-level validation and verified postcondition reporting. |
+| [23 — Evidence-gated capability learning](23-evidence-gated-capability-learning.md) | Repeated verified compositions converted into explicit reusable capability proposals. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 
 ## Research archive
