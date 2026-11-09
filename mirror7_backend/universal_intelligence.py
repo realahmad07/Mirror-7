@@ -110,7 +110,7 @@ class UniversalIntelligencePipeline:
                 "rules_imported": imported.imported_count,
                 "rules_skipped": imported.skipped_count,
                 "rules_rejected": imported.rejected_count,
-                "uol_catalog_size": len(language.rules),
+                "uol_catalog_size": len(imported.rules),
             },
             "capability_matching": {
                 "match_count": len(matches.matches),
