@@ -34,7 +34,7 @@ EXPECTED_PER_DOMAIN = 10
 
 def _normalise_prompt(value: str) -> str:
     import re
-    return re.sub(r"[^\\w]+", " ", value.casefold(), flags=re.UNICODE).strip()
+    return re.sub(r"[^\w]+", " ", value.casefold(), flags=re.UNICODE).strip()
 
 
 def load_and_validate(path: Path) -> list[dict]:
