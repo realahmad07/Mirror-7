@@ -2,6 +2,11 @@
 
 This directory publishes the inventory, integrity hashes, comparison report, and import plan for the four Crystal archives uploaded for Mirror-7.
 
+## Dataset and licence
+
+- [DATA_CARD.md](DATA_CARD.md) — contents, counts, usage, and important caveats.
+- [LICENSES.md](LICENSES.md) — source-specific licence and attribution register. This is a mixed-source dataset; the root software licence does not apply to every upstream record.
+
 ## Files
 
 - [manifest.json](manifest.json) — archive SHA-256 values, observed record counts, dry-run counts, evidence and licensing status.
@@ -17,3 +22,8 @@ A combined owner-facing download bundle was prepared, containing all four origin
 ## Important status
 
 The import report is a **dry run**, not a claim that the user's production .dcrystal database has been modified. Run the local importer from the actual Mirror checkout against the actual vault, inspect the quarantine output, and only then use its explicit apply mode. Canonical evidence remains unverified; a trust tier or a filename such as "verified sample" is not independent verification.
+
+
+## Test Mirror against the stored brain
+
+After the raw archives are published, run `python scripts/test_crystal_archive_responses.py --brain datasets/crystal_archive/raw/crystal_4.zip`. It records a known-rule retrieval, an unseen exact modular-arithmetic query, and an out-of-scope abstention probe.
