@@ -271,3 +271,18 @@ def test_natural_language_calculator_uses_mirror_native_synthesizer_without_exte
     assert result["code_verification"]["tests_generated"] == 4
     assert result["code_verification"]["tests_passed"] == 4
     assert "code_generation" not in result["sources_consulted"]
+
+
+def test_universal_orchestrator_builds_bubble_sort_without_external_generation():
+    from mirror_crystal import UniversalIntelligenceEngine
+
+    result = make(
+        universal_engine_provider=lambda: UniversalIntelligenceEngine(),
+    ).ask("Write a Python function to sort a list of numbers using bubble sort.")
+
+    assert result["verified"] is True
+    assert result["answer_qualification"] == "verified_artifact"
+    assert "def bubble_sort" in result["answer"]
+    assert result["code_verification"]["tests_generated"] == 4
+    assert result["code_verification"]["tests_passed"] == 4
+    assert result["code_generation"]["origin"] == "mirror_native_capability_composition"
