@@ -265,3 +265,27 @@ def test_natural_language_calculator_uses_mirror_native_synthesizer_not_external
     assert result["code_verification"]["tests_generated"] == 4
     assert result["code_verification"]["tests_passed"] == 4
     assert "code_generation" not in result["sources_consulted"]
+
+
+def test_natural_language_calculator_uses_mirror_native_synthesizer_without_external_model():
+    from mirror_crystal import UniversalIntelligenceEngine
+
+    engine = UniversalIntelligenceEngine()
+    result = make(
+        universal_engine_provider=lambda: engine,
+        code_generation_provider=lambda _prompt: (_ for _ in ()).throw(
+            AssertionError("external code generator must not be called")
+        ),
+    ).ask(
+        "Build a calculator supporting addition, subtraction, multiplication and division"
+    )
+
+    assert result["verified"] is True
+    assert result["answer_qualification"] == "verified_artifact"
+    assert result["verification_status"] == "verified_artifact_execution"
+    assert result["code_generation"]["origin"] == "mirror_native_capability_composition"
+    assert result["code_verification"]["verified"] is True
+    assert "def calculate" in result["answer"]
+    assert result["code_verification"]["tests_generated"] == 4
+    assert result["code_verification"]["tests_passed"] == 4
+    assert "code_generation" not in result["sources_consulted"]
