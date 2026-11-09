@@ -1,6 +1,6 @@
 # Local import workflow
 
-The owner-facing integration bundle includes the importer script.
+The owner-facing integration ZIP includes the importer script. Its path is used directly in the commands below; it is not a committed data file in this metadata-only PR.
 
 1. Extract the bundle. Keep the original four ZIPs unchanged.
 2. From the Mirror-7 checkout, run the importer without apply mode to prepare:
@@ -15,7 +15,7 @@ The owner-facing integration bundle includes the importer script.
 Example:
 
 ```bash
-python tools/import_crystal_archive_bundle.py \
+python /path/to/bundle/tools/import_crystal_archive_bundle.py \
   --archives-dir /path/to/bundle/raw_archives \
   --general-pack /path/to/bundle/raw_archives/Mirror_General_Reasoning_10K_Candidate_Pack_v1.zip \
   --vault artifacts/mirror_crystal_all_datasets.dcrystal \
