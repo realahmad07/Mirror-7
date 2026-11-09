@@ -889,7 +889,7 @@
                     <p class="text-zinc-400 font-sans text-xs">Retains project architecture configurations, ports, database schemas, S3 buckets, and persistent variables across days and server restarts with zero catastrophic forgetting.</p>
                     
                     <div class="p-3 bg-cyan-950/20 border border-cyan-500/30 rounded-sm text-[11px] text-zinc-300 leading-relaxed">
-                        🛡️ <strong>Zero-Knowledge Memory &amp; GDPR Compliance:</strong> Secrets (API keys, GitHub tokens, passwords) are automatically scrubbed before persistence. Stored parameters are encrypted at rest with PBKDF2 HMAC keystream. Quota limit: 200 entities/session with LRU eviction and time-decay compaction.
+                        🛡️ <strong>Zero-Knowledge Memory &amp; GDPR Compliance:</strong> Secrets (API keys, GitHub tokens, passwords) are automatically scrubbed before persistence. Stored parameters are encrypted at rest with AES-256-GCM authenticated encryption (requires MIRROR_MEMORY_KEY). Quota limit: 200 entities/session with LRU eviction and time-decay compaction.
                     </div>
 
                     <div>
