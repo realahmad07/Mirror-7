@@ -69,10 +69,17 @@ closed. The old custom `enc::` format is supported for compatibility reads only;
 rewrite legacy records to migrate them. Startup clears the old plaintext
 `value_json` duplicate for known sensitive categories/keys.
 
+Persistent learned-capability storage also requires
+`MIRROR_CAPABILITY_ATTESTATION_KEY` (at least 32 characters). Mirror signs the
+typed capability payload before persistence and verifies it before loading a
+learned executor after restart. Do not rotate this key without a planned
+re-signing/migration of persisted capability records.
+
 Example deployment configuration:
 
 ```bash
 export MIRROR_MEMORY_KEY='<32+ character secret from a secrets manager>'
+export MIRROR_CAPABILITY_ATTESTATION_KEY='<32+ character stable capability-signing secret>'
 export MIRROR7_API_TOKEN='<32+ character bearer token from a secrets manager>'
 export MIRROR7_HOST='0.0.0.0'
 export MIRROR7_CORS_ORIGIN='https://your-frontend.example'
