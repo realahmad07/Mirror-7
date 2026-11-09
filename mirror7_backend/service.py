@@ -69,6 +69,15 @@ class BackendService:
                 pass
 
     @property
+    def response_generator(self):
+        """Backward-compatible access to the configured response callable."""
+        return self.response_engine._generator
+
+    @response_generator.setter
+    def response_generator(self, generator):
+        self.response_engine.set_model(generator)
+
+    @property
     def memory_graph(self):
         if self._memory_graph is None:
             from mirror_crystal.cross_session_memory import CrossSessionMemoryGraph
