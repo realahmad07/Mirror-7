@@ -69,7 +69,10 @@ class UnifiedCognitiveOrchestrator:
         text = prompt.strip().casefold()
         if not text or "?" in text:
             return False
-        explicit_subject = text.startswith(("my ", "our ", "the project ", "we use ", "i use "))
+        explicit_subject = text.startswith((
+            "my ", "our ", "the project ", "we use ", "i use ",
+            "app ", "api ", "web ", "backend ", "server ", "database ", "db ",
+        ))
         configuration_statement = bool(re.search(
             r"\b(port|bucket|database|framework|region|server|configured|running)\b", text
         ))
