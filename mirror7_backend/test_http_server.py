@@ -217,3 +217,28 @@ def test_tdd_generate_route_reports_unconfigured_provider():
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+def test_universal_solve_endpoint_uses_native_capability_composition():
+    from .service import BackendService
+
+    service = BackendService(enable_crystal_auto_load=False)
+    server = create_server(port=0, service=service)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        status, result = request(
+            server,
+            "POST",
+            "/api/universal/solve",
+            {"prompt": "What is 19 plus 23?"},
+        )
+        assert status == 200
+        assert result["status"] == "verified"
+        assert result["verified"] is True
+        assert result["answer"] == "42.0"
+        assert result["verification"]["level"] == "formally_verified"
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
