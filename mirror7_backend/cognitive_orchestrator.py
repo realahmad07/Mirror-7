@@ -76,7 +76,7 @@ class UnifiedCognitiveOrchestrator:
             if memory_context:
                 evidence.append(self._candidate(
                     "cross_session_memory", memory_context, 1.0,
-                    "verified_exact", True,
+                    "remembered_context", False,
                 ))
             memory.auto_extract_and_remember(session_id, prompt)
         except Exception as exc:
@@ -195,5 +195,5 @@ class UnifiedCognitiveOrchestrator:
             "conflict": conflict,
             "errors": errors,
             "can_teach": abstained,
-            "consent_logged": bool(consent_log),
+            "consent_log_requested": bool(consent_log),
         }
