@@ -151,8 +151,15 @@ class BenchmarkCaseResult:
 def literal_claim_judge(answer: str, claim: dict[str, Any]) -> ClaimJudgement:
     """Exact-fragment baseline; this does not prove semantic support or catch every extra claim."""
     normalized = normalize_answer(answer)
-    fragments = [normalize_answer(item) for item in claim.get("required_fragments", [])]
-    matched = bool(fragments) and all(item and item in normalized for item in fragments)
+    groups = claim.get("required_fragment_groups")
+    if groups:
+        matched = all(
+            any(normalize_answer(item) and normalize_answer(item) in normalized for item in group)
+            for group in groups
+        )
+    else:
+        fragments = [normalize_answer(item) for item in claim.get("required_fragments", [])]
+        matched = bool(fragments) and all(item and item in normalized for item in fragments)
     return ClaimJudgement(supported=matched, contradicted=False, note="required-fragment exact-match baseline")
 
 
