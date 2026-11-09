@@ -60,6 +60,7 @@ class BackendService:
         self._streamer: Any | None = None
         self._crystal_query_coordinator: Any | None = None
         self._cognitive_orchestrator: Any | None = None
+        self._universal_intelligence_engine: Any | None = None
         self._is_ready: bool = False
         self._warmup_ms: float = 0.0
         if self.crystal_vault is None and enable_crystal_auto_load:
@@ -143,6 +144,74 @@ class BackendService:
             self.crystal_vault = None
 
     @property
+    def universal_intelligence(self):
+        """Lazy native universal engine backed by local capabilities and Crystal blueprints."""
+        if self._universal_intelligence_engine is None:
+            from mirror_crystal import UniversalIntelligenceEngine
+            engine = UniversalIntelligenceEngine()
+            if self.crystal_vault is not None:
+                try:
+                    blueprints = self.crystal_vault.list_blueprints(limit=10000)
+                    engine.ingest_blueprints(blueprints)
+                    engine.load_learned_blueprints(blueprints)
+                except Exception:
+                    # Missing/old vault schemas do not fabricate executable capabilities.
+                    pass
+            self._universal_intelligence_engine = engine
+        return self._universal_intelligence_engine
+
+    def universal_solve(self, task: Any) -> dict[str, Any]:
+        """Interpret a native request or execute a caller-supplied typed TaskSpec."""
+        return self.universal_intelligence.solve(task)
+
+    def persist_universal_capability(self, capability: Any) -> str:
+        """Persist a verified replayable capability as a canonical Crystal blueprint."""
+        if self.crystal_vault is None:
+            raise RuntimeError("Crystal Vault is unavailable; capability was not persisted")
+        from mirror_crystal import (
+            Blueprint,
+            BlueprintKind,
+            BlueprintProvenance,
+            EvidenceLevel,
+            VerificationEvidence,
+        )
+        from mirror_crystal.universal_representation import canonical_json
+        if not capability.evidence.independently_reproduced:
+            raise ValueError("only independently reproduced capabilities may be persisted")
+        payload = canonical_json(capability.to_dict())
+        prompt = capability.name
+        blueprint = Blueprint(
+            blueprint_id=f"universal:{capability.capability_id}",
+            kind=BlueprintKind.PROCEDURE,
+            domain=capability.domains[0],
+            intent="universal_capability.v1",
+            prompt_pattern=prompt,
+            response_template=payload,
+            dependencies=tuple(capability.dependencies),
+            provenance=BlueprintProvenance(
+                source="mirror_universal_capability_learning",
+                source_ref=capability.capability_id,
+                content_sha256=Blueprint._digest(prompt, payload),
+                parent_ids=tuple(capability.lineage),
+            ),
+            verification=VerificationEvidence(
+                level=EvidenceLevel.INDEPENDENTLY_REPRODUCED,
+                checks_passed=tuple(capability.evidence.checks_passed),
+                verifier=capability.evidence.verifier,
+            ),
+        )
+        return self.crystal_vault.store_blueprint(blueprint)
+
+    def promote_universal_composition(self, task: Any, result: Mapping[str, Any], gate: Any):
+        """Promote only after the explicit held-out, multi-seed and adversarial learning gate."""
+        return self.universal_intelligence.promote_verified_composition(
+            task,
+            result,
+            gate,
+            persist=self.persist_universal_capability,
+        )
+
+    @property
     def cognitive_orchestrator(self):
         """Lazy coordinator joining the existing memory, Crystal, reasoning, and TDD organs."""
         if self._cognitive_orchestrator is None:
@@ -155,6 +224,7 @@ class BackendService:
                 metrics=self.metrics,
                 code_generation_provider=self.code_generation_provider,
                 synthesis_provider=self.evidence_synthesis_provider,
+                universal_engine_provider=lambda: self.universal_intelligence,
             )
         return self._cognitive_orchestrator
 
