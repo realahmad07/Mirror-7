@@ -1223,7 +1223,7 @@ class SandboxMCTSPlanner:
     def __init__(
         self,
         max_nodes: int = 28,
-        max_wall_ms: float = 350.0,
+        max_wall_ms: float = 3000.0,
         max_loop_steps: int = 25_000,
         ucb_c: float = 1.15,
     ) -> None:
