@@ -436,11 +436,17 @@ class LearningGateReport:
     failures: tuple[str, ...] = ()
     run_digest: str = ""
     attestation: str = ""
+    base_case_count: int = 0
+    held_out_case_count: int = 0
+    adversarial_case_count: int = 0
 
     @property
     def passed(self) -> bool:
         return (
-            self.cases_generated >= 3
+            self.base_case_count >= 3
+            and self.held_out_case_count >= 1
+            and self.adversarial_case_count >= 1
+            and self.cases_generated >= 3
             and self.cases_passed == self.cases_generated
             and self.seed_count >= 3
             and self.held_out_passed
