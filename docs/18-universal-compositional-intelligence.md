@@ -68,11 +68,13 @@ multiply/divide, comparisons, boolean logic, sequence length/sum, and text
 concatenation. Each built-in gets execution-tested status only after its own
 deterministic registration self-test.
 
-The first native code-generation example is
+The first native code-generation examples are in
 `mirror_crystal/native_program_synthesis.py`. A typed `ProgramIR` is compiled
 into Python AST nodes, emitted as Python source, and checked by Mirror's existing
-TDD sandbox. The calculator example builds addition, subtraction, multiplication,
-and division (including division-by-zero handling) without any external model.
+TDD sandbox. The calculator composes arithmetic dispatch and error handling.
+The bubble-sort program composes local list copying, nested bounded loops,
+comparisons, conditional branches, tuple assignment, and a return operation.
+Both are constructed without an external code-generation model.
 
 ## Use
 
@@ -128,7 +130,10 @@ cycles, missing dependencies, ambiguous matches, and incompatible schemas.
 
 After a solution passes its domain verifier and the held-out/adversarial,
 multi-seed learning gate, it can be turned into a replayable composition
-capability. The persisted implementation is a typed Mirror composition graph,
+capability. Mirror now executes the base, held-out, and adversarial suites itself;
+it attests the report with a per-engine HMAC and records the candidate-runner and
+independent-verifier code fingerprints. Promotion rejects hand-constructed,
+edited, stale, or cross-engine reports. The persisted implementation is a typed Mirror composition graph,
 not a copy of one answer. Replays use new inputs and invoke the same capability
 registry and verification pipeline. Transferred capabilities lose their previous
 evidence and require target-domain re-verification.
