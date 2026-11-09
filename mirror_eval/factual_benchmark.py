@@ -45,11 +45,15 @@ def _timestamp(value: str) -> bool:
 
 
 def _reviewers_are_independent(rows: Iterable[dict[str, Any]], *, min_reviewers: int = 2) -> bool:
+    records = list(rows)
+    if any(row.get("decision") == "reject" for row in records):
+        return False
     approved = {
         str(row.get("reviewer_id", "")).strip()
-        for row in rows
+        for row in records
         if row.get("decision") == "approve"
         and row.get("independent") is True
+        and row.get("method") in {"independent_source_comparison", "independent_replication"}
         and str(row.get("reviewer_id", "")).strip()
         and _timestamp(str(row.get("reviewed_at", "")))
     }
@@ -71,7 +75,7 @@ def validate_case(case: dict[str, Any], *, require_independent_review: bool = Tr
 
     for claim in claims:
         for name in ("claim_id", "claim_text", "source_publisher", "source_url",
-                     "source_locator", "source_quote", "source_excerpt_sha256"):
+                     "source_locator", "source_quote", "source_excerpt_sha256", "license_spdx"):
             if not str(claim.get(name, "")).strip():
                 raise BenchmarkValidationError(f"{case['case_id']}: claim field {name} is missing")
         parsed = urlparse(str(claim["source_url"]))
