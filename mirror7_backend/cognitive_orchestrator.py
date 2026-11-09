@@ -203,6 +203,7 @@ class UnifiedCognitiveOrchestrator:
                 universal_pipeline = self._universal_intelligence_provider()
                 if universal_pipeline is not None:
                     options = dict(universal_options or {})
+                    options.setdefault("execute", True)
                     universal_report = universal_pipeline.analyze(prompt, **options)
                     sources_consulted.append("universal_intelligence")
             except Exception as exc:
