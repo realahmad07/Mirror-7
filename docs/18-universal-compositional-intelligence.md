@@ -165,6 +165,22 @@ This is a foundation, not completed general intelligence.
 - Passing the repository test suite confirms software contracts, not AGI or
   broad human-level reasoning.
 
+## Nine-phase roadmap status
+
+| Phase | Current implementation | Remaining work |
+|---|---|---|
+| 1. Knowledge foundation | Provenance/evidence records; legacy blueprints indexed separately from executable capabilities; trust tiers retained. | Broader source review, curation and contradiction resolution across all existing stores. |
+| 2. Universal representation | Shared typed nodes, TaskSpec, SubtaskSpec, CapabilitySpec, provenance, evidence and execution contracts. | Evolve schema versions and add domain-specific quantity/units/uncertainty structures as needed. |
+| 3. Task understanding | Rule-based native request interpretation, arithmetic AST decomposition, typed DAG tasks, and domain-interpreter hooks. | Broaden natural-language decomposition and connect native Mirror language reasoning to typed TaskSpec proposal/repair. |
+| 4. Capability system | Native arithmetic, comparison, boolean, sequence and text primitives; calculator and bubble-sort synthesizers; typed domain adapter API. | More local operators and real domain packs for physics, biology, chemistry, engineering and other fields. |
+| 5. Composition | Dependency-aware task DAG, typed binding, ambiguity and cycle rejection, expression-tree decomposition, reusable composition replay. | General capability search/backtracking, cost-aware planning, richer subgoal discovery and large plan optimization. |
+| 6. Verification | Independent Decimal recomputation, TDD sandbox for programs, mandatory output and acceptance contracts, pluggable domain verifiers. | Independent scientific/empirical verifiers for each domain; current generic checks are not scientific proof. |
+| 7. Self-improvement | Executed multi-seed/held-out/adversarial gate, engine-instance attestation, replayable capability promotion and Crystal persistence. | Automatically generate candidate abstractions and test suites; broader reviewer governance and revocation/rollback workflows. |
+| 8. Cross-domain intelligence | Transfer proposals strip source evidence and require a new target-domain gate. | Domain-tested analogical transfer and validated structural correspondences, not just compatible operator reuse. |
+| 9. Continuous expansion | Capability-gap curriculum reports and persistent learned capability blueprints. | Autonomous curriculum scheduling, frontier prioritization and continuous held-out evaluation. |
+
+The roadmap is therefore an integrated foundation with working end-to-end examples—not a claim that every phase is complete for every domain. The highest-confidence current end-to-end paths are arithmetic composition and two native Python synthesis examples (calculator and bubble sort).
+
 ## Next expansion
 
 Extend the shared ProgramIR and operator algebra (variables, conditionals,
