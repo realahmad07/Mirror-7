@@ -11,7 +11,7 @@ from typing import Any, Callable, Iterable, Mapping
 
 from .operational_language import (
     UOL, UOLError, Lit, Var, Call, If, Program, RuleStatus, VariableSpec,
-    expr_dict, _infer, _freeze, _matches,
+    expr_dict, _infer, _type_name, _freeze, _matches,
 )
 from .blueprint_contracts import EvidenceLevel, VerificationEvidence
 from .capability_model import CapabilitySpec, PortContract
