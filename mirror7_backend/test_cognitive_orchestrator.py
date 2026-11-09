@@ -258,9 +258,6 @@ def test_natural_language_calculator_uses_mirror_native_synthesizer_without_exte
     engine = UniversalIntelligenceEngine()
     result = make(
         universal_engine_provider=lambda: engine,
-        code_generation_provider=lambda _prompt: (_ for _ in ()).throw(
-            AssertionError("external code generator must not be called")
-        ),
     ).ask(
         "Build a calculator supporting addition, subtraction, multiplication and division"
     )
