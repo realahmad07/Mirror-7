@@ -8,13 +8,8 @@ from .actions import ActionGateway
 from .observability import BackendMetrics
 from .persistence import CheckpointStore
 from .runtime import BackendResult, BackendSession
-from phase359_response_generation_adapter import make_response_generator
 from phase362_response_generation_config import ResponseGenerationConfig
-from phase364_response_generation_validation import validate_generated_response
-from phase357_response_generation_interface import (
-    build_response_generation_request,
-    generate_response,
-)
+from .response_engine import UnifiedResponseEngine
 
 
 class BackendService:
@@ -41,8 +36,10 @@ class BackendService:
         self.engine_factory = engine_factory
         self.checkpoint_store = checkpoint_store
         self.action_gateway = action_gateway
-        self.response_generator = response_generator
         self.generation_config = generation_config or ResponseGenerationConfig()
+        self.response_engine = UnifiedResponseEngine(
+            response_generator, config=self.generation_config
+        )
         self.max_sessions = max_sessions
         self.metrics = metrics or BackendMetrics()
         self._sessions: dict[str, BackendSession] = {}
@@ -269,17 +266,9 @@ class BackendService:
             result = session.step(
                 observation, goal=goal, research_tasks=research_tasks, views=views
             )
-            if self.response_generator is not None:
-                request = build_response_generation_request(result.realization_contract)
-                if request is not None:
-                    response = generate_response(request, self.response_generator)
-                    contract = result.realization_contract
-                    response = validate_generated_response(
-                        response,
-                        mode=getattr(contract, "mode", None),
-                        config=self.generation_config,
-                    )
-                    result = replace(result, response=response)
+            response = self.response_engine.respond(result.realization_contract)
+            if response is not None:
+                result = replace(result, response=response)
             succeeded = True
             return result
         finally:
@@ -290,10 +279,11 @@ class BackendService:
         if not isinstance(config, ResponseGenerationConfig):
             raise TypeError("config must be a ResponseGenerationConfig")
         self.generation_config = config
+        self.response_engine.set_config(config)
 
     def set_response_model(self, model: Any | None) -> None:
         """Install or remove the response model adapter at runtime."""
-        self.response_generator = None if model is None else make_response_generator(model)
+        self.response_engine.set_model(model)
 
     def save(self, session_id: str):
         if self.checkpoint_store is None:
@@ -370,7 +360,7 @@ class BackendService:
                 "closing_sessions": len(self._closing),
                 "persistence": self.checkpoint_store is not None,
                 "actions": self.action_gateway is not None,
-                "response_generation": self.response_generator is not None,
+                "response_generation": self.response_engine.enabled,
                 "crystal": crystal_info,
                 "metrics": self.metrics.snapshot(),
             }
