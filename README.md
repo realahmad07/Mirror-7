@@ -953,6 +953,8 @@ The backend Q&A path now connects task analysis to **optional verified task exec
 
 See [Backend Q&A Execution and Native Code Generation](./docs/32-backend-qna-execution-and-native-code-generation.md) and [Universal Intelligence Integration](./docs/31-backend-universal-intelligence-integration.md) for behavior, host configuration, trust boundaries and tests.
 
-## Crystal dataset archive audit
+## Crystal dataset archive and AI access
 
-The uploaded Crystal archive inventory, checksums, comparison report, and safe local import instructions are published in [datasets/crystal_archive/](datasets/crystal_archive/README.md). Raw archive payloads remain owner-held pending complete redistribution-license review. The full 368,270-rule production vault was not part of the uploaded ZIPs.
+The Crystal dataset index, source-specific licensing notes, comparison report, and owner-side publication tool are in [datasets/crystal_archive/](datasets/crystal_archive/README.md). The dataset card documents all four archive volumes and the embedded MCRYSTAL brain. After the owner publishes the raw ZIPs to this repository, any AI or developer can access them through Git clone, raw GitHub links, or the documented JSONL/JSON interfaces.
+
+The MCRYSTAL brain can be queried directly from crystal_4.zip; MirrorCrystalEngine.load() reads it from the ZIP without a standalone .mcrystal copy. Run [the response probe](scripts/test_crystal_archive_responses.py) to check stored-rule retrieval, unseen modular arithmetic, and the unknown-query response. Source-specific dataset terms are listed in [LICENSES.md](datasets/crystal_archive/LICENSES.md); the repository's Apache-2.0 code licence is not automatically a licence for every third-party dataset record.
