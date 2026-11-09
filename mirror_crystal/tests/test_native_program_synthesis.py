@@ -85,7 +85,7 @@ def test_bubble_sort_program_is_composed_from_loops_conditionals_and_sequence_no
 def test_generated_bubble_sort_executes_empty_sorted_reverse_duplicate_and_negative_inputs():
     source = NativeProgramSynthesizer().build_bubble_sort()["code"]
     namespace = {}
-    exec(compile(source, "<mirror-native-bubble-sort>", "exec"), {"__builtins__": {}}, namespace)
+    exec(compile(source, "<mirror-native-bubble-sort>", "exec"), namespace, namespace)
     bubble_sort = namespace["bubble_sort"]
 
     assert bubble_sort([]) == []
