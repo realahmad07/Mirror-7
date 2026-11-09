@@ -59,6 +59,7 @@ def make(
     metrics=None,
     code_generation_provider=None,
     synthesis_provider=None,
+    universal_engine_provider=None,
 ):
     return UnifiedCognitiveOrchestrator(
         vault_provider=lambda: vault,
@@ -68,6 +69,7 @@ def make(
         metrics=metrics or Metrics(),
         code_generation_provider=code_generation_provider,
         synthesis_provider=synthesis_provider,
+        universal_engine_provider=universal_engine_provider,
     )
 
 
@@ -225,3 +227,17 @@ def test_synthesis_generator_cannot_add_unsupported_claims():
     assert result["answer"] == "Python is dynamically typed."
     assert result["synthesis"]["generator_rejected"] is True
     assert result["synthesis"]["memory_used_as_evidence"] is False
+
+
+def test_universal_composition_is_used_for_verified_arithmetic_answers():
+    from mirror_crystal import UniversalIntelligenceEngine
+
+    engine = UniversalIntelligenceEngine()
+    result = make(universal_engine_provider=lambda: engine).ask("What is 6 times 7?")
+
+    assert result["answer"] == "42.0"
+    assert result["verified"] is True
+    assert result["universal_execution"]["verification"]["level"] == "formally_verified"
+    assert "universal_capability_composition" in [
+        item["source"] for item in result["evidence"]
+    ]
