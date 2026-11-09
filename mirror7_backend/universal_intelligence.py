@@ -31,6 +31,9 @@ class UniversalIntelligencePipeline:
         vault_provider: Callable[[], Any | None],
         max_knowledge_records: int = 500,
         max_capabilities: int = 500,
+        execution_engine: Any | None = None,
+        verification_engine: Any | None = None,
+        required_verification_checks: Mapping[str, tuple[str, ...]] | None = None,
     ) -> None:
         if not callable(vault_provider):
             raise TypeError("vault_provider must be callable")
@@ -46,6 +49,14 @@ class UniversalIntelligencePipeline:
         self.task_engine = TaskUnderstandingEngine()
         self.matcher = CapabilityMatcher()
         self.composer = CapabilityCompositionPlanner()
+        self.execution_engine = execution_engine
+        self.verification_engine = verification_engine
+        if required_verification_checks is not None and not isinstance(required_verification_checks, Mapping):
+            raise TypeError("required_verification_checks must be a mapping")
+        self.required_verification_checks = {
+            str(key): tuple(str(item) for item in values)
+            for key, values in (required_verification_checks or {}).items()
+        }
 
     def _knowledge(self, vault: Any, domain: str):
         listing = getattr(vault, "list_knowledge_records", None)
@@ -66,8 +77,11 @@ class UniversalIntelligencePipeline:
         context: Mapping[str, Any] | None = None,
         explicit_constraints=(),
         acceptance_criteria=(),
+        execute: bool = False,
     ) -> dict[str, Any]:
         """Return a task contract, imported-rule summary, matches and a non-executed plan."""
+        if not isinstance(execute, bool):
+            raise TypeError("execute must be a boolean")
         task = self.task_engine.interpret(
             prompt,
             domain_hint=domain_hint,
@@ -103,6 +117,91 @@ class UniversalIntelligencePipeline:
         else:
             status = "plan_ready" if plan.ready else "blocked"
 
+        execution_payload: dict[str, Any] = {
+            "attempted": False,
+            "status": "not_attempted",
+            "verified": False,
+            "reason": "planning is advisory unless execution is explicitly requested",
+        }
+        executable_intents = {
+            "build", "create", "implement", "write", "generate",
+            "calculate", "solve", "convert",
+        }
+        if execute:
+            if task.intent.value not in executable_intents:
+                execution_payload["reason"] = "this request is not an executable task intent"
+            elif not plan.ready:
+                execution_payload.update({
+                    "status": "blocked",
+                    "reason": "the composition plan is blocked; no step was run",
+                    "blockers": list(plan.blockers),
+                })
+            elif (
+                self.execution_engine is None
+                or self.verification_engine is None
+                or not self.required_verification_checks
+            ):
+                execution_payload["reason"] = (
+                    "execution requires host-registered native handlers, a separate "
+                    "independent verifier, and explicit required-check policy"
+                )
+            else:
+                execution_payload["attempted"] = True
+                try:
+                    execution_report = self.execution_engine.execute(
+                        plan,
+                        capabilities,
+                        task_inputs=task.known_inputs,
+                        task_context=task.context,
+                    )
+                    execution_payload.update({
+                        "status": execution_report.status.value,
+                        "plan_id": execution_report.plan_id,
+                        "task_id": execution_report.task_id,
+                        "fingerprint": execution_report.fingerprint,
+                        "error": execution_report.error,
+                        "steps": [
+                            {
+                                "step_id": step.step_id,
+                                "subtask_id": step.subtask_id,
+                                "capability_id": step.capability_id,
+                                "success": step.success,
+                                "inputs": dict(step.inputs),
+                                "outputs": dict(step.outputs),
+                                "error": step.error,
+                                "duration_ms": step.duration_ms,
+                            }
+                            for step in execution_report.steps
+                        ],
+                    })
+                    if execution_report.succeeded:
+                        verification_report = self.verification_engine.verify(
+                            execution_report,
+                            capabilities,
+                            required_checks=self.required_verification_checks,
+                        )
+                        execution_payload["verification"] = {
+                            "status": verification_report.status.value,
+                            "verified": verification_report.verified,
+                            "verifier_ids": list(verification_report.verifier_ids),
+                            "verified_conditions": list(verification_report.verified_conditions),
+                            "blockers": list(verification_report.blockers),
+                            "fingerprint": verification_report.fingerprint,
+                        }
+                        execution_payload["verified"] = verification_report.verified
+                        if verification_report.verified and execution_report.steps:
+                            execution_payload["verified_outputs"] = dict(
+                                execution_report.steps[-1].outputs
+                            )
+                    else:
+                        execution_payload["reason"] = "execution failed; stopped without retry"
+                except Exception as exc:
+                    execution_payload.update({
+                        "status": "failed",
+                        "error": type(exc).__name__,
+                        "reason": "execution or verification raised an error; no retry was attempted",
+                    })
+
         return {
             "status": status,
             "task": task.to_dict(),
@@ -131,13 +230,7 @@ class UniversalIntelligencePipeline:
                 ],
             },
             "composition_plan": plan.to_dict(),
-            "execution": {
-                "attempted": False,
-                "reason": (
-                    "planning is advisory; only an explicitly registered native handler "
-                    "and independent verifier may authorize execution and promotion"
-                ),
-            },
+            "execution": execution_payload,
         }
 
     @staticmethod

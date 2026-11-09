@@ -937,3 +937,18 @@ The normal `POST /api/crystal/ask` path now includes a `universal_intelligence` 
 For explicit construction from typed examples, use `POST /api/universal/synthesize`. Supply typed inputs plus disjoint `training` and `validation` examples. A successful result is a UOL program and a capability candidate marked `UNVERIFIED`; it cannot execute or promote itself. The host-side synthesizer API additionally supports CEGIS when a separate oracle and disjoint probe pool are supplied.
 
 See [Backend Universal Intelligence Integration](./docs/31-backend-universal-intelligence-integration.md) for request formats, examples, runtime boundaries and test coverage.
+
+
+---
+
+## Backend Q&A: guarded execution and native Python replies
+
+The backend Q&A path now connects task analysis to **optional verified task execution**, and connects a small native Python builder to the existing test-and-check cycle.
+
+- A ready plan can run only through host-registered native handlers, with a separate independent verifier and explicit required checks. If those are not configured, Mirror explains why execution was not attempted.
+- Q&A composes answers from supported facts, independently verified task outputs, and tested code. Memory and unreviewed retrieval are not treated as proof.
+- The built-in code writer currently supports a narrow set of beginner tasks: print supplied text, add/subtract/multiply two numbers, and square a number. It asks for a name when “print my name” lacks the actual name, and refuses unsupported code requests.
+- Factual questions use the existing Crystal knowledge vault. Missing or conflicting evidence remains unanswered rather than invented.
+- **No knowledge rules or datasets were added.** Rule/data feeding remains a separate step.
+
+See [Backend Q&A Execution and Native Code Generation](./docs/32-backend-qna-execution-and-native-code-generation.md) and [Universal Intelligence Integration](./docs/31-backend-universal-intelligence-integration.md) for behavior, host configuration, trust boundaries and tests.

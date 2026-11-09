@@ -2,7 +2,7 @@
 
 ## What is connected
 
-The default backend Q&A path now invokes `UniversalIntelligencePipeline.analyze` and returns its trace under `universal_intelligence`. The bridge performs:
+The default backend Q&A path invokes `UniversalIntelligencePipeline.analyze` and returns its trace under `universal_intelligence`. Normal Q&A requests also set `execute=true`: a ready plan is run only when the host has configured an allow-listed native execution engine, a separate independent verification engine, and explicit required checks. Without all three, the plan remains advisory and no step runs. The bridge performs:
 
 1. Domain-neutral task interpretation, including intent, constraints, known inputs, context, outputs and actionable subtasks.
 2. Conservative import of structured `KnowledgeRecord.content.uol_rule` entries into the UOL catalog, preserving the importer's provenance and evidence policy.
@@ -77,9 +77,11 @@ A successful request returns a typed UOL program and a candidate capability mark
 - Natural-language parsing is bounded and conservative; an inferred task contract is not proof that the request was fully understood.
 - Natural-language knowledge is not silently compiled into UOL. Only explicit structured UOL rules are imported.
 - Matching and composition never invent missing inputs or upgrade capability evidence.
+- When configured, plan execution uses only host-registered native handlers. The engine is bounded and stops on the first failed step; it does not blindly retry operations.
+- Successful execution is not enough: a separately registered verifier must pass every required check and declared postcondition before an output is marked verified.
 - UOL synthesis is example-guided within the implemented finite grammar, not unrestricted program or theory invention.
 - Candidate execution, independent domain verification, repeated-observation learning, explicit promotion and persistence remain separate gates.
-- No arbitrary user-supplied source string is evaluated by this bridge.
+- No arbitrary user-supplied source string is evaluated by this bridge, and this integration does not ingest or generate knowledge rules.
 
 ## Tests
 

@@ -108,3 +108,88 @@ def test_default_cognitive_qa_includes_universal_intelligence_trace():
     assert result["universal_intelligence"]["task"]["intent"] == "explain"
     assert "universal_intelligence" in result["sources_consulted"]
     assert result["universal_intelligence"]["execution"]["attempted"] is False
+
+
+def _double_handler(inputs):
+    return {"result": inputs["value"] * 2}
+
+
+def _independently_verify_double(context):
+    return context.step.outputs["result"] == context.step.inputs["value"] * 2
+
+
+class ExecutableVault(EmptyVault):
+    def __init__(self, capability):
+        self.capability = capability
+
+    def list_capabilities(self, *, domain=None, limit=500):
+        return (self.capability,)
+
+
+def test_normal_qna_executes_only_with_independent_verification():
+    from mirror_crystal.blueprint_contracts import EvidenceLevel, VerificationEvidence
+    from mirror_crystal.capability_model import CapabilitySpec, PortContract
+    from mirror_crystal.execution import CapabilityExecutionEngine, NativeOperationRegistry
+    from mirror_crystal.universal_representation import RepresentationProvenance
+    from mirror_crystal.verification import (
+        IndependentCheck,
+        IndependentVerificationEngine,
+        IndependentVerifierRegistry,
+    )
+
+    capability = CapabilitySpec(
+        capability_id="double-value",
+        name="Double a value",
+        description="Build a doubled value from one integer input",
+        domains=("general",),
+        intents=("build",),
+        inputs=(PortContract("value", "integer"),),
+        outputs=(PortContract("result", "integer"),),
+        postconditions=("result_is_double",),
+        provenance=RepresentationProvenance(source="backend-qna-test"),
+        verification=VerificationEvidence(
+            level=EvidenceLevel.EXECUTION_TESTED,
+            checks_passed=("handler-unit-test",),
+            verifier="handler-tests",
+        ),
+    )
+    operations = NativeOperationRegistry()
+    operations.register("double-value", _double_handler)
+    verifiers = IndependentVerifierRegistry()
+    verifiers.register(
+        IndependentCheck(
+            "double-result",
+            "independent-checker",
+            _independently_verify_double,
+            ("result_is_double",),
+        ),
+        independent=True,
+    )
+    pipeline = UniversalIntelligencePipeline(
+        vault_provider=lambda: ExecutableVault(capability),
+        execution_engine=CapabilityExecutionEngine(operations),
+        verification_engine=IndependentVerificationEngine(verifiers),
+        required_verification_checks={"double-value": ("double-result",)},
+    )
+    orchestrator = UnifiedCognitiveOrchestrator(
+        vault_provider=lambda: None,
+        memory_provider=MemoryStub,
+        reasoning_provider=ReasoningStub,
+        code_provider=CodeStub,
+        universal_intelligence_provider=lambda: pipeline,
+    )
+
+    result = orchestrator.ask(
+        "Build a double from value",
+        universal_options={
+            "domain_hint": "general",
+            "known_inputs": {"value": 6},
+        },
+    )
+
+    assert result["task_execution_verified"] is True
+    assert result["task_result_verified"] is True
+    assert result["task_execution"]["status"] == "succeeded"
+    assert result["task_execution"]["verification"]["verified"] is True
+    assert result["task_execution"]["verified_outputs"] == {"result": 12}
+    assert "12" in result["answer"]

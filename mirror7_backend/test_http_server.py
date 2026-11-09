@@ -195,7 +195,44 @@ def test_api_token_protects_sensitive_routes_but_not_liveness():
         thread.join(timeout=2)
 
 
-def test_tdd_generate_route_reports_unconfigured_provider():
+def test_tdd_generate_route_uses_native_builder_and_rejects_unsupported_requests():
+    from .service import BackendService
+
+    service = BackendService(enable_crystal_auto_load=False)
+    server = create_server(port=0, service=service)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        status, unsupported = request(
+            server,
+            "POST",
+            "/api/tdd/generate",
+            {"prompt": "Write a sorting function"},
+        )
+        assert status == 200
+        assert unsupported["ok"] is False
+        assert unsupported["verified"] is False
+        assert "does not yet support" in unsupported["error"]
+
+        status, generated = request(
+            server,
+            "POST",
+            "/api/tdd/generate",
+            {"prompt": "Write Python code to add two numbers"},
+        )
+        assert status == 200
+        assert generated["ok"] is True
+        assert generated["verified"] is True
+        assert "def add(a, b)" in generated["final_code"]
+        assert generated["verification"]["tests_generated"] == 3
+        assert generated["verification"]["tests_passed"] == 3
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def test_normal_qna_returns_native_code_only_after_tdd_passes():
     from .service import BackendService
 
     service = BackendService(enable_crystal_auto_load=False)
@@ -206,13 +243,16 @@ def test_tdd_generate_route_reports_unconfigured_provider():
         status, result = request(
             server,
             "POST",
-            "/api/tdd/generate",
-            {"prompt": "Write a sorting function"},
+            "/api/crystal/ask",
+            {"prompt": "Write Python code to add two numbers"},
         )
         assert status == 200
-        assert result["ok"] is False
-        assert result["verified"] is False
-        assert "No code-generation provider" in result["error"]
+        assert result["answer_qualification"] == "verified_task_result"
+        assert result["task_result_verified"] is True
+        assert result["task_code_verified"] is True
+        assert "def add(a, b)" in result["answer"]
+        assert result["code_verification"]["tests_generated"] == 3
+        assert result["code_verification"]["tests_passed"] == 3
     finally:
         server.shutdown()
         server.server_close()

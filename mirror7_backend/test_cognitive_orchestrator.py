@@ -193,7 +193,8 @@ def test_natural_language_code_generation_is_connected_to_tdd():
         explicit_tests="assert add(2, 3) == 5\nassert add(-1, 1) == 0",
     )
     assert result["generated_code"] == "def add(a, b): return a + b"
-    assert result["code_generation"] == {"available": True, "generated": True}
+    assert result["code_generation"]["available"] is True
+    assert result["code_generation"]["generated"] is True
     assert result["code_verification"]["verified"] is True
     assert "code_generation" in result["sources_consulted"]
     assert "code_verification" in result["sources_consulted"]
@@ -225,3 +226,50 @@ def test_synthesis_generator_cannot_add_unsupported_claims():
     assert result["answer"] == "Python is dynamically typed."
     assert result["synthesis"]["generator_rejected"] is True
     assert result["synthesis"]["memory_used_as_evidence"] is False
+
+
+def test_native_code_reply_includes_only_tdd_verified_source():
+    code = Code({
+        "verified": True,
+        "tests_generated": 1,
+        "tests_passed": 1,
+        "final_code": "def main():\n    message = 'Hello Mirror'\n    print(message)\n    return message",
+    })
+    result = make(
+        code=code,
+        code_generation_provider=lambda prompt: {
+            "code": "def main():\n    message = 'Hello Mirror'\n    print(message)\n    return message",
+            "tests": "assert main() == 'Hello Mirror'\n",
+            "spec_desc": "print Hello Mirror",
+            "generation_kind": "print_text",
+        },
+    ).ask("Write Python code that prints 'Hello Mirror'")
+
+    assert result["task_result_verified"] is True
+    assert result["task_code_verified"] is True
+    assert result["verified"] is False  # program checks do not certify factual claims
+    assert "Generated and tested Python code:" in result["answer"]
+    assert "def main()" in result["answer"]
+    assert code.calls[0][2] == "assert main() == 'Hello Mirror'\n"
+
+
+def test_native_code_generation_asks_for_missing_name_without_fabricating():
+    result = make(
+        code_generation_provider=lambda prompt: {
+            "code": None,
+            "needs_input": "What name should the program print?",
+            "generation_kind": "print_text",
+        },
+    ).ask("Write Python code that prints my name")
+
+    assert result["answer"] == "What name should the program print?"
+    assert result["answer_qualification"] == "clarification_required"
+    assert result["abstained"] is False
+    assert result["generated_code"] is None
+
+
+def test_unknown_factual_question_is_not_invented():
+    result = make(vault=Vault(None)).ask("How many planets are there in the universe?")
+    assert result["answer"] == "Insufficient independently verified evidence."
+    assert result["verified"] is False
+    assert result["abstained"] is True
