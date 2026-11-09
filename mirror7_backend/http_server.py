@@ -135,6 +135,9 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             "mode": res.get("mode"),
             "latency_ms": res.get("latency_ms", 0.0),
             "epistemic_tier": res.get("epistemic_tier"),
+            "verified": bool(res.get("verified", False)),
+            "abstained": bool(res.get("abstained", True)),
+            "answer_qualification": res.get("answer_qualification", "unknown"),
         }
         self.wfile.write(f"data: {json.dumps(final_meta, ensure_ascii=False)}\n\n".encode("utf-8"))
         self.wfile.flush()
