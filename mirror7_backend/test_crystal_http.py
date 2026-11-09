@@ -70,7 +70,10 @@ def test_crystal_http_server_full_integration(tmp_path: Path):
         assert code_q == 200
         assert "O(sqrt(N))" in data_q["answer"]
         # Retrieval returns the stored answer; it does not independently prove the fact.
-        assert data_q["epistemic_tier"] == "moderate_confidence"
+        assert data_q["epistemic_tier"] == "honest_abstain"
+        assert data_q["verified"] is False
+        assert data_q["abstained"] is True
+        assert data_q["answer_qualification"] == "unverified_candidate"
 
         code_cas, data_cas, _ = make_request(server, "POST", "/api/crystal/ask", {"prompt": "Differentiate x^3 + 5*x"})
         assert code_cas == 200
@@ -85,7 +88,9 @@ def test_crystal_http_server_full_integration(tmp_path: Path):
         )
         assert code_qm == 200
         assert "78" in data_qm["answer"]
-        assert data_qm["epistemic_tier"] == "verified_exact"
+        assert data_qm["epistemic_tier"] == "honest_abstain"
+        assert data_qm["verified"] is False
+        assert data_qm["abstained"] is True
 
         # Genuine out-of-distribution prose must still abstain honestly
         code_ood, data_ood, _ = make_request(

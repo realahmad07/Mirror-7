@@ -179,12 +179,18 @@ def test_sharded_crystal_router_backend_service_integration(tmp_path: Path):
     
     # Test query routing through BackendService
     q_code = service.crystal_ask("What is quicksort?")
+    assert "UNVERIFIED CANDIDATE" in q_code["answer"]
     assert "Quicksort" in q_code["answer"]
-    assert q_code["confidence"] >= 0.8
+    assert q_code["confidence"] == 0.0
+    assert q_code["verified"] is False
+    assert q_code["abstained"] is True
     
     q_quant = service.crystal_ask("What is a Hadamard gate?")
+    assert "UNVERIFIED CANDIDATE" in q_quant["answer"]
     assert "Hadamard gate" in q_quant["answer"]
-    assert q_quant["confidence"] >= 0.8
+    assert q_quant["confidence"] == 0.0
+    assert q_quant["verified"] is False
+    assert q_quant["abstained"] is True
 
 
 def test_export_mmap_index_and_domain_sharding(tmp_path: Path):

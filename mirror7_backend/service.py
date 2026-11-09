@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 from threading import Condition, RLock
 from typing import Any, Callable, Mapping
 
@@ -15,7 +15,7 @@ from .response_engine import UnifiedResponseEngine
 class BackendService:
     """UI-independent orchestration facade for the Mirror 7 backend with optional Mirror Crystal Engine."""
 
-    VERSION = 5
+    VERSION = 6
 
     def __init__(
         self,
@@ -24,6 +24,8 @@ class BackendService:
         checkpoint_store: CheckpointStore | None = None,
         action_gateway: ActionGateway | None = None,
         response_generator: Callable[[Any], Any] | None = None,
+        code_generation_provider: Callable[[str], Any] | None = None,
+        evidence_synthesis_provider: Callable[[dict[str, Any]], Any] | None = None,
         generation_config: ResponseGenerationConfig | None = None,
         max_sessions: int = 128,
         metrics: BackendMetrics | None = None,
@@ -40,6 +42,8 @@ class BackendService:
         self.response_engine = UnifiedResponseEngine(
             response_generator, config=self.generation_config
         )
+        self.code_generation_provider = code_generation_provider
+        self.evidence_synthesis_provider = evidence_synthesis_provider
         self.max_sessions = max_sessions
         self.metrics = metrics or BackendMetrics()
         self._sessions: dict[str, BackendSession] = {}
@@ -149,6 +153,8 @@ class BackendService:
                 reasoning_provider=lambda: self.cerebrum_bridge,
                 code_provider=lambda: self.tdd_engine,
                 metrics=self.metrics,
+                code_generation_provider=self.code_generation_provider,
+                synthesis_provider=self.evidence_synthesis_provider,
             )
         return self._cognitive_orchestrator
 
@@ -244,6 +250,57 @@ class BackendService:
         import dataclasses
         rep = self.tdd_engine.run_tdd_cycle(candidate_code, spec_desc=spec_desc, explicit_tests=explicit_tests)
         return dataclasses.asdict(rep)
+
+    def tdd_generate_and_verify(
+        self,
+        prompt: str,
+        spec_desc: str = "",
+        explicit_tests: str = "",
+    ) -> dict[str, Any]:
+        """Generate code through an injected model adapter, then verify it with non-vacuous TDD."""
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise ValueError("prompt must be a non-empty string")
+        if self.code_generation_provider is None:
+            return {
+                "ok": False,
+                "verified": False,
+                "error": "No code-generation provider is configured.",
+                "final_code": None,
+                "verification": None,
+            }
+        generated = self.code_generation_provider(prompt)
+        if isinstance(generated, Mapping):
+            candidate = generated.get("code") or generated.get("final_code")
+        else:
+            candidate = generated
+        if not isinstance(candidate, str) or not candidate.strip():
+            return {
+                "ok": False,
+                "verified": False,
+                "error": "Code-generation provider returned no source code.",
+                "final_code": None,
+                "verification": None,
+            }
+        report = self.tdd_engine.run_tdd_cycle(
+            candidate.strip(),
+            spec_desc=spec_desc,
+            explicit_tests=explicit_tests,
+        )
+        payload = asdict(report) if hasattr(report, "__dataclass_fields__") else dict(report)
+        tests_generated = int(payload.get("tests_generated", 0) or 0)
+        tests_passed = int(payload.get("tests_passed", 0) or 0)
+        verified = (
+            payload.get("verified") is True
+            and tests_generated > 0
+            and tests_passed == tests_generated
+        )
+        payload["verified"] = verified
+        return {
+            "ok": True,
+            "verified": verified,
+            "final_code": payload.get("final_code", candidate.strip()),
+            "verification": payload,
+        }
 
     def six_gate_audit(self, text: str, spdx_license: str = "MIT") -> dict[str, Any]:
         """'Quality Over Quantity' 6-Gate Permissive Data Hygiene Auditor."""

@@ -99,7 +99,9 @@ def test_auto_extract_and_resolve_context():
 def test_context_extraction_privacy_gdpr_and_compaction():
     with tempfile.TemporaryDirectory() as td:
         db_path = Path(td) / "test_privacy_gdpr.sqlite"
-        mem = CrossSessionMemoryGraph(db_path)
+        mem = CrossSessionMemoryGraph(
+            db_path, encryption_key="test-only-memory-key-with-at-least-32-chars"
+        )
         try:
             # 1. Context-Aware Port Extraction (Bottleneck 11)
             t_srv = "Our analytics server runs on port 9443 with framework FastAPI"
@@ -135,7 +137,11 @@ def test_context_extraction_privacy_gdpr_and_compaction():
 
             # Underlying database must store encrypted string
             raw_row = mem._conn.execute("SELECT value_text FROM memory_entities WHERE session_id = 'sess_priv' AND entity_key = 'prod_token'").fetchone()
-            assert raw_row[0].startswith("enc::")
+            assert raw_row[0].startswith("aead:v1:")
+            raw_json = mem._conn.execute(
+                "SELECT value_json FROM memory_entities WHERE session_id = 'sess_priv' AND entity_key = 'prod_token'"
+            ).fetchone()
+            assert raw_json[0] is None
 
             # Recall decrypts transparently
             recalled_sec = mem.recall_entity("sess_priv", "prod_token")
@@ -169,3 +175,58 @@ def test_context_extraction_privacy_gdpr_and_compaction():
             assert compact_res["inactive_entities_purged"] >= 1
         finally:
             mem.close()
+
+
+def test_sensitive_memory_requires_a_configured_key(tmp_path):
+    import pytest
+
+    mem = CrossSessionMemoryGraph(tmp_path / "no-key.sqlite")
+    try:
+        with pytest.raises(ValueError, match="MIRROR_MEMORY_KEY"):
+            mem.remember("session", "api_token", "token-value", entity_type="credential")
+    finally:
+        mem.close()
+
+
+def test_aead_cipher_uses_random_nonces_and_detects_tampering():
+    import pytest
+    from mirror_crystal.cross_session_memory import StdlibCipher
+
+    key = "correct-horse-battery-staple-and-more"
+    first = StdlibCipher.encrypt("private value", key)
+    second = StdlibCipher.encrypt("private value", key)
+    assert first.startswith("aead:v1:")
+    assert second.startswith("aead:v1:")
+    assert first != second
+    assert StdlibCipher.decrypt(first, key) == "private value"
+
+    prefix, payload = first.rsplit(":", 1)
+    tampered = payload[:-2] + ("AA" if payload[-2:] != "AA" else "BB")
+    with pytest.raises(Exception):
+        StdlibCipher.decrypt(prefix + ":" + tampered, key)
+
+
+def test_nested_credentials_are_scrubbed_from_auxiliary_json(tmp_path):
+    import json
+    from mirror_crystal.cross_session_memory import CrossSessionMemoryGraph
+
+    mem = CrossSessionMemoryGraph(tmp_path / "nested-secrets.sqlite")
+    try:
+        secret = "sk-" + ("Z" * 36)
+        mem.remember(
+            "session",
+            "general_config",
+            {"api_key": secret, "service": {"name": "mirror"}},
+            entity_type="general",
+        )
+        row = mem._conn.execute(
+            "SELECT value_text, value_json FROM memory_entities "
+            "WHERE session_id = 'session' AND entity_key = 'general_config'"
+        ).fetchone()
+        assert secret not in row[0]
+        assert secret not in row[1]
+        parsed = json.loads(row[1])
+        assert parsed["api_key"] == "[REDACTED_SECRET]"
+        assert parsed["service"]["name"] == "mirror"
+    finally:
+        mem.close()

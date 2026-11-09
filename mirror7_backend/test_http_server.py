@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import threading
+import urllib.error
 import urllib.request
 
 from .http_server import create_server
@@ -127,6 +128,91 @@ def test_bounded_server_backpressure_and_pool():
         status, health = request(server, "GET", "/api/health")
         assert status == 200
         assert health["ok"] is True
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def test_non_loopback_bind_requires_token_and_specific_cors():
+    from .service import BackendService
+
+    try:
+        create_server(host="0.0.0.0", port=0, service=BackendService())
+    except ValueError as exc:
+        assert "MIRROR7_API_TOKEN" in str(exc)
+    else:
+        raise AssertionError("public bind without token must fail closed")
+
+    try:
+        create_server(
+            host="0.0.0.0",
+            port=0,
+            service=BackendService(),
+            api_token="x" * 40,
+        )
+    except ValueError as exc:
+        assert "CORS" in str(exc)
+    else:
+        raise AssertionError("public wildcard CORS must fail closed")
+
+
+def test_api_token_protects_sensitive_routes_but_not_liveness():
+    from .service import BackendService
+
+    token = "mirror7-test-token-" + ("x" * 40)
+    server = create_server(port=0, service=BackendService(), api_token=token)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        status, health = request(server, "GET", "/api/health")
+        assert status == 200
+        assert health["ok"] is True
+
+        unauthenticated = urllib.request.Request(
+            f"http://127.0.0.1:{server.server_port}/api/sessions",
+            method="GET",
+        )
+        try:
+            urllib.request.urlopen(unauthenticated, timeout=3)
+        except urllib.error.HTTPError as exc:
+            assert exc.code == 401
+        else:
+            raise AssertionError("sensitive API route must require authentication")
+
+        authenticated = urllib.request.Request(
+            f"http://127.0.0.1:{server.server_port}/api/sessions",
+            headers={"Authorization": f"Bearer {token}"},
+            method="GET",
+        )
+        with urllib.request.urlopen(authenticated, timeout=3) as response:
+            payload = json.loads(response.read())
+            assert response.status == 200
+            assert payload["sessions"] == []
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def test_tdd_generate_route_reports_unconfigured_provider():
+    from .service import BackendService
+
+    service = BackendService(enable_crystal_auto_load=False)
+    server = create_server(port=0, service=service)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        status, result = request(
+            server,
+            "POST",
+            "/api/tdd/generate",
+            {"prompt": "Write a sorting function"},
+        )
+        assert status == 200
+        assert result["ok"] is False
+        assert result["verified"] is False
+        assert "No code-generation provider" in result["error"]
     finally:
         server.shutdown()
         server.server_close()

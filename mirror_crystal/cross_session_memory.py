@@ -5,9 +5,11 @@ project environment anchors, relation links, and contradiction reconciliation ac
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
+import secrets
 from pathlib import Path
 import re
 import sqlite3
@@ -35,50 +37,102 @@ class SecretScrubber:
             s = pat.sub(repl, s)
         return s
 
+    @classmethod
+    def scrub_value(cls, value: Any) -> Any:
+        """Recursively redact credential-like mapping keys and scrub scalar strings."""
+        if isinstance(value, dict):
+            cleaned: dict[Any, Any] = {}
+            for key, item in value.items():
+                normalized = re.sub(r"[^a-z0-9]+", "_", str(key).casefold()).strip("_")
+                key_parts = set(normalized.split("_"))
+                sensitive_parts = {
+                    "password", "passwd", "secret", "token", "authorization",
+                    "credential", "private", "apikey",
+                }
+                if key_parts & sensitive_parts or normalized in {
+                    "api_key", "private_key", "client_secret", "access_key",
+                }:
+                    cleaned[key] = "[REDACTED_SECRET]"
+                else:
+                    cleaned[key] = cls.scrub_value(item)
+            return cleaned
+        if isinstance(value, list):
+            return [cls.scrub_value(item) for item in value]
+        if isinstance(value, tuple):
+            return tuple(cls.scrub_value(item) for item in value)
+        if isinstance(value, str):
+            return cls.scrub(value)
+        return value
+
 
 class StdlibCipher:
-    """Pure Python stdlib AES/PBKDF2-equivalent stream cipher for encryption at rest."""
-    MASTER_SALT = b"mirror7_memory_vault_salt_2026"
+    """Authenticated AES-256-GCM storage with read-only legacy decryption support."""
+    LEGACY_MASTER_SALT = b"mirror7_memory_vault_salt_2026"
+    KDF_SALT = b"mirror7-memory-aead-v1"
+    AAD = b"mirror7-memory-entity-v1"
 
     @classmethod
-    def _derive_key(cls, key_str: str) -> bytes:
-        return hashlib.pbkdf2_hmac("sha256", key_str.encode("utf-8"), cls.MASTER_SALT, 1000)
+    def _derive_key(cls, key_str: str | None) -> bytes:
+        if not isinstance(key_str, str) or len(key_str) < 32:
+            raise ValueError("MIRROR_MEMORY_KEY must be configured with at least 32 characters")
+        return hashlib.scrypt(
+            key_str.encode("utf-8"), salt=cls.KDF_SALT,
+            n=2**14, r=8, p=1, dklen=32,
+        )
 
     @classmethod
-    def encrypt(cls, plaintext: str, key_str: str = "mirror7_default_vault_key") -> str:
-        data_bytes = plaintext.encode("utf-8")
+    def encrypt(cls, plaintext: str, key_str: str | None = None) -> str:
+        try:
+            from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        except ImportError as exc:
+            raise RuntimeError("cryptography is required for sensitive memory encryption") from exc
         key = cls._derive_key(key_str)
-        out = bytearray(len(data_bytes))
-        block_idx = 0
-        cur_block = b""
-        block_pos = 32
-        for i, b in enumerate(data_bytes):
-            if block_pos >= 32:
-                cur_block = hashlib.sha256(key + struct.pack("<I", block_idx)).digest()
-                block_idx += 1
-                block_pos = 0
-            out[i] = b ^ cur_block[block_pos]
-            block_pos += 1
-        return "enc::" + out.hex()
+        nonce = secrets.token_bytes(12)
+        encrypted = AESGCM(key).encrypt(
+            nonce, str(plaintext).encode("utf-8"), cls.AAD
+        )
+        packed = base64.urlsafe_b64encode(nonce + encrypted).decode("ascii")
+        return "aead:v1:" + packed
 
     @classmethod
-    def decrypt(cls, ciphertext: str, key_str: str = "mirror7_default_vault_key") -> str:
-        if not ciphertext.startswith("enc::"):
-            return ciphertext
+    def _legacy_decrypt(cls, ciphertext: str, key_str: str) -> str:
+        # Compatibility only: never use this custom stream cipher for new writes.
         data_bytes = bytes.fromhex(ciphertext[5:])
-        key = cls._derive_key(key_str)
+        key = hashlib.pbkdf2_hmac(
+            "sha256", key_str.encode("utf-8"), cls.LEGACY_MASTER_SALT, 1000
+        )
         out = bytearray(len(data_bytes))
         block_idx = 0
         cur_block = b""
         block_pos = 32
-        for i, b in enumerate(data_bytes):
+        for i, value in enumerate(data_bytes):
             if block_pos >= 32:
                 cur_block = hashlib.sha256(key + struct.pack("<I", block_idx)).digest()
                 block_idx += 1
                 block_pos = 0
-            out[i] = b ^ cur_block[block_pos]
+            out[i] = value ^ cur_block[block_pos]
             block_pos += 1
         return out.decode("utf-8", errors="replace")
+
+    @classmethod
+    def decrypt(cls, ciphertext: str, key_str: str | None = None) -> str:
+        if ciphertext.startswith("enc::"):
+            return cls._legacy_decrypt(
+                ciphertext, key_str or "m7_memory_vault_secure_key"
+            )
+        if not ciphertext.startswith("aead:v1:"):
+            return ciphertext
+        try:
+            from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        except ImportError as exc:
+            raise RuntimeError("cryptography is required for sensitive memory decryption") from exc
+        packed = base64.urlsafe_b64decode(ciphertext[len("aead:v1:"):].encode("ascii"))
+        if len(packed) < 28:
+            raise ValueError("invalid encrypted memory payload")
+        key = cls._derive_key(key_str)
+        return AESGCM(key).decrypt(
+            packed[:12], packed[12:], cls.AAD
+        ).decode("utf-8")
 
 class CrossSessionMemoryGraph:
     """
@@ -88,7 +142,12 @@ class CrossSessionMemoryGraph:
 
     DEFAULT_DB_PATH = Path("artifacts/mirror_memory_graph.sqlite")
 
-    def __init__(self, db_path: Optional[Path | str] = None) -> None:
+    def __init__(
+        self,
+        db_path: Optional[Path | str] = None,
+        *,
+        encryption_key: str | None = None,
+    ) -> None:
         self.db_path = Path(db_path) if db_path else self.DEFAULT_DB_PATH
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
@@ -103,11 +162,23 @@ class CrossSessionMemoryGraph:
         self._conn.execute("PRAGMA busy_timeout = 10000")
         self._conn.execute("PRAGMA wal_autocheckpoint = 1000")
         self.max_entities_per_session = 200
-        self.vault_encryption_key = os.getenv("MIRROR_MEMORY_KEY", "m7_memory_vault_secure_key")
+        self.vault_encryption_key = encryption_key or os.getenv("MIRROR_MEMORY_KEY")
+        self.legacy_encryption_key = (
+            os.getenv("MIRROR_MEMORY_LEGACY_KEY")
+            or os.getenv("MIRROR_MEMORY_KEY")
+            or "m7_memory_vault_secure_key"
+        )
         self._undo_stack: Dict[str, List[Dict[str, Any]]] = {}
         self._entity_cache: Dict[str, Dict[str, Dict[str, Any]]] = {}
         self._profile_cache: Dict[str, Optional[Dict[str, Any]]] = {}
         self._init_schema()
+
+    def _decrypt_value(self, value: str) -> str:
+        if value.startswith("aead:v1:"):
+            return StdlibCipher.decrypt(value, self.vault_encryption_key)
+        if value.startswith("enc::"):
+            return StdlibCipher.decrypt(value, self.legacy_encryption_key)
+        return value
 
     def _init_schema(self) -> None:
         with self._lock:
@@ -167,6 +238,13 @@ class CrossSessionMemoryGraph:
             cur.execute("CREATE INDEX IF NOT EXISTS idx_mem_session ON memory_entities(session_id, entity_key)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_mem_type ON memory_entities(session_id, entity_type)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_rel_session ON memory_relations(session_id, src_key)")
+            # Older versions duplicated sensitive values in plaintext JSON.
+            cur.execute("""
+                UPDATE memory_entities SET value_json = NULL
+                WHERE entity_type IN ('credential', 'secret', 'auth', 'private_key')
+                   OR lower(entity_key) LIKE '%password%'
+                   OR lower(entity_key) LIKE '%token%'
+            """)
 
     # =========================================================================
     # Core Entity Memory Operations
@@ -182,13 +260,23 @@ class CrossSessionMemoryGraph:
     ) -> Dict[str, Any]:
         """Stores or updates an entity memory with secret scrubbing, quota check, and encryption."""
         key_clean = key.strip().lower()
-        # Privacy filter: scrub secrets & credentials before saving
-        val_str = SecretScrubber.scrub(str(value).strip())
-        val_json = json.dumps(value) if not isinstance(value, str) else json.dumps({"str": val_str})
+        # Recursively scrub structured values before producing either database
+        # representation, so the auxiliary JSON column cannot retain raw credentials.
+        safe_value = SecretScrubber.scrub_value(value)
+        val_str = str(safe_value).strip()
         now = time.time()
-
-        # Encryption at rest for sensitive categories
-        is_sensitive = entity_type in ("credential", "secret", "auth", "private_key") or "password" in key_clean or "token" in key_clean
+        # Sensitive data must have authenticated encryption and must not be duplicated
+        # into the plaintext JSON column. Missing keys fail closed rather than downgrade.
+        is_sensitive = (
+            entity_type in ("credential", "secret", "auth", "private_key")
+            or "password" in key_clean
+            or "token" in key_clean
+        )
+        val_json = None if is_sensitive else (
+            json.dumps(safe_value, ensure_ascii=False)
+            if not isinstance(safe_value, str)
+            else json.dumps({"str": val_str}, ensure_ascii=False)
+        )
         db_val_text = StdlibCipher.encrypt(val_str, self.vault_encryption_key) if is_sensitive else val_str
 
         with self._lock:
@@ -269,7 +357,7 @@ class CrossSessionMemoryGraph:
             if not row:
                 return None
             k, etype, val_text, val_json, conf, updated, ttl = row
-            decrypted_val = StdlibCipher.decrypt(val_text, self.vault_encryption_key) if val_text.startswith("enc::") else val_text
+            decrypted_val = self._decrypt_value(val_text)
             try:
                 parsed_json = json.loads(val_json) if val_json else None
             except Exception:
@@ -314,7 +402,7 @@ class CrossSessionMemoryGraph:
                 sess_map: Dict[str, Dict[str, Any]] = {}
                 for r in rows:
                     v_raw = r[2]
-                    v_dec = StdlibCipher.decrypt(v_raw, self.vault_encryption_key) if v_raw.startswith("enc::") else v_raw
+                    v_dec = self._decrypt_value(v_raw)
                     sess_map[r[0]] = {
                         "key": r[0],
                         "type": r[1],
@@ -536,7 +624,7 @@ class CrossSessionMemoryGraph:
                 {
                     "key": r[0],
                     "type": r[1],
-                    "value": StdlibCipher.decrypt(r[2], self.vault_encryption_key) if r[2].startswith("enc::") else r[2],
+                    "value": self._decrypt_value(r[2]),
                     "confidence": r[3],
                     "created_at": r[4],
                     "updated_at": r[5],
@@ -723,7 +811,7 @@ class CrossSessionMemoryGraph:
         for session_id, key, val, conf, _ in rows:
             stats["entities_scanned"] += 1
             try:
-                decrypted_val = StdlibCipher.decrypt(val, key_str=self.vault_encryption_key)
+                decrypted_val = self._decrypt_value(val)
             except Exception:
                 decrypted_val = val
 
