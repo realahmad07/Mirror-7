@@ -202,6 +202,14 @@ These are bounded checkers for specific structured claims, not general-purpose p
 
 **Phase 3–4 verification:** CI passed **295** Mirror Crystal/evaluation tests, **45** backend tests, **4** release-boundary tests, **3** training-foundation tests and **3** free-running evaluator tests; package build passed. Security Guard passed. [CI run](https://github.com/realahmad07/Mirror-7/actions/runs/42668214798) · [Security Guard](https://github.com/realahmad07/Mirror-7/actions/runs/42668215023).
 
+## Phase 5–6: Verified program learning and cross-domain transfer
+
+**Phase 5 — verified program learning:** Mirror can now take one immutable UOL candidate and learn a reusable capability only after at least three distinct tasks and executions pass the target domain's independent evidence checks. It replays the same program against every recorded input and checks the actual output. The resulting capability carries independently reproduced evidence, but registration is still an explicit promotion action; its process-safe native handler executes the saved UOL program, not generated Python.
+
+**Phase 6 — controlled cross-domain transfer:** a learned program can be proposed in another domain only if its rule dependencies are verified and globally scoped, its input/output interface is compatible, and fresh target training and held-out examples pass. Port names, types, units and dimensions are preserved. The transferred capability remains **UNVERIFIED** until target-domain verifiers accept it across repeated executions and Phase 5 promotes the target capability.
+
+This is a bounded transfer mechanism, not unrestricted analogy or universal scientific discovery. It will reject source-domain-only rules and never carry source verification into the target domain. See [Phase 5–6 implementation and trust boundaries](./docs/29-phase5-verified-program-learning-and-phase6-cross-domain-transfer.md).
+
 ### What Mirror can do in this verified core
 
 - Store and retrieve facts, definitions, rules, formulas, procedures, assumptions and observations with their provenance, evidence and epistemic status.

@@ -79,3 +79,12 @@ The next backend increment adds a knowledge-to-operation bridge and counterexamp
 - [Implementation details and evidence boundaries](28-phase3-advanced-synthesis-and-phase4-native-verification.md).
 
 These increments do not make the broader original strategic Phase 6 complete: general-purpose domain simulators, source-authentication, formal proof tools and experimental validation remain separate work.
+
+
+## Native construction milestone — Phase 5 and Phase 6
+
+- Phase 5 learns a reusable native UOL capability only from repeated distinct executions, independently verified evidence and exact program-output replay. Capability and handler registration remain explicit.
+- Phase 6 transfers a verified program only through globally verified dependencies, unchanged typed/unit/dimension ports, and fresh target-domain regression examples. Transfer candidates remain unverified until target verifiers and the Phase 5 learning gate pass.
+- [Phase 5–6 implementation and acceptance boundaries](29-phase5-verified-program-learning-and-phase6-cross-domain-transfer.md).
+
+The remaining broader research goal is not unrestricted transfer: it is to establish reliable semantic correspondence and cross-domain generalization on frozen, held-out, adversarial benchmarks without inheriting source-domain trust.

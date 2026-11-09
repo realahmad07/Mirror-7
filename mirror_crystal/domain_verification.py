@@ -279,6 +279,7 @@ class DomainVerificationEngine:
         *,
         requirements: Mapping[str, DomainVerificationRequirement],
         required_checks: Mapping[str, Mapping[str, str]],
+        _candidate_capability_ids: Iterable[str] = (),
     ) -> DomainVerificationReport:
         if not isinstance(execution, PlanExecutionReport):
             raise TypeError("execution must be PlanExecutionReport")
@@ -293,6 +294,17 @@ class DomainVerificationEngine:
 
         catalog = tuple(capabilities)
         capability_map = {item.capability_id: item for item in catalog}
+        candidate_ids = set(_candidate_capability_ids)
+        if not candidate_ids.issubset(capability_map):
+            raise DomainVerificationError("candidate verification references an absent capability")
+        for candidate_id in candidate_ids:
+            candidate = capability_map[candidate_id]
+            if candidate.executable or candidate.provenance.source not in {
+                "mirror_uol_synthesizer", "mirror_cross_domain_transfer",
+            }:
+                raise DomainVerificationError(
+                    "only unverified UOL synthesis/transfer proposals may use candidate verification"
+                )
         results: list[DomainCheckResult] = []
         summaries: list[DomainCapabilityVerification] = []
         all_conditions: set[str] = set()
@@ -328,7 +340,7 @@ class DomainVerificationEngine:
             assert capability is not None
             assert isinstance(requirement, DomainVerificationRequirement)
             assert isinstance(check_map, Mapping)
-            if not capability.executable:
+            if not capability.executable and capability.capability_id not in candidate_ids:
                 local_blockers.append(
                     f"capability is not evidence-eligible for domain verification: {capability.capability_id}"
                 )
@@ -460,4 +472,30 @@ class DomainVerificationEngine:
         return DomainVerificationReport(
             execution.plan_id, execution.task_id, status, tuple(results), tuple(summaries),
             tuple(sorted(all_conditions)), tuple(dict.fromkeys(blockers)), execution.fingerprint,
+        )
+
+
+    def verify_candidate(
+        self,
+        execution: PlanExecutionReport,
+        candidate: CapabilitySpec,
+        *,
+        requirements: Mapping[str, DomainVerificationRequirement],
+        required_checks: Mapping[str, Mapping[str, str]],
+    ) -> DomainVerificationReport:
+        """Independently verify one unpromoted UOL candidate without making it executable.
+
+        Candidate verification produces evidence only. It does not alter the capability's
+        UNVERIFIED state; repeated verified observations must still pass the learning gate.
+        """
+        if not isinstance(candidate, CapabilitySpec):
+            raise TypeError("candidate must be CapabilitySpec")
+        if candidate.executable or candidate.provenance.source not in {
+            "mirror_uol_synthesizer", "mirror_cross_domain_transfer",
+        }:
+            raise DomainVerificationError("candidate must be an unverified UOL synthesis/transfer proposal")
+        return self.verify(
+            execution, (candidate,), requirements=requirements,
+            required_checks=required_checks,
+            _candidate_capability_ids=(candidate.capability_id,),
         )

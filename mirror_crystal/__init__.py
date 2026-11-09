@@ -139,6 +139,13 @@ from .knowledge_uol import (
     KnowledgeRuleImporter, KnowledgeRuleImportIssue, KnowledgeRuleImportReport,
 )
 from .native_verifiers import NativeDomainVerifierSuite, NativeVerificationError
+from .verified_program_learning import (
+    ProgramLearningError, UOLProgramHandler, UOLProgramLearningProposal,
+    VerifiedProgramLearningEngine, VerifiedProgramObservation,
+)
+from .cross_domain_transfer import (
+    CrossDomainTransferEngine, CrossDomainTransferError, CrossDomainTransferProposal,
+)
 
 __all__ = [
     "KnowledgeConflict",
@@ -289,4 +296,7 @@ __all__ += [
     "SynthesisReport", "SynthesisStatus", "Counterexample",
     "KnowledgeRuleImporter", "KnowledgeRuleImportIssue", "KnowledgeRuleImportReport",
     "NativeDomainVerifierSuite", "NativeVerificationError",
+    "ProgramLearningError", "UOLProgramHandler", "UOLProgramLearningProposal",
+    "VerifiedProgramLearningEngine", "VerifiedProgramObservation",
+    "CrossDomainTransferEngine", "CrossDomainTransferError", "CrossDomainTransferProposal",
 ]

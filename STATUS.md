@@ -156,3 +156,15 @@ See [Phase 3–4 design and boundaries](docs/28-phase3-advanced-synthesis-and-ph
 
 CI: https://github.com/realahmad07/Mirror-7/actions/runs/42668214798  
 Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42668215023
+
+
+## Universal construction — Phase 5 and Phase 6
+
+**Implementation status: added; full CI and Security Guard acceptance pending.**
+
+| Phase | Implemented increment | Acceptance boundary |
+|---|---|---|
+| 5 — Verified program learning | A UOL program becomes a reusable capability only after three distinct task/execution observations pass execution-bound native domain verification, two or more independent verifier identities, and exact program output replay. Explicit promotion registers a process-safe UOL handler. | No silent registry write; failed, duplicate, stale or mismatched observations are rejected. |
+| 6 — Controlled cross-domain transfer | Verified domain-neutral UOL programs may be transferred to a new domain if all rule dependencies are globally scoped and independently verified, port contracts (including units/dimensions) are preserved, and fresh target train/held-out cases pass. | Transfer candidates remain UNVERIFIED until target-domain verification and repeated Phase 5 learning. No general semantic analogy or automatic unit conversion is claimed. |
+
+See [Phase 5–6 implementation and limits](docs/29-phase5-verified-program-learning-and-phase6-cross-domain-transfer.md).
