@@ -434,6 +434,8 @@ class LearningGateReport:
     adversarial_passed: bool
     independent_verifier: str
     failures: tuple[str, ...] = ()
+    run_digest: str = ""
+    attestation: str = ""
 
     @property
     def passed(self) -> bool:
@@ -444,5 +446,7 @@ class LearningGateReport:
             and self.held_out_passed
             and self.adversarial_passed
             and bool(self.independent_verifier.strip())
+            and bool(self.run_digest)
+            and bool(self.attestation)
             and not self.failures
         )
