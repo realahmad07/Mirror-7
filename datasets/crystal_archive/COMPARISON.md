@@ -30,7 +30,7 @@ Prepared totals: **48,060 legacy-pair inputs** and **17,911 canonical blueprint 
 
 Mirror's legacy ingest_jsonl path skips repeated prompts and can keep the first answer without reconciling later conflicting answers. The local importer therefore quarantines conflicting groups before ingestion, keeps original archive ZIPs unchanged, and creates a SQLite online backup before apply mode.
 
-This branch also fixes a runtime scale issue: blueprint composition now loads only the requested blueprint's dependency closure instead of the first 10,000 records, with a regression test using 10,001 unrelated records.
+This branch fixes two runtime scale issues: blueprint composition loads only the requested blueprint's dependency closure instead of the first 10,000 records, and prompt lookup uses informative multiword prefixes so large generic first-word buckets do not hide later matches. Versioned startup migration rebuilds the stored prompt index. Regression tests cover a target after 10,000 unrelated blueprints and a rule beyond 512 broadly prefixed candidates.
 
 ## Limits
 
