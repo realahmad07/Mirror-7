@@ -107,7 +107,7 @@ def test_phase7_repairs_underfit_program_with_fresh_cegis_evidence_and_keeps_can
     proposal = FailureRepairEngine(language).propose_program_repair(
         goal,
         original,
-        counterexample_inputs=({"x": 0, "y": 0}, {"x": 2, "y": 0}),
+        counterexample_inputs=({"x": 0, "y": 4}, {"x": 2, "y": 0}),
         counterexample_oracle=lambda values: values["x"] ** 2,
         max_rounds=4,
     )
