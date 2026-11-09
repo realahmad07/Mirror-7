@@ -36,8 +36,10 @@ class BlueprintProvenance:
     license_spdx: str = "NOASSERTION"
     content_sha256: str = ""
     captured_at: str = ""
+    parent_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
+        object.__setattr__(self, "parent_ids", tuple(str(x) for x in self.parent_ids))
         if not self.source.strip():
             raise BlueprintValidationError("provenance.source must not be empty")
         if self.content_sha256 and not re.fullmatch(r"[0-9a-f]{64}", self.content_sha256):
