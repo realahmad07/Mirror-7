@@ -22,14 +22,22 @@ from mirror_crystal import (
 from mirror_crystal.universal_representation import canonical_json, stable_id
 
 
-def strict_gate():
-    return LearningGateReport(
-        cases_generated=9,
-        cases_passed=9,
-        seed_count=3,
-        held_out_passed=True,
-        adversarial_passed=True,
-        independent_verifier="mirror-test-independent-replay-v1",
+def strict_gate(engine):
+    base = [
+        {"input": value, "expected": value * 2}
+        for value in (2, 3, 5)
+    ]
+    held_out = [{"input": 11, "expected": 22}]
+    adversarial = [{"input": -7, "expected": -14}]
+    return engine.evaluate_learning_gate(
+        candidate={"operation": "double"},
+        cases=base,
+        seeds=(17, 29, 43),
+        held_out_cases=held_out,
+        adversarial_cases=adversarial,
+        independent_verifier="mirror-test-independent-replay-v2",
+        candidate_runner=lambda _candidate, case, _seed: case["input"] * 2,
+        independent_check=lambda _candidate, case, output, _suite: output == case["expected"],
     )
 
 
@@ -210,7 +218,7 @@ def test_learning_gate_blocks_weak_evidence_and_promotes_replayable_composition(
 
     persisted = []
     learned = engine.promote_verified_composition(
-        task, result, strict_gate(), persist=persisted.append
+        task, result, strict_gate(engine), persist=persisted.append
     )
     assert learned.evidence.independently_reproduced is True
     assert learned.capability_id in [x.capability_id for x in engine.registry.list_capabilities()]
@@ -243,7 +251,7 @@ def test_persisted_learned_capability_can_be_reloaded_from_blueprint():
         ),
     )
     result = engine.solve(task)
-    learned = engine.promote_verified_composition(task, result, strict_gate())
+    learned = engine.promote_verified_composition(task, result, strict_gate(engine))
     prompt = learned.name
     response = canonical_json(learned.to_dict())
     blueprint = Blueprint(
@@ -284,7 +292,7 @@ def test_cross_domain_transfer_requires_fresh_target_domain_gate():
             LearningGateReport(1, 1, 1, False, False, ""),
         )
 
-    promoted = engine.promote_cross_domain_transfer(proposal, strict_gate())
+    promoted = engine.promote_cross_domain_transfer(proposal, strict_gate(engine))
     assert promoted.domains == ("biology",)
     assert promoted.evidence.independently_reproduced is True
     assert engine.registry.handler(promoted.capability_id) is not None
@@ -450,3 +458,48 @@ def test_generic_domain_execution_without_acceptance_criteria_is_not_verified():
     assert result["status"] == "verification_failed"
     assert result["verified"] is False
     assert "generic_verification_requires_acceptance_criteria" in result["verification"]["checks_failed"]
+
+
+def test_learning_gate_report_cannot_be_forged_or_reused_by_another_engine():
+    engine = UniversalIntelligenceEngine()
+    valid = strict_gate(engine)
+    assert valid.passed is True
+    assert engine._is_learning_gate_attested(valid) is True
+
+    forged = replace(valid, cases_generated=999, cases_passed=999)
+    assert forged.passed is True
+    assert engine._is_learning_gate_attested(forged) is False
+
+    other_engine = UniversalIntelligenceEngine()
+    assert other_engine._is_learning_gate_attested(valid) is False
+
+    unsigned = LearningGateReport(
+        cases_generated=9,
+        cases_passed=9,
+        seed_count=3,
+        held_out_passed=True,
+        adversarial_passed=True,
+        independent_verifier="fabricated",
+    )
+    assert unsigned.passed is False
+    assert engine._is_learning_gate_attested(unsigned) is False
+
+
+def test_learning_gate_runs_all_seeds_held_out_and_adversarial_cases():
+    engine = UniversalIntelligenceEngine()
+    seen = []
+    report = engine.evaluate_learning_gate(
+        candidate="candidate",
+        cases=[1, 2, 3],
+        seeds=[1, 2, 3],
+        held_out_cases=[4],
+        adversarial_cases=[-1],
+        independent_verifier="independent-test",
+        candidate_runner=lambda candidate, case, seed: (seen.append((case, seed)) or case * 2),
+        independent_check=lambda candidate, case, output, suite: output == case * 2,
+    )
+    assert report.passed is True
+    assert report.cases_generated == 9
+    assert report.cases_passed == 9
+    assert report.seed_count == 3
+    assert len(seen) == 15  # 3x3 training, 1x3 held-out, 1x3 adversarial
