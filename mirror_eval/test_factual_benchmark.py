@@ -95,6 +95,9 @@ def test_metrics_cover_accuracy_unsupported_answers_abstention_and_calibration()
     assert metrics["coverage"] == pytest.approx(2/3)
     assert 0.0 <= metrics["brier_score"] <= 1.0
     assert 0.0 <= metrics["expected_calibration_error"] <= 1.0
+    assert metrics["calibration_sample_count"] == 2
+    assert report["cases"][0]["answer_text"] == "The value is forty two."
+    assert len(report["cases"][0]["response_sha256"]) == 64
 
 
 def test_unanswerable_case_answer_is_counted_unsupported():
