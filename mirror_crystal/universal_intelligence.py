@@ -10,6 +10,7 @@ from dataclasses import asdict, replace
 from decimal import Decimal, InvalidOperation
 import hashlib
 import hmac
+import marshal
 import secrets
 import re
 from typing import Any, Callable, Mapping
@@ -822,6 +823,8 @@ class CapabilityLearningEngine:
                     "base_case_count": gate.base_case_count,
                     "held_out_case_count": gate.held_out_case_count,
                     "adversarial_case_count": gate.adversarial_case_count,
+                    "candidate_runner_sha256": gate.candidate_runner_sha256,
+                    "independent_verifier_sha256": gate.independent_verifier_sha256,
                     "learning_gate": "v2",
                     "run_digest": gate.run_digest,
                 },
@@ -909,6 +912,31 @@ class UniversalIntelligenceEngine:
         self._domain_adapters: set[str] = set()
         if install_primitives:
             self._install_primitives()
+
+    @staticmethod
+    def _callable_fingerprint(function: Callable[..., Any]) -> str:
+        code = getattr(function, "__code__", None)
+        if code is None:
+            code = getattr(getattr(type(function), "__call__", None), "__code__", None)
+        if code is None:
+            identity = f"{type(function).__module__}.{type(function).__qualname__}"
+            return hashlib.sha256(identity.encode("utf-8")).hexdigest()
+        defaults = repr(getattr(function, "__defaults__", None))
+        kwdefaults = repr(getattr(function, "__kwdefaults__", None))
+        closure = getattr(function, "__closure__", None) or ()
+        closure_values = []
+        for cell in closure:
+            try:
+                closure_values.append(repr(cell.cell_contents))
+            except ValueError:
+                closure_values.append("<empty-cell>")
+        material = (
+            marshal.dumps(code)
+            + defaults.encode("utf-8")
+            + kwdefaults.encode("utf-8")
+            + repr(tuple(closure_values)).encode("utf-8")
+        )
+        return hashlib.sha256(material).hexdigest()
 
     @staticmethod
     def _learning_gate_payload(report: LearningGateReport) -> str:
@@ -1027,6 +1055,8 @@ class UniversalIntelligenceEngine:
                 "base_case_count": len(base_cases),
                 "held_out_case_count": len(held_cases),
                 "adversarial_case_count": len(adversarial),
+                "candidate_runner_sha256": self._callable_fingerprint(candidate_runner),
+                "independent_verifier_sha256": self._callable_fingerprint(independent_check),
             }).encode("utf-8")
         ).hexdigest()
         unsigned = LearningGateReport(
@@ -1042,6 +1072,8 @@ class UniversalIntelligenceEngine:
             base_case_count=len(base_cases),
             held_out_case_count=len(held_cases),
             adversarial_case_count=len(adversarial),
+            candidate_runner_sha256=self._callable_fingerprint(candidate_runner),
+            independent_verifier_sha256=self._callable_fingerprint(independent_check),
         )
         signed = replace(unsigned, attestation=self._sign_learning_gate(unsigned))
         # A signed failed report stays failed; attestation proves execution, not success.
