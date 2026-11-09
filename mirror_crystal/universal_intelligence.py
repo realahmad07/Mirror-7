@@ -275,7 +275,7 @@ class UniversalTaskInterpreter:
     ) -> TaskSpec | None:
         """Parse a bounded arithmetic AST and decompose every operator into a capability step."""
         match = re.search(
-            r"(?:calculate|compute|evaluate|what\\s+is|what's)\\s+([0-9.()+*/\\-\\s]+)",
+            r"(?:calculate|compute|evaluate|what\s+is|what's)\s+([0-9.()+*/\-\s]+)",
             text.casefold(),
         )
         if not match:
