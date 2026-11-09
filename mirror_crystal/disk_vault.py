@@ -1582,7 +1582,7 @@ class DiskCrystalVault:
                 trace.append(f"Quarantined rule #{rule.rule_id} ({judge_msg})")
                 continue
 
-            mode_str = "slot_formula_lock" if rule.num_slots > 0 else "direct_crystal_lock"
+            mode_str = ("slot_formula_lock" if rule.num_slots > 0 and rule.derived_expr else ("slot_template_lock" if rule.num_slots > 0 else "direct_crystal_lock"))
             conf_val = cal_conf
             sb_ver = judge_msg != "non_code"
             if is_coding_req and sb_ver:
