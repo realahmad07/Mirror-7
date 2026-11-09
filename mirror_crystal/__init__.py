@@ -80,6 +80,16 @@ from .universal_representation import (
     canonical_json,
     stable_representation_id,
 )
+from .task_understanding import (
+    ConstraintKind,
+    TaskConstraint,
+    TaskIntent,
+    TaskSpec,
+    TaskStatus,
+    TaskSubtask,
+    TaskUnderstandingEngine,
+    TaskUnderstandingError,
+)
 
 __all__ = [
     "AbstractedPair",
@@ -95,6 +105,14 @@ __all__ = [
     "UncertaintyKind",
     "canonical_json",
     "stable_representation_id",
+    "ConstraintKind",
+    "TaskConstraint",
+    "TaskIntent",
+    "TaskSpec",
+    "TaskStatus",
+    "TaskSubtask",
+    "TaskUnderstandingEngine",
+    "TaskUnderstandingError",
     "Blueprint",
     "ClaimEvidence",
     "ClaimEvidenceError",
