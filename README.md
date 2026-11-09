@@ -952,3 +952,7 @@ The backend Q&A path now connects task analysis to **optional verified task exec
 - **No knowledge rules or datasets were added.** Rule/data feeding remains a separate step.
 
 See [Backend Q&A Execution and Native Code Generation](./docs/32-backend-qna-execution-and-native-code-generation.md) and [Universal Intelligence Integration](./docs/31-backend-universal-intelligence-integration.md) for behavior, host configuration, trust boundaries and tests.
+
+## Crystal dataset archive audit
+
+The uploaded Crystal archive inventory, checksums, comparison report, and safe local import instructions are published in [datasets/crystal_archive/](datasets/crystal_archive/README.md). Raw archive payloads remain owner-held pending complete redistribution-license review. The full 368,270-rule production vault was not part of the uploaded ZIPs.
