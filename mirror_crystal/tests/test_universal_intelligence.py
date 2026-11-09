@@ -491,6 +491,34 @@ def test_learning_gate_report_cannot_be_forged_or_reused_by_another_engine():
     assert engine._is_learning_gate_attested(unsigned) is False
 
 
+def test_attested_gate_for_one_composition_cannot_promote_another():
+    engine = UniversalIntelligenceEngine()
+    task_one = TaskSpec(
+        task_id="gate-one",
+        request="Add",
+        goal="Add two numbers",
+        domain="mathematics",
+        inputs={"left": 1, "right": 2},
+        input_schema={"left": "number", "right": "number"},
+        required_outputs={"result": "number"},
+        subtasks=(
+            SubtaskSpec(
+                "add", "Add", "mathematics", ("numeric.add",), "numeric.add",
+                {"left": "input:left", "right": "input:right"}, {"result": "number"},
+            ),
+        ),
+    )
+    task_two = replace(task_one, task_id="gate-two", goal="Subtract two numbers")
+    result_one = engine.solve(task_one)
+    result_two = engine.solve(task_two)
+    candidate_one = engine.composition_learning_candidate(result_one)
+    gate_one = strict_gate(engine, candidate_one)
+    assert gate_one.passed is True
+
+    with pytest.raises(CapabilityError, match="different candidate"):
+        engine.promote_verified_composition(task_two, result_two, gate_one)
+
+
 def test_learning_gate_runs_all_seeds_held_out_and_adversarial_cases():
     engine = UniversalIntelligenceEngine()
     seen = []
