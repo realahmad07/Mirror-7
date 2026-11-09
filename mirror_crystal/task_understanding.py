@@ -204,7 +204,7 @@ _CONSTRAINT_PATTERNS: tuple[tuple[ConstraintKind, re.Pattern[str]], ...] = (
 )
 
 _ASSUMPTION_PATTERN = re.compile(
-    r"(?:^|[.;\n])\s*((?:assume|assuming)\b[^.;\n]*)", re.I
+    r"(?:^|(?<=[.!?])\s+)(assum(?:e|ing)\b[^.!?\n]*[.!?]?)", re.I
 )
 _ACCEPTANCE_PATTERN = re.compile(
     r"\b(?:success\s+means|done\s+when|complete\s+when|acceptance\s+criteria?\s*:|"
@@ -277,7 +277,7 @@ class TaskSubtask:
         )
         if not self.subtask_id.strip() or not self.goal.strip():
             raise TaskUnderstandingError("subtask_id and goal must be non-empty")
-        if isinstance(self.sequence_index, bool) or self.sequence_index < 0:
+        if isinstance(self.sequence_index, bool) or not isinstance(self.sequence_index, int) or self.sequence_index < 0:
             raise TaskUnderstandingError("subtask.sequence_index must be a non-negative integer")
         if len(set(self.depends_on)) != len(self.depends_on):
             raise TaskUnderstandingError("subtask dependencies must be unique")
@@ -470,19 +470,22 @@ class TaskUnderstandingEngine:
         seen: set[str] = set()
         sentences = re.split(r"(?<=[.!?])\s+|\n+", text)
         for sentence in sentences:
-            phrase = sentence.strip(" \t\r-•")
-            if not phrase:
-                continue
-            kinds = [kind for kind, pattern in _CONSTRAINT_PATTERNS if pattern.search(phrase)]
-            if not kinds:
-                continue
-            normalized = " ".join(phrase.casefold().split())
-            if normalized in seen:
-                continue
-            seen.add(normalized)
-            kind = kinds[0]
-            constraint_id = stable_representation_id("constraint", {"text": normalized})
-            found.append(TaskConstraint(constraint_id, phrase, kind, True, "user_request"))
+            # Separate coordinated requirements before assigning their kinds.
+            fragments = re.split(r"\s+\band\b\s+|\s+\bbut\b\s+", sentence, flags=re.I)
+            for fragment in fragments:
+                phrase = fragment.strip(" \t\r-•,")
+                if not phrase:
+                    continue
+                kinds = [kind for kind, pattern in _CONSTRAINT_PATTERNS if pattern.search(phrase)]
+                if not kinds:
+                    continue
+                normalized = " ".join(phrase.casefold().split())
+                if normalized in seen:
+                    continue
+                seen.add(normalized)
+                kind = kinds[0]
+                constraint_id = stable_representation_id("constraint", {"text": normalized})
+                found.append(TaskConstraint(constraint_id, phrase, kind, True, "user_request"))
         for value in explicit_constraints:
             phrase = str(value).strip()
             if not phrase:
@@ -552,15 +555,18 @@ class TaskUnderstandingEngine:
         parts: list[str] = []
         sequential: list[bool] = []
         cursor = 0
+        next_depends_on_previous = False
         for match in _SEQUENTIAL_SPLIT.finditer(text):
             before = text[cursor:match.start()].strip(" ,;:\t\n")
             if before:
                 parts.append(before)
-                sequential.append(False if not parts else bool(match.group(2)))
+                sequential.append(next_depends_on_previous if parts[:-1] else False)
+            next_depends_on_previous = True
             cursor = match.end()
         tail = text[cursor:].strip(" ,;:\t\n")
         if tail:
             parts.append(tail)
+            sequential.append(next_depends_on_previous if len(parts) > 1 else False)
 
         if len(parts) <= 1:
             conjunctive = _ACTION_CONJUNCTION_SPLIT.split(text)
@@ -632,16 +638,21 @@ class TaskUnderstandingEngine:
 
         if intent is TaskIntent.UNKNOWN:
             unknowns.append("No explicit action verb was recognized; clarify the intended action.")
-        unresolved_reference = re.search(r"\b(?:it|this|that|these|those)\b", text, re.I)
+        # "that" also introduces relative clauses ("a tool that works"); only
+        # demonstratives/pronouns with no supplied referent are treated as blockers.
+        unresolved_reference = re.search(r"\b(?:it|this|these|those)\b", text, re.I)
         if unresolved_reference and not safe_context and not safe_inputs and len(text.split()) <= 8:
             unknowns.append("The request contains a reference without a supplied referent or context.")
         if domain == "general" and domain_hint is None:
             # General is retained as a valid domain; the missing label is visible, not guessed.
             unknowns.append("No domain-specific cue was strong enough; domain remains general.")
 
+        explicit_constraint_values = tuple(str(value).strip() for value in explicit_constraints)
+        if any(not value for value in explicit_constraint_values):
+            raise TaskUnderstandingError("explicit constraints cannot be empty")
         supplied_criteria = tuple(str(value).strip() for value in acceptance_criteria)
         criteria = self._acceptance_criteria(text, supplied_criteria)
-        constraints = self._constraints(text, explicit_constraints)
+        constraints = self._constraints(text, explicit_constraint_values)
         outputs = self._requested_outputs(text)
         assumptions = self._assumptions(text)
         subtasks = self._make_subtasks(text, criteria)
@@ -659,7 +670,7 @@ class TaskUnderstandingEngine:
             "goal": (goal or text).strip(),
             "known_inputs": safe_inputs,
             "context": safe_context,
-            "explicit_constraints": [str(value).strip() for value in explicit_constraints],
+            "explicit_constraints": list(explicit_constraint_values),
             "acceptance_criteria": list(criteria),
         })
         return TaskSpec(
