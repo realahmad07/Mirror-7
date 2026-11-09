@@ -54,7 +54,7 @@ python -m mirror_crystal train \
 ### 2. Continue Teaching an Existing `.mcrystal` Brain (`0%` Forgetting)
 ```bash
 python -m mirror_crystal train \
-  --load artifacts/mirror_crystal_v1.mcrystal \
+  --load datasets/crystal_archive/raw/crystal_4.zip \
   --input training/data/mirror_quantum_math_reasoning_v1.jsonl \
   --save artifacts/mirror_crystal_v1.mcrystal
 ```
@@ -62,7 +62,7 @@ python -m mirror_crystal train \
 ### 3. Single-Prompt Query
 ```bash
 python -m mirror_crystal query \
-  --brain artifacts/mirror_crystal_v1.mcrystal \
+  --brain datasets/crystal_archive/raw/crystal_4.zip \
   --prompt "How does Grover's quantum search algorithm achieve a quadratic speedup?"
 ```
 
@@ -186,3 +186,7 @@ For consumer apps running on weak CPUs, low-RAM mobile devices, or non-SSD PCs b
 See **[`11-mirror-crystal-phase2-phase3-evolution.md`](11-mirror-crystal-phase2-phase3-evolution.md)** for the full architecture and regression benchmarks of:
 - **Phase 2:** `PerceptualVQLens` (`INT8` image/waveform VQ patch tokenizer), `SandboxMCTSPlanner` (UCB1 CPU code synthesis & AST self-repair), `CoreferenceAndSenseTracker` (multi-turn pronouns + homonym sense disambiguation), `NightlyDreamSynthesizer` (autonomous multi-hop shortcut discovery), and `UniversalConceptHub` + `FluentByteRealizer` (zero-duplication cross-lingual locking).
 - **Phase 3 & Phase 4:** `DreamUtilityPruner`, `TopicShiftDecayGuard`, `BoundedLoopStepGuard` (`_BoundedStepInjector`), `MorphologicalFuzzySpellBridge` (`ContextBitTable.resolve_typo_token`), `EpistemicConfidenceCalibrator`, `D4` camera-rotation invariance, and `SplitBrainCorefBridge` hybrid Edge-Cloud coreference continuity.
+
+### Portable Crystal archive loading
+
+The portable distribution is the four ZIP archives under datasets/crystal_archive/raw/. The CPU MCRYSTAL payload is embedded in crystal_4.zip. MirrorCrystalEngine.load() reads that payload directly from the ZIP, so a separate checked-in artifacts/mirror_crystal_v1.mcrystal copy is not required. Query/chat/continue-teaching accept crystal_4.zip as their brain/load path. See datasets/crystal_archive/DATA_CARD.md and LICENSES.md for the data inventory and source-specific terms.
