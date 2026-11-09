@@ -803,6 +803,9 @@ class CapabilityLearningEngine:
                 seed_count=gate.seed_count,
                 details={
                     "case_count": gate.cases_generated,
+                    "base_case_count": gate.base_case_count,
+                    "held_out_case_count": gate.held_out_case_count,
+                    "adversarial_case_count": gate.adversarial_case_count,
                     "learning_gate": "v2",
                     "run_digest": gate.run_digest,
                 },
@@ -982,18 +985,18 @@ class UniversalIntelligenceEngine:
 
         nonlocal_passed = [0]
         nonlocal_total = [0]
-        base_ok = run_suite("base", base_cases) if len(seed_values) >= 3 else False
+        run_suite("base", base_cases) if len(seed_values) >= 3 else False
         held_out_passed = run_suite("held_out", held_cases) if len(seed_values) >= 3 else False
         adversarial_passed = run_suite("adversarial", adversarial) if len(seed_values) >= 3 else False
         if len(base_cases) < 3:
-            failures.append("base_suite_requires_at_least_3_cases")
+            failures.append("base_suite_requires_at_least_3_distinct_cases")
         if len(seed_values) < 3:
             failures.append("learning_gate_requires_at_least_3_seeds")
         if not held_cases:
             failures.append("held_out_suite_missing")
         if not adversarial:
             failures.append("adversarial_suite_missing")
-        if not independent_verifier.strip():
+        if not str(independent_verifier).strip():
             failures.append("independent_verifier_identity_missing")
 
         run_digest = hashlib.sha256(
@@ -1004,7 +1007,10 @@ class UniversalIntelligenceEngine:
                 "adversarial_cases": adversarial,
                 "seeds": seed_values,
                 "outcomes": outcomes,
-                "independent_verifier": independent_verifier,
+                "independent_verifier": str(independent_verifier),
+                "base_case_count": len(base_cases),
+                "held_out_case_count": len(held_cases),
+                "adversarial_case_count": len(adversarial),
             }).encode("utf-8")
         ).hexdigest()
         unsigned = LearningGateReport(
@@ -1017,6 +1023,9 @@ class UniversalIntelligenceEngine:
             failures=tuple(failures),
             run_digest=run_digest,
             attestation="",
+            base_case_count=len(base_cases),
+            held_out_case_count=len(held_cases),
+            adversarial_case_count=len(adversarial),
         )
         signed = replace(unsigned, attestation=self._sign_learning_gate(unsigned))
         # A signed failed report stays failed; attestation proves execution, not success.
