@@ -906,3 +906,23 @@ git push -u origin main
 **Built & Engineered by Ahmad Hassan** • [github.com/realahmad07/Mirror-7](https://github.com/realahmad07/Mirror-7) • Licensed under [`Apache-2.0`](./LICENSE)
 
 </div>
+
+
+## Universal construction — Phase 7: Failure Diagnosis and Targeted Repair
+
+Phase 7 adds a bounded feedback mechanism across composition, synthesis, execution and
+independent domain verification. It localizes the smallest evidenced failure, identifies
+the failed execution step/capability or rejected verifier evidence, and recommends a
+conservative corrective action.
+
+For UOL programs, Mirror can use fresh, disjoint host-oracle counterexamples with its
+existing bounded CEGIS synthesizer to propose a revised program. A successful proposal
+is replayed over the original training set, held-out set and fresh probes.
+
+**Trust boundary:** a repair proposal remains **UNVERIFIED**. It is not automatically
+executed, learned, registered, persisted or promoted. Independent domain verification
+and the repeated-observation Phase 5 learning gate remain mandatory. Runtime failures
+are not blindly retried, since host handlers may have side effects. This is bounded
+UOL repair—not unrestricted self-modifying software or general autonomous discovery.
+
+See [Phase 7 design and acceptance boundaries](docs/30-phase7-failure-diagnosis-and-targeted-repair.md).

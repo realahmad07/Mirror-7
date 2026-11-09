@@ -88,3 +88,13 @@ These increments do not make the broader original strategic Phase 6 complete: ge
 - [Phase 5–6 implementation and acceptance boundaries](29-phase5-verified-program-learning-and-phase6-cross-domain-transfer.md).
 
 The remaining broader research goal is not unrestricted transfer: it is to establish reliable semantic correspondence and cross-domain generalization on frozen, held-out, adversarial benchmarks without inheriting source-domain trust.
+
+
+## Native construction milestone — Phase 7
+
+- Phase 7 adds typed failure diagnosis across composition, synthesis, execution and domain verification, with failed-step and rejected-evidence localization.
+- For UOL programs only, fresh host-oracle counterexamples can drive bounded CEGIS to propose a replacement that is replayed against the original train/held-out examples and new probes.
+- Repair results remain UNVERIFIED and require independent domain verification plus the existing repeated-observation learning and explicit promotion gates. Runtime handlers are not blindly retried.
+- [Phase 7 implementation and acceptance boundaries](30-phase7-failure-diagnosis-and-targeted-repair.md).
+
+This closes a bounded failure-feedback loop; it does not establish unrestricted self-modifying software, arbitrary code repair, general scientific discovery or AGI.

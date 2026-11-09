@@ -145,7 +145,11 @@ from .verified_program_learning import (
 )
 from .cross_domain_transfer import (
     CrossDomainTransferEngine, CrossDomainTransferError, CrossDomainTransferProposal,
+)from .failure_repair import (
+    FailureDiagnosis, FailureKind, FailureRepairEngine, FailureRepairError,
+    RepairProposal, RepairStatus,
 )
+
 
 __all__ = [
     "KnowledgeConflict",
@@ -299,4 +303,9 @@ __all__ += [
     "ProgramLearningError", "UOLProgramHandler", "UOLProgramLearningProposal",
     "VerifiedProgramLearningEngine", "VerifiedProgramObservation",
     "CrossDomainTransferEngine", "CrossDomainTransferError", "CrossDomainTransferProposal",
+]
+
+__all__ += [
+    "FailureDiagnosis", "FailureKind", "FailureRepairEngine", "FailureRepairError",
+    "RepairProposal", "RepairStatus",
 ]

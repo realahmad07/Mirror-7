@@ -71,7 +71,7 @@ The end-to-end test runs three distinct task instances through the full core pat
 | 4 | Capability system | PASS |
 | 5 | Composition engine | PASS (bounded integration example) |
 | 6 | Universal verification across execution, proof and simulation | PARTIAL — evidence-carrying domain verifier contract and five-domain policy tests added; actual independent proof/simulation/scientific verifier implementations remain host-provided. |
-| 7 | Failure diagnosis, targeted repair and self-improvement | PARTIAL |
+| 7 | Failure diagnosis, targeted repair and self-improvement | PASS (bounded UOL repair; broad autonomous self-modification remains out of scope) |
 | 8 | Cross-domain transfer | NOT YET ACCEPTED |
 | 9 | Continuous open-world expansion | NOT YET ACCEPTED |
 
@@ -183,3 +183,23 @@ See [Phase 5–6 implementation and limits](docs/29-phase5-verified-program-lear
 
 CI: https://github.com/realahmad07/Mirror-7/actions/runs/42669765017  
 Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42669766125
+
+
+## Strategic Phase 7 — failure diagnosis and targeted UOL repair
+
+**Status: implemented; acceptance is bounded to typed reports and oracle-backed UOL repair.**
+
+`mirror_crystal/failure_repair.py` diagnoses blocked composition plans, synthesis search
+failures, execution failures (including the exact first failed step), and rejected or
+incomplete domain-verification evidence. It recommends the smallest corrective action
+supported by the report.
+
+For an existing UOL program, the repair engine accepts fresh, disjoint probe inputs and
+an explicit host-supplied oracle. It records demonstrated counterexamples, runs bounded
+CEGIS, and independently replays a successful replacement over original train/held-out
+cases and fresh probes. The resulting capability remains **UNVERIFIED** and requires
+the existing Phase 4 domain verification and Phase 5 repeated-observation learning gates.
+
+The engine does not automatically retry potentially side-effecting handlers or promote
+repairs. It does not repair arbitrary Python/native code or establish unrestricted
+self-modification. See [Phase 7 implementation and limits](docs/30-phase7-failure-diagnosis-and-targeted-repair.md).
