@@ -64,3 +64,29 @@ def test_program_ir_rejects_unknown_binary_operators():
     )
     with pytest.raises(ValueError, match="unsupported arithmetic operation"):
         PythonASTCompiler().compile(program)
+
+
+def test_bubble_sort_program_is_composed_from_loops_conditionals_and_sequence_nodes():
+    result = NativeProgramSynthesizer().build_bubble_sort()
+    source = result["code"]
+    parsed = ast.parse(source)
+    assert len(parsed.body) == 1
+    assert isinstance(parsed.body[0], ast.FunctionDef)
+    assert parsed.body[0].name == "bubble_sort"
+    assert "for " in source
+    assert "if " in source
+    assert result["program_ir"]["operations"] == [
+        "sequence.copy", "loop.for_range", "compare.greater_than", "sequence.swap"
+    ]
+
+
+def test_generated_bubble_sort_executes_empty_sorted_reverse_duplicate_and_negative_inputs():
+    source = NativeProgramSynthesizer().build_bubble_sort()["code"]
+    namespace = {}
+    exec(compile(source, "<mirror-native-bubble-sort>", "exec"), {"__builtins__": {}}, namespace)
+    bubble_sort = namespace["bubble_sort"]
+
+    assert bubble_sort([]) == []
+    assert bubble_sort([1, 2, 3]) == [1, 2, 3]
+    assert bubble_sort([5, 4, 3, 2, 1]) == [1, 2, 3, 4, 5]
+    assert bubble_sort([5, 5, -1, 0]) == [-1, 0, 5, 5]
