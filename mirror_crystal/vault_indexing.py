@@ -9,6 +9,7 @@ import math
 import mmap
 import re
 import struct
+import zlib
 from pathlib import Path
 from typing import Any
 
