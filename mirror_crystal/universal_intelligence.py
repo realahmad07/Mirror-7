@@ -1363,6 +1363,41 @@ class UniversalIntelligenceEngine:
             task = TaskSpec.from_dict(task)
         if not isinstance(task, TaskSpec):
             raise TypeError("task must be a TaskSpec, mapping, or request string")
+
+        # Retrieve matching knowledge into the task context for domain adapters and
+        # traceability. Knowledge remains non-executable unless separately registered
+        # as a trusted typed capability with a handler.
+        query_text = " ".join((
+            task.request,
+            task.goal,
+            " ".join(task.required_capability_tags),
+        ))
+        knowledge_nodes = self.registry.search_knowledge(
+            query_text,
+            domain=task.domain,
+            limit=12,
+        )
+        retrieved_knowledge = [
+            {
+                "node_id": node.node_id,
+                "kind": node.kind.value,
+                "domain": node.domain,
+                "label": node.label,
+                "content": str(node.content),
+                "verification_level": node.evidence.level.value,
+                "source": node.provenance.source,
+                "source_ref": node.provenance.source_ref,
+                "dependencies": list(node.dependencies),
+            }
+            for node in knowledge_nodes
+        ]
+        task = replace(
+            task,
+            context={
+                **dict(task.context),
+                "retrieved_knowledge": retrieved_knowledge,
+            },
+        )
         try:
             plan = self.planner.plan(task)
         except CapabilityError as exc:
@@ -1371,6 +1406,7 @@ class UniversalIntelligenceEngine:
                 "verified": False,
                 "answer": "Mirror could not construct a safe task plan.",
                 "task": task.to_dict(),
+                "retrieved_knowledge": retrieved_knowledge,
                 "plan": None,
                 "errors": [str(exc)],
             }
@@ -1380,6 +1416,7 @@ class UniversalIntelligenceEngine:
                 "verified": False,
                 "answer": "Mirror has represented the goal, but lacks a trusted executable capability for at least one required step.",
                 "task": task.to_dict(),
+                "retrieved_knowledge": retrieved_knowledge,
                 "plan": {
                     "plan_id": plan.plan_id,
                     "steps": [
@@ -1399,6 +1436,7 @@ class UniversalIntelligenceEngine:
                 "verified": False,
                 "answer": "Mirror constructed a plan but execution failed; no result was promoted.",
                 "task": task.to_dict(),
+                "retrieved_knowledge": retrieved_knowledge,
                 "plan": {"plan_id": plan.plan_id},
                 "errors": [f"{type(exc).__name__}: {exc}"],
             }
@@ -1444,6 +1482,7 @@ class UniversalIntelligenceEngine:
                 "notes": list(report.notes),
             },
             "task": task.to_dict(),
+            "retrieved_knowledge": retrieved_knowledge,
             "plan": {
                 "plan_id": plan.plan_id,
                 "steps": [
