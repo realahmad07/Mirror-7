@@ -66,7 +66,7 @@ python -m mirror_eval.factual_benchmark \\
   --output artifacts/factual_v1_results.json
 \`\`\`
 
-Metrics include factual accuracy on answerable cases, accuracy among answered cases, coverage, unsupported-answer rate, claim support rate, abstention precision/recall, Brier score and expected calibration error. Each report includes per-case outcomes and the dataset digest. The built-in claim judge is exact required-fragment matching: it is deterministic but not semantic entailment and cannot detect all extra unsupported claims. Published scores should add independent claim extraction and entailment annotations, preserve raw model answers, and report judge limitations.
+Metrics include factual accuracy on answerable cases, accuracy among answered cases, coverage, unsupported-answer rate, claim support rate, abstention precision/recall, Brier score and expected calibration error. Calibration is computed only over answered responses because abstentions have no answer-confidence score. Each report retains each raw answer, response SHA-256, response mode, confidence, latency and per-case outcome, plus the dataset digest. The built-in claim judge is exact required-fragment matching: it is deterministic but not semantic entailment and cannot detect all extra unsupported claims. It supports alternative written forms for a single expected unit/phrase where explicitly declared. Published scores should add independent claim extraction and entailment annotations, preserve raw model answers, and report judge limitations.
 
 The test split is frozen. Do not place benchmark prompts, answers, or excerpts in training, curation prompts, or knowledge vaults.
 
