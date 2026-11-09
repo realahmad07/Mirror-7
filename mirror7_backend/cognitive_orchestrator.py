@@ -47,6 +47,7 @@ class UnifiedCognitiveOrchestrator:
             "calculate", "compute", "equation", "integral", "derivative",
             "eigenvalue", "probability", "solve", "mathematics", "math",
             "matrix", "modulo", "remainder", "differentiate", "integrate",
+            "grover", "quantum", "iteration", "iterations",
         )
         return (
             any(re.search(r"\b" + re.escape(term) + r"\b", text) for term in math_terms)
