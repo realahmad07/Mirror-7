@@ -66,9 +66,35 @@ from .pocket_teleport import (
     SignedRuleCapsule,
 )
 from .slot_abstractor import AbstractedPair, SlotAbstractor
+from .universal_representation import (
+    EpistemicStatus,
+    RepresentationConflictError,
+    RepresentationGraph,
+    RepresentationKind,
+    RepresentationNode,
+    RepresentationProvenance,
+    RepresentationRelation,
+    RepresentationUncertainty,
+    RepresentationValidationError,
+    UncertaintyKind,
+    canonical_json,
+    stable_representation_id,
+)
 
 __all__ = [
     "AbstractedPair",
+    "EpistemicStatus",
+    "RepresentationConflictError",
+    "RepresentationGraph",
+    "RepresentationKind",
+    "RepresentationNode",
+    "RepresentationProvenance",
+    "RepresentationRelation",
+    "RepresentationUncertainty",
+    "RepresentationValidationError",
+    "UncertaintyKind",
+    "canonical_json",
+    "stable_representation_id",
     "Blueprint",
     "ClaimEvidence",
     "ClaimEvidenceError",

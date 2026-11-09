@@ -19,6 +19,7 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [13 — Qwen-Math Parity to Claude-Opus Frontier Evolution](13-mirror-qwen-to-opus-evolution.md) | Dual-Brain `CerebrumCrystalBridge` (0% math hallucination), `ProcessRewardVerifier` (11.8 µs PRM), `AutonomousTDDEngine` (test-driven self-repair in 2.5 ms), `HierarchicalProjectState`, and 6-gate data hygiene. |
 | [14 — Canonical Blueprint and Rule Architecture](14-blueprint-rule-architecture.md) | Versioned blueprint schema, evidence levels, dependency composition, modularization status, and correctness roadmap. |
 | [15 — Source evidence, benchmark and sandbox](15-source-evidence-benchmark-and-sandbox.md) | Legacy migration, claim-level review, frozen factual evaluation and container isolation. |
+| [16 — Universal representation layer](16-universal-representation-layer.md) | Domain-neutral typed nodes, relations, epistemic status, uncertainty, provenance and disk-backed graph persistence. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 
 ## Research archive

@@ -115,6 +115,38 @@ class VaultStorageMixin:
                 created_at REAL NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_unanswered_domain ON unanswered_queries(inferred_domain);
+
+            CREATE TABLE IF NOT EXISTS representation_nodes (
+                node_id TEXT PRIMARY KEY,
+                domain TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                epistemic_status TEXT NOT NULL,
+                canonical_json TEXT NOT NULL,
+                fingerprint TEXT NOT NULL,
+                updated_at REAL NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_representation_nodes_domain_kind
+                ON representation_nodes(domain, kind);
+            CREATE INDEX IF NOT EXISTS idx_representation_nodes_status
+                ON representation_nodes(epistemic_status);
+            CREATE TABLE IF NOT EXISTS representation_relations (
+                relation_id TEXT PRIMARY KEY,
+                source_id TEXT NOT NULL,
+                predicate TEXT NOT NULL,
+                target_id TEXT NOT NULL,
+                domain TEXT NOT NULL,
+                canonical_json TEXT NOT NULL,
+                fingerprint TEXT NOT NULL,
+                updated_at REAL NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_representation_relations_source
+                ON representation_relations(source_id);
+            CREATE INDEX IF NOT EXISTS idx_representation_relations_target
+                ON representation_relations(target_id);
+            CREATE INDEX IF NOT EXISTS idx_representation_relations_predicate
+                ON representation_relations(predicate);
+            CREATE INDEX IF NOT EXISTS idx_representation_relations_domain
+                ON representation_relations(domain);
             """
         )
         columns = {str(row[1]) for row in cur.execute("PRAGMA table_info(blueprints)")}

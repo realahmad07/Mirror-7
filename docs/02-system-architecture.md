@@ -5,6 +5,7 @@
 | Layer | Responsibility |
 |---|---|
 | Research phases | Bounded hypotheses, mechanisms, integrations, and evaluators. |
+| Universal representation | Typed cross-domain knowledge nodes and relations with epistemic status, provenance, uncertainty, and durable storage. |
 | Mirror runtime | Session-level state and research-engine orchestration. |
 | Backend service | Lifecycle, persistence, actions, metrics, response generation, and capacity. |
 | HTTP boundary | Stable JSON API for the UI/client. |

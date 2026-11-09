@@ -94,6 +94,7 @@ $$\text{Latency}_{\text{Crystal}} = \mathcal{O}(1) \text{ Hash} + \mathcal{O}(\l
 | [Detailed Color PDF Roadmap](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf) | [Testing & CI](docs/06-testing-ci.md) | [Evaluation Protocols](docs/05-evaluation.md) |
 | [Project Overview](docs/01-project-overview.md) | [Repository Organization](docs/07-repository-organization.md) | [Experiments 1–7 Lineage](docs/research/README.md) |
 | [System Architecture](docs/02-system-architecture.md) | [Documented Limitations](docs/08-limitations.md) | [Phase Roadmap](docs/09-roadmap.md) |
+| [Universal Representation Layer](docs/16-universal-representation-layer.md) | [Canonical Blueprints](docs/14-blueprint-rule-architecture.md) | [Source Evidence & Sandbox](docs/15-source-evidence-benchmark-and-sandbox.md) |
 | [Documentation Index](docs/README.md) | [Contributing Guide](CONTRIBUTING.md) | [A100 V6 Verification Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md) |
 | [Mirror Crystal (0-Weight CPU Engine)](docs/10-mirror-crystal-weightless-engine.md) | [CPU Autonomous Engine (`1.58`-bit)](training/cpu_autonomous_engine.py) | [Mirror Crystal Hardware Telemetry](artifacts/mirror_crystal_hardware_benchmark.json) |
 
