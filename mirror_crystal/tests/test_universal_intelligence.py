@@ -22,7 +22,7 @@ from mirror_crystal import (
 from mirror_crystal.universal_representation import canonical_json, stable_id
 
 
-def strict_gate(engine):
+def strict_gate(engine, candidate="test-candidate"):
     base = [
         {"input": value, "expected": value * 2}
         for value in (2, 3, 5)
@@ -30,7 +30,7 @@ def strict_gate(engine):
     held_out = [{"input": 11, "expected": 22}]
     adversarial = [{"input": -7, "expected": -14}]
     return engine.evaluate_learning_gate(
-        candidate={"operation": "double"},
+        candidate=candidate,
         cases=base,
         seeds=(17, 29, 43),
         held_out_cases=held_out,
@@ -218,7 +218,9 @@ def test_learning_gate_blocks_weak_evidence_and_promotes_replayable_composition(
 
     persisted = []
     learned = engine.promote_verified_composition(
-        task, result, strict_gate(engine), persist=persisted.append
+        task, result, strict_gate(
+            engine, engine.composition_learning_candidate(result)
+        ), persist=persisted.append
     )
     assert learned.evidence.independently_reproduced is True
     assert learned.capability_id in [x.capability_id for x in engine.registry.list_capabilities()]
@@ -251,7 +253,9 @@ def test_persisted_learned_capability_can_be_reloaded_from_blueprint():
         ),
     )
     result = engine.solve(task)
-    learned = engine.promote_verified_composition(task, result, strict_gate(engine))
+    learned = engine.promote_verified_composition(
+        task, result, strict_gate(engine, engine.composition_learning_candidate(result))
+    )
     prompt = learned.name
     response = canonical_json(learned.to_dict())
     blueprint = Blueprint(
@@ -292,7 +296,9 @@ def test_cross_domain_transfer_requires_fresh_target_domain_gate():
             LearningGateReport(1, 1, 1, False, False, ""),
         )
 
-    promoted = engine.promote_cross_domain_transfer(proposal, strict_gate(engine))
+    promoted = engine.promote_cross_domain_transfer(
+        proposal, strict_gate(engine, engine.cross_domain_learning_candidate(proposal))
+    )
     assert promoted.domains == ("biology",)
     assert promoted.evidence.independently_reproduced is True
     assert engine.registry.handler(promoted.capability_id) is not None
@@ -462,7 +468,7 @@ def test_generic_domain_execution_without_acceptance_criteria_is_not_verified():
 
 def test_learning_gate_report_cannot_be_forged_or_reused_by_another_engine():
     engine = UniversalIntelligenceEngine()
-    valid = strict_gate(engine)
+    valid = strict_gate(engine, "forged-report-check")
     assert valid.passed is True
     assert engine._is_learning_gate_attested(valid) is True
 
