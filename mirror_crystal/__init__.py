@@ -65,6 +65,14 @@ from .pocket_teleport import (
     PocketCrystalClient,
     SignedRuleCapsule,
 )
+from .native_program_synthesis import (
+    BinaryOperation,
+    DispatchCase,
+    FunctionProgram,
+    NativeProgramSynthesizer,
+    ProgramIR,
+    PythonASTCompiler,
+)
 from .universal_representation import (
     CapabilitySpec,
     EvidenceRecord,
@@ -95,6 +103,12 @@ from .slot_abstractor import AbstractedPair, SlotAbstractor
 
 __all__ = [
     "AbstractedPair",
+    "BinaryOperation",
+    "DispatchCase",
+    "FunctionProgram",
+    "NativeProgramSynthesizer",
+    "ProgramIR",
+    "PythonASTCompiler",
     "CapabilityError",
     "CapabilityLearningEngine",
     "CapabilityRegistry",
