@@ -15,7 +15,7 @@ from .response_engine import UnifiedResponseEngine
 class BackendService:
     """UI-independent orchestration facade for the Mirror 7 backend with optional Mirror Crystal Engine."""
 
-    VERSION = 5
+    VERSION = 6
 
     def __init__(
         self,
