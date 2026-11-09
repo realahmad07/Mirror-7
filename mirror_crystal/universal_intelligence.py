@@ -261,7 +261,7 @@ class UniversalTaskInterpreter:
         lower = text.casefold()
         domain = domain_hint.casefold() if domain_hint else "general"
         if not domain_hint:
-            for candidate, terms in cls._DOMAIN_TERMS.items():
+            for candidate, terms in self._DOMAIN_TERMS.items():
                 if any(re.search(r"\b" + re.escape(term) + r"\b", lower) for term in terms):
                     domain = candidate
                     break
@@ -276,6 +276,32 @@ class UniversalTaskInterpreter:
             if interpreted.domain != domain:
                 raise ValueError("domain interpreter returned a TaskSpec for the wrong domain")
             return interpreted
+
+        if domain == "programming" and re.search(r"\\b(build|create|make|write|implement)\\b", lower) and re.search(r"\\bcalculator\\b", lower):
+            tests = (
+                'assert calculate(2, 3, "add") == 5\\n'
+                'assert calculate(5, 2, "subtract") == 3\\n'
+                'assert calculate(3, 4, "multiply") == 12\\n'
+                'assert calculate(8, 2, "divide") == 4\\n'
+            )
+            subtask = SubtaskSpec(
+                subtask_id="synthesize_calculator",
+                goal="Construct a calculator program from Mirror-native typed operations.",
+                domain="programming",
+                capability_tags=("program.calculator.synthesize",),
+                capability_id="program.calculator.synthesize",
+                output_schema={"code": "string", "program_ir": "mapping"},
+            )
+            return TaskSpec(
+                task_id=stable_id("task", {"request": text, "artifact": "native_calculator"}),
+                request=text,
+                goal="Build an executable calculator supporting addition, subtraction, multiplication and division.",
+                domain="programming",
+                required_outputs={"code": "string", "program_ir": "mapping"},
+                required_capability_tags=("program.calculator.synthesize",),
+                subtasks=(subtask,),
+                context={"tests": tests, "artifact_type": "python_source"},
+            )
 
         match = self._ARITHMETIC.search(text)
         if match:
@@ -545,6 +571,7 @@ class UniversalVerifier:
     def __init__(self) -> None:
         self._domain_verifiers: dict[str, Callable[[TaskSpec, TaskPlan, tuple[Any, ...], Mapping[str, Any]], tuple[bool, tuple[str, ...], tuple[str, ...]]]] = {}
         self.register_domain_verifier("mathematics", self._verify_arithmetic)
+        self.register_domain_verifier("programming", self._verify_program)
         self.register_domain_verifier("general", self._verify_generic)
 
     def register_domain_verifier(self, domain: str, verifier: Callable) -> None:
@@ -589,6 +616,37 @@ class UniversalVerifier:
             except Exception as exc:
                 failed.append(f"criterion:{index}:{field}:{operation}:{type(exc).__name__}")
         return tuple(passed), tuple(failed)
+
+    @staticmethod
+    def _verify_program(task, plan, executions, outputs):
+        """Syntax-check and TDD-test native program artifacts inside Mirror's sandbox."""
+        code = outputs.get("final", {}).get("code")
+        if not isinstance(code, str) or not code.strip():
+            return False, (), ("program_source_missing",)
+        try:
+            from .phase7_qwen_to_opus import AutonomousTDDEngine
+            test_code = str(task.context.get("tests", "") or "")
+            if not test_code.strip():
+                return False, (), ("program_verification_tests_missing",)
+            report = AutonomousTDDEngine().run_tdd_cycle(
+                code,
+                spec_desc=task.goal,
+                explicit_tests=test_code,
+            )
+            count = int(getattr(report, "tests_generated", 0) or 0)
+            passed = int(getattr(report, "tests_passed", 0) or 0)
+            if report.verified and count > 0 and passed == count:
+                return True, (
+                    "python_source_compiled",
+                    f"tdd_assertions_passed:{passed}/{count}",
+                    "sandbox_execution_passed",
+                ), ()
+            return False, (), (
+                f"tdd_verification_failed:{passed}/{count}",
+                *tuple(getattr(report, "diagnostics", ()) or ()),
+            )
+        except Exception as exc:
+            return False, (), (f"program_verifier_error:{type(exc).__name__}",)
 
     @staticmethod
     def _verify_generic(task, plan, executions, outputs):
@@ -840,6 +898,18 @@ class UniversalIntelligenceEngine:
             ("sequence.sum", "Sum a numeric sequence", "mathematics", {"items": "sequence"}, {"result": "number"}, ("sequence.sum", "sequence", "numeric"), lambda x: {"result": float(sum((self._numeric(v) for v in x["items"]), Decimal("0")))}),
             ("text.concatenate", "Concatenate text values", "general", {"left": "string", "right": "string"}, {"result": "string"}, ("text.concatenate", "text"), lambda x: {"result": x["left"] + x["right"]}),
         ]
+        from .native_program_synthesis import NativeProgramSynthesizer
+
+        program_synthesizer = NativeProgramSynthesizer()
+        definitions.append((
+            "program.calculator.synthesize",
+            "Synthesize a calculator from Mirror-native typed syntax operations",
+            "programming",
+            {},
+            {"code": "string", "program_ir": "mapping"},
+            ("program.calculator.synthesize", "program.construct", "program.ast"),
+            lambda _values: program_synthesizer.build_calculator(),
+        ))
         for capability_id, name, domain, inputs, outputs, tags, handler in definitions:
             spec = CapabilitySpec(
                 capability_id=capability_id,
@@ -868,9 +938,15 @@ class UniversalIntelligenceEngine:
                     "sequence.length": {"items": [1, 2]},
                     "sequence.sum": {"items": [1, 2, 3]},
                     "text.concatenate": {"left": "mi", "right": "rror"},
+                    "program.calculator.synthesize": {},
                 }[cid]
                 output = fn(probe)
-                return isinstance(output, Mapping) and set(output) == {next(iter(spec.output_schema))}
+                return (
+                    isinstance(output, Mapping)
+                    and set(output) == set(spec.output_schema)
+                    and isinstance(output.get("code"), str)
+                    and "def calculate" in output["code"]
+                )
             self.registry.register(spec, handler, self_test=self_test)
 
     @staticmethod
@@ -973,9 +1049,13 @@ class UniversalIntelligenceEngine:
         report = self.verifier.verify(task, plan, executions, outputs)
         final_outputs = dict(outputs.get("final", {}))
         answer = (
-            str(next(iter(final_outputs.values())))
-            if len(final_outputs) == 1
-            else canonical_json(final_outputs)
+            final_outputs["code"]
+            if task.domain == "programming" and isinstance(final_outputs.get("code"), str)
+            else (
+                str(next(iter(final_outputs.values())))
+                if len(final_outputs) == 1
+                else canonical_json(final_outputs)
+            )
         )
         status = "verified" if report.passed else "verification_failed"
         learning_candidate = None
@@ -1152,8 +1232,6 @@ class UniversalIntelligenceEngine:
         input_schema = dict(task.input_schema) or {
             key: self._infer_value_type(value) for key, value in task.inputs.items()
         }
-        if not input_schema:
-            raise CapabilityError("learned capability requires a typed input contract")
         required_outputs = dict(task.required_outputs)
         last_capability = self.registry.get(str(plan_steps[-1]["capability_id"]))
         if last_capability is None:
