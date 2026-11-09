@@ -88,7 +88,9 @@ def test_crystal_http_server_full_integration(tmp_path: Path):
         )
         assert code_qm == 200
         assert "78" in data_qm["answer"]
-        assert data_qm["epistemic_tier"] == "verified_exact"
+        assert data_qm["epistemic_tier"] == "honest_abstain"
+        assert data_qm["verified"] is False
+        assert data_qm["abstained"] is True
 
         # Genuine out-of-distribution prose must still abstain honestly
         code_ood, data_ood, _ = make_request(
