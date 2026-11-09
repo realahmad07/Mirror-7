@@ -439,6 +439,8 @@ class LearningGateReport:
     base_case_count: int = 0
     held_out_case_count: int = 0
     adversarial_case_count: int = 0
+    candidate_runner_sha256: str = ""
+    independent_verifier_sha256: str = ""
 
     @property
     def passed(self) -> bool:
@@ -446,6 +448,8 @@ class LearningGateReport:
             self.base_case_count >= 3
             and self.held_out_case_count >= 1
             and self.adversarial_case_count >= 1
+            and bool(re.fullmatch(r"[0-9a-f]{64}", self.candidate_runner_sha256))
+            and bool(re.fullmatch(r"[0-9a-f]{64}", self.independent_verifier_sha256))
             and self.cases_generated >= 3
             and self.cases_passed == self.cases_generated
             and self.seed_count >= 3
