@@ -26,6 +26,12 @@ def _make_legacy_vault(path: Path) -> bytes:
         vault.optimize_disk()
     finally:
         vault.close()
+    # Recreate a legacy vault from before canonical blueprint tables existed.
+    with sqlite3.connect(path) as legacy:
+        legacy.execute("DROP TABLE IF EXISTS blueprint_claim_evidence")
+        legacy.execute("DROP TABLE IF EXISTS blueprint_claim_scopes")
+        legacy.execute("DROP TABLE IF EXISTS blueprints")
+        legacy.commit()
     return path.read_bytes()
 
 
