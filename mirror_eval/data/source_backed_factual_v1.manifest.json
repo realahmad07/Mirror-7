@@ -1,0 +1,16 @@
+{
+  "benchmark_id": "mirror-source-backed-factual-v1",
+  "version": 1,
+  "split": "test",
+  "dataset_file": "source_backed_factual_v1.jsonl",
+  "dataset_sha256": "PENDING",
+  "review_status": "pending_independent_review",
+  "required_distinct_independent_reviewers_per_claim": 2,
+  "required_distinct_independent_case_reviewers": 2,
+  "training_usage": "forbidden",
+  "notes": [
+    "Source URLs and short evidence excerpts are recorded to make each gold claim auditable.",
+    "No reviewer approvals have been fabricated; the dataset cannot be scored until two independent reviewers approve every claim and case.",
+    "The set is frozen as an evaluation-only asset. Update only by creating a new version and digest."
+  ]
+}
