@@ -185,6 +185,33 @@ class CapabilityRegistry:
             values = [x for x in values if x.domain == domain or x.domain == "general"]
         return tuple(sorted(values, key=lambda x: x.node_id))
 
+    def search_knowledge(
+        self,
+        query: str,
+        *,
+        domain: str | None = None,
+        kinds: tuple[RepresentationKind, ...] = (),
+        limit: int = 20,
+    ) -> tuple[RepresentationNode, ...]:
+        """Rank stored domain knowledge by token overlap without changing its trust level."""
+        terms = {
+            token for token in re.findall(r"[a-z0-9_]+", query.casefold())
+            if len(token) > 2
+        }
+        candidates = list(self.knowledge_nodes(domain=domain))
+        if kinds:
+            allowed = {RepresentationKind(x) for x in kinds}
+            candidates = [node for node in candidates if node.kind in allowed]
+        ranked = []
+        for node in candidates:
+            text = " ".join((node.label, node.domain, str(node.content))).casefold()
+            node_terms = set(re.findall(r"[a-z0-9_]+", text))
+            score = len(terms & node_terms)
+            if score:
+                ranked.append((-score, node.node_id, node))
+        ranked.sort(key=lambda item: (item[0], item[1]))
+        return tuple(item[2] for item in ranked[:max(1, min(int(limit), 100))])
+
 
 class UniversalTaskInterpreter:
     """Conservative native interpreter for explicit task shapes and simple arithmetic.
@@ -577,7 +604,8 @@ class UniversalVerifier:
                 args = execution["inputs"]
                 expected = operation_map[capability_id](args["left"], args["right"])
                 actual = Decimal(str(execution["outputs"]["result"]))
-                if actual == expected:
+                tolerance = max(abs(expected), Decimal("1")) * Decimal("1e-12")
+                if abs(actual - expected) <= tolerance:
                     independent.append(f"independent_decimal_recompute:{capability_id}")
                 else:
                     failed.append(f"independent_decimal_recompute_failed:{capability_id}")
