@@ -80,6 +80,17 @@ from .universal_representation import (
     canonical_json,
     stable_representation_id,
 )
+from .capability_model import (
+    CapabilityConflictError, CapabilityRegistry, CapabilitySpec,
+    CapabilityValidationError, PortContract,
+)
+from .capability_matching import (
+    CapabilityMatch, CapabilityMatchReport, CapabilityMatcher,
+)
+from .capability_composition import (
+    CapabilityCompositionPlanner, CompositionPlan, CompositionPlanningError,
+    InputBinding, PlanStatus, PlanStep,
+)
 from .task_understanding import (
     ConstraintKind,
     TaskConstraint,
@@ -92,6 +103,20 @@ from .task_understanding import (
 )
 
 __all__ = [
+    "CapabilityConflictError",
+    "CapabilityRegistry",
+    "CapabilitySpec",
+    "CapabilityValidationError",
+    "PortContract",
+    "CapabilityMatch",
+    "CapabilityMatchReport",
+    "CapabilityMatcher",
+    "CapabilityCompositionPlanner",
+    "CompositionPlan",
+    "CompositionPlanningError",
+    "InputBinding",
+    "PlanStatus",
+    "PlanStep",
     "AbstractedPair",
     "EpistemicStatus",
     "RepresentationConflictError",

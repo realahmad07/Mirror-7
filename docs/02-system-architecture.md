@@ -7,6 +7,9 @@
 | Research phases | Bounded hypotheses, mechanisms, integrations, and evaluators. |
 | Universal representation | Typed cross-domain knowledge nodes and relations with epistemic status, provenance, uncertainty, and durable storage. |
 | Universal task understanding | Converts user requests into a domain-neutral TaskSpec with explicit goals, knowns, unknowns, constraints, outputs, and subtask dependencies. |
+| Capability contracts and registry | Stores reusable domain-neutral operations with typed input/output ports, preconditions, dependencies, provenance, and explicit verification evidence. |
+| Capability matching | Matches each task unit to domain/intent-compatible capabilities and reports missing inputs and evidence eligibility without executing anything. |
+| Capability composition planning | Builds a bounded typed dependency plan, rejects unverified or unbound operations, and records postconditions as future verification requirements. |
 | Mirror runtime | Session-level state and research-engine orchestration. |
 | Backend service | Lifecycle, persistence, actions, metrics, response generation, and capacity. |
 | HTTP boundary | Stable JSON API for the UI/client. |
