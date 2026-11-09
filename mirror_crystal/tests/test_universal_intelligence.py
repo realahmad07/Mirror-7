@@ -311,3 +311,73 @@ def test_task_and_capability_contracts_round_trip_without_losing_types():
     assert restored_spec.capability_id == spec.capability_id
     assert restored_spec.input_schema == spec.input_schema
     assert restored_spec.evidence.trusted_for_execution
+
+
+def test_new_domain_adapter_uses_same_representation_planner_and_verifier():
+    engine = UniversalIntelligenceEngine()
+
+    capability = CapabilitySpec(
+        capability_id="biology.sequence_count",
+        name="Count biological observations",
+        domains=("biology",),
+        input_schema={"observations": "sequence"},
+        output_schema={"count": "integer"},
+        tags=("biology.sequence_count",),
+        executor_key="biology.sequence_count",
+        evidence=EvidenceRecord(level=VerificationLevel.UNVERIFIED),
+        provenance=ProvenanceRecord(source="test-domain-adapter"),
+    )
+
+    task = TaskSpec(
+        task_id="biology-count",
+        request="Count observations",
+        goal="Count the observations",
+        domain="biology",
+        inputs={"observations": ["cell-a", "cell-b", "cell-c"]},
+        input_schema={"observations": "sequence"},
+        required_outputs={"count": "integer"},
+        subtasks=(
+            SubtaskSpec(
+                subtask_id="count",
+                goal="Count biological observations",
+                domain="biology",
+                capability_tags=("biology.sequence_count",),
+                capability_id="biology.sequence_count",
+                input_bindings={"observations": "input:observations"},
+                output_schema={"count": "integer"},
+            ),
+        ),
+        acceptance_criteria=({
+            "field": "count.count",
+            "op": "equals",
+            "expected": 3,
+        },),
+    )
+
+    def verify(_task, _plan, _executions, _outputs):
+        return True, ("biology_adapter_contract_passed",), ()
+
+    def interpret(prompt, inputs):
+        return replace(
+            task,
+            request=prompt,
+            task_id=stable_id("biology-task", prompt),
+            inputs=inputs or task.inputs,
+        )
+
+    engine.register_domain_adapter(
+        "biology",
+        capabilities=(
+            (
+                capability,
+                lambda values: {"count": len(values["observations"])},
+                lambda: True,
+            ),
+        ),
+        verifier=verify,
+        interpreter=interpret,
+    )
+    result = engine.solve_prompt("Count these cell observations", domain_hint="biology")
+    assert result["status"] == "verified"
+    assert result["candidate_outputs"] == {"count": 3}
+    assert result["verification"]["verifier"] == "Mirror UniversalVerifier/biology"
