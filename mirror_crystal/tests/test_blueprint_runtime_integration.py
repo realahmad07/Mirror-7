@@ -294,3 +294,37 @@ def test_respond_blueprint_reaches_records_beyond_global_10000_limit(tmp_path):
     finally:
         vault.close()
 
+def test_blueprint_prompt_index_finds_specific_rule_beyond_broad_prefix_bucket(tmp_path):
+    from mirror_crystal.blueprint_prompt import blueprint_prompt_fields
+
+    vault = DiskCrystalVault(tmp_path / "large-prompt-index.dcrystal")
+    try:
+        prompts = []
+        for index in range(700):
+            prompt = (
+                "Use this procedure when a problem requires separate "
+                f"topic{index:04d} for this case."
+            )
+            response = f"Apply the procedure for topic {index:04d}."
+            blueprint = Blueprint(
+                blueprint_id=f"indexed-{index:04d}",
+                kind=BlueprintKind.PROCEDURE,
+                domain="general_reasoning",
+                intent=f"topic-{index:04d}",
+                prompt_pattern=prompt,
+                response_template=response,
+                provenance=BlueprintProvenance(
+                    source="prompt-index-test",
+                    source_ref=f"fixture://topic/{index}",
+                    content_sha256=Blueprint._digest(prompt, response),
+                ),
+            )
+            vault.store_blueprint(blueprint)
+            prompts.append(prompt)
+
+        matches = vault.find_blueprint_matches(prompts[-1])
+        assert len(matches) == 1
+        assert matches[0][0].blueprint_id == "indexed-0699"
+    finally:
+        vault.close()
+
