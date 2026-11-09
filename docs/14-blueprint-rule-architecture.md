@@ -1,68 +1,32 @@
 # Canonical Blueprint and Rule Architecture
 
 ## Purpose
-
 Mirror's knowledge foundation should be a composable system of blueprints and rules. A blueprint describes a capability or transformation; rules provide executable or retrievable pieces used to realize it. Stored examples, retrieval similarity and legacy trust labels are not proof of truth.
 
-This page defines the first stable contract and a safe migration path. It does not claim that every current subsystem has already migrated.
-
 ## Canonical blueprint
+The versioned contract in \`blueprint_contracts.py\` records kind, domain, intent, prompt/response templates, slots, preconditions, postconditions, dependencies, provenance, licensing and verification evidence. Legacy adapters preserve prior trust labels as metadata but always emit \`unverified\` evidence.
 
-The new `mirror_crystal.blueprint_contracts` module defines a versioned `Blueprint` with identity/type, domain and intent, prompt pattern and response template, slots, preconditions/postconditions, dependency IDs, provenance, license label, content digest, and verification evidence.
+## Runtime and storage now implemented
+- \`DiskCrystalVault\` remains the compatibility facade, with storage, indexing, retrieval and response behavior extracted into \`vault_storage.py\`, \`vault_indexing.py\`, \`vault_retrieval.py\` and \`vault_response.py\`.
+- The existing SQLite file format is retained. Schema creation adds a separate \`blueprints\` table and a domain/intent index; existing rule rows are not destructively rewritten.
+- \`store_blueprint\`, \`get_blueprint\`, \`list_blueprints\` and bounded \`backfill_legacy_blueprints\` provide canonical persistence. Backfill is paginated and every adapted legacy rule remains unverified.
+- \`respond_blueprint\` is an explicit runtime entry point. It resolves dependencies in deterministic order, checks exact preconditions against externally verified condition tokens, and requires an explicit verifier for each postcondition. Formula blueprints with derived expressions require a caller-supplied safe executor; the runtime never calls Python \`eval\`.
+- Missing dependencies, cycles, missing template values, unmet preconditions and unchecked postconditions block composition.
 
-The `BlueprintDependencyGraph` resolves dependencies in deterministic order and rejects missing nodes and cycles. It is deliberately independent of retrieval and storage.
+## Answer verification policy
+\`BlueprintAnswerVerifier\` records source identity/reference, content digest, capture timestamp, freshness, evidence level and conflicting records. Conflicting blueprints for the same domain/intent cause abstention. Missing, stale, future-dated or digest-mismatched provenance prevents reliable labeling. Only formally verified or independently reproduced evidence can pass the evidence-level gate.
 
-### Evidence levels
+This verifier is an evidence-policy gate, **not an external fact-checking service**. It cannot independently establish that a source is authentic, that a cited page supports every sentence, or that a formal verifier was honestly operated. The normal legacy \`respond\` path remains conservative and retrieval-only factual matches remain moderate confidence; it is not automatically promoted by the new blueprint API.
 
-| Level | Meaning | Does not mean |
-|---|---|---|
-| `unverified` | No attached validation evidence | Not a correctness claim |
-| `curated` | A documented curation review occurred | Does not prove factual correctness |
-| `execution_tested` | Named executable checks passed | Does not prove behavior outside test scope |
-| `formally_verified` | A named formal verifier checked an explicit claim | Does not prove unrelated claims |
-| `independently_reproduced` | A named independent reproduction passed | Does not imply broad generalization |
+## Execution isolation
+\`ZeroTrustSandboxJudge\` still performs parent-process AST checks, then executes approved candidates in a separate Python child process with timeout and POSIX CPU, address-space, file-size and file-descriptor limits. It uses an isolated interpreter mode, a temporary working directory and a restricted import/builtin map.
 
-Legacy `CrystalRule` and roadmap records are adapted with `unverified` evidence. A legacy `trust_tier=1`, the presence of a test string, or successful ingestion is not silently promoted to verification.
+A child process is stronger than same-process \`exec\`, but this is **not** a container, seccomp policy, network namespace, or a proof against Python/runtime escapes. Do not run hostile multi-tenant workloads with this as the only security boundary. Production hardening should add a container/VM boundary and network denial.
 
-## Intended runtime flow
+## Evaluation
+New tests cover dependency ordering, missing prerequisites, unchecked postconditions, formula-executor requirements, persistent legacy backfill, freshness, contradictions, unverified evidence and distinct-process execution. A separate black-box evaluation module contains synthetic negative controls.
 
-1. Parse request into intent and explicit constraints.
-2. Retrieve candidate blueprints and rule fragments.
-3. Check preconditions, domain, and entity coverage.
-4. Resolve dependencies in dependency-first order.
-5. Execute bounded deterministic transformations or tested procedures.
-6. Validate postconditions and response invariants.
-7. Compose without adding unsupported claims.
-8. Return answer with evidence scope and trace, or clarify/abstain.
+These are regression/negative-control tests, not a large independently curated factual benchmark. A true held-out factual evaluation still needs licensed source-backed examples, independent annotators/verifiers, multilingual/adversarial slices and a frozen test set. Report factual accuracy, unsupported-answer rate, abstention quality, calibration and latency separately.
 
-Retrieval, storage, composition, execution, and response realization should be independently testable components.
-
-## Bottlenecks found
-
-- `engine.py` combines ingestion, state, retrieval, chaining, composition, and abstention.
-- `disk_vault.py` combines SQLite/index storage, ingestion, candidate retrieval, response policy, maintenance, and analytics.
-- The in-memory and disk-backed engines duplicate substantial response logic.
-- The disk vault imported response/session helpers from `engine.py`, an unnecessary dependency on the in-memory engine.
-- Retrieval similarity and multi-hop fact chaining were previously labeled `verified_exact`; neither is independent proof.
-- The Python AST judge is an in-process restricted execution harness, not an OS/container-isolated security boundary.
-
-## Changes in this increment
-
-1. Extracted shared response types, session memory, and compound-intent splitting. The disk vault now imports these shared primitives directly.
-2. Added a canonical blueprint contract and dependency graph, plus conservative legacy adapters.
-3. Centralized epistemic tier policy. Deterministic operations and test-passing synthesis can be exact; retrieval-only facts and factual chains cannot.
-4. Added focused regression tests for contract round-trips, evidence invariants, dependency resolution, module compatibility, epistemic labeling, and the isolated backend query coordinator.
-
-## Remaining migration plan
-
-1. **Backend facade:** move teaching/ingestion, memory, streamer, and session lifecycle into separate coordinators; the query path is now separated.
-2. **Storage boundary:** move SQLite schema, transactions, LRU and index persistence behind a repository interface.
-3. **Retrieval boundary:** implement a common candidate interface so memory and disk engines share matching and abstention policy.
-4. **Composition boundary:** replace implicit rule chaining with explicit dependencies, preconditions, and postconditions.
-5. **Execution boundary:** isolate deterministic formula interpreters and replace in-process code execution with an OS-level sandbox for untrusted programs.
-6. **Answer validation:** attach source/evidence pointers to factual claims or mark them as inference; add contradiction and freshness checks.
-7. **Evaluation:** add external, held-out, adversarial, multilingual and regression suites. Report accuracy, unsupported-answer rate, abstention quality, calibration and latency separately.
-
-## Current capability boundary
-
-The Crystal track can retrieve stored examples, generalize a bounded set of numeric formula patterns, perform selected deterministic CAS operations, recall explicit session constraints, compose some rule chains, and synthesize code against supplied tests. It is not yet a general-purpose factual knowledge engine. Stored-rule count and internal benchmark results do not establish broad answer correctness.
+## Compatibility and remaining boundaries
+The storage split is a responsibility boundary; \`DiskCrystalVault\` remains the public import and legacy rule schema remains readable. Backfill is explicit and paginated to avoid long startup migrations. The classic \`respond\` path is retained for compatibility. Crystal can still retrieve stored examples, generalize selected numeric templates, run selected deterministic CAS operations, maintain session constraints, compose explicit blueprint chains and verify bounded code candidates. It is not a general-purpose factual knowledge engine or established general intelligence.
