@@ -10,27 +10,60 @@ from mirror_crystal.disk_vault import DiskCrystalVault
 from mirror_crystal.autonomous_streamer import AutonomousDatasetStreamer
 
 
-def test_streamer_pulse_and_flush():
+def test_streamer_pulse_and_flush(monkeypatch):
+    from types import SimpleNamespace
+    from mirror_crystal.autonomous_streamer import StreamCandidate
+
+    candidates = [
+        StreamCandidate(
+            source="unit_test_stream",
+            domain="test_domain",
+            prompt="Explain deterministic test candidate alpha.",
+            response="Deterministic candidate alpha has a stable, bounded explanation.",
+            spdx_license="Apache-2.0",
+        ),
+        StreamCandidate(
+            source="unit_test_stream",
+            domain="test_domain",
+            prompt="Explain deterministic test candidate beta.",
+            response="Deterministic candidate beta has a separate, stable explanation.",
+            spdx_license="Apache-2.0",
+        ),
+    ]
+    # Make the stream-source selection deterministic. This test covers buffering
+    # and flush accounting, not random choice among external candidate generators.
+    monkeypatch.setattr(
+        "mirror_crystal.autonomous_streamer.random.choice",
+        lambda _generators: (lambda: candidates),
+    )
     with tempfile.TemporaryDirectory() as td:
         vpath = Path(td) / "test_stream_vault.dcrystal"
         vault = DiskCrystalVault(vpath)
         try:
             streamer = AutonomousDatasetStreamer(vault, cadence_seconds=1.0, flush_batch_size=2)
+            monkeypatch.setattr(
+                streamer.hygiene,
+                "audit_record",
+                lambda *_args, **_kwargs: SimpleNamespace(passed=True, rejection_gate=None),
+            )
 
             # Execute pulse
             res = streamer.pulse_once()
-            assert res["evaluated"] >= 1
-            assert res["admitted"] >= 1
+            assert res["evaluated"] == 2
+            assert res["admitted"] == 2
 
-            # Second pulse to trigger flush (batch_size=2)
-            streamer.pulse_once()
+            # The first pulse reaches the deterministic batch size; a second pulse
+            # exercises repeated flush behavior without depending on live randomness.
+            second = streamer.pulse_once()
+            assert second["evaluated"] == 2
+            assert second["admitted"] == 2
             streamer._flush_buffer_locked()
 
             assert vault.rule_count() >= 1
 
             status = streamer.get_status()
-            assert status["total_evaluated"] >= 2
-            assert status["total_admitted"] >= 2
+            assert status["total_evaluated"] == 4
+            assert status["total_admitted"] == 4
             assert status["vault_total_rules"] == vault.rule_count()
         finally:
             vault.close()
