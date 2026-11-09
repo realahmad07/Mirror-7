@@ -21,7 +21,7 @@ Use \`scripts/migrate_legacy_blueprints.py\` in dry-run mode before applying any
 See [docs/15-source-evidence-benchmark-and-sandbox.md](15-source-evidence-benchmark-and-sandbox.md) for the manifest contract, CLI usage and review procedure.
 
 ## Evaluation
-The evaluation-only factual v1 dataset is source-linked and digest-pinned but currently pending independent review. It contains no fabricated reviewer records and scoring is blocked until the review gate is satisfied. The harness measures accuracy, unsupported-answer rate, claim support, abstention precision/recall, coverage and calibration. Its built-in lexical judge is a baseline, not semantic entailment.
+The evaluation-only factual v1 dataset is source-linked and digest-pinned but currently pending independent review. It contains no fabricated reviewer records and scoring is blocked until the review gate is satisfied. The harness measures accuracy, unsupported-answer rate, claim support, abstention precision/recall, coverage, latency and calibration over answered responses. It archives raw outputs with hashes. Its built-in lexical judge is a baseline, not semantic entailment.
 
 Synthetic tests remain regression and negative controls, not a substitute for a broad independent factual benchmark. Add licensed, independently annotated, multilingual, adversarial and freshness-sensitive examples before drawing general reliability conclusions.
 
