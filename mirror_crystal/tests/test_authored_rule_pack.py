@@ -14,7 +14,7 @@ def test_authored_rule_pack_is_balanced_and_explicitly_unverified():
     rows = [json.loads(line) for line in PACK.read_text(encoding="utf-8").splitlines() if line.strip()]
     assert len(rows) == 110
     assert set(Counter(row["domain"] for row in rows).values()) == {10}
-    prompts = [re.sub(r"[^\\w]+", " ", row["question"].casefold()).strip() for row in rows]
+    prompts = [re.sub(r"[^\w]+", " ", row["question"].casefold()).strip() for row in rows]
     assert len(prompts) == len(set(prompts))
     assert all(row["trust_tier"] == 3 for row in rows)
     assert all(row["evidence_status"] == "unverified" for row in rows)
