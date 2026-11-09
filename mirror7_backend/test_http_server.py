@@ -195,7 +195,7 @@ def test_api_token_protects_sensitive_routes_but_not_liveness():
         thread.join(timeout=2)
 
 
-def test_tdd_generate_route_reports_unconfigured_provider():
+def test_tdd_generate_route_uses_native_capabilities_and_reports_gaps():
     from .service import BackendService
 
     service = BackendService(enable_crystal_auto_load=False)
@@ -207,12 +207,14 @@ def test_tdd_generate_route_reports_unconfigured_provider():
             server,
             "POST",
             "/api/tdd/generate",
-            {"prompt": "Write a sorting function"},
+            {"prompt": "Write code for a sorting function"},
         )
         assert status == 200
         assert result["ok"] is False
         assert result["verified"] is False
-        assert "No code-generation provider" in result["error"]
+        assert result["final_code"] is None
+        assert result["universal_result"]["status"] == "capability_gap"
+        assert "Mirror has no verified native construction path" in result["error"]
     finally:
         server.shutdown()
         server.server_close()
