@@ -29,6 +29,7 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [23 — Evidence-gated capability learning](23-evidence-gated-capability-learning.md) | Repeated verified compositions converted into explicit reusable capability proposals. |
 | [24 — Universal knowledge foundation](24-knowledge-foundation.md) | Canonical knowledge records, assumption/evidence separation, source-backed fact admission, contradiction detection, and typed knowledge-to-capability bridging. |
 | [25 — Domain-specific verification](25-domain-specific-verification.md) | Evidence artifacts bound to exact execution fingerprints, domain policies, checker identity floors, postconditions, and fail-closed outcomes. |
+| [26 — Universal operational language and capability synthesis](26-universal-operational-language-and-synthesis.md) | Typed UOL, bounded native interpreter, structured rule integration, held-out synthesis and verification gates. |
 | [Core pipeline acceptance and roadmap alignment](../PHASE1_9_ACCEPTANCE.md) | Nine engineering-layer test results plus honest status of the original strategic nine-phase roadmap. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 

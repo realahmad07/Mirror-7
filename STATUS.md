@@ -96,3 +96,11 @@ review service, or external source-authentication service.
 **Strategic Phase 6 remains PARTIAL.** Real domain engines must be installed and
 independently validated against frozen, held-out and adversarial domain
 benchmarks before this phase can be marked complete.
+
+## Universal Operational Language and capability synthesis v1
+
+The repository now includes a typed, serializable UOL expression language and a bounded interpreter, plus an example-guided capability synthesizer. The v1 search composes closed built-in primitives and structured, domain-scoped rules supplied to Mirror. It requires disjoint training and held-out examples and returns explicit no-solution or budget-exhausted outcomes.
+
+Synthesized procedures adapt to the existing capability contract as **UNVERIFIED** candidates. They cannot enter ordinary capability execution or learning promotion without the existing independent verification gates. The interpreter executes UOL data directly; it does not execute generated Python or arbitrary host callbacks.
+
+Focused isolated tests: **15 passed**. Full repository CI remains the integration acceptance gate. This increment does not claim unrestricted code generation, general cross-domain transfer, or open-world autonomous learning.

@@ -125,6 +125,17 @@ from .task_understanding import (
     TaskUnderstandingError,
 )
 
+from .operational_language import (
+    UOL, UOLError, UOLExecutionError, RuleStatus, VariableSpec, Lit, Var, Call,
+    If, ArrayExpr, RecordExpr, Field, Index, Let, MapExpr, FoldExpr,
+    OperationalRule, RuleCatalog, Program, Expression, build_program,
+    expr_dict, expr_from_dict, program_dict, program_from_dict, knowledge_rule,
+)
+from .capability_synthesizer import (
+    CapabilitySynthesizer, Example, SynthesisError, SynthesisGoal,
+    SynthesisReport, SynthesisStatus,
+)
+
 __all__ = [
     "KnowledgeConflict",
     "KnowledgeConflictError",
@@ -262,4 +273,14 @@ __all__ = [
     "ZeroTrustSandboxJudge",
     "curate_all_datasets",
     "split_compound_intents",
+]
+
+__all__ += [
+    "UOL", "UOLError", "UOLExecutionError", "RuleStatus", "VariableSpec",
+    "Lit", "Var", "Call", "If", "ArrayExpr", "RecordExpr", "Field", "Index",
+    "Let", "MapExpr", "FoldExpr", "OperationalRule", "RuleCatalog", "Program",
+    "Expression", "build_program", "expr_dict", "expr_from_dict",
+    "program_dict", "program_from_dict", "knowledge_rule",
+    "CapabilitySynthesizer", "Example", "SynthesisError", "SynthesisGoal",
+    "SynthesisReport", "SynthesisStatus",
 ]
