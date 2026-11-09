@@ -289,7 +289,18 @@ class UnifiedCognitiveOrchestrator:
                 "Conflicting verified claims; Mirror abstains."
                 if conflict else (
                     synthesis["answer"] if verified_answer
-                    else "Insufficient independently verified evidence."
+                    else (
+                        "UNVERIFIED CANDIDATE — not independently verified.\\n\\n"
+                        + candidate["answer"]
+                        if candidate else "Insufficient independently verified evidence."
+                    )
+                )
+            ),
+            "answer_qualification": (
+                "verified" if verified_answer else (
+                    "conflicting_evidence" if conflict else (
+                        "unverified_candidate" if candidate else "no_candidate"
+                    )
                 )
             ),
             "confidence": 0.0 if abstained else min(
