@@ -45,6 +45,8 @@ jobs:
         run: python -m pytest -q phase324_backend_smoke phase342_release_boundary
       - name: Training foundation tests
         run: python -m pytest -q training/test_training_foundation.py
+      - name: Free-running evaluator tests
+        run: python -m pytest -q training/test_free_running_eval.py
       - name: Build and validate smoke dataset
         run: |
           python -m training.make_smoke_dataset
