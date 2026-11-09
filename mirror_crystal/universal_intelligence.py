@@ -296,7 +296,7 @@ class UniversalTaskInterpreter:
                 raise ValueError("domain interpreter returned a TaskSpec for the wrong domain")
             return interpreted
 
-        if domain == "programming" and re.search(r"\b(build|create|make|write|implement)\\b", lower) and re.search(r"\bcalculator\\b", lower):
+        if domain == "programming" and re.search(r"\b(build|create|make|write|implement)\b", lower) and re.search(r"\bcalculator\b", lower):
             tests = (
                 'assert calculate(2, 3, "add") == 5\\n'
                 'assert calculate(5, 2, "subtract") == 3\\n'
@@ -324,8 +324,8 @@ class UniversalTaskInterpreter:
 
         if (
             domain == "programming"
-            and re.search(r"\b(build|create|make|write|implement)\\b", lower)
-            and re.search(r"\b(sort|sorting)\\b", lower)
+            and re.search(r"\b(build|create|make|write|implement)\b", lower)
+            and re.search(r"\b(sort|sorting)\b", lower)
         ):
             tests = (
                 'assert bubble_sort([3, 1, 2]) == [1, 2, 3]\\n'
