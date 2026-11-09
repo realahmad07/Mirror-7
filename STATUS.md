@@ -130,3 +130,15 @@ See [Phase 1–2 implementation details](docs/27-phase1-knowledge-to-uol-and-pha
 
 CI: https://github.com/realahmad07/Mirror-7/actions/runs/42667036649  
 Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42667036152
+
+
+## Universal construction — Phase 3 and Phase 4
+
+**Implementation status: added; active CI and Security Guard acceptance pending.**
+
+| Phase | Implemented increment | Acceptance boundary |
+|---|---|---|
+| 3 — Advanced capability synthesis | Search can construct conditional selection, map transformations and fold reductions, and recursively account for rule references in nested UOL expressions. | Bounded grammar and finite examples only; candidates remain UNVERIFIED. |
+| 4 — Native domain verification | Two native checks per initial domain: exact mathematics, independent UOL program replay/contracts, physics dimensions/conservation, biology bounds/mass balance, and engineering stress/safety factor. | Each check verifies only its declared structured invariant. This does not complete general-purpose scientific simulation or the broader strategic Phase 6. |
+
+See [Phase 3–4 design and boundaries](docs/28-phase3-advanced-synthesis-and-phase4-native-verification.md).

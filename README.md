@@ -184,7 +184,21 @@ The current implementation adds a shared route from the canonical knowledge stor
 - **Counterexample-guided synthesis (CEGIS):** a candidate is tested against an independent host-supplied oracle on a disjoint probe pool. A mismatch is recorded and fed back into the synthesis constraints before another candidate is constructed.
 - **Trust is unchanged:** text-only records are not converted into executable code, and even a candidate that passes its examples and probes remains UNVERIFIED until independent verification and evidence-gated promotion.
 
-The search remains bounded to the current UOL primitive/rule grammar. The per-round candidate budget and maximum number of rounds jointly bound total search work. An oracle and probe pool must be supplied by the host; CEGIS agreement over finite examples is not a proof of universal correctness. See [Phase 1–2 implementation and acceptance boundaries](./docs/27-phase1-knowledge-to-uol-and-phase2-cegis.md).
+The Phase 1–2 baseline search was bounded to primitive/rule expressions. Phase 3 extends the grammar with conditionals, map and fold transformations. Search remains budgeted, uses disjoint held-out cases and—when enabled—an explicit host oracle; finite examples are not a proof of universal correctness. See [Phase 1–2 boundaries](./docs/27-phase1-knowledge-to-uol-and-phase2-cegis.md) and [Phase 3–4 implementation](./docs/28-phase3-advanced-synthesis-and-phase4-native-verification.md).
+
+## Phase 3–4: Advanced synthesis and native domain verification
+
+Mirror's UOL synthesizer now has a bounded search grammar for **conditional selection, array mapping and array folding**, in addition to primitive expressions and structured rules. Candidates must still pass training and held-out tests; optional CEGIS adds counterexamples from a host-supplied oracle. Successful synthesis does not automatically make a capability executable.
+
+The new native verification suite registers two concrete checkers for each initial domain:
+
+- **Mathematics:** exact polynomial identity normalization and exact rational sample replay.
+- **Programming:** independent bounded UOL reference replay and typed input/output contract checks.
+- **Physics:** dimensional homogeneity and conservation balance.
+- **Biology:** declared measurement bounds and mass balance.
+- **Engineering:** load/area stress recomputation and safety-factor validation.
+
+These are bounded checkers for specific structured claims, not general-purpose proof assistants, scientific simulators, biological reviewers, or engineering certification systems. Evidence is bound to the exact execution and declared postconditions; missing or mismatched evidence fails closed. See [Phase 3–4 implementation and limitations](./docs/28-phase3-advanced-synthesis-and-phase4-native-verification.md).
 
 ### What Mirror can do in this verified core
 

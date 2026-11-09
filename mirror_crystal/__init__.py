@@ -138,6 +138,7 @@ from .capability_synthesizer import (
 from .knowledge_uol import (
     KnowledgeRuleImporter, KnowledgeRuleImportIssue, KnowledgeRuleImportReport,
 )
+from .native_verifiers import NativeDomainVerifierSuite, NativeVerificationError
 
 __all__ = [
     "KnowledgeConflict",
@@ -287,4 +288,5 @@ __all__ += [
     "CapabilitySynthesizer", "Example", "SynthesisError", "SynthesisGoal",
     "SynthesisReport", "SynthesisStatus", "Counterexample",
     "KnowledgeRuleImporter", "KnowledgeRuleImportIssue", "KnowledgeRuleImportReport",
+    "NativeDomainVerifierSuite", "NativeVerificationError",
 ]

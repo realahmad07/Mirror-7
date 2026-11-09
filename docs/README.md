@@ -31,6 +31,7 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [25 — Domain-specific verification](25-domain-specific-verification.md) | Evidence artifacts bound to exact execution fingerprints, domain policies, checker identity floors, postconditions, and fail-closed outcomes. |
 | [26 — Universal operational language and capability synthesis](26-universal-operational-language-and-synthesis.md) | Typed UOL, bounded native interpreter, structured rule integration, held-out synthesis and verification gates. |
 | [27 — Knowledge-to-UOL and counterexample-guided synthesis](27-phase1-knowledge-to-uol-and-phase2-cegis.md) | Conservative canonical knowledge import, trust preservation, conflict quarantine, oracle-driven counterexample refinement and bounded CEGIS. |
+| [28 — Phase 3 advanced synthesis and Phase 4 native verification](28-phase3-advanced-synthesis-and-phase4-native-verification.md) | Conditional/map/fold synthesis and native math, programming, physics, biology and engineering checks with execution-bound evidence. |
 | [Core pipeline acceptance and roadmap alignment](../PHASE1_9_ACCEPTANCE.md) | Nine engineering-layer test results plus honest status of the original strategic nine-phase roadmap. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 

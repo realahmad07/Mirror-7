@@ -70,3 +70,12 @@ The next backend increment adds a knowledge-to-operation bridge and counterexamp
 - Phase 1 imports only reviewed, typed UOL rule payloads from canonical knowledge records; it keeps source/evidence lineage and fails closed on contradictions or identifier collisions.
 - Phase 2 uses a host-supplied oracle to generate counterexamples, adds them as constraints, and repeats bounded synthesis.
 - Candidates remain unverified. The next unresolved work is expanding the synthesis grammar and connecting successful candidate programs to real, independently validated domain verifiers.
+
+
+## Native construction milestone — Phase 3 and Phase 4
+
+- Phase 3 expands UOL search to conditionals, map and fold transformations, retaining explicit candidate budgets and held-out checks.
+- Phase 4 adds native deterministic checkers for a deliberately bounded set of mathematical, programming, physics, biology and engineering invariants.
+- [Implementation details and evidence boundaries](28-phase3-advanced-synthesis-and-phase4-native-verification.md).
+
+These increments do not make the broader original strategic Phase 6 complete: general-purpose domain simulators, source-authentication, formal proof tools and experimental validation remain separate work.

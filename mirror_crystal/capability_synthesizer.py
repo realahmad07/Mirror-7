@@ -10,8 +10,8 @@ import math
 from typing import Any, Callable, Iterable, Mapping
 
 from .operational_language import (
-    UOL, UOLError, Lit, Var, Call, If, Program, RuleStatus, VariableSpec,
-    expr_dict, _infer, _type_name, _freeze, _matches,
+    UOL, UOLError, Lit, Var, Call, If, MapExpr, FoldExpr, Program,
+    RuleStatus, VariableSpec, expr_dict, _walk, _infer, _type_name, _freeze, _matches,
 )
 from .blueprint_contracts import EvidenceLevel, VerificationEvidence
 from .capability_model import CapabilitySpec, PortContract
@@ -56,6 +56,9 @@ class SynthesisGoal:
     max_depth: int = 2
     candidate_budget: int = 20000
     include_assumed_rules: bool = True
+    enable_conditionals: bool = True
+    enable_map: bool = True
+    enable_fold: bool = True
 
     def __post_init__(self):
         object.__setattr__(self, "inputs", tuple(self.inputs))
@@ -70,6 +73,10 @@ class SynthesisGoal:
             raise SynthesisError("need at least two training and one held-out example")
         if self.max_depth < 0 or self.max_depth > 4 or not 1 <= self.candidate_budget <= 250000:
             raise SynthesisError("synthesis search limits out of range")
+        if any(type(value) is not bool for value in (
+            self.include_assumed_rules, self.enable_conditionals, self.enable_map, self.enable_fold
+        )):
+            raise SynthesisError("synthesis grammar switches must be booleans")
         names = [item.name for item in self.inputs]
         if len(names) != len(set(names)):
             raise SynthesisError("input names must be unique")
@@ -230,6 +237,119 @@ class CapabilitySynthesizer:
                     if key not in seen:
                         additions.append((candidate, output_type, depth))
 
+            # Conditional construction: predicates discovered in earlier
+            # rounds become control-flow guards over compatible result branches.
+            if goal.enable_conditionals:
+                pool = list(seen.values())
+                conditions = [item for item in pool if item[1] in {"boolean", "any"} and item[2] <= 1][:12]
+                branches = [item for item in pool if item[1] in {"integer", "number", "text", "boolean", "any"} and item[2] <= 1][:24]
+                for condition in conditions:
+                    for yes in branches:
+                        for no in branches:
+                            if budget[0] >= goal.candidate_budget:
+                                return collected(additions), True
+                            if yes[1] != no[1] and not {yes[1], no[1]} <= {"integer", "number", "any"}:
+                                continue
+                            expr = If(condition[0], yes[0], no[0])
+                            expr_depth = 1 + max(condition[2], yes[2], no[2])
+                            if expr_depth > depth:
+                                continue
+                            budget[0] += 1
+                            try:
+                                output_type = _infer(
+                                    expr, {item.name: item.value_type for item in goal.inputs},
+                                    self.language.rules, set(),
+                                )
+                            except UOLError:
+                                continue
+                            key = json.dumps(expr_dict(expr), sort_keys=True)
+                            if key not in seen:
+                                additions.append((expr, output_type, expr_depth))
+
+            # Higher-order collection construction. Element variables are
+            # intentionally typed as any by UOL v1; runtime cases enforce
+            # concrete element compatibility before a candidate can pass.
+            array_ports = [item for item in goal.inputs if item.value_type == "array"]
+            scalar_ports = [item for item in goal.inputs if item.value_type in {"integer", "number", "boolean", "text"}]
+            constants = [(Var(port.name), port.value_type) for port in scalar_ports]
+            for value in goal.constants:
+                if isinstance(value, bool):
+                    value_type = "boolean"
+                elif isinstance(value, int):
+                    value_type = "integer"
+                elif isinstance(value, float):
+                    value_type = "number"
+                elif isinstance(value, str):
+                    value_type = "text"
+                elif value is None:
+                    value_type = "null"
+                else:
+                    continue
+                constants.append((Lit(value), value_type))
+            element = Var("__mirror_item")
+            accumulator = Var("__mirror_acc")
+            if goal.enable_map and goal.output_type in {"array", "any"}:
+                for array_port in array_ports:
+                    body_terms = [(element, "any"), *constants]
+                    for term, term_type in body_terms:
+                        for operator in ("negate", "absolute", "not", "length"):
+                            if budget[0] >= goal.candidate_budget:
+                                return collected(additions), True
+                            body = Call(operator, (term,))
+                            try:
+                                _infer(body, {**{x.name: x.value_type for x in goal.inputs}, "__mirror_item": "any"}, self.language.rules, set())
+                            except UOLError:
+                                continue
+                            expr = MapExpr(Var(array_port.name), "__mirror_item", body)
+                            if depth < 2:
+                                continue
+                            budget[0] += 1
+                            key = json.dumps(expr_dict(expr), sort_keys=True)
+                            if key not in seen:
+                                additions.append((expr, "array", depth))
+                        for other, _ in body_terms:
+                            for operator in ("add", "subtract", "multiply", "minimum", "maximum", "equal", "less_than", "greater_than"):
+                                if budget[0] >= goal.candidate_budget:
+                                    return collected(additions), True
+                                body = Call(operator, (term, other))
+                                try:
+                                    _infer(body, {**{x.name: x.value_type for x in goal.inputs}, "__mirror_item": "any"}, self.language.rules, set())
+                                except UOLError:
+                                    continue
+                                expr = MapExpr(Var(array_port.name), "__mirror_item", body)
+                                if depth < 2:
+                                    continue
+                                budget[0] += 1
+                                key = json.dumps(expr_dict(expr), sort_keys=True)
+                                if key not in seen:
+                                    additions.append((expr, "array", depth))
+
+            if goal.enable_fold and goal.output_type in {"integer", "number", "any"}:
+                for array_port in array_ports:
+                    for initial in (0, 1):
+                        for operator in ("add", "multiply", "minimum", "maximum"):
+                            if budget[0] >= goal.candidate_budget:
+                                return collected(additions), True
+                            body = Call(operator, (accumulator, element))
+                            if depth < 2:
+                                continue
+                            expr = FoldExpr(
+                                Var(array_port.name), Lit(initial),
+                                "__mirror_acc", "__mirror_item", body,
+                            )
+                            try:
+                                output_type = _infer(
+                                    expr,
+                                    {x.name: x.value_type for x in goal.inputs},
+                                    self.language.rules, set(),
+                                )
+                            except UOLError:
+                                continue
+                            budget[0] += 1
+                            key = json.dumps(expr_dict(expr), sort_keys=True)
+                            if key not in seen:
+                                additions.append((expr, output_type, depth))
+
             for item in additions:
                 key = json.dumps(expr_dict(item[0]), sort_keys=True)
                 if key not in seen:
@@ -242,17 +362,9 @@ class CapabilitySynthesizer:
     @staticmethod
     def _rule_refs(expression, known):
         refs = set()
-        def visit(node):
-            if isinstance(node, Call):
-                if node.operator in known:
-                    refs.add(node.operator)
-                for argument in node.args:
-                    visit(argument)
-            elif isinstance(node, If):
-                visit(node.condition)
-                visit(node.yes)
-                visit(node.no)
-        visit(expression)
+        for node in _walk(expression):
+            if isinstance(node, Call) and node.operator in known:
+                refs.add(node.operator)
         return tuple(sorted(refs))
 
     @staticmethod
