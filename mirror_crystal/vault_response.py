@@ -5,7 +5,7 @@ import re
 import time
 
 from .bit_signatures import ContextBitTable
-from .epistemic_policy import EpistemicConfidenceCalibrator
+from .phase2_cognitive_core import EpistemicConfidenceCalibrator
 from .grammar_and_sandbox import ZeroTrustSandboxJudge
 from .intent import split_compound_intents
 from .phase5_bicameral_and_cas import SymbolicCASOrgan
