@@ -57,6 +57,7 @@ class BackendService:
         self._hygiene_pipeline: Any | None = None
         self._memory_graph: Any | None = None
         self._streamer: Any | None = None
+        self._crystal_query_coordinator: Any | None = None
         self._is_ready: bool = False
         self._warmup_ms: float = 0.0
         if self.crystal_vault is None and enable_crystal_auto_load:
@@ -83,6 +84,19 @@ class BackendService:
             from mirror_crystal.autonomous_streamer import AutonomousDatasetStreamer
             self._streamer = AutonomousDatasetStreamer(self.crystal_vault, cadence_seconds=15.0)
         return self._streamer
+
+    @property
+    def crystal_queries(self):
+        """Lazy crystal query boundary; dependencies resolve to current service state."""
+        if self._crystal_query_coordinator is None:
+            from .crystal_query import CrystalQueryCoordinator
+            self._crystal_query_coordinator = CrystalQueryCoordinator(
+                vault_provider=lambda: self.crystal_vault,
+                memory_graph_provider=lambda: self.memory_graph,
+                cerebrum_bridge_provider=lambda: self.cerebrum_bridge,
+                metrics=self.metrics,
+            )
+        return self._crystal_query_coordinator
 
     @property
     def cerebrum_bridge(self):
@@ -118,102 +132,8 @@ class BackendService:
             self.crystal_vault = None
 
     def crystal_ask(self, prompt: str, session_id: str = "default", consent_log: bool = False) -> dict[str, Any]:
-        """Query the backing Mirror Crystal Vault with verified Cerebrum math fallback on miss, abstention tracking, and optional consent logging."""
-        if self.crystal_vault is None:
-            return {
-                "answer": "Mirror Crystal Vault is not initialized.",
-                "confidence": 0.0,
-                "mode": "unmatched_honest_abstain",
-                "matched_rule_id": None,
-                "latency_ms": 0.0,
-                "sandbox_verified": False,
-                "reasoning_trace": ["Vault not mounted."],
-                "epistemic_tier": "honest_abstain",
-                "abstained": True,
-                "can_teach": True,
-                "teach_template": {"question": prompt, "domain": "general"},
-            }
-        # 1. Check cross-session memory graph for active project/config anchor recall
-        mem_ctx = self.memory_graph.resolve_memory_context(session_id, prompt)
-        if mem_ctx and any(w in prompt.lower() for w in ("what is", "what are", "show", "config", "my", "our", "port", "bucket", "database")):
-            self.metrics.increment("crystal_queries_total")
-            self.metrics.increment("crystal_queries_answered")
-            return {
-                "answer": mem_ctx,
-                "confidence": 1.0,
-                "mode": "cross_session_memory_recall",
-                "matched_rule_id": None,
-                "latency_ms": 0.45,
-                "sandbox_verified": True,
-                "reasoning_trace": ["Retrieved from persistent CrossSessionMemoryGraph"],
-                "epistemic_tier": "verified_exact",
-                "abstained": False,
-                "can_teach": False,
-            }
-
-        # 2. Auto-extract any newly stated parameters in prompt into persistent memory
-        self.memory_graph.auto_extract_and_remember(session_id, prompt)
-
-        res = self.crystal_vault.respond(prompt, session_id=session_id)
-        self.metrics.increment("crystal_queries_total")
-        if res.epistemic_tier == "honest_abstain" and prompt.strip():
-            math_res = self.cerebrum_bridge.solve(prompt)
-            if math_res.get("ok") and float(math_res.get("prm_reward", 0.0)) >= 0.80:
-                self.metrics.increment("crystal_queries_answered")
-                ans_text = str(math_res.get("formatted_solution") or math_res.get("formatted_response") or math_res["answer"])
-                out_pkt = {
-                    "answer": ans_text,
-                    "confidence": round(float(math_res["prm_reward"]), 4),
-                    "mode": f"cerebrum_{math_res.get('strategy', 'exact')}",
-                    "matched_rule_id": None,
-                    "latency_ms": round(float(res.latency_ms) + float(math_res.get("latency_ms", 0.0)), 3),
-                    "sandbox_verified": True,
-                    "reasoning_trace": list(res.reasoning_trace)
-                    + [f"Delegated to CerebrumCrystalBridge ({math_res.get('strategy')}, PRM={math_res['prm_reward']})"],
-                    "epistemic_tier": "verified_exact",
-                    "abstained": False,
-                    "can_teach": False,
-                }
-                if consent_log:
-                    try:
-                        from mirror_eval.runner import QueryRegressionLogger
-                        QueryRegressionLogger.log_query(prompt, ans_text, out_pkt["latency_ms"], out_pkt["confidence"], user_consented=True, abstained=False)
-                    except Exception:
-                        pass
-                return out_pkt
-
-        is_abstained = res.epistemic_tier == "honest_abstain"
-        if is_abstained:
-            self.metrics.increment("crystal_queries_abstained")
-        else:
-            self.metrics.increment("crystal_queries_answered")
-
-        out_pkt = {
-            "answer": res.answer,
-            "confidence": res.confidence,
-            "mode": res.mode,
-            "matched_rule_id": res.matched_rule_id,
-            "latency_ms": res.latency_ms,
-            "sandbox_verified": res.sandbox_verified,
-            "reasoning_trace": res.reasoning_trace,
-            "epistemic_tier": res.epistemic_tier,
-            "abstained": is_abstained,
-            "can_teach": is_abstained,
-            "teach_template": {
-                "question": prompt,
-                "domain": "general",
-                "suggested_action": "Teach Mirror to eliminate this abstention permanently",
-            } if is_abstained else None,
-        }
-
-        if consent_log:
-            try:
-                from mirror_eval.runner import QueryRegressionLogger
-                QueryRegressionLogger.log_query(prompt, res.answer, res.latency_ms, res.confidence, user_consented=True, abstained=is_abstained)
-            except Exception:
-                pass
-
-        return out_pkt
+        """Compatibility facade delegating query orchestration to CrystalQueryCoordinator."""
+        return self.crystal_queries.ask(prompt, session_id=session_id, consent_log=consent_log)
 
     def crystal_teach(self, question: str, answer: str, test_code: str = "", domain: str = "general") -> bool:
         """Instantly crystallize a verified rule into the live DiskCrystalVault."""
