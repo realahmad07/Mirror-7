@@ -240,3 +240,57 @@ def test_old_blueprint_table_is_additively_migrated_for_prompt_dispatch(tmp_path
         assert {"prompt_key", "prompt_prefix"}.issubset(columns)
     finally:
         vault.close()
+
+def test_respond_blueprint_reaches_records_beyond_global_10000_limit(tmp_path):
+    import time
+
+    from mirror_crystal.blueprint_prompt import blueprint_prompt_fields
+
+    vault = DiskCrystalVault(tmp_path / "large-blueprint-vault.dcrystal")
+    try:
+        # Put 10,000 lexically earlier, unrelated blueprints in the store.
+        # The target is deliberately after the old list_blueprints() limit.
+        rows = []
+        for index in range(10_000):
+            filler = make_blueprint(
+                f"a-filler-{index:05d}",
+                f"Unused filler result {index}.",
+                intent=f"filler-{index}",
+                domain=f"filler-{index}",
+            )
+            prompt_key, prompt_prefix = blueprint_prompt_fields(filler.prompt_pattern)
+            rows.append((
+                filler.blueprint_id,
+                filler.domain,
+                filler.intent,
+                filler.kind.value,
+                filler.canonical_json(),
+                prompt_key,
+                prompt_prefix,
+                time.time(),
+            ))
+        vault.conn.executemany(
+            "INSERT INTO blueprints("
+            "blueprint_id, domain, intent, kind, canonical_json, prompt_key, prompt_prefix, updated_at"
+            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            rows,
+        )
+        target = make_blueprint(
+            "z-target-beyond-10000",
+            "Reached {v1}.",
+            intent="target-intent",
+            domain="target-domain",
+        )
+        vault.store_blueprint(target)
+
+        response = vault.respond_blueprint(
+            target.blueprint_id,
+            values={"v1": "the target"},
+        )
+
+        assert response.mode == "blueprint_composition_unverified"
+        assert response.epistemic_tier == "unverified"
+        assert response.answer == "Reached the target."
+    finally:
+        vault.close()
+
