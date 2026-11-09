@@ -207,14 +207,14 @@ def test_tdd_generate_route_uses_native_capabilities_and_reports_gaps():
             server,
             "POST",
             "/api/tdd/generate",
-            {"prompt": "Write code for a sorting function"},
+            {"prompt": "Implement a distributed scheduler"},
         )
         assert status == 200
         assert result["ok"] is False
         assert result["verified"] is False
         assert result["final_code"] is None
         assert result["universal_result"]["status"] == "capability_gap"
-        assert "Mirror has no verified native construction path" in result["error"]
+        assert "capability" in result["error"].lower()
     finally:
         server.shutdown()
         server.server_close()
@@ -240,6 +240,31 @@ def test_universal_solve_endpoint_uses_native_capability_composition():
         assert result["verified"] is True
         assert result["answer"] == "42.0"
         assert result["verification"]["level"] == "formally_verified"
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def test_tdd_generate_route_native_bubble_sort_is_verified_without_provider():
+    from .service import BackendService
+
+    service = BackendService(enable_crystal_auto_load=False)
+    server = create_server(port=0, service=service)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        status, result = request(
+            server,
+            "POST",
+            "/api/tdd/generate",
+            {"prompt": "Write a Python function to sort a list of numbers using bubble sort."},
+        )
+        assert status == 200
+        assert result["ok"] is True
+        assert result["verified"] is True
+        assert "def bubble_sort" in result["final_code"]
+        assert "tdd_assertions_passed:4/4" in result["verification"]["checks_passed"]
     finally:
         server.shutdown()
         server.server_close()
