@@ -90,3 +90,44 @@ def test_generated_bubble_sort_executes_empty_sorted_reverse_duplicate_and_negat
     assert bubble_sort([1, 2, 3]) == [1, 2, 3]
     assert bubble_sort([5, 4, 3, 2, 1]) == [1, 2, 3, 4, 5]
     assert bubble_sort([5, 5, -1, 0]) == [-1, 0, 5, 5]
+
+
+def test_program_ir_rejects_forbidden_identifiers_and_non_allowlisted_calls():
+    forbidden_name = ProgramIR(
+        module_name="bad_name",
+        functions=(
+            FunctionProgram(
+                name="calculate",
+                parameters=("__import__",),
+                cases=(),
+                dispatch_parameter="",
+                statements=(),
+            ),
+        ),
+    )
+    with pytest.raises(ValueError, match="forbidden identifier"):
+        PythonASTCompiler().compile(forbidden_name)
+
+    forbidden_call = ProgramIR(
+        module_name="bad_call",
+        functions=(
+            FunctionProgram(
+                name="calculate",
+                parameters=("value",),
+                cases=(),
+                dispatch_parameter="",
+                statements=(
+                    __import__("mirror_crystal.native_program_synthesis", fromlist=["ProgramStatement"]).ProgramStatement(
+                        operation="return",
+                        expression=__import__("mirror_crystal.native_program_synthesis", fromlist=["ProgramExpression"]).ProgramExpression(
+                            "call", "__import__", (
+                                __import__("mirror_crystal.native_program_synthesis", fromlist=["ProgramExpression"]).ProgramExpression("literal", "os"),
+                            )
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+    with pytest.raises(ValueError, match="allowlist"):
+        PythonASTCompiler().compile(forbidden_call)
