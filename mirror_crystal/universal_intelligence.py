@@ -655,6 +655,8 @@ class UniversalVerifier:
             for subtask in task.subtasks
             for criterion in subtask.acceptance_criteria
         )
+        if not criteria:
+            return False, (), ("generic_verification_requires_acceptance_criteria",)
         passed, failed = UniversalVerifier._check_criteria(criteria, outputs)
         return not failed, passed, failed
 
