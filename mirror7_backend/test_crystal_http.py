@@ -69,7 +69,8 @@ def test_crystal_http_server_full_integration(tmp_path: Path):
         code_q, data_q, _ = make_request(server, "POST", "/api/crystal/ask", {"prompt": "What is Grover search?"})
         assert code_q == 200
         assert "O(sqrt(N))" in data_q["answer"]
-        assert data_q["epistemic_tier"] in {"verified_exact", "high_confidence"}
+        # Retrieval returns the stored answer; it does not independently prove the fact.
+        assert data_q["epistemic_tier"] == "moderate_confidence"
 
         code_cas, data_cas, _ = make_request(server, "POST", "/api/crystal/ask", {"prompt": "Differentiate x^3 + 5*x"})
         assert code_cas == 200
