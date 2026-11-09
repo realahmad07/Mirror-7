@@ -34,21 +34,28 @@ claim composition is used instead. This is an intentionally strict baseline;
 semantic paraphrase validation and broader numeric/entity contradiction detection
 remain future work.
 
-## 3. Code generation and TDD
+## 3. Native code construction and TDD
 
-`BackendService` accepts an optional `code_generation_provider` with contract:
+The universal request path does not call an external code-generation model or
+provider. It uses Mirror's typed `ProgramIR`, native Python AST construction,
+local capability composition, and existing TDD sandbox.
 
-- Input: the user's natural-language coding request.
-- Output: source-code string, or a mapping containing `code` / `final_code`.
+The first shipped construction path is a calculator composed from typed
+addition, subtraction, multiplication, and division operators. Generated code is
+compiled and tested with non-vacuous assertions before it is returned as a
+verified execution artifact. The TDD sandbox remains the execution boundary.
 
-The new `POST /api/tdd/generate` route runs provider output through the existing
-TDD engine. A result is verified only when the report itself says verified, at
-least one assertion was executed, and every generated assertion passed. A missing
-provider, empty output, or zero-assertion suite fails closed.
+`POST /api/universal/solve` and `POST /api/tdd/generate` use this native path.
+When Mirror lacks a trusted construction capability (for example, a sorting
+algorithm not yet implemented in its registry), it returns a capability gap
+instead of silently falling back to an external model. The old injected
+`code_generation_provider` dependency has been removed from the cognitive and
+backend generation path.
 
-The default HTTP server does not invent or silently load a code-generation model.
-The host application must inject a real model adapter. Passing generated tests
-does not prove all program behavior or security.
+The first ProgramIR is deliberately limited. Loops, classes, data structures,
+multi-file projects, and broader native constructs require additional typed IR
+nodes, composition rules, and independent tests. Passing the current calculator
+tests does not establish general-purpose code-generation ability.
 
 ## 4. Memory encryption and API boundary
 
