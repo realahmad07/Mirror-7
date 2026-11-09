@@ -55,6 +55,7 @@ class BackendService:
         self._memory_graph: Any | None = None
         self._streamer: Any | None = None
         self._crystal_query_coordinator: Any | None = None
+        self._cognitive_orchestrator: Any | None = None
         self._is_ready: bool = False
         self._warmup_ms: float = 0.0
         if self.crystal_vault is None and enable_crystal_auto_load:
@@ -137,9 +138,43 @@ class BackendService:
         except Exception:
             self.crystal_vault = None
 
+    @property
+    def cognitive_orchestrator(self):
+        """Lazy coordinator joining the existing memory, Crystal, reasoning, and TDD organs."""
+        if self._cognitive_orchestrator is None:
+            from .cognitive_orchestrator import UnifiedCognitiveOrchestrator
+            self._cognitive_orchestrator = UnifiedCognitiveOrchestrator(
+                vault_provider=lambda: self.crystal_vault,
+                memory_provider=lambda: self.memory_graph,
+                reasoning_provider=lambda: self.cerebrum_bridge,
+                code_provider=lambda: self.tdd_engine,
+                metrics=self.metrics,
+            )
+        return self._cognitive_orchestrator
+
+    def cognitive_ask(
+        self,
+        prompt: str,
+        session_id: str = "default",
+        *,
+        candidate_code: str | None = None,
+        spec_desc: str = "",
+        explicit_tests: str = "",
+        consent_log: bool = False,
+    ) -> dict[str, Any]:
+        """Run one evidence-collecting query across relevant cognitive organs."""
+        return self.cognitive_orchestrator.ask(
+            prompt,
+            session_id=session_id,
+            candidate_code=candidate_code,
+            spec_desc=spec_desc,
+            explicit_tests=explicit_tests,
+            consent_log=consent_log,
+        )
+
     def crystal_ask(self, prompt: str, session_id: str = "default", consent_log: bool = False) -> dict[str, Any]:
-        """Compatibility facade delegating query orchestration to CrystalQueryCoordinator."""
-        return self.crystal_queries.ask(prompt, session_id=session_id, consent_log=consent_log)
+        """Compatibility entry point routed through unified cognitive orchestration."""
+        return self.cognitive_ask(prompt, session_id, consent_log=consent_log)
 
     def crystal_teach(self, question: str, answer: str, test_code: str = "", domain: str = "general") -> bool:
         """Instantly crystallize a verified rule into the live DiskCrystalVault."""
