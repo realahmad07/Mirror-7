@@ -200,6 +200,8 @@ The new native verification suite registers two concrete checkers for each initi
 
 These are bounded checkers for specific structured claims, not general-purpose proof assistants, scientific simulators, biological reviewers, or engineering certification systems. Evidence is bound to the exact execution and declared postconditions; missing or mismatched evidence fails closed. See [Phase 3–4 implementation and limitations](./docs/28-phase3-advanced-synthesis-and-phase4-native-verification.md).
 
+**Phase 3–4 verification:** CI passed **295** Mirror Crystal/evaluation tests, **45** backend tests, **4** release-boundary tests, **3** training-foundation tests and **3** free-running evaluator tests; package build passed. Security Guard passed. [CI run](https://github.com/realahmad07/Mirror-7/actions/runs/42668214798) · [Security Guard](https://github.com/realahmad07/Mirror-7/actions/runs/42668215023).
+
 ### What Mirror can do in this verified core
 
 - Store and retrieve facts, definitions, rules, formulas, procedures, assumptions and observations with their provenance, evidence and epistemic status.

@@ -134,7 +134,7 @@ Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42667036152
 
 ## Universal construction — Phase 3 and Phase 4
 
-**Implementation status: added; active CI and Security Guard acceptance pending.**
+**Status: PASS — commit `923f6ece744f987510d70d76d5f7b90d7a6dede8` passed full active CI and Security Guard.**
 
 | Phase | Implemented increment | Acceptance boundary |
 |---|---|---|
@@ -142,3 +142,17 @@ Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42667036152
 | 4 — Native domain verification | Two native checks per initial domain: exact mathematics, independent UOL program replay/contracts, physics dimensions/conservation, biology bounds/mass balance, and engineering stress/safety factor. | Each check verifies only its declared structured invariant. This does not complete general-purpose scientific simulation or the broader strategic Phase 6. |
 
 See [Phase 3–4 design and boundaries](docs/28-phase3-advanced-synthesis-and-phase4-native-verification.md).
+
+
+### Phase 3–4 CI evidence
+
+- Mirror Crystal and CPU evaluation: **295 passed**.
+- Backend: **45 passed**.
+- Backend smoke and release boundary: **4 passed**.
+- Training foundation: **3 passed**.
+- Free-running evaluator: **3 passed**.
+- Package build: **PASS**.
+- Security Guard: **PASS**.
+
+CI: https://github.com/realahmad07/Mirror-7/actions/runs/42668214798  
+Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42668215023
