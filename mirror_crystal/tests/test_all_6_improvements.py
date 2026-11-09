@@ -143,10 +143,14 @@ def test_improvement_5_sse_streaming():
                             chunks.append(data["chunk"])
 
                 assembled = "".join(chunks)
+                assert "UNVERIFIED CANDIDATE" in assembled
                 assert "Quantum computing uses superposition." in assembled
                 assert final_event is not None
                 assert final_event["done"] is True
-                assert final_event["confidence"] >= 0.8
+                assert final_event["confidence"] == 0.0
+                assert final_event["verified"] is False
+                assert final_event["abstained"] is True
+                assert final_event["answer_qualification"] == "unverified_candidate"
         finally:
             server.shutdown()
             vault.close()
