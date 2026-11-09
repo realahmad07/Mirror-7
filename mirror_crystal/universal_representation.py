@@ -531,7 +531,7 @@ class RepresentationGraph:
             )
             if incident and (normalized is None or relation.predicate == normalized):
                 matches.append(relation)
-        return tuple(matches)
+        return tuple(sorted(matches, key=lambda item: (item.predicate, item.relation_id)))
 
     def validate(self) -> None:
         for relation in self._relations.values():
