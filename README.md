@@ -210,6 +210,8 @@ These are bounded checkers for specific structured claims, not general-purpose p
 
 This is a bounded transfer mechanism, not unrestricted analogy or universal scientific discovery. It will reject source-domain-only rules and never carry source verification into the target domain. See [Phase 5–6 implementation and trust boundaries](./docs/29-phase5-verified-program-learning-and-phase6-cross-domain-transfer.md).
 
+**Phase 5–6 verification:** GitHub CI passed **304** Mirror Crystal/evaluation tests, **45** backend tests, **4** release-boundary tests, **3** training-foundation tests and **3** free-running evaluator tests; smoke-dataset validation and package build passed. Security Guard passed. [CI run](https://github.com/realahmad07/Mirror-7/actions/runs/42669765017) · [Security Guard](https://github.com/realahmad07/Mirror-7/actions/runs/42669766125).
+
 ### What Mirror can do in this verified core
 
 - Store and retrieve facts, definitions, rules, formulas, procedures, assumptions and observations with their provenance, evidence and epistemic status.

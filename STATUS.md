@@ -160,7 +160,7 @@ Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42668215023
 
 ## Universal construction — Phase 5 and Phase 6
 
-**Implementation status: added; full CI and Security Guard acceptance pending.**
+**Status: PASS — commit `c9b237f066fb07245fba5e006628fa7839bbe9a0` passed full CI and Security Guard.**
 
 | Phase | Implemented increment | Acceptance boundary |
 |---|---|---|
@@ -168,3 +168,18 @@ Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42668215023
 | 6 — Controlled cross-domain transfer | Verified domain-neutral UOL programs may be transferred to a new domain if all rule dependencies are globally scoped and independently verified, port contracts (including units/dimensions) are preserved, and fresh target train/held-out cases pass. | Transfer candidates remain UNVERIFIED until target-domain verification and repeated Phase 5 learning. No general semantic analogy or automatic unit conversion is claimed. |
 
 See [Phase 5–6 implementation and limits](docs/29-phase5-verified-program-learning-and-phase6-cross-domain-transfer.md).
+
+
+### Phase 5–6 CI evidence
+
+- Mirror Crystal and CPU evaluation: **304 passed**.
+- Backend: **45 passed**.
+- Backend smoke and release boundary: **4 passed**.
+- Training foundation: **3 passed**.
+- Free-running evaluator: **3 passed**.
+- Smoke-dataset validation: **PASS**.
+- Package build: **PASS**.
+- Security Guard: **PASS**.
+
+CI: https://github.com/realahmad07/Mirror-7/actions/runs/42669765017  
+Security Guard: https://github.com/realahmad07/Mirror-7/actions/runs/42669766125
