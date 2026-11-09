@@ -1078,29 +1078,35 @@ class UniversalIntelligenceEngine:
                 transferable=domain == "general",
             )
             def self_test(fn=handler, cid=capability_id):
-                # Registration evidence is earned only by executing a deterministic contract test.
-                probe = {
-                    "numeric.add": {"left": 2, "right": 3},
-                    "numeric.subtract": {"left": 5, "right": 2},
-                    "numeric.multiply": {"left": 3, "right": 4},
-                    "numeric.divide": {"left": 8, "right": 2},
-                    "compare.equal": {"left": "a", "right": "a"},
-                    "compare.less_than": {"left": 1, "right": 2},
-                    "logic.and": {"left": True, "right": True},
-                    "logic.or": {"left": False, "right": True},
-                    "logic.not": {"value": False},
-                    "sequence.length": {"items": [1, 2]},
-                    "sequence.sum": {"items": [1, 2, 3]},
-                    "text.concatenate": {"left": "mi", "right": "rror"},
-                    "program.calculator.synthesize": {},
-                }[cid]
+                # Earn execution-tested status only when the operation's value,
+                # not just its output shape, matches an independent expected result.
+                probes = {
+                    "numeric.add": ({"left": 2, "right": 3}, {"result": 5.0}),
+                    "numeric.subtract": ({"left": 5, "right": 2}, {"result": 3.0}),
+                    "numeric.multiply": ({"left": 3, "right": 4}, {"result": 12.0}),
+                    "numeric.divide": ({"left": 8, "right": 2}, {"result": 4.0}),
+                    "compare.equal": ({"left": "a", "right": "a"}, {"result": True}),
+                    "compare.less_than": ({"left": 1, "right": 2}, {"result": True}),
+                    "logic.and": ({"left": True, "right": True}, {"result": True}),
+                    "logic.or": ({"left": False, "right": True}, {"result": True}),
+                    "logic.not": ({"value": False}, {"result": True}),
+                    "sequence.length": ({"items": [1, 2]}, {"result": 2}),
+                    "sequence.sum": ({"items": [1, 2, 3]}, {"result": 6.0}),
+                    "text.concatenate": ({"left": "mi", "right": "rror"}, {"result": "mirror"}),
+                    "program.calculator.synthesize": ({}, None),
+                }
+                probe, expected = probes[cid]
                 output = fn(probe)
-                return (
-                    isinstance(output, Mapping)
-                    and set(output) == set(spec.output_schema)
-                    and isinstance(output.get("code"), str)
-                    and "def calculate" in output["code"]
-                )
+                if not isinstance(output, Mapping) or set(output) != set(spec.output_schema):
+                    return False
+                if cid == "program.calculator.synthesize":
+                    return (
+                        isinstance(output.get("code"), str)
+                        and "def calculate" in output["code"]
+                        and set(output.get("program_ir", {}).get("operations", ()))
+                        == {"add", "subtract", "multiply", "divide"}
+                    )
+                return dict(output) == expected
             self.registry.register(spec, handler, self_test=self_test)
 
     @staticmethod
