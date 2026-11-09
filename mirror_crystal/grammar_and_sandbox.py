@@ -21,6 +21,7 @@ import io
 import itertools
 import json
 import math
+import os
 import operator
 import queue
 import random
@@ -231,7 +232,11 @@ class ZeroTrustSandboxJudge:
         test_code: str = "",
         max_loop_steps: int = 50_000,
     ) -> tuple[bool, str]:
-        """AST-audit in the parent, then execute only in a bounded child process."""
+        """AST-audit in the parent and execute in Docker/Podman by default.
+
+        MIRROR_SANDBOX_MODE=process is an explicit, lower-isolation development/test
+        override. Production deployments must leave the mode at container.
+        """
         code = cls.extract_python_code(response_text)
         if not code and not test_code:
             return True, "non_code"
@@ -239,8 +244,18 @@ class ZeroTrustSandboxJudge:
         safe, reason = cls.is_ast_safe(full_snippet)
         if not safe:
             return False, reason
-        from .os_process_sandbox import run_python_isolated
-        result = run_python_isolated(full_snippet, max_loop_steps=max_loop_steps)
-        if not result.ok:
-            return False, result.error or "isolated execution failed"
-        return True, result.output or "PASS"
+
+        mode = os.environ.get("MIRROR_SANDBOX_MODE", "container").strip().lower()
+        if mode == "container":
+            from .container_sandbox import run_python_in_container
+            result = run_python_in_container(full_snippet, max_loop_steps=max_loop_steps)
+            if not result.ok:
+                return False, result.error or "container execution failed"
+            return True, result.output or "PASS"
+        if mode == "process":
+            from .os_process_sandbox import run_python_isolated
+            result = run_python_isolated(full_snippet, max_loop_steps=max_loop_steps)
+            if not result.ok:
+                return False, result.error or "process execution failed"
+            return True, result.output or "PASS"
+        return False, f"unsupported MIRROR_SANDBOX_MODE '{mode}'; refusing to execute"
