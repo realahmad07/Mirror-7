@@ -335,13 +335,7 @@ class UnifiedCognitiveOrchestrator:
             except Exception:
                 pass
 
-        if conflict:
-            final_answer = "Conflicting verified claims; Mirror abstains."
-            qualification = "conflicting_evidence"
-        elif verified_answer:
-            final_answer = synthesis["answer"]
-            qualification = "verified"
-        elif task_code_verified:
+        if task_code_verified:
             final_code = str(code_verification.get("final_code") or generated_code)
             final_answer = (
                 "Generated and tested Python code:\n\n"
@@ -357,6 +351,12 @@ class UnifiedCognitiveOrchestrator:
         elif clarification_required:
             final_answer = str(generation_needs_input)
             qualification = "clarification_required"
+        elif conflict:
+            final_answer = "Conflicting verified claims; Mirror abstains."
+            qualification = "conflicting_evidence"
+        elif verified_answer:
+            final_answer = synthesis["answer"]
+            qualification = "verified"
         elif code_generation and code_generation.get("available") and not code_generation.get("generated"):
             final_answer = str(
                 code_generation.get("reason")
