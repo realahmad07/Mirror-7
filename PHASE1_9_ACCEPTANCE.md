@@ -36,7 +36,7 @@ These nine engineering layers divide the implementation into testable components
 | 3. Task understanding | Accurate connected subtasks. | **PASS (bounded)** — deterministic TaskSpec, constraints/context and dependency DAG are tested; unrestricted language understanding is not claimed. |
 | 4. Capability system | Verified reusable operations with typed contracts. | **PASS** — capability contracts, persistence and evidence eligibility are tested. |
 | 5. Composition engine | Construct a solution from capabilities rather than retrieving a complete stored blueprint. | **PASS (bounded)** — the integration test composes a two-step solution from two distinct procedures. |
-| 6. Universal verification | Domain-appropriate execution, proof, simulation and evidence. | **PARTIAL** — bounded native execution and independent checker callbacks are tested. General proof and simulation backends across domains are not established. |
+| 6. Universal verification | Domain-appropriate execution, proof, simulation and evidence. | **PARTIAL** — a typed evidence-carrying domain-verification contract and policy tests across five domains are added. Production proof, code-analysis, simulation and scientific evidence engines are not yet implemented/independently accepted. |
 | 7. Self-improvement | Failure diagnosis, targeted repair, abstraction and reusable capability learning. | **PARTIAL** — repeated verified composition learning is tested. A complete diagnosis → targeted repair → regression → abstraction loop is not integrated end to end. |
 | 8. Cross-domain intelligence | Transfer verified methods between different domains. | **NOT YET ACCEPTED** — no sealed cross-domain transfer benchmark has passed. |
 | 9. Continuous expansion | Improve on genuinely unseen problems through continual verified expansion. | **NOT YET ACCEPTED** — no open-world continuous-expansion benchmark has passed. |
@@ -107,3 +107,32 @@ python -m build
 ```
 
 The complete automated result is tied to the accepted commit and linked workflow runs above.
+
+
+## Strategic Phase 6 — accepted infrastructure increment (not full phase acceptance)
+
+A domain-evidence verification layer has been added in
+`mirror_crystal/domain_verification.py`, with public exports from
+`mirror_crystal`.
+
+The new contract requires each verifier to return a structured evidence artifact
+rather than a bare boolean. Every artifact is bound to:
+- the exact execution fingerprint and step;
+- the capability identifier and declared domain;
+- the required evidence kind and registered verifier identity;
+- an evidence reference, a canonical payload SHA-256 digest, and the postconditions
+  it claims to establish.
+
+A per-capability policy declares required evidence kinds and a minimum number of
+distinct verifier identities. Replayed evidence, boolean callbacks, mismatched
+domain/step/capability bindings, undeclared postconditions, duplicate evidence
+identifiers and unverified capabilities are rejected or blocked. Inconclusive
+evidence is never treated as a pass.
+
+The five-domain policy tests exercise programming, mathematics, physics,
+biology and engineering evidence categories. Their callbacks are deterministic
+test doubles, not production domain engines. This closes an important
+verification-contract gap; it does not prove that every domain has a functioning
+proof/simulation/experimental verification backend. Strategic Phase 6 therefore
+remains **PARTIAL** pending real domain adapters and frozen held-out/adversarial
+acceptance benchmarks.
