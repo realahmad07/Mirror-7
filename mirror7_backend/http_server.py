@@ -263,11 +263,34 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 self._send(200, res)
                 return
 
+            if parts == ["api", "universal", "analyze"]:
+                prompt = str(payload.get("prompt", ""))
+                options = payload.get("options", {})
+                if not isinstance(options, dict):
+                    raise ValueError("options must be a JSON object")
+                res = service.universal_analyze(prompt, **options)
+                self._send(200, {"ok": True, "universal_intelligence": res})
+                return
+
+            if parts == ["api", "universal", "synthesize"]:
+                goal = payload.get("goal")
+                if not isinstance(goal, dict):
+                    raise ValueError("goal must be a JSON object")
+                res = service.universal_synthesize(goal)
+                self._send(200, {"ok": True, "uol_synthesis": res})
+                return
+
             if parts == ["api", "crystal", "ask"]:
                 prompt = str(payload.get("prompt", ""))
                 session_id = str(payload.get("session_id", "studio_web"))
                 consent_log = bool(payload.get("consent_log", False))
-                res = service.crystal_ask(prompt, session_id=session_id, consent_log=consent_log)
+                universal_options = payload.get("universal_options", {})
+                if not isinstance(universal_options, dict):
+                    raise ValueError("universal_options must be a JSON object")
+                res = service.crystal_ask(
+                    prompt, session_id=session_id, consent_log=consent_log,
+                    universal_options=universal_options,
+                )
                 self._send(200, res)
                 return
 

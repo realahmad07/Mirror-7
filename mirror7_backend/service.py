@@ -60,6 +60,7 @@ class BackendService:
         self._streamer: Any | None = None
         self._crystal_query_coordinator: Any | None = None
         self._cognitive_orchestrator: Any | None = None
+        self._universal_intelligence_pipeline: Any | None = None
         self._is_ready: bool = False
         self._warmup_ms: float = 0.0
         if self.crystal_vault is None and enable_crystal_auto_load:
@@ -155,8 +156,27 @@ class BackendService:
                 metrics=self.metrics,
                 code_generation_provider=self.code_generation_provider,
                 synthesis_provider=self.evidence_synthesis_provider,
+                universal_intelligence_provider=lambda: self.universal_intelligence_pipeline,
             )
         return self._cognitive_orchestrator
+
+    @property
+    def universal_intelligence_pipeline(self):
+        """Lazy UOL/task/capability bridge shared by Q&A and explicit synthesis calls."""
+        if self._universal_intelligence_pipeline is None:
+            from .universal_intelligence import UniversalIntelligencePipeline
+            self._universal_intelligence_pipeline = UniversalIntelligencePipeline(
+                vault_provider=lambda: self.crystal_vault
+            )
+        return self._universal_intelligence_pipeline
+
+    def universal_analyze(self, prompt: str, **options: Any) -> dict[str, Any]:
+        """Understand a task, import structured UOL rules, and propose a typed composition."""
+        return self.universal_intelligence_pipeline.analyze(prompt, **options)
+
+    def universal_synthesize(self, goal: Mapping[str, Any]) -> dict[str, Any]:
+        """Build an unverified UOL candidate from explicit typed train/held-out examples."""
+        return self.universal_intelligence_pipeline.synthesize(goal)
 
     def cognitive_ask(
         self,
@@ -167,6 +187,7 @@ class BackendService:
         spec_desc: str = "",
         explicit_tests: str = "",
         consent_log: bool = False,
+        universal_options: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Run one evidence-collecting query across relevant cognitive organs."""
         return self.cognitive_orchestrator.ask(
@@ -176,11 +197,22 @@ class BackendService:
             spec_desc=spec_desc,
             explicit_tests=explicit_tests,
             consent_log=consent_log,
+            universal_options=universal_options,
         )
 
-    def crystal_ask(self, prompt: str, session_id: str = "default", consent_log: bool = False) -> dict[str, Any]:
+    def crystal_ask(
+        self,
+        prompt: str,
+        session_id: str = "default",
+        consent_log: bool = False,
+        *,
+        universal_options: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Compatibility entry point routed through unified cognitive orchestration."""
-        return self.cognitive_ask(prompt, session_id, consent_log=consent_log)
+        return self.cognitive_ask(
+            prompt, session_id, consent_log=consent_log,
+            universal_options=universal_options,
+        )
 
     def crystal_teach(self, question: str, answer: str, test_code: str = "", domain: str = "general") -> bool:
         """Instantly crystallize a verified rule into the live DiskCrystalVault."""

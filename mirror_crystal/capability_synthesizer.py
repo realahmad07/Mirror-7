@@ -522,14 +522,17 @@ class CapabilitySynthesizer:
                         round_found=round_number, reason=reason,
                     )
                     break
-                probes_passed += 1
+                # A passing probe is not final evidence until a candidate passes every
+                # remaining probe. Counterexamples are added to training and are
+                # revalidated by the next synthesis round, so count the complete
+                # original probe pool only when the loop finishes successfully.
 
             if discovered is None:
                 return SynthesisReport(
                     SynthesisStatus.SYNTHESIZED, report.program, total_tested,
                     len(active_goal.training), len(goal.validation), report.rule_ids,
                     rounds=round_number, counterexamples=tuple(counterexamples),
-                    probes_passed=probes_passed,
+                    probes_passed=len(probes),
                 )
 
             counterexamples.append(discovered)

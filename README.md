@@ -926,3 +926,14 @@ are not blindly retried, since host handlers may have side effects. This is boun
 UOL repair—not unrestricted self-modifying software or general autonomous discovery.
 
 See [Phase 7 design and acceptance boundaries](docs/30-phase7-failure-diagnosis-and-targeted-repair.md).
+
+
+---
+
+## Backend integration: universal task planning and UOL synthesis
+
+The normal `POST /api/crystal/ask` path now includes a `universal_intelligence` trace: task interpretation, structured knowledge-to-UOL import, capability matching, and a bounded typed composition proposal. The plan remains advisory; it is not treated as a verified answer or executed without an explicitly registered handler and independent verifier.
+
+For explicit construction from typed examples, use `POST /api/universal/synthesize`. Supply typed inputs plus disjoint `training` and `validation` examples. A successful result is a UOL program and a capability candidate marked `UNVERIFIED`; it cannot execute or promote itself. The host-side synthesizer API additionally supports CEGIS when a separate oracle and disjoint probe pool are supplied.
+
+See [Backend Universal Intelligence Integration](./docs/31-backend-universal-intelligence-integration.md) for request formats, examples, runtime boundaries and test coverage.

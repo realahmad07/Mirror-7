@@ -89,3 +89,25 @@ def test_synthesized_candidate_stays_unverified_after_cegis():
     candidate = synthesizer.to_candidate_capability(report)
     assert candidate.verification.level is EvidenceLevel.UNVERIFIED
     assert not candidate.executable
+
+def test_cegis_counts_a_probe_that_passes_before_a_later_counterexample():
+    goal = SynthesisGoal(
+        "square-x", "mathematics",
+        (VariableSpec("x", "integer"), VariableSpec("y", "integer")),
+        "integer",
+        training=(Example({"x": 0, "y": 0}, 0), Example({"x": 1, "y": 0}, 1)),
+        validation=(Example({"x": 0, "y": 3}, 0),),
+        constants=(0, 1), max_depth=2, candidate_budget=20000,
+    )
+    report = CapabilitySynthesizer(UOL()).synthesize(
+        goal,
+        counterexample_inputs=({"x": 0, "y": 4}, {"x": 2, "y": 0}),
+        counterexample_oracle=lambda values: values["x"] * values["x"],
+        max_rounds=4,
+    )
+
+    assert report.succeeded
+    assert report.rounds >= 2
+    assert len(report.counterexamples) == 1
+    assert report.probes_passed == 2
+    assert UOL().execute(report.program, {"x": 8, "y": 0}) == 64
