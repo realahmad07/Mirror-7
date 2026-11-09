@@ -1,0 +1,16 @@
+{
+  "benchmark_id": "mirror-source-backed-factual-v1",
+  "version": 1,
+  "split": "test",
+  "dataset_file": "source_backed_factual_v1.jsonl",
+  "dataset_sha256": "278ab0daa8b50512b667ab155a4cea6377740ede3ffca888d858b66bdfd5ee54",
+  "review_status": "pending_independent_review",
+  "required_distinct_independent_reviewers_per_claim": 2,
+  "required_distinct_independent_case_reviewers": 2,
+  "training_usage": "forbidden",
+  "notes": [
+    "Eight source-linked cases cover HTTP, Python, SI metrology, JSON, two adversarial qualification cases, and one unanswerable negative control.",
+    "No reviewer approvals have been fabricated; scoring remains blocked until two independent reviewers approve every claim and every case.",
+    "Evaluation-only frozen test data. Do not add its prompts, answers, or excerpts to model training or the knowledge vault."
+  ]
+}

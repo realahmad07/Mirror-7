@@ -88,6 +88,20 @@ class VaultStorageMixin:
                 updated_at REAL NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_blueprints_domain_intent ON blueprints(domain, intent);
+            CREATE TABLE IF NOT EXISTS blueprint_claim_evidence (
+                blueprint_id TEXT NOT NULL,
+                claim_id TEXT NOT NULL,
+                reviewer_id TEXT NOT NULL,
+                canonical_json TEXT NOT NULL,
+                updated_at REAL NOT NULL,
+                PRIMARY KEY (blueprint_id, claim_id, reviewer_id)
+            );
+            CREATE INDEX IF NOT EXISTS idx_blueprint_claim_evidence_id ON blueprint_claim_evidence(blueprint_id, claim_id);
+            CREATE TABLE IF NOT EXISTS blueprint_claim_scopes (
+                blueprint_id TEXT PRIMARY KEY,
+                required_claim_ids_json TEXT NOT NULL,
+                updated_at REAL NOT NULL
+            );
             CREATE INDEX IF NOT EXISTS idx_rules_num_slots ON rules(num_slots) WHERE num_slots > 0;
             CREATE TABLE IF NOT EXISTS prompt_aliases (
                 alias_hash BLOB PRIMARY KEY,

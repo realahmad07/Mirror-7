@@ -1,12 +1,18 @@
 """Canonical blueprint persistence and runtime entry points for DiskCrystalVault."""
 from __future__ import annotations
 
+from dataclasses import replace
+from datetime import datetime, timezone
 import json
 import time
 from typing import Any, Callable, Iterable, Mapping
 
 from .answer_verification import BlueprintAnswerVerifier
-from .blueprint_contracts import Blueprint, BlueprintValidationError
+from .blueprint_contracts import (
+    Blueprint, BlueprintKind, BlueprintProvenance, BlueprintValidationError,
+    EvidenceLevel, VerificationEvidence,
+)
+from .claim_verification import ClaimEvidence, ClaimEvidenceError, ClaimEvidenceVerifier
 from .blueprint_prompt import blueprint_query_prefix, blueprint_prompt_fields, match_blueprint_prompt
 from .blueprint_runtime import BlueprintCompositionEngine, BlueprintCompositionError
 from .response_types import CrystalResponse
@@ -78,6 +84,114 @@ class VaultBlueprintRuntimeMixin:
             )
         blueprint, values = matches[0]
         return self.respond_blueprint(blueprint.blueprint_id, values=values)
+
+    def store_claim_evidence(self, evidence: ClaimEvidence) -> None:
+        """Persist one independent review for one atomic claim on a blueprint."""
+        if not isinstance(evidence, ClaimEvidence):
+            raise TypeError("evidence must be ClaimEvidence")
+        if self.get_blueprint(evidence.blueprint_id) is None:
+            raise ClaimEvidenceError(f"unknown blueprint: {evidence.blueprint_id}")
+        with self._lock:
+            with self.conn:
+                self.conn.execute(
+                    "INSERT OR REPLACE INTO blueprint_claim_evidence("
+                    "blueprint_id, claim_id, reviewer_id, canonical_json, updated_at"
+                    ") VALUES (?, ?, ?, ?, ?)",
+                    (
+                        evidence.blueprint_id,
+                        evidence.claim_id,
+                        evidence.reviewer_id,
+                        json.dumps(evidence.to_dict(), sort_keys=True, separators=(",", ":")),
+                        time.time(),
+                    ),
+                )
+
+    def list_claim_evidence(self, blueprint_id: str) -> list[ClaimEvidence]:
+        rows = self.conn.execute(
+            "SELECT canonical_json FROM blueprint_claim_evidence "
+            "WHERE blueprint_id = ? ORDER BY claim_id, reviewer_id",
+            (str(blueprint_id),),
+        ).fetchall()
+        return [ClaimEvidence.from_dict(json.loads(row[0])) for row in rows]
+
+    def register_blueprint_claim_scope(self, blueprint_id: str, required_claim_ids: Iterable[str]) -> tuple[str, ...]:
+        """Freeze the complete atomic claim scope before independent review."""
+        if self.get_blueprint(blueprint_id) is None:
+            raise ClaimEvidenceError(f"unknown blueprint: {blueprint_id}")
+        claim_ids = tuple(sorted(set(str(x).strip() for x in required_claim_ids if str(x).strip())))
+        if not claim_ids:
+            raise ClaimEvidenceError("claim scope must contain at least one claim id")
+        with self._lock:
+            with self.conn:
+                existing = self.conn.execute(
+                    "SELECT required_claim_ids_json FROM blueprint_claim_scopes WHERE blueprint_id = ?",
+                    (blueprint_id,),
+                ).fetchone()
+                if existing is not None:
+                    old_scope = tuple(json.loads(existing[0]))
+                    if old_scope != claim_ids:
+                        raise ClaimEvidenceError("claim scope is frozen and cannot be silently changed")
+                else:
+                    self.conn.execute(
+                        "INSERT INTO blueprint_claim_scopes(blueprint_id, required_claim_ids_json, updated_at) "
+                        "VALUES (?, ?, ?)",
+                        (blueprint_id, json.dumps(claim_ids), time.time()),
+                    )
+        return claim_ids
+
+    def get_blueprint_claim_scope(self, blueprint_id: str) -> tuple[str, ...]:
+        row = self.conn.execute(
+            "SELECT required_claim_ids_json FROM blueprint_claim_scopes WHERE blueprint_id = ?",
+            (str(blueprint_id),),
+        ).fetchone()
+        return tuple(json.loads(row[0])) if row else ()
+
+    def verify_blueprint_claims(self, blueprint: Blueprint):
+        return ClaimEvidenceVerifier().verify(
+            blueprint,
+            self.list_claim_evidence(blueprint.blueprint_id),
+            self.get_blueprint_claim_scope(blueprint.blueprint_id),
+        )
+
+    def curate_blueprint_from_evidence(self, blueprint_id: str) -> Blueprint:
+        """Promote only after two distinct independent reviewers approve every frozen claim."""
+        blueprint = self.get_blueprint(blueprint_id)
+        if blueprint is None:
+            raise ClaimEvidenceError(f"unknown blueprint: {blueprint_id}")
+        scope = self.get_blueprint_claim_scope(blueprint_id)
+        evidence = self.list_claim_evidence(blueprint_id)
+        report = ClaimEvidenceVerifier().verify(blueprint, evidence, scope)
+        if not report.reliable:
+            raise ClaimEvidenceError("blueprint curation blocked: " + "; ".join(report.reasons))
+
+        approved = [
+            item for item in evidence
+            if item.claim_id in scope and item.review_decision == "approve" and item.reviewer_independent
+        ]
+        reviewers = sorted({item.reviewer_id for item in approved})
+        source_urls = sorted({item.source_url for item in approved})
+        source_publishers = sorted({item.source_publisher for item in approved})
+        retrieved_at = max(item.source_retrieved_at for item in approved)
+        license_ids = sorted({item.license_spdx for item in approved})
+        now = datetime.now(timezone.utc).isoformat()
+        promoted = replace(
+            blueprint,
+            provenance=BlueprintProvenance(
+                source="independently_reviewed_primary_sources:" + ",".join(source_publishers),
+                source_ref=";".join(source_urls),
+                license_spdx=" AND ".join(license_ids),
+                content_sha256=Blueprint._digest(blueprint.prompt_pattern, blueprint.response_template),
+                captured_at=retrieved_at,
+            ),
+            verification=VerificationEvidence(
+                level=EvidenceLevel.INDEPENDENTLY_REPRODUCED,
+                checks_passed=tuple(f"claim:{claim_id}:two_independent_reviews" for claim_id in scope),
+                verifier="independent-reviewers:" + ",".join(reviewers),
+                verified_at=now,
+            ),
+        )
+        self.store_blueprint(promoted)
+        return promoted
 
     def get_blueprint(self, blueprint_id: str) -> Blueprint | None:
         row = self.conn.execute(
@@ -177,25 +291,47 @@ class VaultBlueprintRuntimeMixin:
                 epistemic_tier="honest_abstain",
             )
 
-        peers = self.list_blueprints(domain=root.domain, intent=root.intent)
-        report = BlueprintAnswerVerifier().verify(root, peers, max_age_days=max_age_days)
-        if report.contradictions:
+        all_blueprints = self.list_blueprints()
+        composed_blueprints = [
+            item for item in all_blueprints if item.blueprint_id in set(composition.blueprint_ids)
+        ]
+        verification_reports = []
+        claim_reports = []
+        contradiction_ids: set[str] = set()
+        for item in composed_blueprints:
+            peers = self.list_blueprints(domain=item.domain, intent=item.intent)
+            item_report = BlueprintAnswerVerifier().verify(item, peers, max_age_days=max_age_days)
+            verification_reports.append((item, item_report))
+            contradiction_ids.update(item_report.contradictions)
+            if item.kind == BlueprintKind.FACT:
+                claim_reports.append((item, self.verify_blueprint_claims(item)))
+
+        evidence_reliable = all(report.reliable for _, report in verification_reports)
+        claims_reliable = all(report.reliable for _, report in claim_reports)
+        reliable = evidence_reliable and claims_reliable
+        if contradiction_ids:
             answer = "Conflicting blueprint records were found. Mirror abstained instead of choosing one as factual."
             confidence = 0.0
             mode = "blueprint_contradiction_abstain"
             tier = "honest_abstain"
         else:
             answer = composition.answer
-            confidence = 0.95 if report.reliable else 0.40
-            mode = "blueprint_composition_reliable" if report.reliable else "blueprint_composition_unverified"
-            tier = "high_confidence" if report.reliable else "unverified"
+            confidence = 0.95 if reliable else 0.40
+            mode = "blueprint_composition_reliable" if reliable else "blueprint_composition_unverified"
+            tier = "high_confidence" if reliable else "unverified"
 
-        trace = [
-            f"Dependency-first composition: {', '.join(composition.blueprint_ids)}",
-            f"Source: {report.source_ref or 'missing'}",
-            f"Evidence: {report.evidence_level}; freshness: {report.freshness}",
-        ]
-        trace.extend(f"Not reliable: {reason}" for reason in report.reasons)
+        trace = [f"Dependency-first composition: {', '.join(composition.blueprint_ids)}"]
+        for item, item_report in verification_reports:
+            trace.append(
+                f"Blueprint {item.blueprint_id}: source={item_report.source_ref or 'missing'}; "
+                f"evidence={item_report.evidence_level}; freshness={item_report.freshness}"
+            )
+            trace.extend(f"{item.blueprint_id} not reliable: {reason}" for reason in item_report.reasons)
+        for item, claim_report in claim_reports:
+            trace.append(
+                f"Claim evidence {item.blueprint_id}: verified={','.join(claim_report.verified_claim_ids) or 'none'}"
+            )
+            trace.extend(f"{item.blueprint_id} claim review: {reason}" for reason in claim_report.reasons)
         if composition.verified_postconditions:
             trace.append("Postconditions verified: " + ", ".join(composition.verified_postconditions))
         elapsed = (time.perf_counter_ns() - started) / 1_000_000.0
