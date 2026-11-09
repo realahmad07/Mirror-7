@@ -343,7 +343,7 @@ class UnifiedCognitiveOrchestrator:
             final_code = str(code_verification.get("final_code") or generated_code)
             final_answer = (
                 "Generated and tested Python code:\n\n"
-                + "\`\`\`python\n" + final_code + "\n\`\`\`"
+                + (chr(96) * 3) + "python\n" + final_code + "\n" + (chr(96) * 3)
             )
             qualification = "verified_task_result"
         elif task_execution_verified:
