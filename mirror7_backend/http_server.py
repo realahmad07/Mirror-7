@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hmac
+import ipaddress
 import json
 import os
 from dataclasses import asdict, is_dataclass
@@ -20,6 +22,23 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
     server_version = "Mirror7HTTP/1.1"
     max_body_bytes = 1_048_576
     cors_origin = "*"
+    api_token: str | None = None
+
+    def _authorize_request(self, path: str) -> bool:
+        # Liveness is deliberately the only unauthenticated API route.
+        if self.command == "GET" and path == "/api/health":
+            return True
+        if not path.startswith("/api/") or self.api_token is None:
+            return True
+        supplied = self.headers.get("Authorization", "")
+        expected = "Bearer " + self.api_token
+        if not hmac.compare_digest(supplied, expected):
+            self._send(HTTPStatus.UNAUTHORIZED, {
+                "ok": False,
+                "error": "authentication required",
+            })
+            return False
+        return True
 
     def _json_safe(self, value: Any) -> Any:
         if is_dataclass(value):
@@ -35,7 +54,7 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Access-Control-Allow-Origin", self.cors_origin)
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header("Cache-Control", "no-cache")
         self.send_header("X-Content-Type-Options", "nosniff")
@@ -129,6 +148,8 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             self._send(500, {"ok": False, "error": "service unavailable"})
             return
         path = urlparse(self.path).path
+        if not self._authorize_request(path):
+            return
         if path in {"/", "/studio", "/studio.html"}:
             from pathlib import Path
             studio_p = Path(__file__).parent / "studio.html"
@@ -187,7 +208,6 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 "service": "mirror7",
                 "ready": getattr(service, "is_ready", True),
                 "warmup_ms": getattr(service, "warmup_ms", 0.0),
-                "status": service.status(),
             })
             return
         if path == "/api/crystal/stream":
@@ -214,9 +234,11 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         if service is None:
             self._send(500, {"ok": False, "error": "service unavailable"})
             return
+        path = urlparse(self.path).path
+        if not self._authorize_request(path):
+            return
         try:
             payload = self._read_json()
-            path = urlparse(self.path).path
             parts = [p for p in path.split("/") if p]
 
             if parts == ["api", "crystal", "stream"]:
@@ -298,6 +320,16 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 spec = str(payload.get("spec", "") or payload.get("spec_desc", ""))
                 tests = str(payload.get("tests", "") or payload.get("explicit_tests", ""))
                 res = service.tdd_synthesize(code, spec_desc=spec, explicit_tests=tests)
+                self._send(200, res)
+                return
+
+            if parts == ["api", "tdd", "generate"]:
+                prompt = str(payload.get("prompt", ""))
+                spec = str(payload.get("spec", "") or payload.get("spec_desc", ""))
+                tests = str(payload.get("tests", "") or payload.get("explicit_tests", ""))
+                res = service.tdd_generate_and_verify(
+                    prompt, spec_desc=spec, explicit_tests=tests
+                )
                 self._send(200, res)
                 return
 
@@ -449,8 +481,10 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         if service is None:
             self._send(500, {"ok": False, "error": "service unavailable"})
             return
+        path = urlparse(self.path).path
+        if not self._authorize_request(path):
+            return
         try:
-            path = urlparse(self.path).path
             parts = [p for p in path.split("/") if p]
             if len(parts) == 4 and parts[:2] == ["api", "sessions"] and parts[3] == "checkpoint":
                 session_id = self._session_id(parts[2])
@@ -571,11 +605,25 @@ def create_server(
     max_workers: int = 32,
     request_queue_size: int = 256,
     socket_timeout: float = 30.0,
+    api_token: str | None = None,
 ):
     if not cors_origin or chr(13) in cors_origin or chr(10) in cors_origin:
         raise ValueError("invalid cors_origin")
+    token = api_token if api_token is not None else os.getenv("MIRROR7_API_TOKEN")
+    token = token.strip() if token else None
+    try:
+        is_loopback = ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        is_loopback = host.casefold() == "localhost"
+    if not is_loopback and not token:
+        raise ValueError("MIRROR7_API_TOKEN is required when binding beyond loopback")
+    if token is not None and len(token) < 32:
+        raise ValueError("API token must contain at least 32 characters")
+    if not is_loopback and cors_origin == "*":
+        raise ValueError("public deployments must configure a specific CORS origin")
     MirrorAPIHandler.service = service or BackendService()
     MirrorAPIHandler.cors_origin = cors_origin
+    MirrorAPIHandler.api_token = token
     return BoundedThreadPoolServer(
         (host, port),
         MirrorAPIHandler,
@@ -589,7 +637,10 @@ def serve(host: str | None = None, port: int | None = None) -> None:
     resolved_host = host if host is not None else os.getenv("MIRROR7_HOST", "127.0.0.1")
     resolved_port = port if port is not None else int(os.getenv("MIRROR7_PORT", "8787"))
     resolved_cors = os.getenv("MIRROR7_CORS_ORIGIN", "*")
-    server = create_server(resolved_host, resolved_port, cors_origin=resolved_cors)
+    api_token = os.getenv("MIRROR7_API_TOKEN")
+    server = create_server(
+        resolved_host, resolved_port, cors_origin=resolved_cors, api_token=api_token
+    )
     print(f"Mirror 7 API listening on http://{resolved_host}:{resolved_port}")
     try:
         server.serve_forever()
