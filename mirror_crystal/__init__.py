@@ -70,7 +70,9 @@ from .native_program_synthesis import (
     DispatchCase,
     FunctionProgram,
     NativeProgramSynthesizer,
+    ProgramExpression,
     ProgramIR,
+    ProgramStatement,
     PythonASTCompiler,
 )
 from .universal_representation import (
@@ -107,7 +109,9 @@ __all__ = [
     "DispatchCase",
     "FunctionProgram",
     "NativeProgramSynthesizer",
+    "ProgramExpression",
     "ProgramIR",
+    "ProgramStatement",
     "PythonASTCompiler",
     "CapabilityError",
     "CapabilityLearningEngine",
