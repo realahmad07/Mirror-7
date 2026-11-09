@@ -45,7 +45,7 @@ The evaluation-only v1 dataset is:
 - \`mirror_eval/data/source_backed_factual_v1.jsonl\`
 - \`mirror_eval/data/source_backed_factual_v1.manifest.json\`
 
-The set contains five source-backed factual cases spanning HTTP, Python, SI metrology and JSON, plus one unanswerable private-token negative control. It is marked \`pending_independent_review\`: no reviewer approvals have been fabricated. The pinned dataset digest detects accidental edits. The data must never enter training or normal vault ingestion.
+The set contains seven source-backed factual cases spanning HTTP, Python, SI metrology and JSON—including two qualification/near-miss cases—plus one unanswerable private-token negative control. It is marked \`pending_independent_review\`: no reviewer approvals have been fabricated. The pinned dataset digest detects accidental edits. The data must never enter training or normal vault ingestion.
 
 Validate structure, source links, quote hashes and frozen digest:
 
