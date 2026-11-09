@@ -172,7 +172,8 @@ def test_blueprint_knowledge_is_indexed_without_becoming_an_executor():
     assert engine.registry.handler("legacy:cell") is None
 
 
-def test_learning_gate_blocks_weak_evidence_and_promotes_replayable_composition():
+def test_learning_gate_blocks_weak_evidence_and_promotes_replayable_composition(monkeypatch):
+    monkeypatch.setenv("MIRROR_CAPABILITY_ATTESTATION_KEY", "mirror-test-persistent-capability-key-2026")
     engine = UniversalIntelligenceEngine()
     task = TaskSpec(
         task_id="learn:sum-compare",
@@ -232,7 +233,8 @@ def test_learning_gate_blocks_weak_evidence_and_promotes_replayable_composition(
     assert handler({"left": 7, "right": 3, "threshold": 8}) == {"result": False}
 
 
-def test_persisted_learned_capability_can_be_reloaded_from_blueprint():
+def test_persisted_learned_capability_can_be_reloaded_from_blueprint(monkeypatch):
+    monkeypatch.setenv("MIRROR_CAPABILITY_ATTESTATION_KEY", "mirror-test-persistent-capability-key-2026")
     engine = UniversalIntelligenceEngine()
     task = TaskSpec(
         task_id="persist:sum",
@@ -253,9 +255,15 @@ def test_persisted_learned_capability_can_be_reloaded_from_blueprint():
         ),
     )
     result = engine.solve(task)
+    persisted = []
     learned = engine.promote_verified_composition(
-        task, result, strict_gate(engine, engine.composition_learning_candidate(result))
+        task,
+        result,
+        strict_gate(engine, engine.composition_learning_candidate(result)),
+        persist=persisted.append,
     )
+    assert persisted == [learned]
+    assert engine._verify_persisted_capability(learned) is True
     prompt = learned.name
     response = canonical_json(learned.to_dict())
     blueprint = Blueprint(
