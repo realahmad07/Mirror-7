@@ -188,7 +188,7 @@ class UnifiedCognitiveOrchestrator:
                          if str(item).startswith("tdd_assertions_passed:")),
                         "",
                     )
-                    counts = re.search(r"tdd_assertions_passed:(\\d+)/(\\d+)", tdd_check)
+                    counts = re.search(r"tdd_assertions_passed:(\d+)/(\d+)", tdd_check)
                     tests_passed = int(counts.group(1)) if counts else 0
                     tests_generated = int(counts.group(2)) if counts else 0
                     code_verification = {
