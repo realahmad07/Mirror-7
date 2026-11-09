@@ -146,6 +146,9 @@ class BenchmarkCaseResult:
     supported_claims: int
     unsupported_claims: int
     response_mode: str
+    answer_text: str
+    response_sha256: str
+    latency_ms: float
 
 
 def literal_claim_judge(answer: str, claim: dict[str, Any]) -> ClaimJudgement:
@@ -169,20 +172,30 @@ def _is_abstention(response: Any) -> bool:
     return mode in ABSTENTION_MODES or (not answer and float(getattr(response, "confidence", 0.0) or 0.0) <= 0.0)
 
 
-def _calibration_metrics(rows: list[BenchmarkCaseResult], bins: int) -> dict[str, float]:
-    if not rows:
-        return {"brier_score": 0.0, "expected_calibration_error": 0.0}
-    brier = sum((min(1.0, max(0.0, row.confidence)) - float(row.correct)) ** 2 for row in rows) / len(rows)
+def _calibration_metrics(rows: list[BenchmarkCaseResult], bins: int) -> dict[str, float | int]:
+    # Response confidence is confidence in an answer; abstentions have no answer confidence.
+    answered = [row for row in rows if not row.abstained]
+    if not answered:
+        return {
+            "brier_score": 0.0,
+            "expected_calibration_error": 0.0,
+            "calibration_sample_count": 0,
+        }
+    brier = sum((min(1.0, max(0.0, row.confidence)) - float(row.correct)) ** 2 for row in answered) / len(answered)
     bucket: dict[int, list[BenchmarkCaseResult]] = defaultdict(list)
-    for row in rows:
+    for row in answered:
         index = min(bins - 1, int(min(1.0, max(0.0, row.confidence)) * bins))
         bucket[index].append(row)
     ece = 0.0
     for members in bucket.values():
         mean_conf = sum(row.confidence for row in members) / len(members)
         accuracy = sum(float(row.correct) for row in members) / len(members)
-        ece += (len(members) / len(rows)) * abs(mean_conf - accuracy)
-    return {"brier_score": round(brier, 6), "expected_calibration_error": round(ece, 6)}
+        ece += (len(members) / len(answered)) * abs(mean_conf - accuracy)
+    return {
+        "brier_score": round(brier, 6),
+        "expected_calibration_error": round(ece, 6),
+        "calibration_sample_count": len(answered),
+    }
 
 
 def run_factual_benchmark(
@@ -221,6 +234,9 @@ def run_factual_benchmark(
             supported_claims=supported,
             unsupported_claims=unsupported,
             response_mode=str(getattr(response, "mode", "") or "unknown"),
+            answer_text=answer,
+            response_sha256=hashlib.sha256(answer.encode("utf-8")).hexdigest(),
+            latency_ms=max(0.0, float(getattr(response, "latency_ms", 0.0) or 0.0)),
         ))
 
     answered = [row for row in rows if not row.abstained]
@@ -246,6 +262,7 @@ def run_factual_benchmark(
         "abstention_precision": round(correct_abstentions / sum(row.abstained for row in rows), 6) if any(row.abstained for row in rows) else 0.0,
         "abstention_recall": round(correct_abstentions / len(unanswerable), 6) if unanswerable else 0.0,
         "abstention_count": sum(row.abstained for row in rows),
+        "mean_latency_ms": round(sum(row.latency_ms for row in rows) / len(rows), 3) if rows else 0.0,
         **_calibration_metrics(rows, max(2, int(calibration_bins))),
     }
     return {
