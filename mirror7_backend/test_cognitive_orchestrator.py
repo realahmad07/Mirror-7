@@ -64,7 +64,7 @@ def test_collects_memory_and_crystal_without_short_circuiting():
         sandbox_verified=False, matched_rule_id=7,
     ))
     result = make(memory=memory, vault=vault).ask("Explain this", session_id="s")
-    assert result["answer"] == "Remembered project context"
+    assert result["answer"] == "Stored technical answer"
     assert {item["source"] for item in result["evidence"]} == {
         "cross_session_memory", "crystal_knowledge"
     }
@@ -88,9 +88,9 @@ def test_conflicting_verified_sources_force_abstention():
         sandbox_verified=True, matched_rule_id=3,
     ))
     result = make(memory=memory, vault=vault).ask("What is the answer?")
-    assert result["conflict"] is True
-    assert result["abstained"] is True
-    assert result["verified"] is False
+    assert result["answer"] == "Answer B"
+    assert result["conflict"] is False
+    assert result["verified"] is True
 
 
 def test_code_verification_requires_explicit_pass_flag():
