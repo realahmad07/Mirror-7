@@ -187,7 +187,7 @@ class CapabilityLearningEngine:
             if not observation.execution.succeeded:
                 raise CapabilityLearningError("failed execution cannot support capability learning")
             if observation.verification.status is not VerificationStatus.VERIFIED:
-                raise CapabilityLearningError("unverified execution cannot support capability learning")
+                raise CapabilityLearningError("observation must be independently verified before capability learning")
             if observation.verification.blockers or any(not item.passed for item in observation.verification.capabilities):
                 raise CapabilityLearningError("verification report contains a blocker or failed capability")
             if not observation.verification.results or any(not item.passed for item in observation.verification.results):

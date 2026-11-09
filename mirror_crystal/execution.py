@@ -258,6 +258,8 @@ class CapabilityExecutionEngine:
             if not isinstance(outputs, dict):
                 raise ExecutionError("operation returned a non-object payload")
             return outputs
+        except TimeoutError as exc:
+            raise ExecutionError(f"operation exceeded timeout: {exc}") from exc
         except (EOFError, OSError, json.JSONDecodeError) as exc:
             raise ExecutionError(f"operation process failed: {type(exc).__name__}") from exc
         finally:
