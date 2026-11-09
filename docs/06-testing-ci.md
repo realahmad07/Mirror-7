@@ -65,3 +65,16 @@ python -m build
 ## Release discipline
 
 Normal development pushes are not release artifacts. The release workflow is tag-oriented so a versioned package can be tied to an explicit commit.
+
+## Universal intelligence Phase 1–9 acceptance
+
+The active CI now runs the domain-neutral knowledge/capability pipeline tests inside `mirror_crystal`, including the combined Phase 1–9 integration test. The 2026-11-09 acceptance run also validates the frozen source-backed benchmark manifest, backend, release boundary, training foundation, free-running evaluator, smoke dataset and package build.
+
+The acceptance report records the exact per-suite counts and workflow links. A green fast-CI run verifies this active engineering surface; it does not re-execute every historical research phase or prove general intelligence. Historical phase experiments remain under their own tests and acceptance records.
+
+
+## Universal intelligence pipeline Phase 1–9 acceptance
+
+The accepted commit `906f912b44db5fede143d8df141fd7280a2762df` passed the complete active CI: 236 Crystal/evaluation tests, 45 backend tests, 4 release-boundary tests, 3 training-foundation tests, and 3 free-running evaluator tests (291 total). Compilation, frozen benchmark-manifest validation, smoke dataset creation/validation, package build and source/security guard passed. See [PHASE1_9_ACCEPTANCE.md](../PHASE1_9_ACCEPTANCE.md) for exact scope, results, and operating boundaries.
+
+The combined integration test runs knowledge-backed procedures through representation, TaskSpec interpretation, capability matching, typed composition, controlled execution, independent verification and explicit composite promotion. A green CI result verifies this bounded engineering path; it does not establish broad cross-domain transfer, open-world reasoning or AGI.

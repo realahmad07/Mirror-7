@@ -7,6 +7,8 @@
 
 ---
 
+> **Roadmap naming:** the model-scaling phases in this document (for example, Mirror-1.5B-Edge Phase 1) are separate from the nine-layer Universal Intelligence Pipeline described in [README.md](README.md). The core engineering pipeline has its own Phase 1–9 acceptance report in [PHASE1_9_ACCEPTANCE.md](PHASE1_9_ACCEPTANCE.md).
+
 ## 1. Executive Summary & Mission
 
 Modern Large Language Models rely on static Byte-Pair Encoding (BPE) vocabularies of `128,000` to `256,000` subwords, stateless full-history token re-computation across dialogue turns, and brute-force training over noisy web scrapes. That legacy stack introduces four major infrastructure bottlenecks:

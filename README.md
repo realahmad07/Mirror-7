@@ -154,24 +154,40 @@ flowchart TB
     REPAIR --> CE
 ```
 
-### Nine-Phase Implementation Roadmap
+### Nine-layer universal intelligence pipeline — implemented and integration-tested
 
-Each phase is a gate: its completion condition must be met before it is treated as a trusted foundation for the next stage.
+These are the nine engineering layers that now form Mirror's shared knowledge-to-learning pipeline. Each layer uses one domain-neutral contract rather than a separate intelligence engine for each subject. The numbering here is the implementation breakdown used for the Phase 1–9 acceptance test; it is not a claim that Mirror has completed the broader open-world cross-domain transfer and continuous-expansion research goals.
 
-| Phase | What we build | Completion condition |
+| Phase | Implemented layer | Acceptance gate |
 |---|---|---|
-| **1. Knowledge foundation** | Trustworthy knowledge, canonical blueprints, provenance, contradiction handling | Knowledge can be distinguished from assumptions and unsupported claims |
-| **2. Universal representation** | A common structure for facts, relationships, rules, constraints, formulas, procedures and operations | Different domains can be represented without redesigning the intelligence engine |
-| **3. Task understanding** | Universal TaskSpec and task decomposition | Complex requests become accurate, connected subtasks |
-| **4. Capability system** | Verified reusable capabilities with typed inputs, outputs, dependencies and contracts | Capabilities work independently and have evidence |
-| **5. Composition engine** | Capability matching, compatibility checking, planning and combinational search | Mirror can construct solutions it has never stored as complete blueprints |
-| **6. Universal verification** | Independent evaluation with domain-specific execution, proof, simulation and evidence checks | Solutions are tested using methods appropriate to their domain |
-| **7. Self-improvement** | Failure diagnosis, targeted repair, abstraction and capability learning | Successful solutions become reusable, tested capabilities |
-| **8. Cross-domain intelligence** | Transfer of useful structures and methods between domains | Mirror can apply a verified method in a different domain when appropriate |
-| **9. Continuous expansion** | More knowledge, capabilities, benchmarks and increasingly difficult tasks | Performance improves on genuinely unseen problems |
+| **1. Knowledge foundation** | Canonical knowledge records, source provenance, explicit evidence and epistemic status, assumption separation, contradiction indexing. | Unverified or assumed material is not assertable; conflicts remain visible. |
+| **2. Universal representation** | Typed nodes, relations, units, dimensions, provenance, uncertainty and evidence in one persistent graph. | Cross-domain structures round-trip and persist without changing their epistemic status. |
+| **3. Task understanding** | Universal `TaskSpec`, explicit known inputs, context, constraints, outputs, unknowns and task dependency DAG. | Requests become deterministic, inspectable task contracts; ambiguity is preserved. |
+| **4. Capability system** | Reusable capability contracts, typed ports, prerequisites, dependencies, evidence and durable registry. | Only capabilities with eligible evidence can enter execution plans. |
+| **5. Capability matching** | Domain/intent filtering, typed input matching, ranking, and missing-input reporting. | Each task unit has compatible candidates or an explicit unmatched result. |
+| **6. Composition planning** | Bounded combinational selection, dependency ordering, typed output-to-input bindings, precondition gates. | A ready plan has no unbound required ports, missing dependencies or cycles. |
+| **7. Controlled execution** | Explicit native-handler allow-list, child-process time/resource limits, typed output validation and fail-fast behavior. | Only a ready plan with registered, evidence-eligible handlers can run. |
+| **8. Independent verification** | Separate verifier registry and per-step checks bound to the exact execution fingerprint. | Every required check and declared postcondition passes independently. |
+| **9. Evidence-gated capability learning** | Repeated composition learning across distinct tasks, multiple verifier identities, explicit promotion into the registry. | Three structurally matching verified tasks are required by default; learning never silently writes memory. |
 
-**Core cycle:** Knowledge → Capabilities → Composition → Verification → Learning → Future Composition.
+**Core cycle:** Knowledge → Representation → Task → Capabilities → Matching → Composition → Execution → Independent Verification → Evidence-Gated Learning → Future Composition.
 
+**Acceptance scope:** all nine engineering layers above pass the combined integration test and active repository CI. This proves the implemented contracts and a bounded end-to-end execution path; it does not establish AGI, unrestricted language understanding, broad cross-domain transfer, autonomous source-code invention, or open-world continuous improvement.
+
+### What Mirror can do in this verified core
+
+- Store and retrieve facts, definitions, rules, formulas, procedures, assumptions and observations with their provenance, evidence and epistemic status.
+- Detect conflicting values for the same normalized claim and refuse to silently choose a winner.
+- Represent knowledge and operations in one persistent, typed graph across domains.
+- Convert requests into task specifications with constraints, input context and sequential or parallel subtasks.
+- Match task units to reusable capabilities and compose a new multi-step plan from smaller capabilities, including typed connections between one step's outputs and another's inputs.
+- Execute only host-registered native handlers under bounded child-process controls, stopping at the first failure.
+- Verify each executed step through separately registered checks, then learn a reusable composite after repeated independently verified success.
+- Persist reviewed knowledge, capabilities, task structures and explicitly promoted learned capabilities in the disk-backed vault.
+
+**Important operating boundaries:** task parsing and matching are deterministic and conservative, not unrestricted semantic understanding. The core does not synthesize arbitrary native handlers from prose; an operation must be supplied and explicitly registered by the host. The default child-process runner is not a hardened security sandbox for hostile code; use the configured container/VM boundary for untrusted execution. Verifier independence is a host-assigned trust boundary. The combined demonstration is a bounded mathematics example, not a cross-domain generalization benchmark.
+
+See [the Phase 1–9 acceptance report](PHASE1_9_ACCEPTANCE.md) for the exact tests, commit and CI results.
 
 ---
 

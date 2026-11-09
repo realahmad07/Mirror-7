@@ -27,6 +27,7 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [21 — Controlled capability execution](21-controlled-capability-execution.md) | Bounded process execution of explicitly registered native handlers with fail-fast output validation. |
 | [22 — Independent outcome verification](22-independent-outcome-verification.md) | Separate check registries, step-level validation and verified postcondition reporting. |
 | [24 — Universal knowledge foundation](24-knowledge-foundation.md) | Canonical knowledge records, assumption/evidence separation, source-backed fact admission, contradiction detection, and typed knowledge-to-capability bridging. |
+| [Phase 1–9 acceptance report](../PHASE1_9_ACCEPTANCE.md) | Combined end-to-end acceptance scope, test counts, CI evidence and operating boundaries. |
 | [23 — Evidence-gated capability learning](23-evidence-gated-capability-learning.md) | Repeated verified compositions converted into explicit reusable capability proposals. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 

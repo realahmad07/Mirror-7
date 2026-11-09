@@ -42,3 +42,23 @@ These are bounded engineering and synthetic research results. They do not establ
 - docs/06-testing-ci.md
 - docs/08-limitations.md
 - docs/09-roadmap.md
+
+## Universal intelligence pipeline — Phase 1–9
+
+**Status: PASS — combined acceptance.**
+
+| Phase | Layer | Status |
+|---|---|---|
+| 1 | Knowledge foundation | PASS |
+| 2 | Universal representation | PASS |
+| 3 | Task understanding | PASS |
+| 4 | Capability contracts and registry | PASS |
+| 5 | Capability matching | PASS |
+| 6 | Typed composition planning | PASS |
+| 7 | Controlled execution | PASS |
+| 8 | Independent outcome verification | PASS |
+| 9 | Evidence-gated capability learning | PASS |
+
+The combined integration test runs three distinct task instances through the complete pipeline: knowledge-backed procedures are represented and registered, task specs are interpreted and matched, a typed two-step plan is composed and executed, two independent verifier identities check every step, and the resulting composite is explicitly promoted into the vault. See [PHASE1_9_ACCEPTANCE.md](PHASE1_9_ACCEPTANCE.md).
+
+This status is an engineering acceptance result for the implemented core. It is not a claim that open-world cross-domain transfer, unrestricted autonomous code generation, or continuous improvement on genuinely unseen domains has been established.
