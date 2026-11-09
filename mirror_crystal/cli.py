@@ -102,11 +102,11 @@ def main(argv: list[str] | None = None) -> int:
     p_train = sub.add_parser("train", help="Ingest .jsonl or .txt/.py files in 1 CPU pass")
     p_train.add_argument("--input", required=True, help="Path to .jsonl, .txt, .md, or .py file")
     p_train.add_argument("--save", required=True, help="Output .mcrystal brain file path")
-    p_train.add_argument("--load", default="", help="Optional existing .mcrystal file to continue teaching")
+    p_train.add_argument("--load", default="", help="Optional existing .mcrystal file or crystal_4 ZIP to continue teaching")
     p_train.add_argument("--max-rows", type=int, default=None)
 
-    p_query = sub.add_parser("query", help="Run a single prompt against a .mcrystal brain")
-    p_query.add_argument("--brain", required=True, help="Path to .mcrystal file")
+    p_query = sub.add_parser("query", help="Run a single prompt against a .mcrystal brain or Crystal archive ZIP")
+    p_query.add_argument("--brain", required=True, help="Path to .mcrystal file or crystal_4 ZIP")
     p_query.add_argument("--prompt", required=True, help="User prompt")
 
     p_chat = sub.add_parser("chat", help="Interactive multi-turn CLI session")
