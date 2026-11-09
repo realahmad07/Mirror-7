@@ -545,3 +545,15 @@ def test_failed_capability_registration_self_test_never_adds_executor():
     assert registry.get("general.always_wrong") is not None
     assert registry.handler("general.always_wrong") is None
     assert registry.executable() == ()
+
+
+def test_natural_language_sort_request_composes_native_program_ir_and_tdd():
+    result = UniversalIntelligenceEngine().solve_prompt(
+        "Write a Python function to sort a list of numbers using bubble sort."
+    )
+    assert result["status"] == "verified"
+    assert result["verified"] is True
+    assert result["task"]["domain"] == "programming"
+    assert "def bubble_sort" in result["candidate_outputs"]["code"]
+    assert "tdd_assertions_passed:4/4" in result["verification"]["checks_passed"]
+    assert result["plan"]["steps"][0]["capability_id"] == "program.sort.bubble.synthesize"
