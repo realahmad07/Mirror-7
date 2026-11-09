@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from .bit_signatures import ContextBitTable
+from .blueprint_prompt import blueprint_prompt_fields
 from .lsh_rule_store import CrystalRule
 
 
@@ -82,6 +83,8 @@ class VaultStorageMixin:
                 intent TEXT NOT NULL,
                 kind TEXT NOT NULL,
                 canonical_json TEXT NOT NULL,
+                prompt_key TEXT NOT NULL DEFAULT '',
+                prompt_prefix TEXT NOT NULL DEFAULT '',
                 updated_at REAL NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_blueprints_domain_intent ON blueprints(domain, intent);
@@ -100,6 +103,26 @@ class VaultStorageMixin:
             CREATE INDEX IF NOT EXISTS idx_unanswered_domain ON unanswered_queries(inferred_domain);
             """
         )
+        columns = {str(row[1]) for row in cur.execute("PRAGMA table_info(blueprints)")}
+        if "prompt_key" not in columns:
+            cur.execute("ALTER TABLE blueprints ADD COLUMN prompt_key TEXT NOT NULL DEFAULT ''")
+        if "prompt_prefix" not in columns:
+            cur.execute("ALTER TABLE blueprints ADD COLUMN prompt_prefix TEXT NOT NULL DEFAULT ''")
+        # One-time, additive index backfill for vaults created before prompt dispatch existed.
+        legacy_blueprints = cur.execute(
+            "SELECT blueprint_id, canonical_json FROM blueprints WHERE prompt_key = '' OR prompt_prefix = ''"
+        ).fetchall()
+        for blueprint_id, canonical_json in legacy_blueprints:
+            try:
+                pattern = str(json.loads(canonical_json).get("prompt_pattern", ""))
+                prompt_key, prompt_prefix = blueprint_prompt_fields(pattern)
+                cur.execute(
+                    "UPDATE blueprints SET prompt_key = ?, prompt_prefix = ? WHERE blueprint_id = ?",
+                    (prompt_key, prompt_prefix, blueprint_id),
+                )
+            except (TypeError, ValueError, json.JSONDecodeError):
+                continue
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_prompt_prefix ON blueprints(prompt_prefix)")
         self.conn.commit()
 
     def _load_lightweight_meta(self) -> None:
