@@ -1854,7 +1854,13 @@ class UniversalIntelligenceEngine:
         persist: Callable[[CapabilitySpec], Any] | None = None,
     ) -> CapabilitySpec:
         self._require_learning_gate(gate, {"capability_id": spec.capability_id})
-        return self.learner.promote(spec, handler, gate, persist=persist)
+        learned = self.learner.promote(spec, handler, gate)
+        if persist is not None:
+            attested = self._attest_persisted_capability(learned)
+            self.registry.replace_spec(attested)
+            persist(attested)
+            return attested
+        return learned
 
     def capability_gaps(self, domains: tuple[str, ...]) -> tuple[dict[str, Any], ...]:
         return self.curriculum.gaps(domains)
