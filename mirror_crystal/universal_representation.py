@@ -371,6 +371,11 @@ class CapabilitySpec:
             evidence if isinstance(evidence, EvidenceRecord)
             else EvidenceRecord(**evidence)
         )
+        provenance = payload.get("provenance", {})
+        payload["provenance"] = (
+            provenance if isinstance(provenance, ProvenanceRecord)
+            else ProvenanceRecord(**provenance)
+        )
         for key in ("domains", "tags", "preconditions", "postconditions", "dependencies", "lineage"):
             if key in payload:
                 payload[key] = tuple(payload[key])
