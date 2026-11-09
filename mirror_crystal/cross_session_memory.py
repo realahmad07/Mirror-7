@@ -115,7 +115,12 @@ class CrossSessionMemoryGraph:
 
     DEFAULT_DB_PATH = Path("artifacts/mirror_memory_graph.sqlite")
 
-    def __init__(self, db_path: Optional[Path | str] = None) -> None:
+    def __init__(
+        self,
+        db_path: Optional[Path | str] = None,
+        *,
+        encryption_key: str | None = None,
+    ) -> None:
         self.db_path = Path(db_path) if db_path else self.DEFAULT_DB_PATH
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
@@ -130,11 +135,23 @@ class CrossSessionMemoryGraph:
         self._conn.execute("PRAGMA busy_timeout = 10000")
         self._conn.execute("PRAGMA wal_autocheckpoint = 1000")
         self.max_entities_per_session = 200
-        self.vault_encryption_key = os.getenv("MIRROR_MEMORY_KEY", "m7_memory_vault_secure_key")
+        self.vault_encryption_key = encryption_key or os.getenv("MIRROR_MEMORY_KEY")
+        self.legacy_encryption_key = (
+            os.getenv("MIRROR_MEMORY_LEGACY_KEY")
+            or os.getenv("MIRROR_MEMORY_KEY")
+            or "m7_memory_vault_secure_key"
+        )
         self._undo_stack: Dict[str, List[Dict[str, Any]]] = {}
         self._entity_cache: Dict[str, Dict[str, Dict[str, Any]]] = {}
         self._profile_cache: Dict[str, Optional[Dict[str, Any]]] = {}
         self._init_schema()
+
+    def _decrypt_value(self, value: str) -> str:
+        if value.startswith("aead:v1:"):
+            return StdlibCipher.decrypt(value, self.vault_encryption_key)
+        if value.startswith("enc::"):
+            return StdlibCipher.decrypt(value, self.legacy_encryption_key)
+        return value
 
     def _init_schema(self) -> None:
         with self._lock:
@@ -194,6 +211,13 @@ class CrossSessionMemoryGraph:
             cur.execute("CREATE INDEX IF NOT EXISTS idx_mem_session ON memory_entities(session_id, entity_key)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_mem_type ON memory_entities(session_id, entity_type)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_rel_session ON memory_relations(session_id, src_key)")
+            # Older versions duplicated sensitive values in plaintext JSON.
+            cur.execute("""
+                UPDATE memory_entities SET value_json = NULL
+                WHERE entity_type IN ('credential', 'secret', 'auth', 'private_key')
+                   OR lower(entity_key) LIKE '%password%'
+                   OR lower(entity_key) LIKE '%token%'
+            """)
 
     # =========================================================================
     # Core Entity Memory Operations
@@ -211,11 +235,17 @@ class CrossSessionMemoryGraph:
         key_clean = key.strip().lower()
         # Privacy filter: scrub secrets & credentials before saving
         val_str = SecretScrubber.scrub(str(value).strip())
-        val_json = json.dumps(value) if not isinstance(value, str) else json.dumps({"str": val_str})
         now = time.time()
-
-        # Encryption at rest for sensitive categories
-        is_sensitive = entity_type in ("credential", "secret", "auth", "private_key") or "password" in key_clean or "token" in key_clean
+        # Sensitive data must have authenticated encryption and must not be duplicated
+        # into the plaintext JSON column. Missing keys fail closed rather than downgrade.
+        is_sensitive = (
+            entity_type in ("credential", "secret", "auth", "private_key")
+            or "password" in key_clean
+            or "token" in key_clean
+        )
+        val_json = None if is_sensitive else (
+            json.dumps(value) if not isinstance(value, str) else json.dumps({"str": val_str})
+        )
         db_val_text = StdlibCipher.encrypt(val_str, self.vault_encryption_key) if is_sensitive else val_str
 
         with self._lock:
@@ -296,7 +326,7 @@ class CrossSessionMemoryGraph:
             if not row:
                 return None
             k, etype, val_text, val_json, conf, updated, ttl = row
-            decrypted_val = StdlibCipher.decrypt(val_text, self.vault_encryption_key) if val_text.startswith("enc::") else val_text
+            decrypted_val = self._decrypt_value(val_text)
             try:
                 parsed_json = json.loads(val_json) if val_json else None
             except Exception:
@@ -341,7 +371,7 @@ class CrossSessionMemoryGraph:
                 sess_map: Dict[str, Dict[str, Any]] = {}
                 for r in rows:
                     v_raw = r[2]
-                    v_dec = StdlibCipher.decrypt(v_raw, self.vault_encryption_key) if v_raw.startswith("enc::") else v_raw
+                    v_dec = self._decrypt_value(v_raw)
                     sess_map[r[0]] = {
                         "key": r[0],
                         "type": r[1],
@@ -563,7 +593,7 @@ class CrossSessionMemoryGraph:
                 {
                     "key": r[0],
                     "type": r[1],
-                    "value": StdlibCipher.decrypt(r[2], self.vault_encryption_key) if r[2].startswith("enc::") else r[2],
+                    "value": self._decrypt_value(r[2]),
                     "confidence": r[3],
                     "created_at": r[4],
                     "updated_at": r[5],
@@ -750,7 +780,7 @@ class CrossSessionMemoryGraph:
         for session_id, key, val, conf, _ in rows:
             stats["entities_scanned"] += 1
             try:
-                decrypted_val = StdlibCipher.decrypt(val, key_str=self.vault_encryption_key)
+                decrypted_val = self._decrypt_value(val)
             except Exception:
                 decrypted_val = val
 
