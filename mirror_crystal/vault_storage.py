@@ -166,20 +166,49 @@ class VaultStorageMixin:
             cur.execute("ALTER TABLE blueprints ADD COLUMN prompt_key TEXT NOT NULL DEFAULT ''")
         if "prompt_prefix" not in columns:
             cur.execute("ALTER TABLE blueprints ADD COLUMN prompt_prefix TEXT NOT NULL DEFAULT ''")
-        # One-time, additive index backfill for vaults created before prompt dispatch existed.
-        legacy_blueprints = cur.execute(
-            "SELECT blueprint_id, canonical_json FROM blueprints WHERE prompt_key = ''"
-        ).fetchall()
-        for blueprint_id, canonical_json in legacy_blueprints:
-            try:
-                pattern = str(json.loads(canonical_json).get("prompt_pattern", ""))
-                prompt_key, prompt_prefix = blueprint_prompt_fields(pattern)
-                cur.execute(
-                    "UPDATE blueprints SET prompt_key = ?, prompt_prefix = ? WHERE blueprint_id = ?",
-                    (prompt_key, prompt_prefix, blueprint_id),
-                )
-            except (TypeError, ValueError, json.JSONDecodeError):
-                continue
+        # Versioned prompt-index rebuild. Version 2 uses informative content words
+        # instead of the first literal word, which can create huge generic buckets
+        # (for example, 10k prompts beginning with "Use this procedure...").
+        index_version_row = cur.execute(
+            "SELECT val FROM meta WHERE key = 'blueprint_prompt_index_version'"
+        ).fetchone()
+        try:
+            index_version = int(index_version_row[0]) if index_version_row else 0
+        except (TypeError, ValueError):
+            index_version = 0
+        if index_version < 2:
+            indexed_blueprints = cur.execute(
+                "SELECT blueprint_id, canonical_json FROM blueprints"
+            ).fetchall()
+            for blueprint_id, canonical_json in indexed_blueprints:
+                try:
+                    pattern = str(json.loads(canonical_json).get("prompt_pattern", ""))
+                    prompt_key, prompt_prefix = blueprint_prompt_fields(pattern)
+                    cur.execute(
+                        "UPDATE blueprints SET prompt_key = ?, prompt_prefix = ? WHERE blueprint_id = ?",
+                        (prompt_key, prompt_prefix, blueprint_id),
+                    )
+                except (TypeError, ValueError, json.JSONDecodeError):
+                    continue
+            cur.execute(
+                "INSERT OR REPLACE INTO meta(key, val) VALUES (?, ?)",
+                ("blueprint_prompt_index_version", b"2"),
+            )
+        else:
+            # Repair rows introduced by an interrupted or older migration.
+            legacy_blueprints = cur.execute(
+                "SELECT blueprint_id, canonical_json FROM blueprints WHERE prompt_key = ''"
+            ).fetchall()
+            for blueprint_id, canonical_json in legacy_blueprints:
+                try:
+                    pattern = str(json.loads(canonical_json).get("prompt_pattern", ""))
+                    prompt_key, prompt_prefix = blueprint_prompt_fields(pattern)
+                    cur.execute(
+                        "UPDATE blueprints SET prompt_key = ?, prompt_prefix = ? WHERE blueprint_id = ?",
+                        (prompt_key, prompt_prefix, blueprint_id),
+                    )
+                except (TypeError, ValueError, json.JSONDecodeError):
+                    continue
         cur.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_prompt_prefix ON blueprints(prompt_prefix)")
         self.conn.commit()
 
