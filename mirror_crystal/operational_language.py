@@ -145,8 +145,9 @@ class RuleCatalog:
             if r.rule_id in refs:raise UOLError("recursive rule")
             _infer(r.body,{x.name:x.value_type for x in r.inputs},self,set())
     @classmethod
-    def from_knowledge_records(cls,records):
-        return cls(knowledge_rule(record) for record in records if isinstance(getattr(record,"content",None),Mapping) and "uol_rule" in record.content)
+    def from_knowledge_records(cls, records):
+        from .knowledge_uol import KnowledgeRuleImporter
+        return KnowledgeRuleImporter().import_records(records).catalog()
 
 def _walk(e):
     yield e
@@ -220,16 +221,62 @@ def _infer(e,env,rules,active):
         return t
     raise UOLError("invalid expression")
 
-def knowledge_rule(record):
-    payload=record.content["uol_rule"];v=record.verification
-    level=getattr(v.level,"value",v.level);status=getattr(record.epistemic_status,"value",record.epistemic_status)
-    if v.checks_failed or status=="disputed":evidence=RuleStatus.DISPUTED
-    elif level in {"formally_verified","independently_reproduced"} and v.checks_passed and v.verifier:evidence=RuleStatus.VERIFIED
-    elif status=="assumed":evidence=RuleStatus.ASSUMED
-    elif status=="observed" or level=="execution_tested":evidence=RuleStatus.OBSERVED
-    elif status=="derived":evidence=RuleStatus.DERIVED
-    else:evidence=RuleStatus.UNKNOWN
-    return OperationalRule(payload.get("rule_id",record.knowledge_id),payload.get("name",record.subject),tuple(VariableSpec(x["name"],x["value_type"]) for x in payload["inputs"]),expr_from_dict(payload["body"]),tuple(payload.get("domains",(record.domain,))),evidence,f"{record.provenance.source}:{record.provenance.source_ref}")
+def knowledge_rule(record, *, force_disputed=False):
+    """Adapt one explicitly structured KnowledgeRecord without upgrading trust."""
+    payload = record.content["uol_rule"]
+    verification = record.verification
+    level = getattr(verification.level, "value", verification.level)
+    status = getattr(record.epistemic_status, "value", record.epistemic_status)
+    provenance = record.provenance.to_dict()
+    content_hash = provenance.get("content_sha256", "")
+    has_source_lineage = (
+        provenance.get("source") not in {"", "unknown"}
+        and bool(provenance.get("source_ref"))
+        and isinstance(content_hash, str)
+        and len(content_hash) == 64
+        and all(ch in "0123456789abcdef" for ch in content_hash)
+    )
+    has_verified_evidence = (
+        level in {"formally_verified", "independently_reproduced"}
+        and bool(verification.checks_passed)
+        and not verification.checks_failed
+        and bool(verification.verifier.strip())
+        and has_source_lineage
+    )
+    if force_disputed or verification.checks_failed or status == "disputed":
+        evidence = RuleStatus.DISPUTED
+    elif has_verified_evidence:
+        evidence = RuleStatus.VERIFIED
+    elif status == "assumed":
+        evidence = RuleStatus.ASSUMED
+    elif status == "observed":
+        evidence = RuleStatus.OBSERVED
+    elif status == "derived":
+        evidence = RuleStatus.DERIVED
+    else:
+        evidence = RuleStatus.UNKNOWN
+    lineage = {
+        "knowledge_id": record.knowledge_id,
+        "knowledge_fingerprint": record.fingerprint,
+        "epistemic_status": status,
+        "verification": {
+            "level": level,
+            "checks_passed": list(verification.checks_passed),
+            "checks_failed": list(verification.checks_failed),
+            "verifier": verification.verifier,
+            "verified_at": verification.verified_at,
+        },
+        "provenance": provenance,
+    }
+    return OperationalRule(
+        payload.get("rule_id", record.knowledge_id),
+        payload.get("name", record.subject),
+        tuple(VariableSpec(item["name"], item["value_type"]) for item in payload["inputs"]),
+        expr_from_dict(payload["body"]),
+        tuple(payload.get("domains", (record.domain,))),
+        evidence,
+        "knowledge-record:" + json.dumps(lineage, sort_keys=True, separators=(",", ":")),
+    )
 
 @dataclass(frozen=True)
 class Program:

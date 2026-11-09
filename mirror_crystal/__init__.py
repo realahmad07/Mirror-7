@@ -132,8 +132,11 @@ from .operational_language import (
     expr_dict, expr_from_dict, program_dict, program_from_dict, knowledge_rule,
 )
 from .capability_synthesizer import (
-    CapabilitySynthesizer, Example, SynthesisError, SynthesisGoal,
+    CapabilitySynthesizer, Counterexample, Example, SynthesisError, SynthesisGoal,
     SynthesisReport, SynthesisStatus,
+)
+from .knowledge_uol import (
+    KnowledgeRuleImporter, KnowledgeRuleImportIssue, KnowledgeRuleImportReport,
 )
 
 __all__ = [
@@ -282,5 +285,6 @@ __all__ += [
     "Expression", "build_program", "expr_dict", "expr_from_dict",
     "program_dict", "program_from_dict", "knowledge_rule",
     "CapabilitySynthesizer", "Example", "SynthesisError", "SynthesisGoal",
-    "SynthesisReport", "SynthesisStatus",
+    "SynthesisReport", "SynthesisStatus", "Counterexample",
+    "KnowledgeRuleImporter", "KnowledgeRuleImportIssue", "KnowledgeRuleImportReport",
 ]

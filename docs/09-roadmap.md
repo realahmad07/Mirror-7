@@ -60,3 +60,13 @@ Avoid another broad sweep of the failed scratch ByteGRU route without a new mech
 ## Next milestone
 
 The next major milestone should be a measurable improvement in native response generation or a latent-state alternative that reduces dependence on raw autoregressive byte prediction while improving held-out free-running behavior.
+
+
+## Native construction milestone — Phase 1 and Phase 2
+
+The next backend increment adds a knowledge-to-operation bridge and counterexample-guided candidate refinement:
+
+- [Phase 1–2 implementation and boundaries](27-phase1-knowledge-to-uol-and-phase2-cegis.md)
+- Phase 1 imports only reviewed, typed UOL rule payloads from canonical knowledge records; it keeps source/evidence lineage and fails closed on contradictions or identifier collisions.
+- Phase 2 uses a host-supplied oracle to generate counterexamples, adds them as constraints, and repeats bounded synthesis.
+- Candidates remain unverified. The next unresolved work is expanding the synthesis grammar and connecting successful candidate programs to real, independently validated domain verifiers.

@@ -104,3 +104,15 @@ The repository now includes a typed, serializable UOL expression language and a 
 Synthesized procedures adapt to the existing capability contract as **UNVERIFIED** candidates. They cannot enter ordinary capability execution or learning promotion without the existing independent verification gates. The interpreter executes UOL data directly; it does not execute generated Python or arbitrary host callbacks.
 
 Focused isolated tests: **15 passed**. Full repository CI remains the integration acceptance gate. This increment does not claim unrestricted code generation, general cross-domain transfer, or open-world autonomous learning.
+
+
+## Universal operational construction — Phase 1 and Phase 2
+
+**Status: IMPLEMENTED — full CI acceptance is being checked on the integration commit.**
+
+| Phase | Implementation | Boundary |
+|---|---|---|
+| 1 — Knowledge-to-UOL integration | Conflict-aware importer connects canonical KnowledgeRecord/KnowledgeRegistry entries with explicit structured UOL rule payloads. It reports imported/skipped/rejected records and retains provenance, epistemic state and verification metadata. | Prose is not silently compiled. Unknown/asserted records remain non-executable; disputes and rule-ID collisions are quarantined. |
+| 2 — Counterexample-guided synthesis | Bounded CEGIS tests candidates against a host-supplied oracle, adds observed counterexamples to training constraints, and repeats while preserving a disjoint held-out set. | Finite probes do not prove general correctness. Candidate capabilities remain UNVERIFIED until independent verification and promotion. |
+
+See [Phase 1–2 implementation details](docs/27-phase1-knowledge-to-uol-and-phase2-cegis.md).

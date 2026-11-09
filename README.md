@@ -174,6 +174,16 @@ These are the nine engineering layers that now form Mirror's shared knowledge-to
 
 **Acceptance scope:** all nine engineering layers above pass the combined integration test and active repository CI. This proves the implemented contracts and a bounded end-to-end execution path; it does not establish AGI, unrestricted language understanding, broad cross-domain transfer, autonomous source-code invention, or open-world continuous improvement.
 
+## Newly integrated: Knowledge-to-UOL and counterexample-guided synthesis
+
+The current implementation adds a shared route from the canonical knowledge store into Mirror's operational language, followed by bounded counterexample-guided discovery:
+
+- **Knowledge import:** explicitly structured, typed rules and procedures in canonical knowledge records can enter the same UOL catalog used by the synthesizer. Source lineage, epistemic status and verification evidence are retained. Conflicts become disputed; colliding rule identifiers are quarantined.
+- **Counterexample-guided synthesis (CEGIS):** a candidate is tested against an independent host-supplied oracle on a disjoint probe pool. A mismatch is recorded and fed back into the synthesis constraints before another candidate is constructed.
+- **Trust is unchanged:** text-only records are not converted into executable code, and even a candidate that passes its examples and probes remains UNVERIFIED until independent verification and evidence-gated promotion.
+
+The search remains bounded to the current UOL primitive/rule grammar. The per-round candidate budget and maximum number of rounds jointly bound total search work. An oracle and probe pool must be supplied by the host; CEGIS agreement over finite examples is not a proof of universal correctness. See [Phase 1–2 implementation and acceptance boundaries](./docs/27-phase1-knowledge-to-uol-and-phase2-cegis.md).
+
 ### What Mirror can do in this verified core
 
 - Store and retrieve facts, definitions, rules, formulas, procedures, assumptions and observations with their provenance, evidence and epistemic status.
