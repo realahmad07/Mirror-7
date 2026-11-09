@@ -872,14 +872,14 @@ class UniversalIntelligenceEngine:
         for entry in capabilities:
             if len(entry) == 2:
                 spec, handler = entry
-                self.registry.register(spec, handler)
+                self_test = None
             elif len(entry) == 3:
                 spec, handler, self_test = entry
-                self.registry.register(spec, handler, self_test=self_test)
             else:
                 raise ValueError("capability entry must contain 2 or 3 items")
             if key not in spec.domains:
                 raise ValueError(f"capability {spec.capability_id} is not declared for {key}")
+            self.registry.register(spec, handler, self_test=self_test)
             registered.append(spec.capability_id)
         if verifier is not None:
             self.verifier.register_domain_verifier(key, verifier)
