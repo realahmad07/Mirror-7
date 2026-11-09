@@ -140,3 +140,26 @@ def test_sandbox_reality_filter_rejects_broken_or_unsafe_code_and_persists(tmp_p
 
     abstain = reloaded.respond("Zyxwvut unrelated alien telemetry 99999?")
     assert abstain.mode == "unmatched_honest_abstain"
+
+def test_mcrystal_archive_zip_loads_and_answers_stored_rule(tmp_path: Path):
+    """The distributable crystal_4 ZIP must behave identically to the .mcrystal file."""
+    import zipfile
+
+    repo_root = Path(__file__).resolve().parents[2]
+    brain_path = repo_root / "artifacts" / "mirror_crystal_v1.mcrystal"
+    assert brain_path.is_file()
+
+    archive_path = tmp_path / "crystal_4.zip"
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.write(brain_path, "crystal_4/mirror_crystal_v1.mcrystal")
+
+    engine = MirrorCrystalEngine.load(archive_path)
+    stored = engine.respond("What is protocol code 1000?")
+    assert "channel_0" in stored.answer
+    assert stored.mode != "unmatched_honest_abstain"
+
+    # Check the same archive-backed engine still handles a symbolic calculation
+    # that is not dependent on a stored question/answer pair.
+    math_result = engine.respond("Compute 31^43 mod 1000000007")
+    assert str(pow(31, 43, 1000000007)) in math_result.answer
+
