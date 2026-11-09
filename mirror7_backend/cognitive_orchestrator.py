@@ -63,6 +63,7 @@ class UnifiedCognitiveOrchestrator:
             "program this", "code this", "fix this code", "build a calculator",
             "create a calculator", "make a calculator", "build a program", "implement in python",
             "implement in javascript", "create an api", "build an api",
+            "sort a list", "sorting algorithm", "bubble sort", "sort numbers",
         )
         return any(marker in text for marker in markers)
 
