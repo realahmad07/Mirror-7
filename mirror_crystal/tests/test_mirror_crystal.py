@@ -146,12 +146,17 @@ def test_mcrystal_archive_zip_loads_and_answers_stored_rule(tmp_path: Path):
     import zipfile
 
     repo_root = Path(__file__).resolve().parents[2]
-    brain_path = repo_root / "artifacts" / "mirror_crystal_v1.mcrystal"
-    assert brain_path.is_file()
-
-    archive_path = tmp_path / "crystal_4.zip"
-    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.write(brain_path, "crystal_4/mirror_crystal_v1.mcrystal")
+    published_archive = repo_root / "datasets" / "crystal_archive" / "raw" / "crystal_4.zip"
+    if published_archive.is_file():
+        archive_path = published_archive
+    else:
+        # Before the raw ZIPs are published, the repository's legacy standalone
+        # brain is byte-identical to the embedded crystal_4 payload.
+        brain_path = repo_root / "artifacts" / "mirror_crystal_v1.mcrystal"
+        assert brain_path.is_file()
+        archive_path = tmp_path / "crystal_4.zip"
+        with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            archive.write(brain_path, "crystal_4/mirror_crystal_v1.mcrystal")
 
     engine = MirrorCrystalEngine.load(archive_path)
     stored = engine.respond("What is protocol code 1000?")
