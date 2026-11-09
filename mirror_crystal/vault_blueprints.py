@@ -193,6 +193,33 @@ class VaultBlueprintRuntimeMixin:
         self.store_blueprint(promoted)
         return promoted
 
+    def _load_blueprint_dependency_closure(self, blueprint_id: str) -> list[Blueprint]:
+        """Load only a root blueprint and its transitive dependencies.
+
+        The previous implementation loaded the first 10,000 blueprints in the
+        vault. That made otherwise valid records unreachable once the canonical
+        store grew beyond that arbitrary limit. Composition needs only the
+        dependency closure; peer records are fetched separately for verification.
+        """
+        pending = [str(blueprint_id)]
+        loaded: dict[str, Blueprint] = {}
+        while pending:
+            current_id = pending.pop()
+            if current_id in loaded:
+                continue
+            blueprint = self.get_blueprint(current_id)
+            if blueprint is None:
+                # Leave missing dependencies out so BlueprintDependencyGraph
+                # returns the existing, explicit "missing dependency" failure.
+                continue
+            loaded[current_id] = blueprint
+            pending.extend(
+                dependency_id
+                for dependency_id in reversed(sorted(blueprint.dependencies))
+                if dependency_id not in loaded
+            )
+        return list(loaded.values())
+
     def get_blueprint(self, blueprint_id: str) -> Blueprint | None:
         row = self.conn.execute(
             "SELECT canonical_json FROM blueprints WHERE blueprint_id = ?",
@@ -269,7 +296,7 @@ class VaultBlueprintRuntimeMixin:
                 epistemic_tier="honest_abstain",
             )
         try:
-            all_blueprints = self.list_blueprints()
+            all_blueprints = self._load_blueprint_dependency_closure(blueprint_id)
             composition = BlueprintCompositionEngine().compose(
                 blueprint_id,
                 all_blueprints,
