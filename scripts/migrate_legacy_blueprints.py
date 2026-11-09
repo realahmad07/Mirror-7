@@ -87,6 +87,10 @@ def main(argv: list[str] | None = None) -> int:
                 if not check or check[0] != "ok":
                     raise RuntimeError(f"backup integrity check failed: {check}")
     except Exception as exc:
+        try:
+            backup_path.unlink(missing_ok=True)
+        except OSError:
+            pass
         parser.error(f"could not create a verified pre-migration backup: {exc}")
 
     vault = DiskCrystalVault(args.vault)
