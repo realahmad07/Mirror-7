@@ -97,6 +97,33 @@ class CapabilityRegistry:
     def handler(self, capability_id: str):
         return self._handlers.get(capability_id)
 
+    def load_learned_blueprints(
+        self,
+        blueprints: list[Any] | tuple[Any, ...],
+        handler_factory: Callable[[CapabilitySpec], Callable[[Mapping[str, Any]], Mapping[str, Any]] | None],
+    ) -> int:
+        """Load only independently reproduced universal capabilities with a replayable implementation."""
+        loaded = 0
+        for blueprint in blueprints:
+            if str(getattr(blueprint, "intent", "")) != "universal_capability.v1":
+                continue
+            try:
+                import json
+                spec = CapabilitySpec.from_dict(json.loads(str(blueprint.response_template)))
+            except Exception:
+                continue
+            if not spec.evidence.independently_reproduced or not spec.implementation:
+                continue
+            handler = handler_factory(spec)
+            if handler is None:
+                continue
+            try:
+                self.register(spec, handler)
+            except ValueError:
+                continue
+            loaded += 1
+        return loaded
+
     def list_capabilities(self, *, domain: str | None = None) -> tuple[CapabilitySpec, ...]:
         items = list(self._specs.values())
         if domain:
@@ -889,6 +916,227 @@ class UniversalIntelligenceEngine:
 
     def solve_prompt(self, prompt: str, *, domain_hint: str | None = None) -> dict[str, Any]:
         return self.solve(self.interpreter.interpret(prompt, domain_hint=domain_hint))
+
+    @staticmethod
+    def _infer_value_type(value: Any) -> str:
+        if isinstance(value, bool):
+            return "boolean"
+        if isinstance(value, int):
+            return "integer"
+        if isinstance(value, (float, Decimal)):
+            return "real"
+        if isinstance(value, str):
+            return "string"
+        if isinstance(value, (list, tuple)):
+            return "sequence"
+        if isinstance(value, Mapping):
+            return "mapping"
+        return "any"
+
+    @staticmethod
+    def _serialize_subtask(item: SubtaskSpec) -> dict[str, Any]:
+        return {
+            "subtask_id": item.subtask_id,
+            "goal": item.goal,
+            "domain": item.domain,
+            "capability_tags": list(item.capability_tags),
+            "capability_id": item.capability_id,
+            "input_bindings": dict(item.input_bindings),
+            "output_schema": dict(item.output_schema),
+            "dependencies": list(item.dependencies),
+            "acceptance_criteria": list(item.acceptance_criteria),
+        }
+
+    def _build_handler_from_implementation(self, spec: CapabilitySpec):
+        implementation = dict(spec.implementation or {})
+        if implementation.get("kind") != "mirror_composition_v1":
+            return None
+        template_data = implementation.get("task_template")
+        if not isinstance(template_data, Mapping):
+            return None
+        try:
+            template = TaskSpec.from_dict(template_data)
+        except Exception:
+            return None
+
+        def replay(values: Mapping[str, Any]) -> Mapping[str, Any]:
+            if set(values) != set(spec.input_schema):
+                raise CapabilityError("learned capability input keys do not match its contract")
+            for key, expected in spec.input_schema.items():
+                if not value_matches_type(values[key], expected):
+                    raise CapabilityError(f"learned capability input {key} has the wrong type")
+            task = replace(template, inputs=dict(values))
+            plan = self.planner.plan(task)
+            if not plan.complete:
+                raise CapabilityError("learned composition dependencies are no longer available")
+            executions, outputs = self.executor.execute(task, plan)
+            report = self.verifier.verify(task, plan, executions, outputs)
+            if not report.passed:
+                raise CapabilityError("learned composition failed replay verification")
+            final = dict(outputs["final"])
+            if set(final) != set(spec.output_schema):
+                raise CapabilityError("learned composition output contract changed")
+            return final
+
+        return replay
+
+    def load_learned_blueprints(self, blueprints: list[Any] | tuple[Any, ...]) -> int:
+        return self.registry.load_learned_blueprints(
+            blueprints,
+            self._build_handler_from_implementation,
+        )
+
+    def promote_verified_composition(
+        self,
+        task: TaskSpec | Mapping[str, Any],
+        result: Mapping[str, Any],
+        gate: LearningGateReport,
+        *,
+        persist: Callable[[CapabilitySpec], Any] | None = None,
+    ) -> CapabilitySpec:
+        """Turn a verified task composition into a replayable capability after independent gates."""
+        if isinstance(task, Mapping):
+            task = TaskSpec.from_dict(task)
+        if not isinstance(task, TaskSpec):
+            raise TypeError("task must be TaskSpec or a mapping")
+        if result.get("verified") is not True or result.get("status") != "verified":
+            raise CapabilityError("only independently verified compositions can be proposed for learning")
+        if not gate.passed:
+            raise CapabilityError("learning gate has not passed")
+        plan_data = result.get("plan") or {}
+        plan_steps = plan_data.get("steps") or []
+        if not plan_steps:
+            raise CapabilityError("verified result has no composition steps")
+
+        # Rebuild a task template without retaining the original input values.
+        subtasks = []
+        for step in plan_steps:
+            step_id = str(step["step_id"])
+            original = next(
+                (item for item in task.subtasks if item.subtask_id == step_id),
+                None,
+            )
+            if original is None:
+                # Planner-generated single-goal subtask.
+                original = SubtaskSpec(
+                    subtask_id=step_id,
+                    goal=task.goal,
+                    domain=task.domain,
+                    capability_tags=task.required_capability_tags,
+                    capability_id=str(step["capability_id"]),
+                    input_bindings=dict(step.get("input_bindings", {})),
+                    output_schema=dict(
+                        self.registry.get(str(step["capability_id"])).output_schema
+                    ),
+                )
+            subtasks.append(original)
+
+        input_schema = dict(task.input_schema) or {
+            key: self._infer_value_type(value) for key, value in task.inputs.items()
+        }
+        if not input_schema:
+            raise CapabilityError("learned capability requires a typed input contract")
+        required_outputs = dict(task.required_outputs)
+        last_capability = self.registry.get(str(plan_steps[-1]["capability_id"]))
+        if last_capability is None:
+            raise CapabilityError("last composed capability is no longer registered")
+        output_schema = required_outputs or dict(last_capability.output_schema)
+        capability_id = stable_id("learned", {
+            "task": task.goal,
+            "domain": task.domain,
+            "steps": [(x["step_id"], x["capability_id"]) for x in plan_steps],
+            "inputs": input_schema,
+            "outputs": output_schema,
+        })
+        task_template = replace(
+            task,
+            inputs={},
+            input_schema=input_schema,
+            subtasks=tuple(subtasks),
+        )
+        spec = CapabilitySpec(
+            capability_id=capability_id,
+            name=task.goal[:120],
+            domains=(task.domain,),
+            input_schema=input_schema,
+            output_schema=output_schema,
+            tags=tuple(set(task.required_capability_tags) | {"composed", "learned"}),
+            dependencies=tuple(str(x["capability_id"]) for x in plan_steps),
+            executor_key=capability_id,
+            evidence=EvidenceRecord(
+                level=VerificationLevel.UNVERIFIED,
+                details={"promotion_pending": True},
+            ),
+            provenance=ProvenanceRecord(
+                source="mirror_verified_composition",
+                source_ref=str(plan_data.get("plan_id", "")),
+            ),
+            transferable=False,
+            implementation={
+                "kind": "mirror_composition_v1",
+                "task_template": task_template.to_dict(),
+                "source_plan_id": str(plan_data.get("plan_id", "")),
+            },
+        )
+        handler = self._build_handler_from_implementation(
+            replace(
+                spec,
+                evidence=EvidenceRecord(
+                    level=VerificationLevel.INDEPENDENTLY_REPRODUCED,
+                    verifier=gate.independent_verifier,
+                    checks_passed=("promotion_preflight",),
+                    held_out_passed=True,
+                    adversarial_passed=True,
+                    seed_count=gate.seed_count,
+                ),
+            )
+        )
+        if handler is None:
+            raise CapabilityError("could not construct a replayable learned capability")
+        return self.learner.promote(spec, handler, gate, persist=persist)
+
+    def propose_cross_domain_transfer(
+        self,
+        capability_id: str,
+        target_domain: str,
+    ) -> CapabilitySpec:
+        source = self.registry.get(capability_id)
+        if source is None:
+            raise CapabilityError(f"unknown source capability: {capability_id}")
+        return self.transfer.propose(source, target_domain)
+
+    def promote_cross_domain_transfer(
+        self,
+        proposal: CapabilitySpec,
+        gate: LearningGateReport,
+    ) -> CapabilitySpec:
+        if proposal.evidence.level != VerificationLevel.UNVERIFIED:
+            raise CapabilityError("transfer proposal must start unverified")
+        source_id = proposal.lineage[-1] if proposal.lineage else ""
+        source = self.registry.get(source_id)
+        if source is None or self.registry.handler(source_id) is None:
+            raise CapabilityError("source executor is unavailable for transfer retesting")
+        # Reuse is permitted only after all target-domain gates pass; evidence is newly earned.
+        if not gate.passed:
+            raise CapabilityError("target-domain transfer verification gate failed")
+        promoted = replace(
+            proposal,
+            evidence=EvidenceRecord(
+                level=VerificationLevel.INDEPENDENTLY_REPRODUCED,
+                verifier=gate.independent_verifier,
+                checks_passed=tuple(
+                    f"target_case_{i + 1}_passed" for i in range(gate.cases_passed)
+                ) + ("target_held_out_passed", "target_adversarial_passed"),
+                held_out_passed=True,
+                adversarial_passed=True,
+                seed_count=gate.seed_count,
+                details={"transferred_from": source_id, "target_domain_retested": True},
+            ),
+            executor_key=source.executor_key,
+        )
+        source_handler = self.registry.handler(source_id)
+        self.registry.register(promoted, source_handler)
+        return promoted
 
     def promote_learned_capability(
         self,
