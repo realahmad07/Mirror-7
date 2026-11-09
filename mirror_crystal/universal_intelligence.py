@@ -399,10 +399,10 @@ class UniversalTaskInterpreter:
 
         if domain == "programming" and re.search(r"\b(build|create|make|write|implement)\b", lower) and re.search(r"\bcalculator\b", lower):
             tests = (
-                'assert calculate(2, 3, "add") == 5\\n'
-                'assert calculate(5, 2, "subtract") == 3\\n'
-                'assert calculate(3, 4, "multiply") == 12\\n'
-                'assert calculate(8, 2, "divide") == 4\\n'
+                'assert calculate(2, 3, "add") == 5\n'
+                'assert calculate(5, 2, "subtract") == 3\n'
+                'assert calculate(3, 4, "multiply") == 12\n'
+                'assert calculate(8, 2, "divide") == 4\n'
             )
             subtask = SubtaskSpec(
                 subtask_id="synthesize_calculator",
@@ -429,10 +429,10 @@ class UniversalTaskInterpreter:
             and re.search(r"\b(sort|sorting)\b", lower)
         ):
             tests = (
-                'assert bubble_sort([3, 1, 2]) == [1, 2, 3]\\n'
-                'assert bubble_sort([]) == []\\n'
-                'assert bubble_sort([5, 5, -1]) == [-1, 5, 5]\\n'
-                'assert bubble_sort([1]) == [1]\\n'
+                'assert bubble_sort([3, 1, 2]) == [1, 2, 3]\n'
+                'assert bubble_sort([]) == []\n'
+                'assert bubble_sort([5, 5, -1]) == [-1, 5, 5]\n'
+                'assert bubble_sort([1]) == [1]\n'
             )
             subtask = SubtaskSpec(
                 subtask_id="synthesize_bubble_sort",
