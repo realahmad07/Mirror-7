@@ -381,3 +381,20 @@ def test_new_domain_adapter_uses_same_representation_planner_and_verifier():
     assert result["status"] == "verified"
     assert result["candidate_outputs"] == {"count": 3}
     assert result["verification"]["verifier"] == "Mirror UniversalVerifier/biology"
+
+
+def test_natural_language_calculator_request_uses_mirror_native_ast_and_tdd():
+    result = UniversalIntelligenceEngine().solve_prompt(
+        "Build a Python calculator that supports addition, subtraction, multiplication and division."
+    )
+    assert result["status"] == "verified"
+    assert result["verified"] is True
+    assert result["task"]["domain"] == "programming"
+    assert result["verification"]["level"] == "execution_tested"
+    source = result["candidate_outputs"]["code"]
+    assert "def calculate" in source
+    assert "ZeroDivisionError" in source
+    assert any("tdd_assertions_passed:" in check for check in result["verification"]["checks_passed"])
+    assert "program.calculator.synthesize" in [
+        step["capability_id"] for step in result["executions"]
+    ]
