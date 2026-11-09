@@ -7,7 +7,7 @@
 
 ---
 
-> **Roadmap naming:** the model-scaling phases in this document (for example, Mirror-1.5B-Edge Phase 1) are separate from the nine-layer Universal Intelligence Pipeline described in [README.md](README.md). The core engineering pipeline has its own Phase 1–9 acceptance report in [PHASE1_9_ACCEPTANCE.md](PHASE1_9_ACCEPTANCE.md).
+> **Roadmap naming:** the model-scaling phases in this document (for example, Mirror-1.5B-Edge Phase 1), the original strategic nine-phase intelligence roadmap, and the nine engineering layers tested in the core pipeline are distinct. See [README.md](README.md) and [PHASE1_9_ACCEPTANCE.md](PHASE1_9_ACCEPTANCE.md) for their separate status.
 
 ## 1. Executive Summary & Mission
 

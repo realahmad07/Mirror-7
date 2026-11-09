@@ -66,15 +66,8 @@ python -m build
 
 Normal development pushes are not release artifacts. The release workflow is tag-oriented so a versioned package can be tied to an explicit commit.
 
-## Universal intelligence Phase 1–9 acceptance
+## Universal intelligence core acceptance
 
-The active CI now runs the domain-neutral knowledge/capability pipeline tests inside `mirror_crystal`, including the combined Phase 1–9 integration test. The 2026-11-09 acceptance run also validates the frozen source-backed benchmark manifest, backend, release boundary, training foundation, free-running evaluator, smoke dataset and package build.
+The nine concrete engineering layers (knowledge, representation, task understanding, capability contracts, matching, composition, controlled execution, independent verification and evidence-gated learning) passed the combined end-to-end test. The accepted code commit ran 291 tests across the Crystal/evaluation, backend, release-boundary and training suites. The final documentation commit also passed full CI and the security guard. See [PHASE1_9_ACCEPTANCE.md](../PHASE1_9_ACCEPTANCE.md) for exact counts and both code/documentation workflow runs.
 
-The acceptance report records the exact per-suite counts and workflow links. A green fast-CI run verifies this active engineering surface; it does not re-execute every historical research phase or prove general intelligence. Historical phase experiments remain under their own tests and acceptance records.
-
-
-## Universal intelligence pipeline Phase 1–9 acceptance
-
-The accepted commit `906f912b44db5fede143d8df141fd7280a2762df` passed the complete active CI: 236 Crystal/evaluation tests, 45 backend tests, 4 release-boundary tests, 3 training-foundation tests, and 3 free-running evaluator tests (291 total). Compilation, frozen benchmark-manifest validation, smoke dataset creation/validation, package build and source/security guard passed. See [PHASE1_9_ACCEPTANCE.md](../PHASE1_9_ACCEPTANCE.md) for exact scope, results, and operating boundaries.
-
-The combined integration test runs knowledge-backed procedures through representation, TaskSpec interpretation, capability matching, typed composition, controlled execution, independent verification and explicit composite promotion. A green CI result verifies this bounded engineering path; it does not establish broad cross-domain transfer, open-world reasoning or AGI.
+This engineering-layer numbering is distinct from the original strategic nine-phase roadmap. Original Phases 1–5 passed within the bounded test scope; Phases 6–7 remain partial, and cross-domain transfer (Phase 8) and open-world continuous expansion (Phase 9) are not yet accepted. A green fast-CI run does not prove those broader research outcomes or re-execute every historical phase.

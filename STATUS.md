@@ -43,11 +43,11 @@ These are bounded engineering and synthetic research results. They do not establ
 - docs/08-limitations.md
 - docs/09-roadmap.md
 
-## Universal intelligence pipeline — Phase 1–9
+## Verified core pipeline — nine engineering layers
 
-**Status: PASS — combined acceptance.**
+**Status: PASS — all nine engineering layers pass the combined bounded integration test.**
 
-| Phase | Layer | Status |
+| Layer | Implemented component | Status |
 |---|---|---|
 | 1 | Knowledge foundation | PASS |
 | 2 | Universal representation | PASS |
@@ -59,6 +59,20 @@ These are bounded engineering and synthetic research results. They do not establ
 | 8 | Independent outcome verification | PASS |
 | 9 | Evidence-gated capability learning | PASS |
 
-The combined integration test runs three distinct task instances through the complete pipeline: knowledge-backed procedures are represented and registered, task specs are interpreted and matched, a typed two-step plan is composed and executed, two independent verifier identities check every step, and the resulting composite is explicitly promoted into the vault. See [PHASE1_9_ACCEPTANCE.md](PHASE1_9_ACCEPTANCE.md).
+The end-to-end test runs three distinct task instances through the full core path: knowledge-backed procedures are represented and registered, task specs are interpreted and matched, a typed two-step plan is composed and executed, two verifier identities check every step, and the learned composite is explicitly promoted. See [PHASE1_9_ACCEPTANCE.md](PHASE1_9_ACCEPTANCE.md).
 
-This status is an engineering acceptance result for the implemented core. It is not a claim that open-world cross-domain transfer, unrestricted autonomous code generation, or continuous improvement on genuinely unseen domains has been established.
+## Original strategic nine-phase roadmap status
+
+| Original phase | Goal | Status |
+|---|---|---|
+| 1 | Knowledge foundation | PASS |
+| 2 | Universal representation | PASS |
+| 3 | Task understanding | PASS (bounded) |
+| 4 | Capability system | PASS |
+| 5 | Composition engine | PASS (bounded integration example) |
+| 6 | Universal verification across execution, proof and simulation | PARTIAL |
+| 7 | Failure diagnosis, targeted repair and self-improvement | PARTIAL |
+| 8 | Cross-domain transfer | NOT YET ACCEPTED |
+| 9 | Continuous open-world expansion | NOT YET ACCEPTED |
+
+The nine tested engineering layers subdivide implementation work. They do not mean the broader original Phase 6–9 outcomes have passed.
