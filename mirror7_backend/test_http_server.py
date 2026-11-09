@@ -193,3 +193,27 @@ def test_api_token_protects_sensitive_routes_but_not_liveness():
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+def test_tdd_generate_route_reports_unconfigured_provider():
+    from .service import BackendService
+
+    service = BackendService(enable_crystal_auto_load=False)
+    server = create_server(port=0, service=service)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        status, result = request(
+            server,
+            "POST",
+            "/api/tdd/generate",
+            {"prompt": "Write a sorting function"},
+        )
+        assert status == 200
+        assert result["ok"] is False
+        assert result["verified"] is False
+        assert "No code-generation provider" in result["error"]
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
