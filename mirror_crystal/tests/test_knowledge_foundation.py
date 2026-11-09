@@ -9,6 +9,7 @@ from mirror_crystal.blueprint_contracts import (
     Blueprint, BlueprintKind, BlueprintProvenance, EvidenceLevel, VerificationEvidence,
 )
 from mirror_crystal.disk_vault import DiskCrystalVault
+from mirror_crystal.claim_verification import ClaimEvidence, ClaimEvidenceVerifier
 from mirror_crystal.knowledge_foundation import (
     KnowledgeConflictError, KnowledgeKind, KnowledgeRecord, KnowledgeRegistry,
     KnowledgeValidationError,
@@ -265,3 +266,58 @@ def test_blueprint_with_review_grade_evidence_still_needs_claim_scope_review():
     record = KnowledgeRecord.from_blueprint(blueprint)
     assert not record.assertable
     assert record.content["claim_evidence_reliable"] is False
+
+def test_blueprint_fact_becomes_assertable_only_after_two_independent_claim_reviews():
+    prompt, response = "What is the reviewed value?", "The reviewed value is 42."
+    blueprint = Blueprint(
+        blueprint_id="reviewed-fact",
+        kind=BlueprintKind.FACT,
+        domain="general",
+        intent="reviewed_value",
+        prompt_pattern=prompt,
+        response_template=response,
+        provenance=BlueprintProvenance(
+            source="primary-source",
+            source_ref="https://example.org/reviewed-value",
+            license_spdx="CC-BY-4.0",
+            content_sha256=Blueprint._digest(prompt, response),
+            captured_at="2026-11-09T12:00:00+00:00",
+        ),
+        verification=VerificationEvidence(
+            level=EvidenceLevel.INDEPENDENTLY_REPRODUCED,
+            checks_passed=("two-reviewers",),
+            verifier="review-process",
+            verified_at="2026-11-09T12:00:00+00:00",
+        ),
+    )
+    quote = "The reviewed value is 42."
+    quote_digest = hashlib.sha256(quote.encode()).hexdigest()
+    rows = tuple(
+        ClaimEvidence(
+            blueprint_id=blueprint.blueprint_id,
+            claim_id="value-42",
+            claim_text="The reviewed value is 42.",
+            source_publisher="Example Publisher",
+            source_url="https://example.org/reviewed-value",
+            source_locator="section 1, paragraph 1",
+            source_quote=quote,
+            source_excerpt_sha256=quote_digest,
+            source_retrieved_at="2026-11-09T12:00:00+00:00",
+            license_spdx="CC-BY-4.0",
+            reviewer_id=reviewer,
+            reviewer_independent=True,
+            review_decision="approve",
+            review_method="independent_source_comparison",
+            reviewed_at="2026-11-09T12:30:00+00:00",
+        )
+        for reviewer in ("reviewer-a", "reviewer-b")
+    )
+    report = ClaimEvidenceVerifier().verify(
+        blueprint, rows, expected_claim_ids=("value-42",)
+    )
+    assert report.reliable
+    record = KnowledgeRecord.from_blueprint(
+        blueprint, claim_evidence_report=report
+    )
+    assert record.assertable
+    assert record.content["verified_claim_ids"] == ("value-42",) or list(record.content["verified_claim_ids"]) == ["value-42"]
