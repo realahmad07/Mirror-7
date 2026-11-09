@@ -7,7 +7,9 @@ from mirror_crystal.native_program_synthesis import (
     DispatchCase,
     FunctionProgram,
     NativeProgramSynthesizer,
+    ProgramExpression,
     ProgramIR,
+    ProgramStatement,
     PythonASTCompiler,
 )
 
@@ -101,7 +103,6 @@ def test_program_ir_rejects_forbidden_identifiers_and_non_allowlisted_calls():
                 parameters=("__import__",),
                 cases=(),
                 dispatch_parameter="",
-                statements=(),
             ),
         ),
     )
@@ -117,12 +118,12 @@ def test_program_ir_rejects_forbidden_identifiers_and_non_allowlisted_calls():
                 cases=(),
                 dispatch_parameter="",
                 statements=(
-                    __import__("mirror_crystal.native_program_synthesis", fromlist=["ProgramStatement"]).ProgramStatement(
+                    ProgramStatement(
                         operation="return",
-                        expression=__import__("mirror_crystal.native_program_synthesis", fromlist=["ProgramExpression"]).ProgramExpression(
-                            "call", "__import__", (
-                                __import__("mirror_crystal.native_program_synthesis", fromlist=["ProgramExpression"]).ProgramExpression("literal", "os"),
-                            )
+                        expression=ProgramExpression(
+                            "call",
+                            "__import__",
+                            (ProgramExpression("literal", "os"),),
                         ),
                     ),
                 ),
