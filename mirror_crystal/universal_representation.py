@@ -333,6 +333,7 @@ class CapabilitySpec:
     provenance: ProvenanceRecord = field(default_factory=ProvenanceRecord)
     transferable: bool = False
     lineage: tuple[str, ...] = ()
+    implementation: Mapping[str, Any] = field(default_factory=dict)
     schema_version: int = 1
 
     def __post_init__(self) -> None:
@@ -342,6 +343,7 @@ class CapabilitySpec:
         object.__setattr__(self, "postconditions", tuple(dict(x) for x in self.postconditions))
         object.__setattr__(self, "dependencies", tuple(str(x) for x in self.dependencies))
         object.__setattr__(self, "lineage", tuple(str(x) for x in self.lineage))
+        object.__setattr__(self, "implementation", dict(self.implementation))
         if not self.capability_id.strip() or not self.name.strip() or not self.domains:
             raise ValueError("capability_id, name, and domains must be non-empty")
         if self.schema_version != 1:
@@ -360,6 +362,19 @@ class CapabilitySpec:
             "level": self.evidence.level.value,
         }
         return data
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> "CapabilitySpec":
+        payload = dict(data)
+        evidence = payload.get("evidence", {})
+        payload["evidence"] = (
+            evidence if isinstance(evidence, EvidenceRecord)
+            else EvidenceRecord(**evidence)
+        )
+        for key in ("domains", "tags", "preconditions", "postconditions", "dependencies", "lineage"):
+            if key in payload:
+                payload[key] = tuple(payload[key])
+        return cls(**payload)
 
 
 @dataclass(frozen=True)
