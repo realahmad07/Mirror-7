@@ -145,7 +145,8 @@ from .verified_program_learning import (
 )
 from .cross_domain_transfer import (
     CrossDomainTransferEngine, CrossDomainTransferError, CrossDomainTransferProposal,
-)from .failure_repair import (
+)
+from .failure_repair import (
     FailureDiagnosis, FailureKind, FailureRepairEngine, FailureRepairError,
     RepairProposal, RepairStatus,
 )
