@@ -99,6 +99,12 @@ class CapabilityRegistry:
     def get(self, capability_id: str) -> CapabilitySpec | None:
         return self._specs.get(capability_id)
 
+    def replace_spec(self, spec: CapabilitySpec) -> None:
+        """Replace metadata for an existing executor without changing its handler."""
+        if spec.capability_id not in self._specs:
+            raise KeyError(f"unknown capability: {spec.capability_id}")
+        self._specs[spec.capability_id] = spec
+
     def handler(self, capability_id: str):
         return self._handlers.get(capability_id)
 
