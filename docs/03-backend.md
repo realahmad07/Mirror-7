@@ -63,8 +63,25 @@ The operation changes the language realization component only. It does not repla
 | POST | /api/crystal/crystallize_doc | Auto-crystallize raw Markdown or Python source without .jsonl. |
 | POST | /api/cerebrum/solve | Dual-Brain Neural-Symbolic Solver (Qwen-2.5-Math parity, PRM reward, boxed LaTeX). |
 | POST | /api/tdd/synthesize | Run candidate code through non-vacuous TDD verification and bounded repair. |
-| POST | /api/tdd/generate | Generate code through an injected provider, then run TDD verification. |
+| POST | /api/tdd/generate | Optional legacy injected-provider adapter for candidate code; the universal native synthesis path is /api/universal/solve. |
+| POST | /api/universal/solve | Compose and verify a domain-neutral typed TaskSpec using Mirror-native capabilities. |
 | POST | /api/data/six_gate_audit | "Quality Over Quantity" 6-gate permissive data hygiene auditor. |
+
+## Universal capability API
+
+`POST /api/universal/solve` accepts either a natural-language `prompt` or a
+structured `task` mapping conforming to `TaskSpec`. It runs Mirror's native
+interpreter, capability planner, typed executor, and verifier. It returns a
+verified result only when the active domain verifier and mandatory output
+contracts pass. Missing capability returns `capability_gap`; failed execution or
+verification does not become a verified answer.
+
+Native Python calculator synthesis is implemented by composing local typed
+operators into ProgramIR, constructing Python AST, and executing non-vacuous
+TDD tests in Mirror's sandbox. No external model provider is required for this
+path. Additional domain adapters register into the same shared engine.
+
+See [Universal Compositional Intelligence](./18-universal-compositional-intelligence.md).
 
 ## HTTP safety boundary
 
