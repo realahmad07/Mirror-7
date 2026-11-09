@@ -18,6 +18,7 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [12 — Mirror Crystal Phase-5 & Phase-6 bicameral, CAS, sensory & sharded scale](12-mirror-crystal-phase5-phase6-bicameral-scale.md) | `SymbolicCASOrgan`, `1.58`-bit `TernaryFluidComposer`, `ActiveCuriosityPlanner`, `DocumentAutoCrystallizer`, pure-stdlib `.png`/`.wav` `SensoryCodec`, `ShardedCrystalRouter`, `184`-byte `WasmPocketCompiler`, Proof-Carrying Capsules, and Phase-6 guards. |
 | [13 — Qwen-Math Parity to Claude-Opus Frontier Evolution](13-mirror-qwen-to-opus-evolution.md) | Dual-Brain `CerebrumCrystalBridge` (0% math hallucination), `ProcessRewardVerifier` (11.8 µs PRM), `AutonomousTDDEngine` (test-driven self-repair in 2.5 ms), `HierarchicalProjectState`, and 6-gate data hygiene. |
 | [14 — Canonical Blueprint and Rule Architecture](14-blueprint-rule-architecture.md) | Versioned blueprint schema, evidence levels, dependency composition, modularization status, and correctness roadmap. |
+| [15 — Source evidence, benchmark and sandbox](15-source-evidence-benchmark-and-sandbox.md) | Legacy migration, claim-level review, frozen factual evaluation and container isolation. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 
 ## Research archive
@@ -36,5 +37,3 @@ The native-brain training track is split into individual experiment pages under 
 ## Documentation style
 
 These pages deliberately use normal GitHub Markdown, tables, headings, code blocks, and links. No Mermaid diagrams or folded-arrow navigation are required.
-
-| [15 — Source evidence, benchmark and sandbox](15-source-evidence-benchmark-and-sandbox.md) | Legacy migration, claim-level review, frozen factual evaluation and container isolation. |
