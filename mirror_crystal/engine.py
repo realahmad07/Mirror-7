@@ -28,6 +28,9 @@ from .phase5_bicameral_and_cas import (
     TernaryFluidComposer,
 )
 from .slot_abstractor import SlotAbstractor
+from .intent import split_compound_intents
+from .response_types import CrystalResponse
+from .session_memory import BinarySessionMemory
 
 
 @dataclass(frozen=True)
@@ -43,85 +46,6 @@ class CrystalResponse:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
-
-
-_LIMIT_DECL_RE = re.compile(
-    r"(?:limit|cap|budget|threshold|capacity|max(?:imum)?)\s*(?:is|=|:)\s*(\d+(?:\.\d+)?)", re.I
-)
-_BURST_CHECK_RE = re.compile(
-    r"(\d+)\s*(?:bursts?|batches|groups|workers|packs|times|x)\s*(?:of|\*)\s*(\d+)", re.I
-)
-_COMPOUND_SPLIT_RE = re.compile(
-    r"\s+(?:and\s+also|also\s+please|and\s+separately)\s+|\s*;\s+|(?<=\?)\s+(?=[A-Z])", re.I
-)
-
-
-def split_compound_intents(prompt: str) -> list[str]:
-    """Decompose multi-part prompts into up to 4 atomic sub-queries without breaking code or short phrases."""
-    s = prompt.strip()
-    if len(s) > 420 or "\n" in s:
-        return [s]
-    parts = [p.strip() for p in _COMPOUND_SPLIT_RE.split(s) if len(p.strip()) >= 12]
-    return parts[:4] if len(parts) >= 2 else [s]
-
-
-class BinarySessionMemory:
-    """Zero-KV-cache binary/integer session state tracking user constraints across turns."""
-
-    def __init__(self) -> None:
-        self._sessions: dict[str, dict[str, float | str]] = {}
-
-    def update_from_prompt(self, session_id: str, prompt: str) -> dict[str, float | str]:
-        mem = self._sessions.setdefault(session_id, {})
-        m_lim = _LIMIT_DECL_RE.search(prompt)
-        if m_lim:
-            mem["constraint_limit"] = float(m_lim.group(1))
-        for m_kv in re.finditer(r"\b([a-zA-Z_][a-zA-Z0-9_]{1,24})\s*=\s*(-?\d+(?:\.\d+)?)\b", prompt):
-            mem[m_kv.group(1).lower()] = float(m_kv.group(2))
-        return mem
-
-    def evaluate_constraint_check(self, session_id: str, prompt: str) -> tuple[str, list[str]] | None:
-        mem = self._sessions.get(session_id, {})
-        if "constraint_limit" not in mem:
-            return None
-        m_burst = _BURST_CHECK_RE.search(prompt)
-        if not m_burst:
-            return None
-        count = int(m_burst.group(1))
-        size = int(m_burst.group(2))
-        total = count * size
-        limit_val = float(mem["constraint_limit"])
-        lim_disp = int(limit_val) if limit_val.is_integer() else limit_val
-        trace = [
-            f"Recalled session constraint_limit = {lim_disp}",
-            f"Executed CPU product check: {count} * {size} = {total}",
-        ]
-        if total <= limit_val:
-            margin = lim_disp - total
-            ans = (
-                f"Safe: {count} * {size} = {total}, which is within your {lim_disp} limit "
-                f"(headroom: {margin})."
-            )
-        else:
-            excess = total - lim_disp
-            ans = (
-                f"Unsafe: {count} * {size} = {total}, which exceeds your {lim_disp} limit by {excess}."
-            )
-            if "limiter" in prompt.lower() or "rate" in prompt.lower():
-                ans += (
-                    "\n\nclass TokenBucketLimiter:\n"
-                    f"  def __init__(self, rate: float = {float(limit_val)}, capacity: float = {float(limit_val)}):\n"
-                    "    self.rate, self.cap = float(rate), float(capacity)\n"
-                    "    self.tokens, self.last_t = float(capacity), 0.0\n"
-                    "  def allow(self, now: float, cost: float = 1.0) -> bool:\n"
-                    "    self.tokens = min(self.cap, self.tokens + max(0.0, now - self.last_t) * self.rate)\n"
-                    "    self.last_t = now\n"
-                    "    if self.tokens >= cost:\n"
-                    "      self.tokens -= cost\n"
-                    "      return True\n"
-                    "    return False"
-                )
-        return ans, trace
 
 
 class MirrorCrystalEngine:
@@ -348,9 +272,9 @@ class MirrorCrystalEngine:
                     mode="multi_hop_rule_chain",
                     matched_rule_id=None,
                     latency_ms=round(ms, 3),
-                    sandbox_verified=True,
+                    sandbox_verified=False,
                     reasoning_trace=trace + hop_facts,
-                    epistemic_tier="verified_exact",
+                    epistemic_tier="moderate_confidence",
                 )
 
         is_creative_req = self.fluid_composer.is_explicit_creative_request(orig_p)
@@ -414,7 +338,7 @@ class MirrorCrystalEngine:
                 trace.append(f"Quarantined rule #{rule.rule_id} ({judge_msg})")
                 continue
 
-            mode_str = "slot_formula_lock" if rule.num_slots > 0 else "direct_crystal_lock"
+            mode_str = ("slot_formula_lock" if rule.num_slots > 0 and rule.derived_expr else ("slot_template_lock" if rule.num_slots > 0 else "direct_crystal_lock"))
             conf_val = cal_conf
             sb_ver = judge_msg != "non_code"
             trace.append(
