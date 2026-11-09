@@ -1,0 +1,99 @@
+{
+  "manifest_version": 1,
+  "generated_at": "2026-11-10",
+  "repository_path": "datasets/crystal_archive",
+  "source_archives": [
+    {
+      "file": "crystal_1.zip",
+      "bytes": 3308719,
+      "sha256": "6c111bbfbc60c5fb0b0e5d4953fb352e043a88a50ce023eac0bd197601c10b47",
+      "zip_entries": 6
+    },
+    {
+      "file": "crystal_2.zip",
+      "bytes": 3127489,
+      "sha256": "94c68635165aa666b82f06a5e1a798aca3ceaaf180817d9a41d327bcddb7392f",
+      "zip_entries": 5
+    },
+    {
+      "file": "crystal_3.zip",
+      "bytes": 4170544,
+      "sha256": "b52a62bf0b393e5855760c0af75591c9475ffd3c9bffe63271e1fa752e57bf65",
+      "zip_entries": 5
+    },
+    {
+      "file": "crystal_4.zip",
+      "bytes": 7373926,
+      "sha256": "b93cd1479415fa4eb98093e3fab54f6b718ddcacb5b45e9a51038c9e50204b55",
+      "zip_entries": 4
+    }
+  ],
+  "generated_general_reasoning_pack": {
+    "file": "Mirror_General_Reasoning_10K_Candidate_Pack_v1.zip",
+    "records": 10266,
+    "synthetic_candidates": 10240,
+    "source_supported_method_candidates": 26,
+    "family_count": 320,
+    "context_count": 32,
+    "evidence": "canonical unverified; proposed tests not executed"
+  },
+  "uploaded_content": {
+    "triplets": {
+      "records": 39428,
+      "unique_normalized_prompts": 34188,
+      "conflicting_prompt_groups": 3406,
+      "conflicting_records": 7240,
+      "same_answer_duplicate_excess": 1406
+    },
+    "roadmap_blueprints": {
+      "records": 1014,
+      "conflicting_records": 17,
+      "usable_after_conflict_quarantine": 997
+    },
+    "mcrystal": {
+      "rules": 6798,
+      "sandbox_verified": 0,
+      "sandbox_rejected": 0,
+      "conflicting_duplicate_records": 2
+    },
+    "sample_rules": {
+      "records": 500,
+      "trust_tier": 2,
+      "per_rule_verification_evidence_included": false,
+      "canaries_excluded_from_import": 2
+    },
+    "taxonomy_snapshot": {
+      "claimed_total_rules": 368270,
+      "actual_full_vault_in_upload": false
+    },
+    "historical_evaluation": {
+      "claimed_passes": 55,
+      "total": 55,
+      "rerun_in_this_audit": false
+    }
+  },
+  "dry_run_plan": {
+    "legacy_pair_input_rows": 48060,
+    "canonical_blueprint_candidates": 17911,
+    "triplet_roadmap_prompt_overlap_groups": 166,
+    "triplet_roadmap_conflicting_records": 231,
+    "triplet_safe_representatives_excluded_for_roadmap_collision": 134,
+    "mcrystal_roadmap_prompt_conflicts_excluded": 148,
+    "roadmap_conflict_records_quarantined": 17,
+    "mcrystal_conflict_records_quarantined": 2,
+    "generated_general_reasoning_records": 10266,
+    "all_canonical_evidence": "unverified"
+  },
+  "publication": {
+    "raw_archive_payloads_committed": false,
+    "reason": "Several source datasets and the MCRYSTAL state have incomplete per-file redistribution/license provenance. Commit manifests and tools, not raw dataset payloads, until rights are confirmed.",
+    "full_368270_vault_included": false
+  },
+  "status": {
+    "archive_integrity": "all four ZIPs passed integrity checks",
+    "local_stage": "dry run completed",
+    "production_vault_modified": false,
+    "semantic_duplicate_review": "not completed; exact normalized text audit only",
+    "importer": "included in the owner-facing integration bundle; requires local Mirror checkout and actual .dcrystal path"
+  }
+}
