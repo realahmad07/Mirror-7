@@ -6,6 +6,7 @@ ledger and learning gate are shared by every domain. No external model is called
 """
 from __future__ import annotations
 
+import ast
 from dataclasses import asdict, replace
 from decimal import Decimal, InvalidOperation
 import hashlib
@@ -266,6 +267,99 @@ class UniversalTaskInterpreter:
         "engineering": ("engineering", "circuit", "beam", "mechanism", "control system"),
     }
 
+    @staticmethod
+    def _arithmetic_expression_task(
+        text: str,
+        *,
+        acceptance_criteria: tuple[Mapping[str, Any], ...] = (),
+    ) -> TaskSpec | None:
+        """Parse a bounded arithmetic AST and decompose every operator into a capability step."""
+        match = re.search(
+            r"(?:calculate|compute|evaluate|what\\s+is|what's)\\s+([0-9.()+*/\\-\\s]+)",
+            text.casefold(),
+        )
+        if not match:
+            return None
+        expression = match.group(1).strip()
+        if not expression or not re.search(r"[+*/-]", expression) or len(expression) > 200:
+            return None
+        try:
+            tree = ast.parse(expression, mode="eval")
+        except (SyntaxError, ValueError):
+            return None
+        nodes = list(ast.walk(tree))
+        if len(nodes) > 64:
+            return None
+        operation_ids = {
+            ast.Add: "numeric.add",
+            ast.Sub: "numeric.subtract",
+            ast.Mult: "numeric.multiply",
+            ast.Div: "numeric.divide",
+        }
+        task_inputs: dict[str, Any] = {}
+        input_schema: dict[str, str] = {}
+        subtasks: list[SubtaskSpec] = []
+
+        def build(node: ast.AST) -> tuple[str, str | None]:
+            if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)) and not isinstance(node.value, bool):
+                value = node.value
+            elif (
+                isinstance(node, ast.UnaryOp)
+                and isinstance(node.op, (ast.USub, ast.UAdd))
+                and isinstance(node.operand, ast.Constant)
+                and isinstance(node.operand.value, (int, float))
+                and not isinstance(node.operand.value, bool)
+            ):
+                value = -node.operand.value if isinstance(node.op, ast.USub) else node.operand.value
+            elif isinstance(node, ast.BinOp) and type(node.op) in operation_ids:
+                capability_id = operation_ids[type(node.op)]
+                left_binding, left_step = build(node.left)
+                right_binding, right_step = build(node.right)
+                step_id = f"operation_{len(subtasks)}"
+                op_name = capability_id.removeprefix("numeric.")
+                dependencies = tuple(
+                    dependency for dependency in (left_step, right_step) if dependency is not None
+                )
+                subtasks.append(SubtaskSpec(
+                    subtask_id=step_id,
+                    goal=f"Apply numeric {op_name} to the resolved operands.",
+                    domain="mathematics",
+                    capability_tags=(capability_id,),
+                    capability_id=capability_id,
+                    input_bindings={"left": left_binding, "right": right_binding},
+                    output_schema={"result": "number"},
+                    dependencies=dependencies,
+                ))
+                return f"step:{step_id}.result", step_id
+            else:
+                raise ValueError("unsupported arithmetic expression node")
+
+            input_name = f"literal_{len(task_inputs)}"
+            task_inputs[input_name] = value
+            input_schema[input_name] = "integer" if isinstance(value, int) else "real"
+            return f"input:{input_name}", None
+
+        try:
+            root_binding, root_step = build(tree.body)
+        except (ValueError, TypeError):
+            return None
+        if root_step is None or not subtasks:
+            return None
+        if root_binding != f"step:{root_step}.result":
+            return None
+        return TaskSpec(
+            task_id=stable_id("task", {"request": text, "expression": expression}),
+            request=text,
+            goal=f"Evaluate the composed arithmetic expression {expression}.",
+            domain="mathematics",
+            inputs=task_inputs,
+            input_schema=input_schema,
+            required_outputs={"result": "number"},
+            subtasks=tuple(subtasks),
+            acceptance_criteria=tuple(acceptance_criteria),
+            context={"expression": expression, "composition": "arithmetic_ast"},
+        )
+
     def interpret(
         self,
         prompt: str,
@@ -284,6 +378,13 @@ class UniversalTaskInterpreter:
                 if any(re.search(r"\b" + re.escape(term) + r"\b", lower) for term in terms):
                     domain = candidate
                     break
+
+        if domain in {"general", "mathematics"}:
+            expression_task = self._arithmetic_expression_task(
+                text, acceptance_criteria=acceptance_criteria
+            )
+            if expression_task is not None:
+                return expression_task
 
         domain_interpreter = self._domain_interpreters.get(domain)
         if domain_interpreter is not None:
