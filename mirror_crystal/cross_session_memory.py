@@ -5,9 +5,11 @@ project environment anchors, relation links, and contradiction reconciliation ac
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
+import secrets
 from pathlib import Path
 import re
 import sqlite3
@@ -37,48 +39,73 @@ class SecretScrubber:
 
 
 class StdlibCipher:
-    """Pure Python stdlib AES/PBKDF2-equivalent stream cipher for encryption at rest."""
-    MASTER_SALT = b"mirror7_memory_vault_salt_2026"
+    """Authenticated AES-256-GCM storage with read-only legacy decryption support."""
+    LEGACY_MASTER_SALT = b"mirror7_memory_vault_salt_2026"
+    KDF_SALT = b"mirror7-memory-aead-v1"
+    AAD = b"mirror7-memory-entity-v1"
 
     @classmethod
-    def _derive_key(cls, key_str: str) -> bytes:
-        return hashlib.pbkdf2_hmac("sha256", key_str.encode("utf-8"), cls.MASTER_SALT, 1000)
+    def _derive_key(cls, key_str: str | None) -> bytes:
+        if not isinstance(key_str, str) or len(key_str) < 32:
+            raise ValueError("MIRROR_MEMORY_KEY must be configured with at least 32 characters")
+        return hashlib.scrypt(
+            key_str.encode("utf-8"), salt=cls.KDF_SALT,
+            n=2**14, r=8, p=1, dklen=32,
+        )
 
     @classmethod
-    def encrypt(cls, plaintext: str, key_str: str = "mirror7_default_vault_key") -> str:
-        data_bytes = plaintext.encode("utf-8")
+    def encrypt(cls, plaintext: str, key_str: str | None = None) -> str:
+        try:
+            from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        except ImportError as exc:
+            raise RuntimeError("cryptography is required for sensitive memory encryption") from exc
         key = cls._derive_key(key_str)
-        out = bytearray(len(data_bytes))
-        block_idx = 0
-        cur_block = b""
-        block_pos = 32
-        for i, b in enumerate(data_bytes):
-            if block_pos >= 32:
-                cur_block = hashlib.sha256(key + struct.pack("<I", block_idx)).digest()
-                block_idx += 1
-                block_pos = 0
-            out[i] = b ^ cur_block[block_pos]
-            block_pos += 1
-        return "enc::" + out.hex()
+        nonce = secrets.token_bytes(12)
+        encrypted = AESGCM(key).encrypt(
+            nonce, str(plaintext).encode("utf-8"), cls.AAD
+        )
+        packed = base64.urlsafe_b64encode(nonce + encrypted).decode("ascii")
+        return "aead:v1:" + packed
 
     @classmethod
-    def decrypt(cls, ciphertext: str, key_str: str = "mirror7_default_vault_key") -> str:
-        if not ciphertext.startswith("enc::"):
-            return ciphertext
+    def _legacy_decrypt(cls, ciphertext: str, key_str: str) -> str:
+        # Compatibility only: never use this custom stream cipher for new writes.
         data_bytes = bytes.fromhex(ciphertext[5:])
-        key = cls._derive_key(key_str)
+        key = hashlib.pbkdf2_hmac(
+            "sha256", key_str.encode("utf-8"), cls.LEGACY_MASTER_SALT, 1000
+        )
         out = bytearray(len(data_bytes))
         block_idx = 0
         cur_block = b""
         block_pos = 32
-        for i, b in enumerate(data_bytes):
+        for i, value in enumerate(data_bytes):
             if block_pos >= 32:
                 cur_block = hashlib.sha256(key + struct.pack("<I", block_idx)).digest()
                 block_idx += 1
                 block_pos = 0
-            out[i] = b ^ cur_block[block_pos]
+            out[i] = value ^ cur_block[block_pos]
             block_pos += 1
         return out.decode("utf-8", errors="replace")
+
+    @classmethod
+    def decrypt(cls, ciphertext: str, key_str: str | None = None) -> str:
+        if ciphertext.startswith("enc::"):
+            return cls._legacy_decrypt(
+                ciphertext, key_str or "m7_memory_vault_secure_key"
+            )
+        if not ciphertext.startswith("aead:v1:"):
+            return ciphertext
+        try:
+            from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        except ImportError as exc:
+            raise RuntimeError("cryptography is required for sensitive memory decryption") from exc
+        packed = base64.urlsafe_b64decode(ciphertext[len("aead:v1:"):].encode("ascii"))
+        if len(packed) < 28:
+            raise ValueError("invalid encrypted memory payload")
+        key = cls._derive_key(key_str)
+        return AESGCM(key).decrypt(
+            packed[:12], packed[12:], cls.AAD
+        ).decode("utf-8")
 
 class CrossSessionMemoryGraph:
     """
