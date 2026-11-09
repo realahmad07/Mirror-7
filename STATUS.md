@@ -70,9 +70,29 @@ The end-to-end test runs three distinct task instances through the full core pat
 | 3 | Task understanding | PASS (bounded) |
 | 4 | Capability system | PASS |
 | 5 | Composition engine | PASS (bounded integration example) |
-| 6 | Universal verification across execution, proof and simulation | PARTIAL |
+| 6 | Universal verification across execution, proof and simulation | PARTIAL — evidence-carrying domain verifier contract and five-domain policy tests added; actual independent proof/simulation/scientific verifier implementations remain host-provided. |
 | 7 | Failure diagnosis, targeted repair and self-improvement | PARTIAL |
 | 8 | Cross-domain transfer | NOT YET ACCEPTED |
 | 9 | Continuous open-world expansion | NOT YET ACCEPTED |
 
 The nine tested engineering layers subdivide implementation work. They do not mean the broader original Phase 6–9 outcomes have passed.
+
+
+## Strategic Phase 6 — domain-evidence verification increment
+
+The repository now provides a typed domain-verification contract in
+`mirror_crystal/domain_verification.py`. It requires verifier-produced evidence
+artifacts bound to the exact execution fingerprint, step, capability and domain.
+A policy declares evidence kinds and a minimum number of distinct verifier
+identities; passing evidence must cover declared postconditions.
+
+The policy/enforcement framework is tested against programming, mathematics,
+physics, biology and engineering evidence categories. These tests validate
+cross-domain policy enforcement with deterministic test callbacks. They do not
+claim that Mirror already contains a general-purpose compiler/test runner,
+formal proof assistant, physics or engineering simulator, biological evidence
+review service, or external source-authentication service.
+
+**Strategic Phase 6 remains PARTIAL.** Real domain engines must be installed and
+independently validated against frozen, held-out and adversarial domain
+benchmarks before this phase can be marked complete.

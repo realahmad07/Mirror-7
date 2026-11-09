@@ -100,6 +100,12 @@ from .verification import (
     IndependentVerificationEngine, IndependentVerifierRegistry,
     VerificationContext, VerificationError, VerificationReport, VerificationStatus,
 )
+from .domain_verification import (
+    DomainCapabilityVerification, DomainCheckResult, DomainDecision,
+    DomainEvidenceArtifact, DomainVerificationCheck, DomainVerificationEngine,
+    DomainVerificationError, DomainVerificationReport, DomainVerificationRequirement,
+    DomainVerificationStatus, DomainVerifierRegistry,
+)
 from .capability_learning import (
     CapabilityLearningEngine, CapabilityLearningError,
     CapabilityLearningObservation, CapabilityLearningProposal,
@@ -157,6 +163,17 @@ __all__ = [
     "VerificationError",
     "VerificationReport",
     "VerificationStatus",
+    "DomainCapabilityVerification",
+    "DomainCheckResult",
+    "DomainDecision",
+    "DomainEvidenceArtifact",
+    "DomainVerificationCheck",
+    "DomainVerificationEngine",
+    "DomainVerificationError",
+    "DomainVerificationReport",
+    "DomainVerificationRequirement",
+    "DomainVerificationStatus",
+    "DomainVerifierRegistry",
     "CapabilityLearningEngine",
     "CapabilityLearningError",
     "CapabilityLearningObservation",

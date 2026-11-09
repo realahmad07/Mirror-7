@@ -81,3 +81,23 @@ The Phase 1–9 implementation has a passing bounded integration test, but impor
 - Verifier independence is an explicit host/operator trust assignment. The framework enforces separate checker registration and required checks but cannot prove organizational independence itself.
 - Composite learning was demonstrated in a bounded mathematics example across three distinct tasks. General cross-domain transfer and continuous open-world capability growth remain unproven.
 - The engineering acceptance does not establish AGI, consciousness, human-level intelligence, unrestricted autonomous scientific discovery or a ChatGPT-class standalone language model.
+
+
+## Domain-verification boundary
+
+The domain-evidence layer enforces evidence shape, provenance locator presence,
+canonical payload integrity, execution/step/capability binding, required
+evidence kinds, postcondition coverage and distinct verifier identities. It
+does not authenticate arbitrary external evidence references or prove that
+two host-configured verifier identities are organizationally independent.
+
+The five-domain tests use deterministic callbacks to test policy enforcement.
+Mirror still needs actual domain backends and independent acceptance evidence:
+- programming: isolated compiler/runtime, test/property/fuzz execution and static analysis;
+- mathematics: exact symbolic/numeric checking plus proof checking where a proof is claimed;
+- physics: dimensional/unit analysis and validated model/simulation checks;
+- biology: traceable source review and appropriately controlled experimental/data evidence;
+- engineering: validated simulation, tolerance and safety-constraint checks.
+
+A domain must remain blocked or inconclusive when its required verifier is absent.
+No domain should be marked verified merely because a capability handler executed.
