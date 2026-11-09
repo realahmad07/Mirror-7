@@ -503,3 +503,45 @@ def test_learning_gate_runs_all_seeds_held_out_and_adversarial_cases():
     assert report.cases_passed == 9
     assert report.seed_count == 3
     assert len(seen) == 15  # 3x3 training, 1x3 held-out, 1x3 adversarial
+
+
+def test_learning_gate_requires_three_distinct_base_cases_not_three_repeated_seeds():
+    engine = UniversalIntelligenceEngine()
+    report = engine.evaluate_learning_gate(
+        candidate="candidate",
+        cases=[{"value": 2}],
+        seeds=[17, 29, 43],
+        held_out_cases=[{"value": 5}],
+        adversarial_cases=[{"value": -1}],
+        independent_verifier="independent-test",
+        candidate_runner=lambda _candidate, case, _seed: case["value"],
+        independent_check=lambda _candidate, case, output, _suite: output == case["value"],
+    )
+    assert report.cases_generated == 3
+    assert report.seed_count == 3
+    assert report.base_case_count == 1
+    assert report.passed is False
+    assert "base_suite_requires_at_least_3_distinct_cases" in report.failures
+
+
+def test_failed_capability_registration_self_test_never_adds_executor():
+    from mirror_crystal.universal_intelligence import CapabilityRegistry
+
+    registry = CapabilityRegistry()
+    spec = CapabilitySpec(
+        capability_id="general.always_wrong",
+        name="Incorrect operation",
+        domains=("general",),
+        input_schema={"value": "integer"},
+        output_schema={"result": "integer"},
+        tags=("general.always_wrong",),
+        evidence=EvidenceRecord(level=VerificationLevel.UNVERIFIED),
+    )
+    registry.register(
+        spec,
+        lambda values: {"result": values["value"] + 999},
+        self_test=lambda: False,
+    )
+    assert registry.get("general.always_wrong") is not None
+    assert registry.handler("general.always_wrong") is None
+    assert registry.executable() == ()
