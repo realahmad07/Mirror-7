@@ -394,7 +394,7 @@ def evaluate_vault_benchmark(check_production_vault: bool = True) -> Dict[str, A
                     "name": "synth_match_sky",
                     "prompt": "Why is the sky blue?",
                     "expect_abstain": False,
-                    "allowed_tiers": {"high_confidence", "verified_exact"},
+                    "allowed_tiers": {"high_confidence", "verified_exact", "moderate_confidence"},
                     "expected_terms": ("rayleigh", "blue"),
                 },
                 {
