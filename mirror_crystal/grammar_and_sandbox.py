@@ -177,7 +177,7 @@ class ByteMarkovGrammar:
 
 
 class ZeroTrustSandboxJudge:
-    """Static AST auditor + isolated CPU execution verifier for code & math reality checks."""
+    """Static AST auditor plus bounded OS child-process verifier for code & math checks."""
 
     @staticmethod
     def is_ast_safe(code_str: str) -> tuple[bool, str]:
@@ -231,6 +231,7 @@ class ZeroTrustSandboxJudge:
         test_code: str = "",
         max_loop_steps: int = 50_000,
     ) -> tuple[bool, str]:
+        """AST-audit in the parent, then execute only in a bounded child process."""
         code = cls.extract_python_code(response_text)
         if not code and not test_code:
             return True, "non_code"
@@ -238,96 +239,8 @@ class ZeroTrustSandboxJudge:
         safe, reason = cls.is_ast_safe(full_snippet)
         if not safe:
             return False, reason
-
-        step_cap = max(100, int(max_loop_steps))
-        steps_box = [0]
-
-        def _mc_step_tick() -> None:
-            s = steps_box[0] + 1
-            if s > step_cap:
-                raise RuntimeError(f"LoopStepLimitExceeded ({step_cap} steps)")
-            steps_box[0] = s
-
-        def _safe_range(*args: int) -> range:
-            r = range(*args)
-            if len(r) > step_cap:
-                raise RuntimeError(f"RangeSpanLimitExceeded ({len(r)} > {step_cap})")
-            return r
-
-        tree = ast.parse(full_snippet)
-        guarded_tree = _BoundedStepInjector().visit(tree)
-        ast.fix_missing_locations(guarded_tree)
-        compiled_code = compile(guarded_tree, "<mirror_sandbox>", "exec")
-
-        mod_map = {
-            "math": math,
-            "cmath": cmath,
-            "decimal": decimal,
-            "operator": operator,
-            "queue": queue,
-            "enum": enum,
-            "heapq": heapq,
-            "collections": collections,
-            "bisect": bisect,
-            "itertools": itertools,
-            "functools": functools,
-            "typing": typing,
-            "fractions": fractions,
-            "statistics": statistics,
-            "re": re,
-            "json": json,
-            "csv": csv,
-            "string": string,
-            "random": random,
-            "copy": copy,
-            "dataclasses": dataclasses,
-        }
-        safe_builtins = {
-            "abs": abs,
-            "all": all,
-            "any": any,
-            "bool": bool,
-            "complex": complex,
-            "dict": dict,
-            "divmod": divmod,
-            "enumerate": enumerate,
-            "filter": filter,
-            "float": float,
-            "int": int,
-            "isinstance": isinstance,
-            "len": len,
-            "list": list,
-            "map": map,
-            "max": max,
-            "min": min,
-            "pow": pow,
-            "print": print,
-            "range": _safe_range,
-            "reversed": reversed,
-            "round": round,
-            "set": set,
-            "sorted": sorted,
-            "str": str,
-            "sum": sum,
-            "tuple": tuple,
-            "zip": zip,
-            "Exception": Exception,
-            "ValueError": ValueError,
-            "TypeError": TypeError,
-            "ZeroDivisionError": ZeroDivisionError,
-            "IndexError": IndexError,
-            "KeyError": KeyError,
-            "RuntimeError": RuntimeError,
-            "AssertionError": AssertionError,
-            "object": object,
-            "__build_class__": builtins.__build_class__,
-            "__import__": lambda name, *a, **k: mod_map[name.split(".")[0]],
-        }
-        ns: dict[str, Any] = {"__builtins__": safe_builtins, "__name__": "__main__", "_mc_step_tick": _mc_step_tick}
-        buf = io.StringIO()
-        try:
-            with redirect_stdout(buf):
-                exec(compiled_code, ns)
-            return True, buf.getvalue().strip() or "PASS"
-        except Exception as exc:
-            return False, f"ExecError: {exc}"
+        from .os_process_sandbox import run_python_isolated
+        result = run_python_isolated(full_snippet, max_loop_steps=max_loop_steps)
+        if not result.ok:
+            return False, result.error or "isolated execution failed"
+        return True, result.output or "PASS"
