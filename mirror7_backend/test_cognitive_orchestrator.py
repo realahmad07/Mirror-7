@@ -64,7 +64,8 @@ def test_collects_memory_and_crystal_without_short_circuiting():
         sandbox_verified=False, matched_rule_id=7,
     ))
     result = make(memory=memory, vault=vault).ask("Explain this", session_id="s")
-    assert result["answer"] == "Stored technical answer"
+    assert result["answer"] == "Remembered project context"
+    assert result["verified"] is False
     assert {item["source"] for item in result["evidence"]} == {
         "cross_session_memory", "crystal_knowledge"
     }
