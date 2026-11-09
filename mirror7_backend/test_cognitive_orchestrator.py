@@ -57,7 +57,6 @@ def make(
     reasoner=None,
     code=None,
     metrics=None,
-    code_generation_provider=None,
     synthesis_provider=None,
     universal_engine_provider=None,
 ):
@@ -67,7 +66,6 @@ def make(
         reasoning_provider=lambda: reasoner if reasoner is not None else Reasoner({"ok": False}),
         code_provider=lambda: code if code is not None else Code({"verified": False}),
         metrics=metrics or Metrics(),
-        code_generation_provider=code_generation_provider,
         synthesis_provider=synthesis_provider,
         universal_engine_provider=universal_engine_provider,
     )
@@ -179,31 +177,21 @@ def test_zero_assertion_tdd_report_is_never_verified():
     assert result["code_verification"]["verified"] is False
 
 
-def test_natural_language_code_generation_is_connected_to_tdd():
-    code = Code({
-        "verified": True,
-        "tests_generated": 2,
-        "tests_passed": 2,
-        "final_code": "def add(a, b): return a + b",
-    })
-    result = make(
-        code=code,
-        code_generation_provider=lambda prompt: {"code": "def add(a, b): return a + b"},
-    ).ask(
-        "Write code for an add function",
-        spec_desc="Add two numbers",
-        explicit_tests="assert add(2, 3) == 5\nassert add(-1, 1) == 0",
-    )
-    assert result["generated_code"] == "def add(a, b): return a + b"
-    assert result["code_generation"] == {"available": True, "generated": True}
-    assert result["code_verification"]["verified"] is True
-    assert "code_generation" in result["sources_consulted"]
-    assert "code_verification" in result["sources_consulted"]
+def test_unsupported_programming_request_reports_native_capability_gap_without_fallback():
+    result = make().ask("Write code for an add function")
+    assert result["verified"] is False
+    assert result["abstained"] is True
+    assert result["code_generation"]["available"] is True
+    assert result["code_generation"]["generated"] is False
+    assert result["code_generation"]["origin"] == "mirror_native_capability_gap"
+    assert result["generated_code"] is None
+    assert "capability_gaps" in result["code_generation"]
 
 
-def test_missing_code_generator_is_reported_not_fabricated():
+def test_missing_native_program_capability_is_not_fabricated():
     result = make().ask("Write code for a web scraper")
-    assert result["code_generation"] == {"available": False, "generated": False}
+    assert result["code_generation"]["origin"] == "mirror_native_capability_gap"
+    assert result["code_generation"]["generated"] is False
     assert result["generated_code"] is None
 
 
@@ -249,9 +237,6 @@ def test_natural_language_calculator_uses_mirror_native_synthesizer_not_external
     engine = UniversalIntelligenceEngine()
     result = make(
         universal_engine_provider=lambda: engine,
-        code_generation_provider=lambda _prompt: (_ for _ in ()).throw(
-            AssertionError("external code generator must not be called")
-        ),
     ).ask(
         "Build a calculator supporting addition, subtraction, multiplication and division"
     )
