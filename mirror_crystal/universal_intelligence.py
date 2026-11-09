@@ -12,6 +12,7 @@ from decimal import Decimal, InvalidOperation
 import hashlib
 import hmac
 import marshal
+import os
 import secrets
 import re
 from typing import Any, Callable, Mapping
@@ -1037,12 +1038,52 @@ class UniversalIntelligenceEngine:
         self.verifier = verifier or UniversalVerifier()
         self._learning_gate_key = secrets.token_bytes(32)
         self.learner = CapabilityLearningEngine(self.registry, self._is_learning_gate_attested)
+        self._persistent_capability_key = os.environ.get("MIRROR_CAPABILITY_ATTESTATION_KEY")
+        if self._persistent_capability_key and len(self._persistent_capability_key) < 32:
+            raise ValueError("MIRROR_CAPABILITY_ATTESTATION_KEY must contain at least 32 characters")
         self.transfer = CrossDomainTransferEngine()
         self.curriculum = UniversalTaskCurriculum(self.registry)
         self.interpreter = UniversalTaskInterpreter()
         self._domain_adapters: set[str] = set()
         if install_primitives:
             self._install_primitives()
+
+    def _capability_attestation_payload(self, spec: CapabilitySpec) -> str:
+        payload = spec.to_dict()
+        evidence = dict(payload.get("evidence") or {})
+        details = dict(evidence.get("details") or {})
+        details.pop("capability_attestation", None)
+        evidence["details"] = details
+        payload["evidence"] = evidence
+        return canonical_json(payload)
+
+    def _attest_persisted_capability(self, spec: CapabilitySpec) -> CapabilitySpec:
+        if not self._persistent_capability_key:
+            raise CapabilityError(
+                "persistent capability learning requires MIRROR_CAPABILITY_ATTESTATION_KEY "
+                "with at least 32 characters"
+            )
+        signature = hmac.new(
+            self._persistent_capability_key.encode("utf-8"),
+            self._capability_attestation_payload(spec).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        details = dict(spec.evidence.details)
+        details["capability_attestation"] = signature
+        return replace(spec, evidence=replace(spec.evidence, details=details))
+
+    def _verify_persisted_capability(self, spec: CapabilitySpec) -> bool:
+        if not self._persistent_capability_key:
+            return False
+        supplied = str(spec.evidence.details.get("capability_attestation", ""))
+        if not re.fullmatch(r"[0-9a-f]{64}", supplied):
+            return False
+        expected = hmac.new(
+            self._persistent_capability_key.encode("utf-8"),
+            self._capability_attestation_payload(spec).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        return hmac.compare_digest(supplied, expected)
 
     @staticmethod
     def _candidate_fingerprint(candidate: Any) -> str:
@@ -1598,6 +1639,8 @@ class UniversalIntelligenceEngine:
         implementation = dict(spec.implementation or {})
         if implementation.get("kind") != "mirror_composition_v1":
             return None
+        if not self._verify_persisted_capability(spec):
+            return None
         template_data = implementation.get("task_template")
         if not isinstance(template_data, Mapping):
             return None
@@ -1740,7 +1783,13 @@ class UniversalIntelligenceEngine:
         )
         if handler is None:
             raise CapabilityError("could not construct a replayable learned capability")
-        return self.learner.promote(spec, handler, gate, persist=persist)
+        learned = self.learner.promote(spec, handler, gate)
+        if persist is not None:
+            attested = self._attest_persisted_capability(learned)
+            self.registry.replace_spec(attested)
+            persist(attested)
+            return attested
+        return learned
 
     def propose_cross_domain_transfer(
         self,
@@ -1784,6 +1833,9 @@ class UniversalIntelligenceEngine:
             executor_key=source.executor_key,
         )
         source_handler = self.registry.handler(source_id)
+        if source_handler is None:
+            raise CapabilityError("target transfer has no source executor")
+        promoted = self._attest_persisted_capability(promoted) if self._persistent_capability_key else promoted
         self.registry.register(promoted, source_handler)
         return promoted
 
