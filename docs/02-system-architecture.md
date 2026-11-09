@@ -6,6 +6,7 @@
 |---|---|
 | Research phases | Bounded hypotheses, mechanisms, integrations, and evaluators. |
 | Universal representation | Typed cross-domain knowledge nodes and relations with epistemic status, provenance, uncertainty, and durable storage. |
+| Universal knowledge foundation | Canonical, domain-neutral facts, assumptions, rules, formulas, procedures, source provenance, evidence state, deterministic lexical lookup, and contradiction links. |
 | Universal task understanding | Converts user requests into a domain-neutral TaskSpec with explicit goals, knowns, unknowns, constraints, outputs, and subtask dependencies. |
 | Capability contracts and registry | Stores reusable domain-neutral operations with typed input/output ports, preconditions, dependencies, provenance, and explicit verification evidence. |
 | Capability matching | Matches each task unit to domain/intent-compatible capabilities and reports missing inputs and evidence eligibility without executing anything. |

@@ -147,6 +147,18 @@ class VaultStorageMixin:
                 ON representation_relations(predicate);
             CREATE INDEX IF NOT EXISTS idx_representation_relations_domain
                 ON representation_relations(domain);
+            CREATE TABLE IF NOT EXISTS knowledge_claim_index (
+                knowledge_node_id TEXT PRIMARY KEY,
+                knowledge_id TEXT NOT NULL UNIQUE,
+                claim_key TEXT NOT NULL,
+                object_fingerprint TEXT NOT NULL,
+                domain TEXT NOT NULL,
+                updated_at REAL NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_knowledge_claim_index_key
+                ON knowledge_claim_index(claim_key, object_fingerprint);
+            CREATE INDEX IF NOT EXISTS idx_knowledge_claim_index_domain
+                ON knowledge_claim_index(domain, claim_key);
             """
         )
         columns = {str(row[1]) for row in cur.execute("PRAGMA table_info(blueprints)")}

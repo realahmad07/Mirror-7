@@ -104,6 +104,10 @@ from .capability_learning import (
     CapabilityLearningEngine, CapabilityLearningError,
     CapabilityLearningObservation, CapabilityLearningProposal,
 )
+from .knowledge_foundation import (
+    KnowledgeConflict, KnowledgeConflictError, KnowledgeKind, KnowledgeRecord,
+    KnowledgeRegistry, KnowledgeSearchResult, KnowledgeValidationError,
+)
 from .task_understanding import (
     ConstraintKind,
     TaskConstraint,
@@ -116,6 +120,13 @@ from .task_understanding import (
 )
 
 __all__ = [
+    "KnowledgeConflict",
+    "KnowledgeConflictError",
+    "KnowledgeKind",
+    "KnowledgeRecord",
+    "KnowledgeRegistry",
+    "KnowledgeSearchResult",
+    "KnowledgeValidationError",
     "CapabilityConflictError",
     "CapabilityRegistry",
     "CapabilitySpec",

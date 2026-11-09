@@ -50,11 +50,12 @@ from .vault_blueprints import VaultBlueprintRuntimeMixin
 from .vault_representation import VaultRepresentationRuntimeMixin
 from .vault_tasks import VaultTaskRuntimeMixin
 from .vault_capabilities import VaultCapabilityRuntimeMixin
+from .vault_knowledge import VaultKnowledgeRuntimeMixin
 
 
 
 
-class DiskCrystalVault(VaultStorageMixin, VaultIndexingMixin, VaultRetrievalMixin, VaultResponseMixin, VaultBlueprintRuntimeMixin, VaultRepresentationRuntimeMixin, VaultTaskRuntimeMixin, VaultCapabilityRuntimeMixin):
+class DiskCrystalVault(VaultStorageMixin, VaultIndexingMixin, VaultRetrievalMixin, VaultResponseMixin, VaultBlueprintRuntimeMixin, VaultRepresentationRuntimeMixin, VaultTaskRuntimeMixin, VaultCapabilityRuntimeMixin, VaultKnowledgeRuntimeMixin):
     """Out-of-core disk-backed intelligence vault: 0 rules loaded in RAM at startup, O(1) candidate disk reads."""
 
     def __init__(
