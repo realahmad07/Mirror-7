@@ -24,7 +24,9 @@ from typing import Any
 import zlib
 
 from .bit_signatures import ContextBitTable
-from .engine import BinarySessionMemory, CrystalResponse, split_compound_intents
+from .intent import split_compound_intents
+from .response_types import CrystalResponse
+from .session_memory import BinarySessionMemory
 from .grammar_and_sandbox import ZeroTrustSandboxJudge
 from .lsh_rule_store import CrystalRule, LSHRuleIndex
 from .phase2_cognitive_core import (
@@ -1417,7 +1419,7 @@ class DiskCrystalVault:
                             ok_ex, j_msg = ZeroTrustSandboxJudge.verify_code_and_test(instantiated)
                             if ok_ex:
                                 ms = (time.perf_counter_ns() - t0) / 1_000_000.0
-                                mode_str = "slot_formula_lock" if rule_exact.num_slots > 0 else "direct_crystal_lock"
+                                mode_str = ("slot_formula_lock" if rule_exact.num_slots > 0 and rule_exact.derived_expr else ("slot_template_lock" if rule_exact.num_slots > 0 else "direct_crystal_lock"))
                                 trace.append(f"O(1) Exact Prompt Hash Hit #{rule_exact.rule_id} (domain={rule_exact.domain})")
                                 return CrystalResponse(
                                     answer=instantiated,
@@ -1427,7 +1429,7 @@ class DiskCrystalVault:
                                     latency_ms=round(ms, 3),
                                     sandbox_verified=j_msg != "non_code",
                                     reasoning_trace=trace,
-                                    epistemic_tier="verified_exact",
+                                    epistemic_tier=EpistemicConfidenceCalibrator.classify_tier(1.0, mode_str, j_msg != "non_code", query_coverage=1.0),
                                 )
 
         raw_sig, raw_toks = self.bit_table.encode_text_signature(q_sense)
@@ -1460,9 +1462,9 @@ class DiskCrystalVault:
                 mode="multi_hop_relational_chain",
                 matched_rule_id=None,
                 latency_ms=round(ms, 3),
-                sandbox_verified=True,
+                sandbox_verified=False,
                 reasoning_trace=trace + hop_facts,
-                epistemic_tier="verified_exact",
+                epistemic_tier="moderate_confidence",
             )
 
         best_score = cands[0][0] if cands else 0.0
@@ -1477,9 +1479,9 @@ class DiskCrystalVault:
                     mode="multi_hop_rule_chain",
                     matched_rule_id=None,
                     latency_ms=round(ms, 3),
-                    sandbox_verified=True,
+                    sandbox_verified=False,
                     reasoning_trace=trace + hop_facts,
-                    epistemic_tier="verified_exact",
+                    epistemic_tier="moderate_confidence",
                 )
 
         is_coding_req = (
