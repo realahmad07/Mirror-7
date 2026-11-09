@@ -37,6 +37,33 @@ class SecretScrubber:
             s = pat.sub(repl, s)
         return s
 
+    @classmethod
+    def scrub_value(cls, value: Any) -> Any:
+        """Recursively redact credential-like mapping keys and scrub scalar strings."""
+        if isinstance(value, dict):
+            cleaned: dict[Any, Any] = {}
+            for key, item in value.items():
+                normalized = re.sub(r"[^a-z0-9]+", "_", str(key).casefold()).strip("_")
+                key_parts = set(normalized.split("_"))
+                sensitive_parts = {
+                    "password", "passwd", "secret", "token", "authorization",
+                    "credential", "private", "apikey",
+                }
+                if key_parts & sensitive_parts or normalized in {
+                    "api_key", "private_key", "client_secret", "access_key",
+                }:
+                    cleaned[key] = "[REDACTED_SECRET]"
+                else:
+                    cleaned[key] = cls.scrub_value(item)
+            return cleaned
+        if isinstance(value, list):
+            return [cls.scrub_value(item) for item in value]
+        if isinstance(value, tuple):
+            return tuple(cls.scrub_value(item) for item in value)
+        if isinstance(value, str):
+            return cls.scrub(value)
+        return value
+
 
 class StdlibCipher:
     """Authenticated AES-256-GCM storage with read-only legacy decryption support."""
@@ -233,8 +260,10 @@ class CrossSessionMemoryGraph:
     ) -> Dict[str, Any]:
         """Stores or updates an entity memory with secret scrubbing, quota check, and encryption."""
         key_clean = key.strip().lower()
-        # Privacy filter: scrub secrets & credentials before saving
-        val_str = SecretScrubber.scrub(str(value).strip())
+        # Recursively scrub structured values before producing either database
+        # representation, so the auxiliary JSON column cannot retain raw credentials.
+        safe_value = SecretScrubber.scrub_value(value)
+        val_str = str(safe_value).strip()
         now = time.time()
         # Sensitive data must have authenticated encryption and must not be duplicated
         # into the plaintext JSON column. Missing keys fail closed rather than downgrade.
@@ -244,7 +273,9 @@ class CrossSessionMemoryGraph:
             or "token" in key_clean
         )
         val_json = None if is_sensitive else (
-            json.dumps(value) if not isinstance(value, str) else json.dumps({"str": val_str})
+            json.dumps(safe_value, ensure_ascii=False)
+            if not isinstance(safe_value, str)
+            else json.dumps({"str": val_str}, ensure_ascii=False)
         )
         db_val_text = StdlibCipher.encrypt(val_str, self.vault_encryption_key) if is_sensitive else val_str
 
