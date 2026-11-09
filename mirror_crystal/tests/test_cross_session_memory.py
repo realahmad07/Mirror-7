@@ -99,7 +99,9 @@ def test_auto_extract_and_resolve_context():
 def test_context_extraction_privacy_gdpr_and_compaction():
     with tempfile.TemporaryDirectory() as td:
         db_path = Path(td) / "test_privacy_gdpr.sqlite"
-        mem = CrossSessionMemoryGraph(db_path)
+        mem = CrossSessionMemoryGraph(
+            db_path, encryption_key="test-only-memory-key-with-at-least-32-chars"
+        )
         try:
             # 1. Context-Aware Port Extraction (Bottleneck 11)
             t_srv = "Our analytics server runs on port 9443 with framework FastAPI"
@@ -135,7 +137,11 @@ def test_context_extraction_privacy_gdpr_and_compaction():
 
             # Underlying database must store encrypted string
             raw_row = mem._conn.execute("SELECT value_text FROM memory_entities WHERE session_id = 'sess_priv' AND entity_key = 'prod_token'").fetchone()
-            assert raw_row[0].startswith("enc::")
+            assert raw_row[0].startswith("aead:v1:")
+            raw_json = mem._conn.execute(
+                "SELECT value_json FROM memory_entities WHERE session_id = 'sess_priv' AND entity_key = 'prod_token'"
+            ).fetchone()
+            assert raw_json[0] is None
 
             # Recall decrypts transparently
             recalled_sec = mem.recall_entity("sess_priv", "prod_token")
