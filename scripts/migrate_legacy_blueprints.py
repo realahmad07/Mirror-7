@@ -80,7 +80,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(f"backup already exists; choose another --backup-path: {backup_path}")
     backup_path.parent.mkdir(parents=True, exist_ok=True)
     try:
-        with sqlite3.connect(f"file:{args.vault.resolve().as_posix()}?mode=ro", uri=True) as source_conn:
+        with sqlite3.connect(args.vault.resolve().as_uri() + "?mode=ro", uri=True) as source_conn:
             with sqlite3.connect(backup_path) as backup_conn:
                 source_conn.backup(backup_conn)
                 check = backup_conn.execute("PRAGMA integrity_check").fetchone()
