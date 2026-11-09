@@ -62,7 +62,8 @@ class UnifiedCognitiveOrchestrator:
         markers = (
             "write code", "generate code", "implement", "build a function",
             "write a function", "create a class", "write a script",
-            "program this", "code this", "fix this code", "implement in python",
+            "program this", "code this", "fix this code", "build a calculator",
+            "create a calculator", "make a calculator", "build a program", "implement in python",
             "implement in javascript", "create an api", "build an api",
         )
         return any(marker in text for marker in markers)
@@ -162,12 +163,44 @@ class UnifiedCognitiveOrchestrator:
         code_generation = None
         code_verification = None
         universal_execution = None
+        native_program_verified = False
 
         if self._universal_engine_provider is not None:
             try:
                 universal_execution = self._universal_engine_provider().solve_prompt(prompt)
                 sources_consulted.append("universal_intelligence")
                 verification = universal_execution.get("verification") or {}
+                task_domain = (universal_execution.get("task") or {}).get("domain")
+                artifact_outputs = universal_execution.get("candidate_outputs") or {}
+                if (
+                    universal_execution.get("verified") is True
+                    and task_domain == "programming"
+                    and isinstance(artifact_outputs.get("code"), str)
+                ):
+                    generated_code = artifact_outputs["code"]
+                    code_generation = {
+                        "available": True,
+                        "generated": True,
+                        "origin": "mirror_native_capability_composition",
+                    }
+                    tdd_check = next(
+                        (item for item in verification.get("checks_passed", [])
+                         if str(item).startswith("tdd_assertions_passed:")),
+                        "",
+                    )
+                    counts = re.search(r"tdd_assertions_passed:(\\d+)/(\\d+)", tdd_check)
+                    tests_passed = int(counts.group(1)) if counts else 0
+                    tests_generated = int(counts.group(2)) if counts else 0
+                    code_verification = {
+                        "verified": bool(tests_generated > 0 and tests_passed == tests_generated),
+                        "tests_generated": tests_generated,
+                        "tests_passed": tests_passed,
+                        "verifier": verification.get("verifier"),
+                        "checks_passed": list(verification.get("checks_passed", [])),
+                    }
+                    native_program_verified = code_verification["verified"]
+                    sources_consulted.append("native_program_synthesizer")
+                    sources_consulted.append("tdd_sandbox")
                 if (
                     universal_execution.get("verified") is True
                     and verification.get("level") == "formally_verified"
@@ -183,7 +216,7 @@ class UnifiedCognitiveOrchestrator:
                             "verification": verification,
                         },
                     ))
-                elif universal_execution.get("candidate_outputs"):
+                elif universal_execution.get("candidate_outputs") and not native_program_verified:
                     computed_candidates.append(self._candidate(
                         "universal_capability_composition",
                         universal_execution.get("answer", ""),
@@ -263,7 +296,11 @@ class UnifiedCognitiveOrchestrator:
             except Exception as exc:
                 errors.append({"source": "reasoning", "error": type(exc).__name__})
 
-        should_generate_code = candidate_code is None and self._is_code_request(prompt)
+        should_generate_code = (
+            candidate_code is None
+            and generated_code is None
+            and self._is_code_request(prompt)
+        )
         if should_generate_code:
             if self._code_generation_provider is not None:
                 try:
@@ -282,7 +319,7 @@ class UnifiedCognitiveOrchestrator:
             else:
                 code_generation = {"available": False, "generated": False}
 
-        code_to_test = candidate_code or generated_code
+        code_to_test = None if native_program_verified else (candidate_code or generated_code)
         if code_to_test:
             try:
                 sources_consulted.append("code_verification")
@@ -304,7 +341,8 @@ class UnifiedCognitiveOrchestrator:
         )
         conflict = bool(synthesis["conflict"])
         verified_answer = bool(synthesis["verified"] and synthesis["answer"] and not conflict)
-        abstained = not verified_answer
+        verified_response = verified_answer or native_program_verified
+        abstained = not verified_response
         candidate = max(
             evidence + computed_candidates,
             key=lambda item: item["confidence"],
@@ -325,34 +363,46 @@ class UnifiedCognitiveOrchestrator:
 
         return {
             "answer": (
-                "Conflicting verified claims; Mirror abstains."
-                if conflict else (
-                    synthesis["answer"] if verified_answer
-                    else (
-                        "UNVERIFIED CANDIDATE — not independently verified.\\n\\n"
-                        + candidate["answer"]
-                        if candidate else "Insufficient independently verified evidence."
+                generated_code if native_program_verified else (
+                    "Conflicting verified claims; Mirror abstains."
+                    if conflict else (
+                        synthesis["answer"] if verified_answer
+                        else (
+                            "UNVERIFIED CANDIDATE — not independently verified.\\n\\n"
+                            + candidate["answer"]
+                            if candidate else "Insufficient independently verified evidence."
+                        )
                     )
                 )
             ),
             "answer_qualification": (
-                "verified" if verified_answer else (
-                    "conflicting_evidence" if conflict else (
-                        "unverified_candidate" if candidate else "no_candidate"
+                "verified_artifact" if native_program_verified else (
+                    "verified" if verified_answer else (
+                        "conflicting_evidence" if conflict else (
+                            "unverified_candidate" if candidate else "no_candidate"
+                        )
                     )
                 )
             ),
-            "confidence": 0.0 if abstained else min(
+            "confidence": 0.0 if abstained or native_program_verified else min(
                 (item["confidence"] for item in evidence if item["verified"]),
                 default=0.0,
             ),
             "mode": "unified_claim_synthesis",
-            "epistemic_tier": "conflicting_verified_evidence" if conflict else (
-                "verified_claim_synthesis" if verified_answer else "honest_abstain"
+            "epistemic_tier": (
+                "verified_program_artifact" if native_program_verified else (
+                    "conflicting_verified_evidence" if conflict else (
+                        "verified_claim_synthesis" if verified_answer else "honest_abstain"
+                    )
+                )
             ),
-            "verified": verified_answer,
+            "verified": verified_response,
             "abstained": abstained,
-            "verification_status": "verified" if verified_answer else "not_independently_verified",
+            "verification_status": (
+                "verified_artifact_execution" if native_program_verified else (
+                    "verified" if verified_answer else "not_independently_verified"
+                )
+            ),
             "candidate_answer": candidate["answer"] if candidate else None,
             "candidate_source": candidate["source"] if candidate else None,
             "memory_context": memory_context,
