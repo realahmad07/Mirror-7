@@ -109,12 +109,28 @@ class CapabilityRegistry:
         for blueprint in blueprints:
             if str(getattr(blueprint, "intent", "")) != "universal_capability.v1":
                 continue
+            blueprint_evidence = getattr(blueprint, "verification", None)
+            blueprint_level = getattr(
+                getattr(blueprint_evidence, "level", VerificationLevel.UNVERIFIED),
+                "value",
+                getattr(blueprint_evidence, "level", VerificationLevel.UNVERIFIED),
+            )
+            if (
+                blueprint_level != VerificationLevel.INDEPENDENTLY_REPRODUCED.value
+                or not str(getattr(blueprint_evidence, "verifier", "")).strip()
+            ):
+                continue
             try:
                 import json
                 spec = CapabilitySpec.from_dict(json.loads(str(blueprint.response_template)))
             except Exception:
                 continue
-            if not spec.evidence.independently_reproduced or not spec.implementation:
+            if (
+                not spec.evidence.independently_reproduced
+                or not spec.implementation
+                or blueprint.blueprint_id != f"universal:{spec.capability_id}"
+                or blueprint.domain not in spec.domains
+            ):
                 continue
             handler = handler_factory(spec)
             if handler is None:
