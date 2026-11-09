@@ -17,6 +17,8 @@ Phase-3 Bottleneck Defenses:
 """
 from __future__ import annotations
 
+from .epistemic_policy import EpistemicTierPolicy
+
 import ast
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -1196,28 +1198,9 @@ class EpistemicConfidenceCalibrator:
         sandbox_verified: bool,
         query_coverage: float = 1.0,
     ) -> str:
-        if mode == "bicameral_creative_synthesis":
-            return "creative_synthesis"
-        if mode == "clarification_needed":
-            return "diagnostic_clarification"
-        if mode == "unmatched_honest_abstain" or confidence <= 0.0:
-            return "honest_abstain"
-        if (
-            mode
-            in {
-                "session_constraint_lock",
-                "slot_formula_lock",
-                "multi_hop_rule_chain",
-                "mcts_program_synthesis",
-                "symbolic_cas_exact",
-            }
-            or (sandbox_verified and confidence >= 0.60 and query_coverage >= 0.50)
-            or (confidence >= 0.85 and query_coverage >= 0.85)
-        ):
-            return "verified_exact"
-        if sandbox_verified or (confidence >= 0.58 and query_coverage >= 0.70):
-            return "high_confidence"
-        return "moderate_confidence"
+        return EpistemicTierPolicy.classify(
+            confidence, mode, sandbox_verified, query_coverage=query_coverage
+        )
 
 
 # ============================================================================

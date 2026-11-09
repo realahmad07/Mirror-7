@@ -5,6 +5,10 @@ Author: Ahmad Hassan | Repository: https://github.com/realahmad07/Mirror-7 | Lic
 from __future__ import annotations
 
 from .autonomous_streamer import AutonomousDatasetStreamer
+from .blueprint_contracts import (
+    Blueprint, BlueprintDependencyGraph, BlueprintKind, BlueprintProvenance,
+    BlueprintValidationError, EvidenceLevel, VerificationEvidence,
+)
 from .cross_session_memory import CrossSessionMemoryGraph
 from .vertical_blueprints import VerticalBlueprintCurator
 from .roadmap_blueprint_engine import RoadmapBlueprintEngine
@@ -62,6 +66,13 @@ from .slot_abstractor import AbstractedPair, SlotAbstractor
 
 __all__ = [
     "AbstractedPair",
+    "Blueprint",
+    "BlueprintDependencyGraph",
+    "BlueprintKind",
+    "BlueprintProvenance",
+    "BlueprintValidationError",
+    "EvidenceLevel",
+    "VerificationEvidence",
     "ActiveCuriosityPlanner",
     "AutonomousTDDEngine",
     "ByteMarkovGrammar",
