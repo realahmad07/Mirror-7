@@ -1495,7 +1495,7 @@ class DiskCrystalVault:
             from .phase2_cognitive_core import _WRAPPER_PROPER_ALLOWLIST
             oov_entities = {e for e in oov_entities if e.lower() not in _WRAPPER_PROPER_ALLOWLIST}
 
-        if not is_creative_req and not oov_entities and not is_coding_req:
+        if not is_creative_req and not oov_entities:
             curiosity_hit = self.curiosity_planner.check_diagnostic_ambiguity(
                 session_id=session_id,
                 query=q_core,
@@ -1517,9 +1517,10 @@ class DiskCrystalVault:
                     epistemic_tier="diagnostic_clarification",
                 )
 
-        if not is_coding_req and len(cands) >= 2 and (cands[0][0] - cands[1][0] <= 0.035) and cands[0][0] >= 0.60:
+        different_domains = len(cands) >= 2 and (cands[0][1].domain or "") != (cands[1][1].domain or "")
+        if (different_domains or not is_coding_req) and len(cands) >= 2 and (cands[0][0] - cands[1][0] <= 0.035) and cands[0][0] >= 0.60:
             c1, c2 = cands[0][1], cands[1][1]
-            if c1.domain != c2.domain or c1.abstract_response != c2.abstract_response:
+            if c1.domain != c2.domain or (not is_coding_req and c1.abstract_response != c2.abstract_response):
                 ms = (time.perf_counter_ns() - t0) / 1_000_000.0
                 p1_desc = c1.abstract_prompt.split('\n')[0][:80]
                 p2_desc = c2.abstract_prompt.split('\n')[0][:80]

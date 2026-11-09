@@ -414,6 +414,19 @@ class AutonomousDatasetStreamer:
         self._pause_event = threading.Event()
         self._pause_event.set()  # Not paused by default
 
+        if hasattr(self.vault, "rule_count"):
+            try:
+                self._base_vault_rules = self.vault.rule_count()
+            except Exception:
+                self._base_vault_rules = 0
+        elif hasattr(self.vault, "rule_index") and hasattr(self.vault.rule_index, "rules"):
+            self._base_vault_rules = len(self.vault.rule_index.rules)
+        elif hasattr(self.vault, "rules"):
+            self._base_vault_rules = len(self.vault.rules)
+        else:
+            self._base_vault_rules = 0
+        self._last_count_refresh = time.time()
+
         self._buffer: List[Dict[str, Any]] = []
         self._stats: Dict[str, Any] = {
             "is_running": False,
@@ -626,14 +639,19 @@ class AutonomousDatasetStreamer:
                 "uptime_seconds": uptime,
             }
 
-        # Query vault rule count without blocking state lock
-        if hasattr(self.vault, "rule_count"):
-            v_count = self.vault.rule_count()
-        elif hasattr(self.vault, "rule_index") and hasattr(self.vault.rule_index, "rules"):
-            v_count = len(self.vault.rule_index.rules)
-        elif hasattr(self.vault, "rules"):
-            v_count = len(self.vault.rules)
-        else:
-            v_count = 0
-        st["vault_total_rules"] = v_count
+        # Non-blocking O(1) count: base count + rules added by streamer
+        now = time.time()
+        if now - getattr(self, "_last_count_refresh", 0.0) > 5.0 and hasattr(self.vault, "_lock"):
+            if self.vault._lock.acquire(blocking=False):
+                try:
+                    row = self.vault.conn.execute("SELECT COUNT(*) FROM rules").fetchone()
+                    total = int(row[0]) if row else 0
+                    self._base_vault_rules = total - self._stats["vault_rules_added"]
+                    self._last_count_refresh = now
+                except Exception:
+                    pass
+                finally:
+                    self.vault._lock.release()
+        base_cnt = getattr(self, "_base_vault_rules", 0)
+        st["vault_total_rules"] = max(0, base_cnt + self._stats["vault_rules_added"])
         return st

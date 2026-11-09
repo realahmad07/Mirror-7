@@ -24,5 +24,7 @@ training/data/*.jsonl
 # Skip redundant multi-epoch smoke .pt checkpoints and heavy local multi-dataset .dcrystal SQLite vaults
 artifacts/*.pt
 artifacts/*.dcrystal*
+artifacts/*.sqlite*
+artifacts/*.jsonl
 !artifacts/mirror7_native_conversation_v5_ep5.best.pt
 !artifacts/mirror_crystal_v1.mcrystal
