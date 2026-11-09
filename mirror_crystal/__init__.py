@@ -7,6 +7,7 @@ from __future__ import annotations
 from .autonomous_streamer import AutonomousDatasetStreamer
 from .answer_verification import BlueprintAnswerVerifier, BlueprintVerificationReport
 from .blueprint_runtime import BlueprintCompositionEngine, BlueprintCompositionError, BlueprintCompositionResult
+from .claim_verification import ClaimEvidence, ClaimEvidenceError, ClaimEvidenceReport, ClaimEvidenceVerifier
 from .blueprint_contracts import (
     Blueprint, BlueprintDependencyGraph, BlueprintKind, BlueprintProvenance,
     BlueprintValidationError, EvidenceLevel, VerificationEvidence,
@@ -69,6 +70,10 @@ from .slot_abstractor import AbstractedPair, SlotAbstractor
 __all__ = [
     "AbstractedPair",
     "Blueprint",
+    "ClaimEvidence",
+    "ClaimEvidenceError",
+    "ClaimEvidenceReport",
+    "ClaimEvidenceVerifier",
     "BlueprintAnswerVerifier",
     "BlueprintVerificationReport",
     "BlueprintCompositionEngine",
