@@ -75,7 +75,7 @@
     }
   },
   "dry_run_plan": {
-    "legacy_pair_input_rows": 48060,
+    "legacy_pair_input_rows": 43626,
     "canonical_blueprint_candidates": 17911,
     "triplet_roadmap_prompt_overlap_groups": 166,
     "triplet_roadmap_conflicting_records": 231,
@@ -84,7 +84,20 @@
     "roadmap_conflict_records_quarantined": 17,
     "mcrystal_conflict_records_quarantined": 2,
     "generated_general_reasoning_records": 10266,
-    "all_canonical_evidence": "unverified"
+    "all_canonical_evidence": "unverified",
+    "legacy_rows_before_cross_source_dedup": 48060,
+    "legacy_exact_same_answer_duplicates_skipped": 4430,
+    "legacy_empty_or_invalid_pairs_skipped": 4,
+    "canonical_source_records_pre_general_reasoning": 7645,
+    "general_reasoning_records": 10266,
+    "legacy_new_rows_by_source": {
+      "crystal_mcrystal_archive": 6648,
+      "mirror_complete_master_v2.jsonl": 11,
+      "mirror_general_reasoning_10k_candidate_v1": 10266,
+      "mirror_internet_curated_v1.jsonl": 4173,
+      "mirror_oasst2_curated_v1.jsonl": 9782,
+      "pre_Quantum_dataset.jsonl": 12746
+    }
   },
   "publication": {
     "raw_archive_payloads_committed": false,
@@ -93,9 +106,9 @@
   },
   "status": {
     "archive_integrity": "all four ZIPs passed integrity checks",
-    "local_stage": "dry run completed",
+    "local_stage": "prepared dry run with exact cross-source deduplication",
     "production_vault_modified": false,
-    "semantic_duplicate_review": "not completed; exact normalized text audit only",
+    "semantic_duplicate_review": "not completed; exact normalized prompt/answer audit only",
     "importer": "included in the owner-facing integration bundle; requires local Mirror checkout and actual .dcrystal path"
   }
 }
