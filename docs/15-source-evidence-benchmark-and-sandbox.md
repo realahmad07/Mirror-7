@@ -83,7 +83,7 @@ Production execution defaults to Docker or Podman via \`MIRROR_SANDBOX_MODE=cont
 Pull the configured image before use:
 
 \`\`\`bash
-docker pull python:3.11-slim-bookworm
+docker pull python:3.11-slim-bookworm@sha256:a83ba18aef0f865b1a4a611c2cf460fe446f2795673bbb9fe43be570439e3b39
 \`\`\`
 
 If Docker/Podman or the image is missing, production execution fails closed. It does not silently fall back to same-process execution. \`MIRROR_SANDBOX_MODE=process\` is an explicitly lower-isolation development/test override only. The CI job uses this override for broad fast unit tests and separately pulls the image and runs a real container smoke test with \`MIRROR_REQUIRE_CONTAINER_SANDBOX=1\`.
