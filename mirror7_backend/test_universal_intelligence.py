@@ -85,8 +85,11 @@ def test_synthesis_rejects_overlapping_training_and_heldout_examples():
             "domain": "mathematics",
             "inputs": [{"name": "x", "value_type": "integer"}],
             "output_type": "integer",
-            "training": [{"inputs": {"x": 1}, "expected": 2}],
-            "validation": [{"inputs": {"x": 1}, "expected": 2}],
+            "training": [
+                {"inputs": {"x": 1}, "expected": 2},
+                {"inputs": {"x": 2}, "expected": 3},
+            ],
+            "validation": [{"inputs": {"x": 2}, "expected": 3}],
         })
 
 
