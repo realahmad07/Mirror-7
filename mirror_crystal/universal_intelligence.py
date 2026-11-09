@@ -214,12 +214,22 @@ class CapabilityRegistry:
 
 
 class UniversalTaskInterpreter:
-    """Conservative native interpreter for explicit task shapes and simple arithmetic.
+    """Native request interpreter with injectable in-process domain decomposition rules.
 
-    It never guesses a complex domain solution. When a deterministic pattern is not
-    recognized, it returns a general-domain TaskSpec for planners and capability
-    adapters to enrich.
+    No network/model call is made. Domain packs may register deterministic or native
+    Mirror-owned interpretation callbacks that return a typed TaskSpec.
     """
+
+    def __init__(self) -> None:
+        self._domain_interpreters: dict[str, Callable[..., Any]] = {}
+
+    def register_domain_interpreter(self, domain: str, interpreter: Callable[..., Any]) -> None:
+        key = domain.casefold().strip()
+        if not key or not callable(interpreter):
+            raise ValueError("domain and callable interpreter are required")
+        if key in self._domain_interpreters:
+            raise ValueError(f"domain interpreter already registered: {key}")
+        self._domain_interpreters[key] = interpreter
 
     _ARITHMETIC = re.compile(
         r"(?P<left>-?\d+(?:\.\d+)?)\s*"
@@ -237,9 +247,8 @@ class UniversalTaskInterpreter:
         "engineering": ("engineering", "circuit", "beam", "mechanism", "control system"),
     }
 
-    @classmethod
     def interpret(
-        cls,
+        self,
         prompt: str,
         *,
         domain_hint: str | None = None,
@@ -257,7 +266,18 @@ class UniversalTaskInterpreter:
                     domain = candidate
                     break
 
-        match = cls._ARITHMETIC.search(text)
+        domain_interpreter = self._domain_interpreters.get(domain)
+        if domain_interpreter is not None:
+            interpreted = domain_interpreter(text, inputs=dict(inputs or {}))
+            if isinstance(interpreted, Mapping):
+                interpreted = TaskSpec.from_dict(interpreted)
+            if not isinstance(interpreted, TaskSpec):
+                raise TypeError(f"{domain} interpreter must return TaskSpec or mapping")
+            if interpreted.domain != domain:
+                raise ValueError("domain interpreter returned a TaskSpec for the wrong domain")
+            return interpreted
+
+        match = self._ARITHMETIC.search(text)
         if match:
             left_text, right_text = match.group("left"), match.group("right")
             left = float(left_text) if "." in left_text else int(left_text)
@@ -767,6 +787,7 @@ class UniversalIntelligenceEngine:
         self.transfer = CrossDomainTransferEngine()
         self.curriculum = UniversalTaskCurriculum(self.registry)
         self.interpreter = UniversalTaskInterpreter()
+        self._domain_adapters: set[str] = set()
         if install_primitives:
             self._install_primitives()
 
@@ -830,6 +851,47 @@ class UniversalIntelligenceEngine:
         if denominator == 0:
             raise ZeroDivisionError("division by zero")
         return {"result": float(UniversalIntelligenceEngine._numeric(values["left"]) / denominator)}
+
+    def register_domain_adapter(
+        self,
+        domain: str,
+        *,
+        capabilities: tuple[Any, ...] = (),
+        verifier: Callable[..., Any] | None = None,
+        interpreter: Callable[..., Any] | None = None,
+    ) -> dict[str, Any]:
+        """Attach a domain pack to the shared engine without creating a separate reasoner.
+
+        Each capability entry is (CapabilitySpec, handler) or
+        (CapabilitySpec, handler, deterministic_self_test).
+        """
+        key = domain.casefold().strip()
+        if not key or key == "general" or key in self._domain_adapters:
+            raise ValueError(f"invalid or already registered domain adapter: {domain}")
+        registered = []
+        for entry in capabilities:
+            if len(entry) == 2:
+                spec, handler = entry
+                self.registry.register(spec, handler)
+            elif len(entry) == 3:
+                spec, handler, self_test = entry
+                self.registry.register(spec, handler, self_test=self_test)
+            else:
+                raise ValueError("capability entry must contain 2 or 3 items")
+            if key not in spec.domains:
+                raise ValueError(f"capability {spec.capability_id} is not declared for {key}")
+            registered.append(spec.capability_id)
+        if verifier is not None:
+            self.verifier.register_domain_verifier(key, verifier)
+        if interpreter is not None:
+            self.interpreter.register_domain_interpreter(key, interpreter)
+        self._domain_adapters.add(key)
+        return {
+            "domain": key,
+            "capabilities_registered": registered,
+            "verifier_registered": verifier is not None,
+            "interpreter_registered": interpreter is not None,
+        }
 
     def ingest_blueprints(self, blueprints: list[Any] | tuple[Any, ...]) -> int:
         return self.registry.add_legacy_blueprints(blueprints)
