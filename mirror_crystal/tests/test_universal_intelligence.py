@@ -621,7 +621,7 @@ def test_retrieved_legacy_knowledge_is_exposed_as_context_not_promoted_to_capabi
     engine.ingest_blueprints([blueprint])
     result = engine.solve_prompt(prompt)
 
-    assert result["status"] == "capability_gap"
+    assert result["status"] == "capability_gap", result
     assert result["verified"] is False
     assert result["retrieved_knowledge"]
     assert result["retrieved_knowledge"][0]["node_id"] == "legacy:cell_context"
