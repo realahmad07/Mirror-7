@@ -110,7 +110,7 @@ class VaultStorageMixin:
             cur.execute("ALTER TABLE blueprints ADD COLUMN prompt_prefix TEXT NOT NULL DEFAULT ''")
         # One-time, additive index backfill for vaults created before prompt dispatch existed.
         legacy_blueprints = cur.execute(
-            "SELECT blueprint_id, canonical_json FROM blueprints WHERE prompt_key = '' OR prompt_prefix = ''"
+            "SELECT blueprint_id, canonical_json FROM blueprints WHERE prompt_key = ''"
         ).fetchall()
         for blueprint_id, canonical_json in legacy_blueprints:
             try:
