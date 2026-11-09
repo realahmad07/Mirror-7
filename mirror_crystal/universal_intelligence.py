@@ -7,7 +7,7 @@ ledger and learning gate are shared by every domain. No external model is called
 from __future__ import annotations
 
 import ast
-from dataclasses import asdict, replace
+from dataclasses import asdict, is_dataclass, replace
 from decimal import Decimal, InvalidOperation
 import hashlib
 import hmac
