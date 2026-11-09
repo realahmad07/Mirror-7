@@ -130,10 +130,20 @@ cycles, missing dependencies, ambiguous matches, and incompatible schemas.
 
 After a solution passes its domain verifier and the held-out/adversarial,
 multi-seed learning gate, it can be turned into a replayable composition
-capability. Mirror now executes the base, held-out, and adversarial suites itself;
-it attests the report with a per-engine HMAC and records the candidate-runner and
-independent-verifier code fingerprints. Promotion rejects hand-constructed,
-edited, stale, or cross-engine reports. The persisted implementation is a typed Mirror composition graph,
+capability. Mirror executes the base, held-out, and adversarial suites itself;
+it attests the report with a per-engine HMAC and records the candidate, runner,
+and independent-verifier fingerprints. A report is bound to the exact
+composition/transfer being promoted. Promotion rejects hand-constructed,
+edited, stale, cross-engine, or different-candidate reports.
+
+For durable learned-capability persistence across process restarts, set
+`MIRROR_CAPABILITY_ATTESTATION_KEY` to a secret of at least 32 characters in
+the deployment secret manager. Mirror signs the capability payload before
+writing it to Crystal, and validates that signature before loading an executable
+learned capability. Without this key, local in-memory learning can work, but
+persistent promotion/reload is deliberately unavailable. Keep this key stable
+for the lifetime of the persisted capability store; rotate it only with an
+explicit re-signing/migration process. The persisted implementation is a typed Mirror composition graph,
 not a copy of one answer. Replays use new inputs and invoke the same capability
 registry and verification pipeline. Transferred capabilities lose their previous
 evidence and require target-domain re-verification.
