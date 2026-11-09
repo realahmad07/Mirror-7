@@ -11,6 +11,11 @@ permissions:
 jobs:
   fast-ci:
     runs-on: ubuntu-latest
+    env:
+      # CI unit suites use the explicitly downgraded process runner for speed/repeatability.
+      # The direct container smoke test below separately verifies the production boundary.
+      MIRROR_SANDBOX_MODE: process
+      MIRROR_REQUIRE_CONTAINER_SANDBOX: "1"
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -22,10 +27,18 @@ jobs:
           cache: pip
       - name: Install test and build tools
         run: python -m pip install --upgrade pip setuptools wheel pytest build
+      - name: Pull isolated Python container image
+        run: docker pull python:3.11-slim-bookworm
       - name: Compile active backend and training code
         run: python -m compileall -q mirror7_backend training mirror_crystal mirror_eval
       - name: Mirror Crystal & honest CPU eval tests
         run: python -m pytest -q mirror_crystal mirror_eval
+      - name: Validate frozen source-backed benchmark manifest
+        run: >-
+          python -m mirror_eval.factual_benchmark
+          --dataset mirror_eval/data/source_backed_factual_v1.jsonl
+          --manifest mirror_eval/data/source_backed_factual_v1.manifest.json
+          --validate-only
       - name: Backend tests
         run: python -m pytest -q mirror7_backend
       - name: Backend smoke and release-boundary tests
