@@ -557,3 +557,31 @@ def test_natural_language_sort_request_composes_native_program_ir_and_tdd():
     assert "def bubble_sort" in result["candidate_outputs"]["code"]
     assert "tdd_assertions_passed:4/4" in result["verification"]["checks_passed"]
     assert result["plan"]["steps"][0]["capability_id"] == "program.sort.bubble.synthesize"
+
+
+def test_retrieved_legacy_knowledge_is_exposed_as_context_not_promoted_to_capability():
+    engine = UniversalIntelligenceEngine()
+    prompt = "How do cells work?"
+    response = "Cells are the basic structural and functional units of living organisms."
+    blueprint = Blueprint(
+        blueprint_id="legacy:cell_context",
+        kind=BlueprintKind.FACT,
+        domain="biology",
+        intent="legacy_fact",
+        prompt_pattern=prompt,
+        response_template=response,
+        provenance=BlueprintProvenance(
+            source="curated-test-source",
+            content_sha256=Blueprint._digest(prompt, response),
+        ),
+        verification=VerificationEvidence(level=EvidenceLevel.UNVERIFIED),
+    )
+    engine.ingest_blueprints([blueprint])
+    result = engine.solve_prompt(prompt)
+
+    assert result["status"] == "capability_gap"
+    assert result["verified"] is False
+    assert result["retrieved_knowledge"]
+    assert result["retrieved_knowledge"][0]["node_id"] == "legacy:cell_context"
+    assert result["retrieved_knowledge"][0]["verification_level"] == "unverified"
+    assert engine.registry.handler("legacy:cell_context") is None
