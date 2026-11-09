@@ -1045,6 +1045,44 @@ class UniversalIntelligenceEngine:
             self._install_primitives()
 
     @staticmethod
+    def _candidate_fingerprint(candidate: Any) -> str:
+        if hasattr(candidate, "to_dict") and callable(candidate.to_dict):
+            serializable = candidate.to_dict()
+        elif is_dataclass(candidate):
+            serializable = asdict(candidate)
+        elif isinstance(candidate, (Mapping, list, tuple, str, int, float, bool)) or candidate is None:
+            serializable = candidate
+        else:
+            serializable = repr(candidate)
+        return hashlib.sha256(canonical_json(serializable).encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def composition_learning_candidate(result: Mapping[str, Any]) -> dict[str, Any]:
+        task_data = result.get("task") or {}
+        plan_data = result.get("plan") or {}
+        return {
+            "kind": "composition",
+            "task_fingerprint": TaskSpec.from_dict(task_data).fingerprint,
+            "plan_id": str(plan_data.get("plan_id", "")),
+            "steps": [
+                (str(item.get("step_id", "")), str(item.get("capability_id", "")))
+                for item in plan_data.get("steps", [])
+            ],
+        }
+
+    @staticmethod
+    def cross_domain_learning_candidate(proposal: CapabilitySpec) -> dict[str, Any]:
+        return {
+            "kind": "cross_domain_transfer",
+            "capability_id": proposal.capability_id,
+            "target_domains": list(proposal.domains),
+            "lineage": list(proposal.lineage),
+            "input_schema": dict(proposal.input_schema),
+            "output_schema": dict(proposal.output_schema),
+            "implementation": dict(proposal.implementation),
+        }
+
+    @staticmethod
     def _callable_fingerprint(function: Callable[..., Any]) -> str:
         code = getattr(function, "__code__", None)
         if code is None:
@@ -1088,12 +1126,21 @@ class UniversalIntelligenceEngine:
         expected = self._sign_learning_gate(report)
         return hmac.compare_digest(report.attestation, expected)
 
-    def _require_learning_gate(self, report: LearningGateReport) -> None:
+    def _require_learning_gate(
+        self,
+        report: LearningGateReport,
+        expected_candidate: Any | None = None,
+    ) -> None:
         if not self._is_learning_gate_attested(report):
             raise CapabilityError(
                 "learning gate is missing a valid Mirror run attestation; "
                 "construct it with evaluate_learning_gate() on this engine instance"
             )
+        if (
+            expected_candidate is not None
+            and report.candidate_fingerprint != self._candidate_fingerprint(expected_candidate)
+        ):
+            raise CapabilityError("learning gate attestation is bound to a different candidate")
 
     def evaluate_learning_gate(
         self,
@@ -1118,6 +1165,7 @@ class UniversalIntelligenceEngine:
             raise TypeError("candidate_runner and independent_check must be callable")
         runner_fingerprint = self._callable_fingerprint(candidate_runner)
         verifier_fingerprint = self._callable_fingerprint(independent_check)
+        candidate_fingerprint = self._candidate_fingerprint(candidate)
         seed_values = tuple(sorted({int(seed) for seed in seeds}))
         base_cases = tuple(cases)
         held_cases = tuple(held_out_cases)
@@ -1192,6 +1240,7 @@ class UniversalIntelligenceEngine:
                 "adversarial_case_count": len(adversarial),
                 "candidate_runner_sha256": runner_fingerprint,
                 "independent_verifier_sha256": verifier_fingerprint,
+                "candidate_fingerprint": candidate_fingerprint,
             }).encode("utf-8")
         ).hexdigest()
         unsigned = LearningGateReport(
@@ -1209,6 +1258,7 @@ class UniversalIntelligenceEngine:
             adversarial_case_count=len(adversarial),
             candidate_runner_sha256=runner_fingerprint,
             independent_verifier_sha256=verifier_fingerprint,
+            candidate_fingerprint=candidate_fingerprint,
         )
         signed = replace(unsigned, attestation=self._sign_learning_gate(unsigned))
         # A signed failed report stays failed; attestation proves execution, not success.
@@ -1598,7 +1648,10 @@ class UniversalIntelligenceEngine:
             raise TypeError("task must be TaskSpec or a mapping")
         if result.get("verified") is not True or result.get("status") != "verified":
             raise CapabilityError("only independently verified compositions can be proposed for learning")
-        self._require_learning_gate(gate)
+        self._require_learning_gate(
+            gate,
+            self.composition_learning_candidate(result),
+        )
         plan_data = result.get("plan") or {}
         plan_steps = plan_data.get("steps") or []
         if not plan_steps:
@@ -1711,7 +1764,10 @@ class UniversalIntelligenceEngine:
         if source is None or self.registry.handler(source_id) is None:
             raise CapabilityError("source executor is unavailable for transfer retesting")
         # Reuse is permitted only after this engine has executed the target-domain gate.
-        self._require_learning_gate(gate)
+        self._require_learning_gate(
+            gate,
+            self.cross_domain_learning_candidate(proposal),
+        )
         promoted = replace(
             proposal,
             evidence=EvidenceRecord(
@@ -1739,6 +1795,7 @@ class UniversalIntelligenceEngine:
         *,
         persist: Callable[[CapabilitySpec], Any] | None = None,
     ) -> CapabilitySpec:
+        self._require_learning_gate(gate, {"capability_id": spec.capability_id})
         return self.learner.promote(spec, handler, gate, persist=persist)
 
     def capability_gaps(self, domains: tuple[str, ...]) -> tuple[dict[str, Any], ...]:
