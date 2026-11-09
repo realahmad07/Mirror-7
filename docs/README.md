@@ -36,3 +36,5 @@ The native-brain training track is split into individual experiment pages under 
 ## Documentation style
 
 These pages deliberately use normal GitHub Markdown, tables, headings, code blocks, and links. No Mermaid diagrams or folded-arrow navigation are required.
+
+| [15 — Source evidence, benchmark and sandbox](15-source-evidence-benchmark-and-sandbox.md) | Legacy migration, claim-level review, frozen factual evaluation and container isolation. |
