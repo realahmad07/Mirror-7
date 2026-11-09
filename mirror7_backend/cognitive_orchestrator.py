@@ -195,5 +195,10 @@ class UnifiedCognitiveOrchestrator:
             "conflict": conflict,
             "errors": errors,
             "can_teach": abstained,
+            "teach_template": ({
+                "question": prompt,
+                "domain": "general",
+                "suggested_action": "Teach Mirror to eliminate this abstention permanently",
+            } if abstained else None),
             "consent_log_requested": bool(consent_log),
         }
