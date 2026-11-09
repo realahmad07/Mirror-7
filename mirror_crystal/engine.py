@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import zipfile
 import re
 import time
 from typing import Any
@@ -509,7 +510,30 @@ class MirrorCrystalEngine:
 
     @classmethod
     def load(cls, path: Path | str) -> MirrorCrystalEngine:
-        raw = zlib.decompress(Path(path).read_bytes()).decode("utf-8")
+        """Load a saved .mcrystal brain or the crystal_4 ZIP that contains it.
+
+        Crystal archive ZIPs are the portable distribution format. The embedded
+        MCRYSTAL payload is read directly from the ZIP; no extraction directory or
+        duplicate standalone brain file is required.
+        """
+        source_path = Path(path)
+        if zipfile.is_zipfile(source_path):
+            with zipfile.ZipFile(source_path, "r") as archive:
+                candidates = [
+                    name for name in archive.namelist()
+                    if Path(name).name == "mirror_crystal_v1.mcrystal"
+                ]
+                if len(candidates) != 1:
+                    raise ValueError(
+                        "Crystal archive ZIP must contain exactly one "
+                        "mirror_crystal_v1.mcrystal payload; pass the crystal_4.zip "
+                        "from the Crystal integration bundle, not the outer bundle ZIP."
+                    )
+                compressed_brain = archive.read(candidates[0])
+        else:
+            compressed_brain = source_path.read_bytes()
+
+        raw = zlib.decompress(compressed_brain).decode("utf-8")
         data = json.loads(raw)
         eng = cls()
         eng.stats.update({k: int(v) for k, v in data.get("stats", {}).items()})
