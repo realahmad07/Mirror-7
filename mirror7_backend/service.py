@@ -153,10 +153,7 @@ class BackendService:
                 reasoning_provider=lambda: self.cerebrum_bridge,
                 code_provider=lambda: self.tdd_engine,
                 metrics=self.metrics,
-                code_generation_provider=lambda prompt: (
-                    self.code_generation_provider(prompt)
-                    if self.code_generation_provider is not None else None
-                ),
+                code_generation_provider=self.code_generation_provider,
                 synthesis_provider=self.evidence_synthesis_provider,
             )
         return self._cognitive_orchestrator
