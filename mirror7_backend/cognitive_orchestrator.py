@@ -64,6 +64,7 @@ class UnifiedCognitiveOrchestrator:
             "write a function", "create a class", "write a script",
             "program this", "code this", "fix this code", "implement in python",
             "implement in javascript", "create an api", "build an api",
+            "python code", "python program", "python script", "write a program",
         )
         return any(marker in text for marker in markers)
 
