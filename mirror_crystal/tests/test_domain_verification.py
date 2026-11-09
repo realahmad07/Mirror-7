@@ -151,7 +151,7 @@ def test_boolean_callback_is_rejected_as_not_evidence():
 def test_evidence_from_different_execution_cannot_be_replayed():
     cap = capability("mathematics")
 
-    def stale(context):
+    def stale(context, domain, kind, verifier):
         return evidence(
             context, domain="mathematics", kind="exact_computation", verifier="checker-a",
             fingerprint="0" * 64,
