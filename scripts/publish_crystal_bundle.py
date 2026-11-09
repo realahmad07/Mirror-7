@@ -15,6 +15,7 @@ import hashlib
 import json
 import shutil
 import subprocess
+import sys
 import tempfile
 import zipfile
 from datetime import datetime
@@ -158,6 +159,24 @@ See raw_manifest.json for checksums and LICENSES.md for source terms.
 """
         if "## Public raw archives" not in old:
             readme.write_text(old.rstrip() + "\n\n" + section, encoding="utf-8")
+
+        # Exercise Mirror's real runtime against the published ZIP before removing
+        # the redundant standalone .mcrystal file.
+        run(
+            [
+                sys.executable, "-m", "pytest", "-q",
+                "mirror_crystal/tests/test_mirror_crystal.py",
+                "-k", "mcrystal_archive_zip_loads_and_answers_stored_rule",
+            ],
+            repo,
+        )
+        run(
+            [
+                sys.executable, "scripts/test_crystal_archive_responses.py",
+                "--brain", str(dest / "crystal_4.zip"),
+            ],
+            repo,
+        )
 
         if args.replace_legacy_mcrystal:
             legacy.unlink()
