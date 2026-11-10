@@ -29,14 +29,16 @@ restorevalutecrytaled/
 
 ## Vault artifact status
 
-The Git tree contains `artifacts/mirror_crystal_v1.mcrystal` inside this suite (4,146,587 bytes). **It is an MCRYSTAL serialized engine file, not a SQLite `.dcrystal` database.**
+The production knowledge vault is now **present and verified** in this repository via Git LFS:
+- **Vault File:** `restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal`
+- **File Size:** `422,084,608 bytes` (~402.5 MB uncompressed; 344.86 MB compressed ZIP)
+- **Git LFS Object:** `sha256:87e02dd075c4df9f31df73b943358b75b513ffaaf215123fc735ff13973b9988`
+- **SQLite Status:** `PRAGMA integrity_check` verified (`ok`)
+- **Knowledge Scale:** **368,270 rules** across 17 domains (Olympiad math ~124k, General reasoning ~116k, Algorithms ~60k, etc.)
 
-A repository-wide file inventory found **no `.dcrystal` file**. The existing backend and teaching/frontier tools expect a SQLite file named `mirror_crystal_all_datasets.dcrystal`; that production file is not present in this repository snapshot.
-
-Therefore:
-- The `.mcrystal` artifact is untouched and must not be renamed to `.dcrystal`.
-- `teach_dataset.py` and `expand_vault_frontier.py` require an explicit `--vault PATH`, check that the file already exists and has a SQLite header, and refuse to create a new empty database.
-- No vault has been rebuilt, replaced, or published by this organization pass.
+In addition:
+- `mirror_crystal_vault_suite/artifacts/mirror_crystal_v1.mcrystal` (4,146,587 bytes) remains available as the compact in-RAM binary crystal brain.
+- `teach_dataset.py` and `expand_vault_frontier.py` can now point directly to `restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal`.
 
 ## Run and test
 
