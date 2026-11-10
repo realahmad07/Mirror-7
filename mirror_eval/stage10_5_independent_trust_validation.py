@@ -19,6 +19,7 @@ import base64
 import hashlib
 import html
 import json
+import mmap
 import os
 from pathlib import Path
 import re
@@ -26,6 +27,7 @@ import struct
 import subprocess
 from typing import Any, Dict, List, Optional, Tuple
 
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -265,110 +267,202 @@ class InstitutionalCredentialVerifier:
         except Exception as exc:
             return False, f"institutional authority signature verification failed: {exc}"
 
-        return True, f"credential authenticated by {auth_info['name']}"
+        return True, f"credential signature verified against repository-pinned key for {auth_info['name']}; external authority ownership is not independently authenticated"
 
 
 # ============================================================================
-# 4. Genuine Historical Git Object Scanner
+# 4. Complete Historical Git Object & Secret Scanner
 # ============================================================================
 
 class GitHistoricalObjectScanner:
-    """Scans the entire underlying Git object database across all historical commits, trees, and blobs."""
+    """Scans every reachable Git blob and tracked/non-ignored working-tree file."""
+
+    REVOKED_PUBLIC_KEY_HEXES = (
+        "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
+        "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
+    )
+    # Split values so the scanner does not reintroduce exposed seeds as literals.
+    LEGACY_SEED_MARKERS = (
+        b"mirror7.reviewer." + b"elena-vance.external-ai-audit.seed.2026",
+        b"mirror7.reviewer." + b"marcus-chen.metrology-institute.seed.2026",
+        b"mock_seed_" + b"elena_vance",
+        b"mock_seed_" + b"marcus_chen",
+    )
+    PEM_PRIVATE_KEY_RE = re.compile(
+        rb"-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----\s+"
+        rb"[A-Za-z0-9+/=\r\n]{30,}?"
+        rb"-----END [A-Z0-9 ]*PRIVATE KEY-----",
+        re.DOTALL,
+    )
+    HEX_PRIVATE_SEED_RE = re.compile(
+        rb"""(?im)\b(?:private[_ -]?key(?:[_ -]?bytes)?|ed25519[_ -]?seed|seed[_ -]?hex)\b\s*[:=]\s*["']([0-9a-f]{64})["']"""
+    )
+    TOKEN_PATTERNS = (
+        re.compile(rb"\bgithub_pat_[A-Za-z0-9_]{20,}\b"),
+        re.compile(rb"\bghp_[A-Za-z0-9]{20,}\b"),
+        re.compile(rb"\bAKIA[0-9A-Z]{16}\b"),
+        re.compile(rb"\bxox[baprs]-[A-Za-z0-9-]{10,}\b"),
+    )
+    CRL_COVERED_MATCHES = {"revoked_v1_public_key", "historical_reviewer_seed"}
+    UNREVOKED_SECRET_MATCHES = {
+        "raw_pem_private_key",
+        "hardcoded_ed25519_private_key",
+        "unrevoked_cloud_token",
+    }
+
+    @classmethod
+    def _contains(cls, payload: Any, needle: bytes) -> bool:
+        return payload.find(needle) >= 0
+
+    @classmethod
+    def _classify_private_seed(cls, seed: bytes) -> str:
+        if len(seed) != 32:
+            return "hardcoded_ed25519_private_key"
+        try:
+            private_key = ed25519.Ed25519PrivateKey.from_private_bytes(seed)
+            public_hex = private_key.public_key().public_bytes(
+                serialization.Encoding.Raw, serialization.PublicFormat.Raw
+            ).hex()
+        except Exception:
+            return "hardcoded_ed25519_private_key"
+        return "historical_reviewer_seed" if public_hex.lower() in cls.REVOKED_PUBLIC_KEY_HEXES else "hardcoded_ed25519_private_key"
+
+    @classmethod
+    def _scan_payload(cls, payload: Any) -> List[str]:
+        matches: set[str] = set()
+        for marker in cls.LEGACY_SEED_MARKERS:
+            if cls._contains(payload, marker) or cls._contains(payload, hashlib.sha256(marker).digest()):
+                matches.add("historical_reviewer_seed")
+        for public_hex in cls.REVOKED_PUBLIC_KEY_HEXES:
+            if cls._contains(payload, public_hex.encode("ascii")):
+                matches.add("revoked_v1_public_key")
+        for match in cls.HEX_PRIVATE_SEED_RE.finditer(payload):
+            try:
+                matches.add(cls._classify_private_seed(bytes.fromhex(match.group(1).decode("ascii"))))
+            except (ValueError, UnicodeDecodeError):
+                matches.add("hardcoded_ed25519_private_key")
+        for match in cls.PEM_PRIVATE_KEY_RE.finditer(payload):
+            classification = "raw_pem_private_key"
+            try:
+                key = serialization.load_pem_private_key(match.group(0), password=None)
+                public_hex = key.public_key().public_bytes(
+                    serialization.Encoding.Raw, serialization.PublicFormat.Raw
+                ).hex()
+                if public_hex.lower() in cls.REVOKED_PUBLIC_KEY_HEXES:
+                    classification = "historical_reviewer_seed"
+            except Exception:
+                pass
+            matches.add(classification)
+        if any(pattern.search(payload) for pattern in cls.TOKEN_PATTERNS):
+            matches.add("unrevoked_cloud_token")
+        return sorted(matches)
+
+    @classmethod
+    def _scan_working_tree(cls, repo_root: Path) -> Tuple[int, List[str]]:
+        listed = subprocess.run(
+            ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+            cwd=str(repo_root), capture_output=True, check=True
+        ).stdout
+        paths = sorted({os.fsdecode(item) for item in listed.split(b"\0") if item})
+        scanned = 0
+        violations: List[str] = []
+        for relative in paths:
+            path = repo_root / relative
+            try:
+                if path.is_symlink() or not path.is_file() or path.stat().st_size == 0:
+                    continue
+                with path.open("rb") as stream:
+                    with mmap.mmap(stream.fileno(), 0, access=mmap.ACCESS_READ) as mapped:
+                        matches = cls._scan_payload(mapped)
+                scanned += 1
+                sensitive = set(matches) & (cls.UNREVOKED_SECRET_MATCHES | {"historical_reviewer_seed"})
+                if sensitive:
+                    violations.append(f"{relative}: {', '.join(sorted(sensitive))}")
+            except (OSError, ValueError) as exc:
+                violations.append(f"{relative}: unable to scan ({exc})")
+        return scanned, violations
 
     @classmethod
     def scan_all_historical_objects(cls, repo_root: Path) -> Dict[str, Any]:
-        """Performs a comprehensive historical scan of all Git objects in the repository in sub-second time."""
-        rev_cmd = ["git", "rev-list", "--objects", "--all"]
-        p = subprocess.run(rev_cmd, cwd=str(repo_root), capture_output=True, text=True, check=True)
-        raw_lines = [line.strip().split() for line in p.stdout.strip().split("\n") if line.strip()]
-
-        total_objects = len(raw_lines)
-        oid_to_path = {l[0]: (l[1] if len(l) > 1 else "<anonymous>") for l in raw_lines}
-
-        # 1. Filter blob OIDs under 500KB via git cat-file --batch-check
-        p_check = subprocess.Popen(
-            ["git", "cat-file", "--batch-check"],
-            cwd=str(repo_root),
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            text=True,
+        """Scan all reachable Git objects and every blob, without a blob-size cutoff."""
+        rev = subprocess.run(
+            ["git", "rev-list", "--objects", "--all"],
+            cwd=str(repo_root), capture_output=True, text=True, check=True
         )
-        in_oids = "\n".join(l[0] for l in raw_lines) + "\n"
-        out_check, _ = p_check.communicate(in_oids)
+        lines = [line for line in rev.stdout.splitlines() if line.strip()]
+        object_ids: List[str] = []
+        object_paths: Dict[str, str] = {}
+        for line in lines:
+            parts = line.split(maxsplit=1)
+            object_ids.append(parts[0])
+            object_paths[parts[0]] = parts[1] if len(parts) > 1 else "<anonymous>"
+        if not object_ids:
+            raise RuntimeError("No reachable Git objects; fetch full history before auditing.")
 
-        blob_oids: List[str] = []
-        for line in out_check.strip().split("\n"):
+        checked = subprocess.run(
+            ["git", "cat-file", "--batch-check"], cwd=str(repo_root),
+            input="\n".join(object_ids) + "\n", capture_output=True, text=True, check=True
+        )
+        blob_info = []
+        for line in checked.stdout.splitlines():
             parts = line.split()
-            if len(parts) >= 3 and parts[1] == "blob" and int(parts[2]) < 500000:
-                blob_oids.append(parts[0])
+            if len(parts) >= 3 and parts[1] == "blob":
+                blob_info.append((parts[0], int(parts[2])))
 
-        # 2. Stream blob content in a single process via git cat-file --batch
-        p_batch = subprocess.Popen(
-            ["git", "cat-file", "--batch"],
-            cwd=str(repo_root),
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
+        blob_oids = [oid for oid, _size in blob_info]
+        batch = subprocess.run(
+            ["git", "cat-file", "--batch"], cwd=str(repo_root),
+            input=("\n".join(blob_oids) + "\n").encode("ascii"),
+            capture_output=True, check=True
         )
-        in_batch = ("\n".join(blob_oids) + "\n").encode("ascii")
-        out_batch, _ = p_batch.communicate(in_batch)
-
-        revoked_v1_hexes = [
-            b"eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
-            b"8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
-        ]
-
         findings: List[Dict[str, Any]] = []
-        header_re = re.compile(rb"([0-9a-f]{40}) blob (\d+)\n")
-        for m in header_re.finditer(out_batch):
-            oid = m.group(1).decode("ascii")
-            size = int(m.group(2).decode("ascii"))
-            start = m.end()
-            blob_content = out_batch[start:start+size]
-
-            matches = []
-            # Raw PEM private key payload (base64 block between BEGIN and END)
-            if re.search(rb"-----BEGIN [A-Z ]*PRIVATE KEY-----\r?\n[A-Za-z0-9+/=\r\n]{30,}\r?\n-----END [A-Z ]*PRIVATE KEY-----", blob_content):
-                matches.append("raw_pem_private_key")
-            if b"mock_seed_elena_vance" in blob_content or b"mock_seed_marcus_chen" in blob_content:
-                matches.append("historical_reviewer_seed")
-            for h in revoked_v1_hexes:
-                if h in blob_content:
-                    matches.append("revoked_v1_public_key")
-
+        total_blob_bytes = 0
+        large_blobs = 0
+        offset = 0
+        for expected_oid in blob_oids:
+            header_end = batch.stdout.find(b"\n", offset)
+            if header_end < 0:
+                raise RuntimeError("Truncated git cat-file batch header.")
+            parts = batch.stdout[offset:header_end].split()
+            if len(parts) != 3 or parts[0].decode("ascii") != expected_oid or parts[1] != b"blob":
+                raise RuntimeError(f"Unexpected git cat-file header for {expected_oid}")
+            size = int(parts[2])
+            body_start = header_end + 1
+            body_end = body_start + size
+            if body_end >= len(batch.stdout) or batch.stdout[body_end:body_end + 1] != b"\n":
+                raise RuntimeError(f"Truncated Git blob {expected_oid}")
+            body = batch.stdout[body_start:body_end]
+            offset = body_end + 1
+            total_blob_bytes += size
+            large_blobs += int(size > 500_000)
+            matches = cls._scan_payload(body)
             if matches:
+                covered = set(matches).issubset(cls.CRL_COVERED_MATCHES)
+                unrevoked = bool(set(matches) & cls.UNREVOKED_SECRET_MATCHES)
                 findings.append({
-                    "oid": oid,
-                    "path": oid_to_path.get(oid, "<anonymous>"),
-                    "matches": list(set(matches)),
+                    "oid": expected_oid,
+                    "path": object_paths.get(expected_oid, "<anonymous>"),
+                    "size_bytes": size,
+                    "matches": matches,
+                    "crl_covered": covered,
+                    "unrevoked_secret": unrevoked,
                 })
 
-        # 3. Working tree current state audit (excludes test assertions and auditing scanners)
-        pattern_pem = re.compile(r"-----BEGIN (?:[A-Z ]+ )?PRIVATE KEY-----", re.IGNORECASE)
-        pattern_seed = re.compile(r"from_private_bytes\(bytes\.fromhex\([\"'][0-9a-f]{64}[\"']\)\)", re.IGNORECASE)
-        tree_violations = []
-
-        for py_path in repo_root.glob("mirror_eval/**/*.py"):
-            # Skip scanners and test suites that inspect patterns
-            if py_path.name in ("stage10_4_cryptographic_trust_closure.py", "stage10_5_independent_trust_validation.py"):
-                continue
-            text = py_path.read_text(encoding="utf-8", errors="replace")
-            if pattern_pem.search(text):
-                tree_violations.append(f"{py_path.relative_to(repo_root)}: PEM private key block found")
-            if pattern_seed.search(text):
-                tree_violations.append(f"{py_path.relative_to(repo_root)}: hardcoded private key bytes detected")
-
+        unrevoked_findings = [row for row in findings if row["unrevoked_secret"]]
+        working_files, working_violations = cls._scan_working_tree(repo_root)
         return {
-            "total_git_objects_scanned": total_objects,
+            "total_git_objects_scanned": len(object_ids),
             "historical_blobs_scanned": len(blob_oids),
+            "large_blobs_scanned": large_blobs,
+            "total_blob_bytes_scanned": total_blob_bytes,
             "historical_blobs_with_findings": len(findings),
             "findings": findings,
-            "all_historical_findings_covered_by_crl": all(
-                set(f["matches"]).issubset({"revoked_v1_public_key", "historical_reviewer_seed"})
-                for f in findings
-            ),
-            "unrevoked_secrets_in_history": 0,
-            "working_tree_clean": len(tree_violations) == 0,
-            "working_tree_violations": tree_violations,
+            "all_historical_findings_covered_by_crl": all(row["crl_covered"] for row in findings),
+            "unrevoked_secrets_in_history": len(unrevoked_findings),
+            "unrevoked_secret_findings": unrevoked_findings,
+            "working_tree_files_scanned": working_files,
+            "working_tree_clean": len(working_violations) == 0,
+            "working_tree_violations": working_violations,
         }
 
 
@@ -479,4 +573,4 @@ class ReconciledTrustRegistry:
         if not cred_ok:
             return False, f"institutional credential verification failed: {cred_msg}"
 
-        return True, "fully authenticated independent reviewer (ORCID, PGP, and Credential verified)"
+        return True, "cryptographic materials match repository-pinned records; real-world reviewer identity and institutional affiliation are not independently authenticated"
