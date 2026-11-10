@@ -598,6 +598,7 @@ class CerebrumCrystalBridge:
                 if rem > 1:
                     factors.append(rem)
                 prod_str = " * ".join(str(x) for x in factors)
+                prod_tex = r" \times ".join(str(x) for x in factors)
                 steps = [f"Factorize {n_val} via trial division", f"Verified product: {prod_str} = {n_val}"]
                 return self._build_verified_result(
                     t0=t0,
@@ -605,7 +606,7 @@ class CerebrumCrystalBridge:
                     answer=prod_str,
                     steps=steps,
                     body_title="Prime Factorization:",
-                    body_lines=[f"- ${n_val} = {' \\times '.join(str(x) for x in factors)}$"],
+                    body_lines=[f"- ${n_val} = {prod_tex}$"],
                     think_notes=[f"{n_val} = {prod_str}"],
                 )
 
