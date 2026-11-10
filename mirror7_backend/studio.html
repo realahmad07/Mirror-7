@@ -151,7 +151,7 @@
 
                 <div class="hidden xl:flex items-center gap-2 pl-4 border-l border-quantum-border text-zinc-400 text-[11px]">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="vault-status-badge">VAULT: 368,270+ BLUEPRINTS</span>
+                    <span id="vault-status-badge">VAULT: AWAITING VERIFIED FEED</span>
                     <span class="text-zinc-700">|</span>
                     <span id="ram-badge" class="text-cyan-400">RAM: 18.0 MB</span>
                     <span class="text-zinc-700">|</span>
@@ -213,7 +213,7 @@
                 </h1>
 
                 <p class="text-base sm:text-lg text-zinc-400 font-sans max-w-2xl leading-relaxed mb-8 font-normal">
-                    The world’s first open-source, weightless neuro-symbolic intelligence architecture. Powered by 368,270+ verified ground-truth blueprints, byte-level Markov realizer, and exact symbolic algebra to eliminate autoregressive hallucination at sub-millisecond CPU speed.
+                    The world’s first open-source, weightless neuro-symbolic intelligence architecture. Awaiting a fresh, inspectable, independently verified rule feed; byte-level Markov realizer, and exact symbolic algebra to eliminate autoregressive hallucination at sub-millisecond CPU speed.
                 </p>
 
                 <!-- Core Action Array -->
@@ -308,7 +308,7 @@
                     <div class="lg:col-span-7 p-6 border-b lg:border-b-0 lg:border-r border-quantum-border flex flex-col justify-between">
                         <div id="chat-stream" class="space-y-4 font-mono text-xs overflow-y-auto max-h-[420px] pr-2">
                             <div class="border-l-2 border-cyan-400 pl-3 py-1 text-zinc-400">
-                                <span class="text-cyan-400 font-bold">[MIRROR_INIT]:</span> Mirror Crystal Live Studio initialized. Discrete blueprint space populated with 368,270+ exact rules. Enter any query, calculus derivative, integer power, or coding specification below.
+                                <span class="text-cyan-400 font-bold">[MIRROR_INIT]:</span> Mirror Crystal Live Studio initialized. Discrete blueprint space is awaiting the next verified feed. Enter any query, calculus derivative, integer power, or coding specification below.
                             </div>
                         </div>
 
@@ -422,7 +422,7 @@
                     Interactive Blueprint Lattice Constellation
                 </h2>
                 <p class="text-sm text-zinc-400 font-sans mt-2">
-                    Traditional LLMs use dense, black-box floating-point synapses that degrade over time. Mirror replaces synapses with an interconnected constellation of <strong>368,270 verified discrete ground-truth rules</strong>, connected via MinHash LSH similarity buckets.
+                    Traditional LLMs use dense, black-box floating-point synapses that degrade over time. Mirror replaces synapses with an interconnected constellation of <strong>a structured rule-vault architecture</strong>, connected via MinHash LSH similarity buckets.
                 </p>
             </div>
 
@@ -604,7 +604,7 @@
                             </tr>
                             <tr>
                                 <td class="p-3 font-semibold text-zinc-400">Rules / Knowledge Substrate</td>
-                                <td id="mirror-table-rule-count" class="p-3 text-emerald-400 font-bold">368,270+ Verified Ground Truths</td>
+                                <td id="mirror-table-rule-count" class="p-3 text-emerald-400 font-bold">Awaiting verified feed</td>
                                 <td class="p-3 text-zinc-400">~1.8T Unverifiable Floating Weights</td>
                                 <td class="p-3 text-zinc-400">~1.5T Unverifiable Floating Weights</td>
                                 <td class="p-3 text-zinc-400">70B Continuous Parameters</td>
@@ -669,7 +669,7 @@
                         <span>MIRROR DISCRETE BLUEPRINT LATTICE</span>
                     </div>
                     <ul class="space-y-2 text-xs font-sans text-zinc-300">
-                        <li class="flex items-start gap-2"><span>•</span> <span><strong>368,270+ Exact Blueprints:</strong> Discrete verified ground-truth rules stored in lightweight SQLite WAL on disk.</span></li>
+                        <li class="flex items-start gap-2"><span>•</span> <span><strong>Verified Blueprint Feed:</strong> Awaiting fresh, inspectable, deduplicated rules.</span></li>
                         <li class="flex items-start gap-2"><span>•</span> <span><strong>Sub-Millisecond Direct Lock:</strong> 64-bit MinHash &amp; bitwise popcount retrieves answers in &lt; 0.5 ms on CPU.</span></li>
                         <li class="flex items-start gap-2"><span>•</span> <span><strong>Zero Hallucination:</strong> Ground-truth answers backed by AST Zero-Trust Sandbox &amp; honest abstention.</span></li>
                         <li class="flex items-start gap-2"><span>•</span> <span><strong>1-Shot Instant Crystallization:</strong> Teaching adds immutable rules instantly with zero catastrophic forgetting.</span></li>
@@ -1141,7 +1141,7 @@ angle$
                 <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm space-y-1 text-[11px]">
                     <div class="flex justify-between">
                         <span>Lattice Nodes:</span>
-                        <span class="text-white">368,270+ Verified</span>
+                        <span class="text-white">Awaiting verified feed</span>
                     </div>
                     <div class="flex justify-between">
                         <span>CPU Thread Pool:</span>
@@ -2600,7 +2600,7 @@ angle$
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-center">
                         <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
                             <div class="text-zinc-500 text-[10px]">Total Vault Rules</div>
-                            <div class="text-xl font-bold text-cyan-400">${(data.total_vault_rules || 38720).toLocaleString()}</div>
+                            <div class="text-xl font-bold text-cyan-400">${(data.total_vault_rules || 0).toLocaleString()}</div>
                         </div>
                         <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
                             <div class="text-zinc-500 text-[10px]">Total Queries</div>
@@ -2641,7 +2641,7 @@ angle$
                 const res = await fetch('/api/crystal/coverage');
                 const data = await res.json();
                 const tel = data.telemetry || {};
-                const total = data.total_vault_rules || 368240;
+                const total = data.total_vault_rules || 0;
 
                 const badge = document.getElementById('abstention-badge');
                 if (badge) badge.innerText = `ABSTENTION: ${tel.abstention_rate_pct || 0}%`;
