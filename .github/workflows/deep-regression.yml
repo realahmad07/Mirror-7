@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - name: Checkout
+      - name: Checkout full Git history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Fetch production Crystal vault from Git LFS
         run: |
           git lfs version
