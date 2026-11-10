@@ -958,14 +958,14 @@ The production SQLite knowledge vault is now **fully present in the repository v
   - **4. Mathematical & Factual Accuracy:** Pure-Python exact symbolic CAS verifies higher-order polynomial differentiation ($d/dx(3x^5-7x^3+11x-4)=15x^4-21x^2+11$); definite integration ($\int_1^3 (9x^2-4x+2)dx = 66$) cross-checked with multi-panel Simpson's rule; multivariable Gauss-Jordan linear systems over $\mathbb{Q}$ ($4x+5y=26, 3x-2y=8 \implies x=4, y=2$); exact dimensional unit conversions ($108\text{ km/h}=30\text{ m/s}$).
   - **5. Cross-Domain Reasoning:** Quantum Born state projections ($P(|0\rangle)=0.5$), kinematics differential calculus ($x(t)=3t^3-9t^2+4t \implies v(4)=76\text{ m/s}$), structural materials mechanics ($FS=3.0$ SAFE), transitive categorical syllogisms (noble gases $\to$ neon $\to$ unreactive), and quantum Grover search iteration scaling (78 iterations for $N=10,000$).
 
-- **Stage 10.1 — Verification Closure (Review Gate Approved & Closed):**
+- **Stage 10.1 — Cryptographic Review Records (External Identity Pending):**
   - Full report: **[`artifacts/STAGE10_1_VERIFICATION_CLOSURE_REPORT.md`](artifacts/STAGE10_1_VERIFICATION_CLOSURE_REPORT.md)** • Test suite: **[`mirror_crystal/tests/test_stage10_1_verification_closure.py`](mirror_crystal/tests/test_stage10_1_verification_closure.py)** (4/4 Passed in 1.44s)
   - Published telemetry: **[`artifacts/factual_benchmark_approved_results.json`](artifacts/factual_benchmark_approved_results.json)**
-  - **Two Genuine Independent Reviewers:** Attestations verified for Dr. Elena Vance (Independent Open Systems & Metrology Audit) and Prof. Marcus Chen (Computational Metrology & Standards Verification); `require_independent_review=True` validation passed with 2 approvals per claim and case.
+  - **Reviewer-record limitation:** Distinct reviewer labels and signatures are present, but real-world reviewer identity, ORCID ownership, PGP publication, and institutional root-key ownership are not independently authenticated by this repository.
   - **Cryptographic Source Quotations:** 100% of quotes verified against authoritative primary publications (RFC 9110, Python 3.11 Language Reference, BIPM SI definitions, RFC 8259) with cryptographic excerpt SHA-256 matching.
   - **Factual & License Provenance Review:** All atomic claims conform to SPDX open licenses (`NOASSERTION`, `CC-BY-4.0`, etc.); full repository licensed under Apache-2.0.
   - **Published Benchmark Telemetry:** Evaluated across all 8 cases; achieves **100% abstention recall (`abstention_recall = 1.0`)** on unanswerable secrets (`private-maintainer-secret-v1`), 7 honest abstentions on held-out test data, zero ungrounded hallucinations, and **`86.99 ms`** average query latency on CPU.
-  - **Review Gate Closure:** Manifest `review_status` transitioned to **`approved`** (`review_gate: "approved"`).
+  - **Review Gate:** Manifest status is `cryptographic_attestations_verified_identity_unverified`; external identity approval remains pending.
 
 - **Stage 10.2 — Verification Integrity (PKI, Digital Attestations & SPDX Compliance):**
   - Full report: **[`artifacts/STAGE10_2_VERIFICATION_INTEGRITY_REPORT.md`](artifacts/STAGE10_2_VERIFICATION_INTEGRITY_REPORT.md)** • Test suite: **[`mirror_crystal/tests/test_stage10_2_verification_integrity.py`](mirror_crystal/tests/test_stage10_2_verification_integrity.py)** (4/4 Passed in 0.21s)
@@ -1108,3 +1108,13 @@ The backend Q&A path now connects task analysis to **optional verified task exec
 - **No knowledge rules or datasets were added.** Rule/data feeding remains a separate step.
 
 See [Backend Q&A Execution and Native Code Generation](./docs/32-backend-qna-execution-and-native-code-generation.md) and [Universal Intelligence Integration](./docs/31-backend-universal-intelligence-integration.md) for behavior, host configuration, trust boundaries and tests.
+
+
+## Stage 10.5.1 — Exhaustive History Scan & Trust-Status Correction
+
+- CI and deep-regression checkouts fetch full Git history (fetch-depth zero).
+- Historical scanning includes every reachable blob without a 500 KB cutoff.
+- Unrevoked-secret counts are computed from detections; they are not hardcoded.
+- Temporary-repository adversarial tests cover large blobs, revoked historical seeds, and unrelated private keys.
+- ORCID checksum validity and local cryptographic consistency are not proof of real-world identity. External reviewer and institutional-root ownership remain pending authoritative corroboration.
+- Detailed report: [STAGE10_5_1_TRUST_SCAN_CLOSURE_REPORT.md](artifacts/STAGE10_5_1_TRUST_SCAN_CLOSURE_REPORT.md).
