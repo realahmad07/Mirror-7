@@ -8,7 +8,7 @@
 [![Training CI](https://github.com/realahmad07/Mirror-7/actions/workflows/training-native.yml/badge.svg)](https://github.com/realahmad07/Mirror-7/actions/workflows/training-native.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-1D4ED8.svg?style=flat-square)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-0F766E.svg?style=flat-square)](./pyproject.toml)
-[![Vault: Awaiting Fresh Verified Feed](https://img.shields.io/badge/Vault-Awaiting_Fresh_Verified_Feed-0B192C.svg?style=flat-square)](#10-mirror-crystal--cpu-first-autonomous-engines-zero-gpu-track)
+[![Vault: 368k Rules Audited](https://img.shields.io/badge/Vault-368k_Rules_Audited-0F766E.svg?style=flat-square)](#10-mirror-crystal--cpu-first-autonomous-engines-zero-gpu-track)
 [![Benchmark: 55/55 100% Green](https://img.shields.io/badge/mirror__eval-55%2F55_100%25_Passed-0F766E.svg?style=flat-square)](#4-live-nvidia-a100--cpu-verification-showcase-zero-truncation)
 [![Inference: < 1.0 ms CPU Lock](https://img.shields.io/badge/CPU_Latency-%3C_1.0_ms_Direct_Lock-1D4ED8.svg?style=flat-square)](#2-architectural-differentiation--byte-first-cost-reduction-economics)
 [![Vocab: 259 Raw UTF-8 Bytes](https://img.shields.io/badge/Vocab-259_Raw_UTF--8_Bytes-0B192C.svg?style=flat-square)](#1-end-to-end-visual-execution-sequence--v6-architecture)
@@ -17,7 +17,7 @@
 [![Retention: 0.9999 Cosine](https://img.shields.io/badge/Continual_Retention-0.9999_Cosine-0B192C.svg?style=flat-square)](#3-multi-domain-cognitive-taxonomy-7-pillars--186-categories)
 
 **Founder & Principal Architect:** **Ahmad Hassan** &nbsp;•&nbsp; **Official Repository:** [github.com/realahmad07/Mirror-7](https://github.com/realahmad07/Mirror-7)  
-📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Verification Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[SHA-256 Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
+📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 📊 **[Phase 2 Knowledge Audit Report](artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Verification Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[SHA-256 Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
 
 </div>
 
@@ -831,30 +831,37 @@ Full documentation: **[`docs/10-mirror-crystal-weightless-engine.md`](docs/10-mi
 
 Alongside our GPU-trained V6 byte-stateful neural checkpoints, Mirror 7 ships two complementary **CPU-native intelligence tracks** verified directly on commodity hardware (`Intel Core i5-10210U` 4-core laptop CPU, `16 GB RAM`, `0` CUDA):
 
-### A. `mirror_crystal/` — Out-of-Core 368k+ Rule Crystal Engine
+### A. `mirror_crystal/` — Out-of-Core 368,270 Rule Crystal Engine & Knowledge Audit
 
-Replaces floating-point weight matrices and iterative backpropagation with **2,048-bit Context Barcodes (`int.bit_count()` hardware `POPCNT`)**, **1-Shot Variable/Formula Slot Abstraction (`{v0}`, `{v1}`)**, **`array('I')` Locality-Sensitive Rule Indexing (`LSH`)**, **Multi-Hop Causal Lock Chaining**, and **Zero-Trust CPU AST/Sandbox Reality Verification** in pure Python 3.11+ standard library:
+Full audit report: **[`artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md`](artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md)** • Audit JSON: **[`artifacts/vault_quality_audit_report.json`](artifacts/vault_quality_audit_report.json)** • Engine docs: **[`docs/10-mirror-crystal-weightless-engine.md`](docs/10-mirror-crystal-weightless-engine.md)**
 
-- **Massive Ingested Knowledge Substrate (legacy rule-vault claim (not included)):**
-  - **124,467 Olympiad & Competition Math Problems:** Vectors, arithmetic sequences, geometry, combinatorics, number theory, and symbolic calculus.
-  - **146,388 General Reasoning & Instruction Rules:** Stanford Alpaca multi-step reasoning, Databricks Dolly 15k human-authored Q&A, and SQuAD 2.0 reading comprehension.
-  - **59,944 Algorithmic & Systems Code Rules:** Code Alpaca, Google MBPP with executable unit test assertions, and 8 frontier algorithmic primitives (Fenwick, Segment Tree, Manacher's Linear Palindrome, Cooley-Tukey FFT, Simpson's Rule, Kahn's Topo-sort, Monotonic Stack, BFS).
-  - **11,540 Physics & Empirical Science Rules:** Electromagnetism, thermodynamics, optics, relativity, and quantum mechanics.
-  - **2,504 Quantum Computing & Circuit Rules:** Grover search, Born rule probabilities, Hilbert space registers, Bell states, and error mitigation.
-  - **14,562 Relational & Deductive Logic Rules:** Multi-hop entity graphs, ProofWriter deduction trees, and contradiction resolution.
-- **Code Fast-Path & Gating Solutions:**
-  - Bypassed the Ambiguity Gate for coding intent, enabling instant retrieval and sandbox verification.
-  - Relaxed lexical coverage threshold to $\ge 0.40$ for coding requests.
-  - Whitelisted 45+ CS and algorithmic acronyms (`BFS`, `DFS`, `DAG`, `FFT`, `AST`, `CSV`, `SQL`, `YAML`, `JSON`).
-  - Generalized `AutonomousTDDEngine` to synthesize parameter execution tests for arbitrary functions with $N = 0, 1, 2, 3+$ arguments and `ast.ClassDef` definitions.
-- **Sub-Millisecond Direct Lock:** **`< 1.0 ms`** mean query latency, **`0%` catastrophic forgetting** across sequential updates, and verified multi-hop rule chaining.
-- **Symbolic CAS Organ (`SymbolicCASOrgan`):** **`0.65–0.81 ms`** exact rational calculus, linear systems & unit conversions across 7 languages with 0.0% hallucination.
+The production SQLite knowledge vault is now **fully present in the repository via Git LFS** (`restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal`, `422 MB` uncompressed, `PRAGMA integrity_check = ok`). It replaces floating-point weight matrices with **2,048-bit Context Barcodes (`POPCNT`)**, **1-Shot Variable/Formula Slot Abstraction (`{v0}`, `{v1}`)**, **`array('I')` Locality-Sensitive Indexing (`LSH`)**, **Multi-Hop Causal Lock Chaining**, and **Zero-Trust AST Sandbox Verification** running in pure Python 3.11+:
+
+- **Phase 2 Complete Knowledge Quality Audit Results (368,270 Rules Audited):**
+  - **124,471 Olympiad & Competition Math Problems (33.8%):** Vectors, arithmetic sequences, geometry, combinatorics, number theory, and symbolic calculus.
+  - **116,444 General Reasoning & Instruction Rules (31.6%):** Multi-step deduction, Stanford Alpaca, Databricks Dolly 15k, and SQuAD 2.0 reading comprehension.
+  - **59,969 Algorithmic & Systems Code Rules (16.3%):** Code Alpaca, Google MBPP with executable unit test assertions, and frontier algorithmic primitives (Fenwick, Segment Tree, Manacher, Cooley-Tukey FFT, Simpson, Kahn's Topo-sort).
+  - **20,767 General Knowledge Rules (5.6%):** Multi-turn conversational facts and domain overviews.
+  - **13,662 Relational Logic Rules (3.7%):** Multi-hop entity graphs, ProofWriter deduction trees, and contradiction resolution.
+  - **11,541 Physics & Empirical Science Rules (3.1%):** Electromagnetism, thermodynamics, optics, relativity, and quantum mechanics.
+  - **9,177 Helpful & Accurate Instruction Rules (2.5%):** Goal-directed task execution and formatting.
+  - **8,327 Higher Mathematics Rules (2.3%):** Formal mathematical proofs and analysis.
+  - **2,504 Quantum Computing & Circuit Rules (0.7%):** Grover search, Born rule probabilities, Hilbert space registers, Bell states, and unitary gate matrices.
+  - **900 Deductive Logic Rules (0.2%):** Formal syllogisms and propositional calculus.
+  - **488 Specialized Pillar Blueprints (0.1%):** Canaries (Protocol 7777), bioinformatics, and systems programming.
+- **Hygiene, Deduplication & Quality Findings:**
+  - **Duplicate / Collision Detection:** **1,972 (0.54%)** normalized duplicate prompts and **1,577 (0.43%)** contradictory collisions (ambiguous conversational prompts like *"Yes please"* mapped to unrelated outputs).
+  - **Truncation Rate:** **53,408 rules (14.50%)** end mid-sentence (legacy relics from earlier CPU 256-byte truncation); targeted for quarantine.
+  - **Code Syntax Check:** **7,063 code rules (17.81% of checked code)** contain broken syntax; protected at inference by `ZeroTrustSandboxJudge`.
+  - **Trust-Tier Verification:** 246,013 rules labeled nominal `Tier 1` and 122,257 labeled `Tier 2`; formally treated as unverified pending two-reviewer independent claim gates per `docs/14-blueprint-rule-architecture.md`.
+- **Sub-Millisecond Direct Lock:** **`< 0.5 ms`** query latency (e.g. Canary Protocol 7777 retrieved in **`0.481 ms`** on CPU), **`0%` catastrophic forgetting**, and verified multi-hop rule chaining.
+- **Symbolic CAS Organ (`SymbolicCASOrgan`):** **`0.65–0.81 ms`** exact rational calculus, linear systems & unit conversions with 0.0% hallucination.
 
 ```bash
-# Run tests, honest CPU evaluation, hardware benchmark, single-pass .jsonl training, or interactive CLI chat on any CPU:
-python -m mirror_eval
-python -m mirror_crystal query --brain artifacts/mirror_crystal_all_datasets.dcrystal --prompt "Compute 41^53 mod 1000000007"
-python -m mirror_crystal chat --brain artifacts/mirror_crystal_all_datasets.dcrystal
+# Query the verified production vault directly (sub-millisecond lock):
+python -m mirror_crystal query --brain restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal --prompt "What is Mirror Crystal Canary Protocol 7777?"
+python -m mirror_crystal query --brain restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal --prompt "What is a qubit and how does quantum superposition work mathematically?"
+python -m mirror_crystal chat --brain restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal
 ```
 
 ### B. `training/cpu_autonomous_engine.py` — `1.58`-Bit & Parallel-Scan CPU Neural Subsystem
