@@ -20,6 +20,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Fetch production Crystal vault from Git LFS
+        run: |
+          git lfs version
+          git lfs install --local
+          git lfs pull --include="restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal" --exclude="restorevalutecrytaled/mirror_crystal_all_datasets_dcrystal.zip"
+          python - <<'PY'
+          import sqlite3
+          from pathlib import Path
+
+          vault = Path("restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal")
+          if not vault.is_file():
+              raise SystemExit(f"Production vault is missing: {vault}")
+          with vault.open("rb") as stream:
+              if stream.read(16) != b"SQLite format 3\\x00":
+                  raise SystemExit("Production vault is still a Git LFS pointer, not a SQLite database.")
+
+          with sqlite3.connect(vault) as connection:
+              check = connection.execute("PRAGMA quick_check").fetchone()[0]
+              if check != "ok":
+                  raise SystemExit(f"Production vault SQLite quick_check failed: {check}")
+              tables = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+              required = {"rules", "rule_hygiene_quarantine", "verified_production_index"}
+              missing = required - tables
+              if missing:
+                  raise SystemExit(f"Production vault is missing required tables: {sorted(missing)}")
+              total = connection.execute("SELECT COUNT(*) FROM rules").fetchone()[0]
+              print(f"Production vault ready: SQLite quick_check={check}; rules={total}; required tables present.")
+          PY
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
