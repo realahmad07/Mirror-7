@@ -106,6 +106,7 @@ def test_one_shot_closes_a_mounted_vault(monkeypatch, capsys):
 def test_main_accepts_existing_vault_override(monkeypatch, tmp_path):
     vault = tmp_path / "test.dcrystal"
     vault.write_bytes(b"sqlite fixture")
+    monkeypatch.setenv("MIRROR_CRYSTAL_VAULT", "previous-vault.dcrystal")
     called = {}
     monkeypatch.setattr(
         mirror_cli,
@@ -115,3 +116,4 @@ def test_main_accepts_existing_vault_override(monkeypatch, tmp_path):
 
     assert mirror_cli.main(["--vault", str(vault), "--session", "s1", "hello", "there"]) == 0
     assert called == {"prompt": "hello there", "session_id": "s1"}
+    assert __import__("os").environ["MIRROR_CRYSTAL_VAULT"] == "previous-vault.dcrystal"
