@@ -26,7 +26,7 @@ jobs:
           if not vault.is_file():
               raise SystemExit(f"Production vault is missing: {vault}")
           with vault.open("rb") as stream:
-              if stream.read(16) != b"SQLite format 3\\x00":
+              if stream.read(16) != b"SQLite format 3" + bytes([0]):
                   raise SystemExit("Production vault is still a Git LFS pointer, not a SQLite database.")
 
           with sqlite3.connect(vault) as connection:
