@@ -21,6 +21,9 @@ jobs:
     timeout-minutes: 30
     env:
       MIRROR_SANDBOX_MODE: process
+      # Tests run from restorevalutecrytaled so imports resolve the restored
+      # mirror_crystal package first; add the repository root for BackendService.
+      PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
