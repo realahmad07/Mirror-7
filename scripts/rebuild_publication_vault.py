@@ -272,7 +272,7 @@ def process_triplet_file(conn: sqlite3.Connection, path: Path,
                     if str(turn.get("split") or "").strip().lower() in HOLDOUT_SPLITS:
                         continue
                     prompt = next((as_text(turn.get(key)) for key in
-                                   ("user_text", "user", "prompt", "instruction", "question", "query", "anchor")
+                                   ("user_text", "user", "prompt", "instruction", "question", "query", "anchor", "input")
                                    if as_text(turn.get(key))), "")
                     response = next((as_text(turn.get(key)) for key in
                                      ("target_text", "response", "completion", "output", "answer",
@@ -287,7 +287,7 @@ def process_triplet_file(conn: sqlite3.Connection, path: Path,
                              source, line_no * 1000 + turn_idx, stats)
             else:
                 prompt = next((as_text(obj.get(key)) for key in
-                               ("user_text", "user", "prompt", "instruction", "question", "query", "anchor", "input_text")
+                               ("user_text", "user", "prompt", "instruction", "question", "query", "anchor", "input_text", "input")
                                if as_text(obj.get(key))), "")
                 response = next((as_text(obj.get(key)) for key in
                                  ("target_text", "response", "completion", "output", "answer",
@@ -309,8 +309,10 @@ def process_triplet_file(conn: sqlite3.Connection, path: Path,
                 stats["pairs_seen"] += 1
                 if not prompt or not response:
                     stats["unmapped_records"] = stats.get("unmapped_records", 0) + 1
+                row_source_dataset = as_text(obj.get("source_dataset"))
+                row_source = f"{source}#source_dataset={row_source_dataset}" if row_source_dataset else source
                 add_pair(conn, prompt, response, outer_domain, as_text(obj.get("tool")),
-                         source, line_no, stats)
+                         row_source, line_no, stats)
     stats["sha256"] = digest.hexdigest()
     stats["bytes"] = path.stat().st_size
 
