@@ -207,7 +207,7 @@ def test_stage10_5_reconciled_trust_architecture_and_full_authentication():
         key_id="key-vance-ed25519-v2",
     )
     assert ok_vance is True, f"Vance full authentication failed: {msg_vance}"
-    assert "fully authenticated" in msg_vance
+    assert "repository-pinned records" in msg_vance and "not independently authenticated" in msg_vance
 
     # 2. Full Authentication for Prof. Marcus Chen
     ok_chen, msg_chen = ReconciledTrustRegistry.authenticate_reviewer_full(
@@ -216,7 +216,7 @@ def test_stage10_5_reconciled_trust_architecture_and_full_authentication():
         key_id="key-chen-ed25519-v2",
     )
     assert ok_chen is True, f"Chen full authentication failed: {msg_chen}"
-    assert "fully authenticated" in msg_chen
+    assert "repository-pinned records" in msg_chen and "not independently authenticated" in msg_chen
 
     # 3. FAIL-CLOSED: Rejection of revoked key ID
     ok_rev_id, msg_rev_id = ReconciledTrustRegistry.authenticate_reviewer_full(
