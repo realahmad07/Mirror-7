@@ -633,13 +633,13 @@ def main() -> int:
         "blueprints": {},
         "runtime_smoke": {},
         "tests": {},
-        "evidence_policy": {
+        "evidence_policy": [
             "all imported legacy/source records are trust_tier 3 or EvidenceLevel.UNVERIFIED",
             "source_supported candidates remain canonical unverified; source status retained in sidecar",
             "test_code in roadmap records is preserved but not executed/promoted",
             "test/eval/validation triplet splits are excluded from live knowledge",
             "canary fixtures and conflicting prompt/answer variants are quarantined",
-        },
+        ],
     }
 
     with tempfile.TemporaryDirectory(prefix="mirror-vault-rebuild-") as td:
