@@ -10,6 +10,25 @@ from .lsh_rule_store import LSHRuleIndex
 
 class VaultRetrievalMixin:
 
+    def reason_over_query(self, query: str, session_id: str = "default") -> Any | None:
+        """Execute Phase 4 multi-hop, cross-domain, causal, and multi-rule reasoning."""
+        from .reasoning_engine import ReasoningIntelligenceEngine
+        from .response_types import CrystalResponse
+        res = ReasoningIntelligenceEngine.reason_over_query(self, query, session_id=session_id)
+        if res is not None:
+            return CrystalResponse(
+                answer=res.answer,
+                confidence=res.confidence,
+                mode=res.mode,
+                matched_rule_id=None,
+                latency_ms=0.5,
+                sandbox_verified=res.verified,
+                reasoning_trace=res.reasoning_trace,
+                epistemic_tier=res.epistemic_tier,
+            )
+        return None
+
+
     def _try_multi_hop_relational(self, query: str, session_id: str = "default") -> tuple[str, list[str]] | None:
         q = query.strip()
         m_poss = self._PAT_POSSESSIVE.match(q)

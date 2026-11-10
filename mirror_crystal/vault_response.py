@@ -149,6 +149,21 @@ class VaultResponseMixin:
             trace.append(f"Disambiguated homonym sense -> {', '.join(sense_tags)}")
         sense_sfx = f" {' '.join(sorted(sense_tags))}" if sense_tags else ""
 
+        # Phase 4 — Multi-Hop Deduction, Cross-Domain Synthesis & Verification
+        reason_hit = self.reason_over_query(q_core, session_id=session_id)
+        if reason_hit is not None:
+            ms = (time.perf_counter_ns() - t0) / 1_000_000.0
+            return CrystalResponse(
+                answer=reason_hit.answer,
+                confidence=reason_hit.confidence,
+                mode=reason_hit.mode,
+                matched_rule_id=reason_hit.matched_rule_id,
+                latency_ms=round(ms, 3),
+                sandbox_verified=reason_hit.sandbox_verified,
+                reasoning_trace=trace + reason_hit.reasoning_trace,
+                epistemic_tier=reason_hit.epistemic_tier,
+            )
+
         if not self.fluid_composer.is_explicit_creative_request(orig_p):
             abs_pair_exact = SlotAbstractor.abstract_pair(q_core, "")
             candidate_hashes = [self._prompt_hash(abs_pair_exact.abstract_prompt.strip().lower() + sense_sfx)]
