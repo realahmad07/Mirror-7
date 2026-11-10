@@ -403,15 +403,22 @@ def main(argv: Optional[list[str]] = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    if args.vault:
-        vault_path = Path(args.vault).expanduser()
-        if not vault_path.is_file() or vault_path.suffix.lower() != ".dcrystal":
-            parser.error(f"--vault must point to an existing .dcrystal file: {vault_path}")
-        os.environ["MIRROR_CRYSTAL_VAULT"] = str(vault_path.resolve())
+    previous_vault = os.environ.get("MIRROR_CRYSTAL_VAULT")
+    try:
+        if args.vault:
+            vault_path = Path(args.vault).expanduser()
+            if not vault_path.is_file() or vault_path.suffix.lower() != ".dcrystal":
+                parser.error(f"--vault must point to an existing .dcrystal file: {vault_path}")
+            os.environ["MIRROR_CRYSTAL_VAULT"] = str(vault_path.resolve())
 
-    if args.prompt:
-        return run_oneshot(" ".join(args.prompt), session_id=args.session)
-    return run_interactive(session_id=args.session)
+        if args.prompt:
+            return run_oneshot(" ".join(args.prompt), session_id=args.session)
+        return run_interactive(session_id=args.session)
+    finally:
+        if previous_vault is None:
+            os.environ.pop("MIRROR_CRYSTAL_VAULT", None)
+        else:
+            os.environ["MIRROR_CRYSTAL_VAULT"] = previous_vault
 
 
 if __name__ == "__main__":
