@@ -10,6 +10,9 @@ requires-python = ">=3.11"
 dependencies = ["cryptography>=42.0"]
 license = {text = "Apache-2.0"}
 
+[project.scripts]
+mirror7-server = "mirror7_backend.http_server:serve"
+
 [tool.setuptools.packages.find]
 include = ["mirror7_backend*", "mirror_crystal*", "mirror_eval*"]
 

@@ -4,7 +4,9 @@ Coordinates task generation, teacher querying, quality filtering, and dataset ex
 """
 from __future__ import annotations
 
+import hashlib
 import logging
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Sequence
@@ -17,6 +19,18 @@ from .validator import ResponseValidator, ValidationResult
 from .normalizer import DatasetNormalizer
 
 logger = logging.getLogger(__name__)
+
+
+def _split_for_prompt(prompt: str, split_ratio: tuple[float, float, float] = (0.80, 0.10, 0.10)) -> str:
+    """Deterministically assign split based on normalized prompt hash."""
+    norm = re.sub(r"\s+", " ", prompt.strip().lower())
+    h = hashlib.sha256(norm.encode("utf-8")).hexdigest()
+    h_val = int(h[:8], 16) / 0xFFFFFFFF
+    if h_val < split_ratio[0]:
+        return "train"
+    elif h_val < split_ratio[0] + split_ratio[1]:
+        return "validation"
+    return "test"
 
 
 @dataclass

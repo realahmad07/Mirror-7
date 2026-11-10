@@ -58,6 +58,31 @@ from .native_conversation_v5 import (
 logger = logging.getLogger("mirror7_gpu_train")
 
 
+def accumulation_group_size(total_batches: int, batch_idx: int, accum_steps: int) -> int:
+    """Return effective accumulation step size for the group containing batch_idx."""
+    if accum_steps <= 0:
+        raise ValueError("accum_steps must be > 0")
+    group_start = (batch_idx // accum_steps) * accum_steps
+    group_end = min(total_batches, group_start + accum_steps)
+    return group_end - group_start
+
+
+def verify_resume_fingerprint(
+    ckpt_fingerprint: str | None,
+    current_fingerprint: str,
+    allow_unverified: bool = False,
+) -> None:
+    """Verify that checkpoint dataset fingerprint matches current training dataset."""
+    if ckpt_fingerprint is None:
+        if not allow_unverified:
+            raise ValueError("no dataset fingerprint in checkpoint")
+        return
+    if ckpt_fingerprint != current_fingerprint:
+        raise ValueError(
+            f"dataset fingerprint mismatch: checkpoint has {ckpt_fingerprint}, current is {current_fingerprint}"
+        )
+
+
 class DynamicBucketSampler:
     """Groups examples of similar target length into batches and supports progressive curriculum ordering.
 
@@ -92,8 +117,8 @@ class DynamicBucketSampler:
 
     def _target_len(self, ex: TrainingExample) -> int:
         if self._lengths is not None and id(ex) in self._lengths:
-            return self._lengths[id(ex)][1]
-        return len(ex.target_text)
+            return max(self._lengths[id(ex)])
+        return max(len(ex.user_text), len(ex.target_text))
 
     def _form_batches(self, sorted_examples: list[TrainingExample]) -> list[list[TrainingExample]]:
         if not self.max_tokens_per_batch:

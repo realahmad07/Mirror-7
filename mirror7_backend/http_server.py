@@ -206,11 +206,13 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             self._send(200, {"ok": True, "prompt": service.crystal_gap_prompt(topic=t)})
             return
         if path == "/api/health":
+            active_sessions = len(service.list_sessions()) if hasattr(service, "list_sessions") else 0
             self._send(200, {
                 "ok": True,
                 "service": "mirror7",
                 "ready": getattr(service, "is_ready", True),
                 "warmup_ms": getattr(service, "warmup_ms", 0.0),
+                "status": {"sessions": active_sessions},
             })
             return
         if path == "/api/crystal/stream":

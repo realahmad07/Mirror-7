@@ -17,7 +17,7 @@
 [![Retention: 0.9999 Cosine](https://img.shields.io/badge/Continual_Retention-0.9999_Cosine-0B192C.svg?style=flat-square)](#3-multi-domain-cognitive-taxonomy-7-pillars--186-categories)
 
 **Founder & Principal Architect:** **Ahmad Hassan** &nbsp;•&nbsp; **Official Repository:** [github.com/realahmad07/Mirror-7](https://github.com/realahmad07/Mirror-7)  
-📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 📊 **[Phase 2 Audit](artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Phase 3 Purification](artifacts/PHASE3_KNOWLEDGE_PURIFICATION_REPORT.md)** &nbsp;|&nbsp; 🧠 **[Phase 4 Reasoning](artifacts/PHASE4_REASONING_RETRIEVAL_REPORT.md)** &nbsp;|&nbsp; 🚀 **[Phase 5 Evaluation](artifacts/PHASE5_PRODUCTION_EVALUATION_REPORT.md)** &nbsp;|&nbsp; 🏁 **[Stage 5 & 6 Release Report](artifacts/STAGE5_STAGE6_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Verification Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[SHA-256 Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
+📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 📊 **[Phase 2 Audit](artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Phase 3 Purification](artifacts/PHASE3_KNOWLEDGE_PURIFICATION_REPORT.md)** &nbsp;|&nbsp; 🧠 **[Phase 4 Reasoning](artifacts/PHASE4_REASONING_RETRIEVAL_REPORT.md)** &nbsp;|&nbsp; 🚀 **[Phase 5 Evaluation](artifacts/PHASE5_PRODUCTION_EVALUATION_REPORT.md)** &nbsp;|&nbsp; 🏁 **[Stage 5 & 6 Report](artifacts/STAGE5_STAGE6_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🏆 **[Stage 7-9 Release Report](artifacts/STAGE7_8_9_RELEASE_REPORT.md)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
 
 </div>
 
@@ -922,6 +922,35 @@ The production SQLite knowledge vault is now **fully present in the repository v
   - **Multi-Threaded Concurrent Query Stress Test:** Dispatched 40 concurrent queries across 8 worker threads against the production `.dcrystal` vault. Mean latency remained under **`10.0 ms`** per request, with total benchmark completing in **`1.72s`**.
   - **Vault Immutability Under Stress:** Confirmed SQLite database retained all 368,270 rules, 65,351 quarantined rules, and 302,919 verified index rules without disk corruption or race conditions.
   - **Production Packaging:** Successfully built distribution packages: `mirror7_backend-0.1.0-py3-none-any.whl` and `mirror7_backend-0.1.0.tar.gz`.
+
+- **Stage 7 — Deep Regression & Full Repository Verification:**
+  - Full report: **[`artifacts/STAGE7_8_9_RELEASE_REPORT.md`](artifacts/STAGE7_8_9_RELEASE_REPORT.md)** • Full suite: **`pytest -q`** (**511 passed, 1 skipped in 56.89s**)
+  - **Full Production Vault Regression:** Verified complete repository against the real `restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal` vault (exact 368,270 rules, zero modifications).
+  - **Historical Regressions Resolved:**
+    - `training/gpu_train.py`: Restored `accumulation_group_size` and `verify_resume_fingerprint`; fixed `DynamicBucketSampler._target_len` to use symmetric max-length for prompt/target bucketing.
+    - `training/knowledge_transfer/collector.py`: Restored deterministic SHA-256 prompt hashing for `_split_for_prompt`.
+    - `mirror7_backend/http_server.py`: Added active session telemetry to `/api/health` status dictionary.
+
+- **Stage 8 — Independent Intelligence Evaluation (6 Advanced Pillars):**
+  - Test suite: **[`mirror_crystal/tests/test_stage8_independent_intelligence_eval.py`](mirror_crystal/tests/test_stage8_independent_intelligence_eval.py)** (7/7 Passed in 1.52s)
+  - **1. Unseen Mathematical Problems:** Exact polynomial differentiation ($d/dx(x^5 - 10x^3 + 15x - 7) = 5x^4 - 30x^2 + 15$), definite integration ($\int_0^3 (4x^3 - 3x^2 + 2x)dx = 63$), exact rational Gauss-Jordan elimination ($3x+4y=18, 2x-y=1 \implies x=2, y=3$), and dimensional conversion ($72\text{ km/h} = 20\text{ m/s}$).
+  - **2. Novel Reasoning Combinations:** Transitive categorical syllogisms (noble gases $\to$ neon $\to$ unreactive) and physics kinematics calculus ($x(t)=3t^3-9t^2+4t \implies v(4)=76\text{ m/s}$).
+  - **3. Cross-Domain Transfer:** Quantum Born projection ($P(|0\rangle) = 0.5$) and materials structural factor of safety ($FS = 3.0$, SAFE).
+  - **4. Long-Context Memory & Isolation:** Multi-turn session isolation: Alice (50 limit) rejects 60; Bob (200 limit) approves 60 with 140 headroom; zero cross-session leakage.
+  - **5. Genuine Learning & Zero Catastrophic Forgetting:** Autonomous learning engine achieves $\ge 85\%$ accuracy on knowledge gaps with 100% retention ($\ge 0.9999$) on canonical anchors.
+  - **6. Adversarial Defense & AST Quarantine:** Runaway infinite loop bombs bounded; dunder AST escapes blocked; calibrated honest abstention on ungrounded claims.
+  - **7. Source-Backed Benchmark Review Gate Governance:** Validates 8 frozen claims (SHA-256 `278ab0daa...`); rigorously verifies that review status remains pending independent external review.
+
+- **Stage 9 — Public Release Validation:**
+  - Test suite: **[`mirror_crystal/tests/test_stage9_public_release.py`](mirror_crystal/tests/test_stage9_public_release.py)** (6/6 Passed in 1.04s)
+  - **1. Package Installation & Wheel Metadata:** Validated `pyproject.toml`, version `0.1.0`, license `Apache-2.0`, console script `mirror7-server = "mirror7_backend.http_server:serve"`, and package namespaces (`mirror7_backend`, `mirror_crystal`, `mirror_eval`).
+  - **2. Live REST API Contracts:** Validated `GET /api/health` (sessions count), `GET /api/crystal/status`, `POST /api/crystal/ask` (epistemic qualification), `POST /api/crystal/teach`, `GET /api/crystal/wasm` (`\x00asm`), `GET /` and `GET /studio` (200 HTML).
+  - **3. Live Studio UI Integration:** Validated `mirror7_backend/studio.html` (>170KB) DOM structure, search forms, responsive theme toggles, and offline integrity.
+  - **4. Security Guard & Secret Scan:** Verified zero hardcoded credentials or private keys; verified AST Sandbox Judge blocks `os`, `subprocess`, `eval`, `exec`, `open`, and dunder breakouts.
+  - **5. Deployment Artifacts:** Validated `Dockerfile` (Python 3.11-slim, EXPOSE 8787, HEALTHCHECK, server CMD) and `docker-compose.yml`.
+  - **6. Documentation & Licensing:** Apache-2.0 `LICENSE`, comprehensive `README.md`, and exact `restorevalutecrytaled/README.md` vault specifications.
+
+- **Grand Total Repository Verification:** **524 passed, 1 skipped in 62.11s (100% green!)**
 
 ```bash
 # Query the verified production vault directly (sub-millisecond lock):
