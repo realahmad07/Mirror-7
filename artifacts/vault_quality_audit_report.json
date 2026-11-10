@@ -1,0 +1,160 @@
+{
+  "timestamp_utc": "2026-11-10T16:03:25Z",
+  "vault_path": "restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal",
+  "total_rules_audited": 368270,
+  "audit_duration_sec": 31.84,
+  "domain_distribution": {
+    "olympiad_math": 124471,
+    "general_reasoning": 116444,
+    "algorithms": 59969,
+    "general": 20767,
+    "relational_logic": 13662,
+    "physics_science": 11541,
+    "provide a helpful, accurate response": 9177,
+    "mathematics": 8327,
+    "quantum_computing": 2504,
+    "deductive_logic": 900,
+    "foundation_pretraining": 156,
+    "logical_reasoning": 113,
+    "general_chat": 81,
+    "critical_thinking": 57,
+    "human_preference": 30,
+    "cpu_verified_skill": 10,
+    "instruction_following": 9,
+    "identity": 6,
+    "metacognitive": 4,
+    "coding": 4,
+    "safety_alignment": 4,
+    "systems_programming": 4,
+    "quantitative_finance": 4,
+    "math": 3,
+    "science_reasoning": 3,
+    "active_thinking": 3,
+    "continuous_learning": 3,
+    "memory_intelligence": 3,
+    "bioinformatics": 3,
+    "doc_crystallized": 2,
+    "autonomous_planning": 2,
+    "canary_math": 1,
+    "canary_fact": 1,
+    "dream_synthesis": 1,
+    "mcts_synthesized": 1
+  },
+  "trust_tier_distribution": {
+    "1": 246013,
+    "2": 122257
+  },
+  "slot_distribution": {
+    "0": 368096,
+    "2": 173,
+    "3": 1
+  },
+  "lengths": {
+    "prompt_median_chars": 187.0,
+    "response_median_chars": 699.0,
+    "empty_prompts": 0,
+    "empty_responses": 0,
+    "short_prompts_under_10": 92,
+    "short_responses_under_20": 12839,
+    "long_responses_over_4000": 2763
+  },
+  "quality_and_hygiene": {
+    "truncated_responses": 53408,
+    "truncated_pct": 14.5,
+    "refusal_responses": 97,
+    "refusal_pct": 0.0263,
+    "code_syntax_checked": 39668,
+    "code_syntax_errors": 7063,
+    "code_syntax_error_pct": 17.81,
+    "has_derived_expressions": 174,
+    "has_test_code": 1,
+    "explicit_provenance_keys_in_payload": 0
+  },
+  "deduplication_and_contradictions": {
+    "duplicate_prompts": 1972,
+    "duplicate_prompts_pct": 0.54,
+    "contradictory_prompts": 1577,
+    "contradictory_prompts_pct": 0.43,
+    "duplicate_responses_total_excess": 13054,
+    "contradiction_samples": [
+      {
+        "prompt": "What can you do?",
+        "rule_id_1": 4335,
+        "resp_1": "You can use Transformers to create state-of-the-art language models for natural language processing tasks such as text suggesting, question answering,",
+        "rule_id_2": 6111,
+        "resp_2": "As an autonomous task execution AI, I can perform the following services:\nGenerate human-like text based on a given prompt.\nSummarize long paragraphs "
+      },
+      {
+        "prompt": "John plants a plot of 3 trees by 4 trees.  Each tree gives 5 apples.  He sells each apple for $.5.  How much money does he make, in dollars?",
+        "rule_id_1": 1925,
+        "resp_1": "He has 3*4=12 trees\nSo he has 12*5=60 apples\nSo he sells the apples for 60*.5=$30\n\nTherefore, the answer is: 30.",
+        "rule_id_2": 9138,
+        "resp_2": "How many trees does John plant? ** He has 3*4=<<3*4=12>>12 trees\nHow many apples does John plant? ** So he has 12*5=<<12*5=60>>60 apples\nHow much mone"
+      },
+      {
+        "prompt": "What is quantum physics?",
+        "rule_id_1": 10998,
+        "resp_1": "Simply put, quantum physics is a branch of physics that deals with matter and energy at a very small level (atomic-subatomic). It is based off of Quan",
+        "rule_id_2": 11025,
+        "resp_2": "Quantum physics is a branch of physics that deals with the behavior of matter and energy at the atomic and subatomic level. It is also known as quantu"
+      },
+      {
+        "prompt": "awesome, thank you!",
+        "rule_id_1": 11085,
+        "resp_1": "You are very welcome. Do you have any other web application development questions you would like to ask?",
+        "rule_id_2": 11182,
+        "resp_2": "You're welcome! Let me know if you have any revisions."
+      },
+      {
+        "prompt": "Please create a product roadmap for Instagram\u2019s storie in order to increase the number of posts. Please be as detailed as possible, and whenever possible, use comparisons to other tools such as TikTok.",
+        "rule_id_1": 2807,
+        "resp_1": "Sure, here's a possible product roadmap for Instagram's Stories to increase the number of posts:\n1. Introduce new editing tools: One way to attract mo",
+        "rule_id_2": 11209,
+        "resp_2": "Sure, here's a possible product roadmap for Instagram's Stories to increase the number of posts:\n\n1. Introduce new editing tools: One way to attract m"
+      },
+      {
+        "prompt": "Now flesh out Babel, New Shanghai, and the Great Pyramid into a Wiki-style summary of the history of the civilisations before and after human arrival on Mars. Remember, include cultural, political, and geological narratives, and explain what happened to Mars\u2019 oceans.",
+        "rule_id_1": 4078,
+        "resp_1": "Sure, here's a Wiki-style summary of the history of Babel, New Shanghai, and the Great Pyramid civilizations on Mars:\nBabel:\nBabel was a thriving civi",
+        "rule_id_2": 11213,
+        "resp_2": "Sure, here's a Wiki-style summary of the history of Babel, New Shanghai, and the Great Pyramid civilizations on Mars:\n\nBabel:\nBabel was a thriving civ"
+      },
+      {
+        "prompt": "Yes please.",
+        "rule_id_1": 11181,
+        "resp_1": "Sure, here's a breakdown of each of the leadership styles:\n\n1. Authoritarian (Autocratic): In this style, the leader makes all decisions without input",
+        "rule_id_2": 11223,
+        "resp_2": "Sure, let me explain each of these mathematical requirements in more detail:\n\n    1. Linear Algebra: Neural networks rely heavily on linear algebra, s"
+      },
+      {
+        "prompt": "that's correct",
+        "rule_id_1": 6508,
+        "resp_1": "Jenny has in total 3 siblings, 2 brothers and 1 sister. Her two brothers have two sisters, Jenny is actually one of these 2. Therefore they are in tot",
+        "rule_id_2": 11268,
+        "resp_2": "I\u2019d be a pretty bad assistant if it wasn\u2019t ;)"
+      },
+      {
+        "prompt": "Hello",
+        "rule_id_1": 11333,
+        "resp_1": "Hello there! How may I assist you?",
+        "rule_id_2": 11348,
+        "resp_2": "<think> Authoritative Mirror 7 identity rule (trust_tier=1). </think>\nHello! I am Mirror 7 (Quantum Mirror) running locally on CPU. Ask me Python codi"
+      },
+      {
+        "prompt": "Thank you for your help",
+        "rule_id_1": 5332,
+        "resp_1": "You are quite welcome! Is there anything else I might help you with, like for example a topic you had in a lecture in school, you need help understand",
+        "rule_id_2": 11409,
+        "resp_2": "You're very welcome. Is there anything else I can assist you with?"
+      }
+    ]
+  },
+  "domain_contamination": {
+    "domain_code_mismatches": {
+      "olympiad_math_with_code": 105
+    },
+    "domain_math_mismatches": {
+      "algorithms_with_only_math": 1421
+    }
+  }
+}
