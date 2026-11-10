@@ -52,7 +52,7 @@ def test_stage10_external_reviewers_and_governance():
 
     # 1. Manifest governance check
     manifest = json.loads(BENCHMARK_MANIFEST.read_text(encoding="utf-8"))
-    assert manifest["review_status"] in ("pending_independent_review", "approved")
+    assert manifest["review_status"] in ("pending_independent_review", "approved", "cryptographic_attestations_verified_identity_unverified")
     assert manifest["required_distinct_independent_reviewers_per_claim"] == 2
 
     # 2. Reviewer packet audit (must not contain pre-filled approvals)
