@@ -16,10 +16,17 @@ mirror-crystal = "mirror_crystal.cli:main"
 mirror7-server = "mirror7_backend.http_server:serve"
 
 [tool.setuptools]
-py-modules = ["mirror_cli", "phase362_response_generation_config"]
+py-modules = ["mirror_cli"]
 
 [tool.setuptools.packages.find]
-include = ["mirror7_backend*", "mirror_crystal*", "mirror_eval*"]
+include = [
+  "mirror7_backend*",
+  "mirror_crystal*",
+  "mirror_eval*",
+  "phase359_response_generation_adapter*",
+  "phase362_response_generation_config*",
+  "phase364_response_generation_validation*",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
