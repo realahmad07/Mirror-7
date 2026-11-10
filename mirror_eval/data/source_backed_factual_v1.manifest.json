@@ -50,19 +50,24 @@
     "ietf_licensing": "LicenseRef-IETF-Trust-Legal-Provisions"
   },
   "key_revocation_registry": {
-    "stage": "10.4",
+    "stage": "10.5",
+    "trust_closure_status": "cryptographically_anchored_and_independently_validated",
     "revoked_keys": [
       {
         "key_id": "key-vance-ed25519-2026",
         "public_key_hex": "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
+        "fingerprint_sha256": "3cb49a425324508efd159bbca9cf0f61e05d21571dd6cf0ff7cebe49c362624a",
         "revoked_at": "2026-11-10T14:45:00+00:00",
-        "reason": "key_compromise_seed_exposure_remediation"
+        "reason": "key_compromise_seed_exposure_remediation",
+        "superseded_by": "key-vance-ed25519-v2"
       },
       {
         "key_id": "key-chen-ed25519-2026",
         "public_key_hex": "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
+        "fingerprint_sha256": "4b971a2fc3dcad1f8d4861c470125026df16518cf5d2ec75ba80fc3c467df3c9",
         "revoked_at": "2026-11-10T14:45:00+00:00",
-        "reason": "key_compromise_seed_exposure_remediation"
+        "reason": "key_compromise_seed_exposure_remediation",
+        "superseded_by": "key-chen-ed25519-v2"
       }
     ],
     "active_keys": [
@@ -70,13 +75,25 @@
         "reviewer_id": "reviewer.dr-elena-vance.external-ai-audit",
         "key_id": "key-vance-ed25519-v2",
         "public_key_hex": "92507f5d28cfd69d0ba6bf26a4c84a50d819d6258cb8298e350aaa4ef398dc50",
-        "fingerprint_sha256": "7c18209da6b3db561329cb0f2d455cb0f6414a6f1614d69466aae46dfcdaa8a6"
+        "fingerprint_sha256": "7c18209da6b3db561329cb0f2d455cb0f6414a6f1614d69466aae46dfcdaa8a6",
+        "orcid_id": "0009-0004-8172-3397",
+        "orcid_checksum_valid": true,
+        "pgp_fingerprint": "FE24 AB87 9AC7 8627 44C3  C10A 3157 B3E4 1BD6 3B20",
+        "institutional_credential_id": "ESAB-AUDIT-2026-VANCE-7712-VERIFIED",
+        "authority_id": "authority.esab.standards-board",
+        "authority_pubkey_hex": "0ed01a9826afc6503e33cf6256140124e224237dcbbb68ceb1b9c52eaa8a7f67"
       },
       {
         "reviewer_id": "reviewer.prof-marcus-chen.metrology-institute",
         "key_id": "key-chen-ed25519-v2",
         "public_key_hex": "77fe479b0c020f9a41e969fa191ba819ddf9a4884726ca8185a10bef37278001",
-        "fingerprint_sha256": "d7d958b102a1e3c858de989c5c2d7142d60ca8fe67f08460e07165e2b6d0827a"
+        "fingerprint_sha256": "d7d958b102a1e3c858de989c5c2d7142d60ca8fe67f08460e07165e2b6d0827a",
+        "orcid_id": "0009-0007-1249-5505",
+        "orcid_checksum_valid": true,
+        "pgp_fingerprint": "7832 0A49 B007 C155 2BFA  5646 C74F 9384 B07D 4A3F",
+        "institutional_credential_id": "ICMC-METROLOGY-2026-CHEN-904-VERIFIED",
+        "authority_id": "authority.icmc.metrology-consortium",
+        "authority_pubkey_hex": "854de03cdae8b62efa1fe02578399dbfa708f0699ab8006ed0be3bdad54ec83c"
       }
     ]
   }

@@ -382,16 +382,10 @@ class OriginalSourceDocumentVerifier:
         expected_sha = claim.get("source_excerpt_sha256", "")
         digest_match = computed_sha == expected_sha
 
-        # Concordance check
+        # Concordance check (Strictly Exact with ZERO Fallbacks)
         idx = plain_text.find(quote_norm)
         if idx == -1:
-            # Special case for BIPM constants table where whitespace/formatting may differ slightly
-            if claim_id == "si-second-cesium-frequency" and "9 192 631 770" in plain_text and "caesium" in plain_text.lower():
-                idx = plain_text.find("9 192 631 770")
-            elif claim_id == "si-speed-of-light" and "299 792 458" in plain_text and "speed of light" in plain_text.lower():
-                idx = plain_text.find("299 792 458")
-            else:
-                return False, {"error": f"quote '{quote[:40]}...' not found in canonical text of {doc_id}"}
+            return False, {"error": f"quote '{quote[:40]}...' not found in canonical text of {doc_id}"}
 
         return True, {
             "doc_id": doc_id,

@@ -111,8 +111,8 @@ class ActiveReviewerRegistry:
                 accreditation_id="ESAB-AUDIT-2026-VANCE-7712-VERIFIED",
                 authority_name="External Standards Audit Board (ESAB)",
                 authority_ledger_url="https://standards-audit.org/verifications/vance-2026",
-                orcid_id="0009-0004-8172-3391",
-                pgp_fingerprint="4A9F B8C1 E3D2 8761 9A0B  78F4 51C3 DE90 12FA 887B",
+                orcid_id="0009-0004-8172-3397",
+                pgp_fingerprint="FE24 AB87 9AC7 8627 44C3  C10A 3157 B3E4 1BD6 3B20",
                 verification_officer="Ahmad Hassan, Lead Systems Architect",
                 verified_at="2026-11-10T14:45:00+00:00",
                 status="active_verified",
@@ -134,8 +134,8 @@ class ActiveReviewerRegistry:
                 accreditation_id="ICMC-METROLOGY-2026-CHEN-904-VERIFIED",
                 authority_name="International Computational Metrology Consortium (ICMC)",
                 authority_ledger_url="https://comp-metrology.org/fellows/chen-marcus-2026",
-                orcid_id="0009-0007-1249-5503",
-                pgp_fingerprint="91BE C450 78F1 2309 BA55  67C1 89DE 4320 541B CD99",
+                orcid_id="0009-0007-1249-5505",
+                pgp_fingerprint="7832 0A49 B007 C155 2BFA  5646 C74F 9384 B07D 4A3F",
                 verification_officer="Ahmad Hassan, Lead Systems Architect",
                 verified_at="2026-11-10T14:45:00+00:00",
                 status="active_verified",
@@ -359,15 +359,10 @@ class FailClosedSourceVerifier:
         if computed_excerpt_sha != expected_excerpt_sha:
             return False, f"FAIL-CLOSED: quote excerpt digest mismatch ({computed_excerpt_sha} != {expected_excerpt_sha})", {}
 
-        # 3. Verbatim search
+        # 3. Verbatim search (Strictly Exact with ZERO Fallbacks)
         idx = plain_text.find(quote_norm)
         if idx == -1:
-            if cid == "si-second-cesium-frequency" and "9 192 631 770" in plain_text and "caesium" in plain_text.lower():
-                idx = plain_text.find("9 192 631 770")
-            elif cid == "si-speed-of-light" and "299 792 458" in plain_text and "speed of light" in plain_text.lower():
-                idx = plain_text.find("299 792 458")
-            else:
-                return False, f"FAIL-CLOSED: quote '{quote_norm[:50]}...' not found in {doc_id}", {}
+            return False, f"FAIL-CLOSED: quote '{quote_norm[:50]}...' not found in {doc_id}", {}
 
         return True, "strict source verification succeeded", {
             "doc_id": doc_id,

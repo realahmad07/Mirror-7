@@ -128,7 +128,7 @@ def test_stage10_4_institutional_evidence_authentication():
     vance = ActiveReviewerRegistry.get_identity("reviewer.dr-elena-vance.external-ai-audit")
     assert vance is not None
     ev_vance = vance.institutional_evidence
-    assert ev_vance.orcid_id == "0009-0004-8172-3391"
+    assert ev_vance.orcid_id == "0009-0004-8172-3397"
     assert "standards-audit.org" in ev_vance.authority_ledger_url
     assert "ESAB-AUDIT-2026-VANCE-7712-VERIFIED" in ev_vance.accreditation_id
     assert ev_vance.status == "active_verified"
@@ -138,7 +138,7 @@ def test_stage10_4_institutional_evidence_authentication():
     chen = ActiveReviewerRegistry.get_identity("reviewer.prof-marcus-chen.metrology-institute")
     assert chen is not None
     ev_chen = chen.institutional_evidence
-    assert ev_chen.orcid_id == "0009-0007-1249-5503"
+    assert ev_chen.orcid_id == "0009-0007-1249-5505"
     assert "comp-metrology.org" in ev_chen.authority_ledger_url
     assert "ICMC-METROLOGY-2026-CHEN-904-VERIFIED" in ev_chen.accreditation_id
     assert ev_chen.status == "active_verified"
