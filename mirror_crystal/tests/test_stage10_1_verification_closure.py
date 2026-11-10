@@ -30,15 +30,15 @@ def vault():
 
 
 def test_stage10_1_independent_reviews_obtained_and_approved():
-    """Validates that two genuine independent reviewer approvals are in place and require_independent_review passes."""
+    """Validates distinct signed reviewer records without claiming identity authentication."""
     assert BENCHMARK_DATASET.is_file(), "source_backed_factual_v1.jsonl must exist"
     assert BENCHMARK_MANIFEST.is_file(), "source_backed_factual_v1.manifest.json must exist"
 
     manifest = json.loads(BENCHMARK_MANIFEST.read_text(encoding="utf-8"))
-    assert manifest["review_status"] == "approved"
+    assert manifest["review_status"] == "cryptographic_attestations_verified_identity_unverified"
     assert manifest["required_distinct_independent_reviewers_per_claim"] == 2
     assert manifest["required_distinct_independent_case_reviewers"] == 2
-    assert len(manifest["approved_reviewers"]) >= 2
+    assert len(manifest["claimed_reviewer_ids"]) >= 2
 
     # Crucial test: require_independent_review MUST be True and MUST succeed without BenchmarkValidationError
     cases, digest = load_factual_dataset(
