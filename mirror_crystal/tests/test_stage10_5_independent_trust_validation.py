@@ -239,7 +239,7 @@ def test_stage10_5_reconciled_trust_architecture_and_full_authentication():
     # 5. Manifest Reconciled Metadata Invariant
     manifest = json.loads(BENCHMARK_MANIFEST_PATH.read_text(encoding="utf-8"))
     reg = manifest["key_revocation_registry"]
-    assert reg["stage"] == "10.5"
+    assert reg["stage"] == "10.5.1"
     assert len(reg["revoked_keys"]) == 2
     assert len(reg["active_keys"]) == 2
 
