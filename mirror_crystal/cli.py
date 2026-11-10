@@ -95,116 +95,184 @@ def run_hardware_benchmark(dataset_path: Path | None = None, max_rows: int = 300
     }
 
 
+SUPPORTED_INPUT_SUFFIXES = {".jsonl", ".txt", ".md", ".py"}
+
+
+def _collect_input_files(input_path: Path) -> list[Path]:
+    """Validate an input file/directory and collect supported files in stable order."""
+    if not input_path.exists():
+        raise ValueError(f"Input path does not exist: {input_path}")
+    if input_path.is_file():
+        if input_path.suffix.lower() not in SUPPORTED_INPUT_SUFFIXES:
+            raise ValueError(f"Unsupported input type {input_path.suffix!r}; use .jsonl, .txt, .md or .py")
+        return [input_path]
+    if not input_path.is_dir():
+        raise ValueError(f"Input path is not a regular file or directory: {input_path}")
+    files = sorted(
+        path for path in input_path.rglob("*")
+        if path.is_file() and path.suffix.lower() in SUPPORTED_INPUT_SUFFIXES
+    )
+    if not files:
+        raise ValueError(f"No supported input files found under {input_path} (expected .jsonl, .txt, .md or .py)")
+    return files
+
+
+def _validate_brain_file(path: Path, parser: argparse.ArgumentParser) -> None:
+    if path.suffix.lower() not in {".mcrystal", ".dcrystal"}:
+        parser.error(f"Brain path must end in .mcrystal or .dcrystal: {path}")
+    if not path.is_file():
+        parser.error(f"Brain file does not exist: {path}")
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Mirror Crystal — Zero-Weight CPU Intelligence Engine")
+    parser = argparse.ArgumentParser(
+        description="Mirror Crystal — CPU-first rule crystallization, retrieval and evaluation"
+    )
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_train = sub.add_parser("train", help="Ingest .jsonl or .txt/.py files in 1 CPU pass")
-    p_train.add_argument("--input", required=True, help="Path to .jsonl, .txt, .md, or .py file")
-    p_train.add_argument("--save", required=True, help="Output .mcrystal brain file path")
-    p_train.add_argument("--load", default="", help="Optional existing .mcrystal file to continue teaching")
+    p_train = sub.add_parser("train", help="Ingest .jsonl, .txt, .md or .py files")
+    p_train.add_argument("--input", required=True, help="Input file or directory")
+    p_train.add_argument("--save", required=True, help="Output .mcrystal or .dcrystal brain path")
+    p_train.add_argument("--load", default="", help="Optional existing .mcrystal brain to continue")
     p_train.add_argument("--max-rows", type=int, default=None)
 
-    p_query = sub.add_parser("query", help="Run a single prompt against a .mcrystal brain")
-    p_query.add_argument("--brain", required=True, help="Path to .mcrystal file")
+    p_query = sub.add_parser("query", help="Run one prompt against an existing brain")
+    p_query.add_argument("--brain", required=True, help="Existing .mcrystal or .dcrystal file")
     p_query.add_argument("--prompt", required=True, help="User prompt")
 
-    p_chat = sub.add_parser("chat", help="Interactive multi-turn CLI session")
-    p_chat.add_argument("--brain", required=True, help="Path to .mcrystal file")
+    p_chat = sub.add_parser("chat", help="Interactive multi-turn session")
+    p_chat.add_argument("--brain", required=True, help="Existing .mcrystal or .dcrystal file")
 
-    p_bench = sub.add_parser("benchmark", help="Run hardware efficiency & capability verification benchmark")
+    p_bench = sub.add_parser("benchmark", help="Run deterministic CPU capability checks")
     p_bench.add_argument("--dataset", default="", help="Optional .jsonl dataset path")
     p_bench.add_argument("--max-rows", type=int, default=7125)
 
     args = parser.parse_args(argv)
+    if getattr(args, "max_rows", None) is not None and args.max_rows < 1:
+        parser.error("--max-rows must be a positive integer")
 
     if args.cmd == "train":
-        in_path = Path(args.input)
-        save_path = Path(args.save)
-        files = sorted(in_path.glob("*.jsonl")) if in_path.is_dir() else [in_path]
+        input_path = Path(args.input).expanduser()
+        save_path = Path(args.save).expanduser()
+        try:
+            files = _collect_input_files(input_path)
+        except ValueError as exc:
+            parser.error(str(exc))
+        if save_path.suffix.lower() not in {".mcrystal", ".dcrystal"}:
+            parser.error("--save must end in .mcrystal or .dcrystal")
+        if args.load:
+            load_path = Path(args.load).expanduser()
+            if save_path.suffix.lower() == ".dcrystal":
+                parser.error("--load is supported only when saving an in-memory .mcrystal brain")
+            if load_path.suffix.lower() != ".mcrystal" or not load_path.is_file():
+                parser.error(f"--load must point to an existing .mcrystal file: {load_path}")
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        per_file: list[dict[str, Any]] = []
 
         if save_path.suffix.lower() == ".dcrystal":
             vault = DiskCrystalVault(save_path)
-            per_file = []
-            for idx_f, f in enumerate(files):
-                is_last = idx_f == len(files) - 1
-                if f.suffix.lower() == ".jsonl":
-                    per_file.append(vault.ingest_jsonl(f, max_rows=args.max_rows, fold_synonyms=is_last))
-                else:
-                    lines_n = vault.observe_unlabeled_text(f.read_text(encoding="utf-8", errors="replace"))
-                    per_file.append({"file": f.name, "lines_read": lines_n})
-            sz = vault.optimize_disk()
-            summary = {
-                "storage_mode": "out_of_core_sqlite_disk_vault (.dcrystal)",
-                "rules_loaded_in_ram_at_startup": 0,
-                "files_ingested": per_file,
-                "total_vault_rules_on_disk": vault.rule_count(),
-                "stats": vault.stats,
-                "saved_brain_path": str(save_path),
-                "saved_brain_mb": round(sz / (1024 * 1024), 3),
-            }
-            vault.close()
+            try:
+                for index, file_path in enumerate(files):
+                    fold = index == len(files) - 1
+                    if file_path.suffix.lower() == ".jsonl":
+                        per_file.append(vault.ingest_jsonl(file_path, max_rows=args.max_rows, fold_synonyms=fold))
+                    else:
+                        per_file.append(vault.ingest_source_file(file_path))
+                saved_bytes = vault.optimize_disk()
+                summary = {
+                    "storage_mode": "out_of_core_sqlite_disk_vault",
+                    "rules_loaded_in_ram_at_startup": 0,
+                    "files_ingested": per_file,
+                    "total_vault_rules_on_disk": vault.rule_count(),
+                    "stats": vault.stats,
+                    "saved_brain_path": str(save_path.resolve()),
+                    "saved_brain_mb": round(saved_bytes / (1024 * 1024), 3),
+                }
+            finally:
+                vault.close()
             print(json.dumps(summary, indent=2))
             return 0
 
-        eng = MirrorCrystalEngine.load(args.load) if args.load else MirrorCrystalEngine()
-        per_file = []
-        for idx_f, f in enumerate(files):
-            is_last = idx_f == len(files) - 1
-            if f.suffix.lower() == ".jsonl":
-                per_file.append(eng.ingest_jsonl(f, max_rows=args.max_rows, fold_synonyms=is_last))
+        engine = MirrorCrystalEngine.load(args.load) if args.load else MirrorCrystalEngine()
+        for index, file_path in enumerate(files):
+            fold = index == len(files) - 1
+            if file_path.suffix.lower() == ".jsonl":
+                per_file.append(engine.ingest_jsonl(file_path, max_rows=args.max_rows, fold_synonyms=fold))
             else:
-                per_file.append(eng.ingest_text_file(f, fold_synonyms=is_last))
-        sz = eng.save(save_path)
-        out_stats: dict[str, Any] = per_file[0] if len(per_file) == 1 else {"files_ingested": per_file}
-        out_stats["saved_brain_path"] = str(save_path)
-        out_stats["saved_brain_mb"] = round(sz / (1024 * 1024), 3)
-        print(json.dumps(out_stats, indent=2))
+                per_file.append(engine.ingest_text_file(file_path, fold_synonyms=fold))
+        saved_bytes = engine.save(save_path)
+        summary: dict[str, Any] = per_file[0] if len(per_file) == 1 else {"files_ingested": per_file}
+        summary["saved_brain_path"] = str(save_path.resolve())
+        summary["saved_brain_mb"] = round(saved_bytes / (1024 * 1024), 3)
+        print(json.dumps(summary, indent=2))
         return 0
 
     if args.cmd == "query":
-        bpath = Path(args.brain)
-        if bpath.suffix.lower() == ".dcrystal":
-            vault = DiskCrystalVault(bpath)
-            res = vault.respond(args.prompt)
-            vault.close()
+        brain_path = Path(args.brain).expanduser()
+        _validate_brain_file(brain_path, parser)
+        if brain_path.suffix.lower() == ".dcrystal":
+            vault = DiskCrystalVault(brain_path)
+            try:
+                response = vault.respond(args.prompt)
+            finally:
+                vault.close()
         else:
-            eng = MirrorCrystalEngine.load(bpath)
-            res = eng.respond(args.prompt)
-        print(json.dumps(res.to_dict(), indent=2))
+            response = MirrorCrystalEngine.load(brain_path).respond(args.prompt)
+        print(json.dumps(response.to_dict(), indent=2))
         return 0
 
     if args.cmd == "chat":
-        bpath = Path(args.brain)
-        is_disk = bpath.suffix.lower() == ".dcrystal"
-        brain: Any = DiskCrystalVault(bpath) if is_disk else MirrorCrystalEngine.load(bpath)
-        print("Mirror Crystal Interactive CPU Session (type 'exit' to quit, '/teach Q ||| A' to teach instantly)")
-        while True:
-            try:
-                user_in = input("\nYOU> ").strip()
-            except EOFError:
-                break
-            if not user_in or user_in.lower() in {"exit", "quit"}:
-                break
-            if user_in.startswith("/teach ") and "|||" in user_in:
-                q_part, a_part = user_in[7:].split("|||", 1)
-                brain.ingest_pair(q_part.strip(), a_part.strip())
-                if is_disk:
-                    brain.optimize_disk()
-                else:
-                    brain.save(bpath)
-                print("[CRYSTALLIZED IN 1 PASS & SAVED]")
-                continue
-            res = brain.respond(user_in, session_id="cli")
-            print(f"MIRROR CRYSTAL ({res.latency_ms:.2f} ms | {res.mode})>\n{res.answer}")
-        if is_disk:
-            brain.close()
+        brain_path = Path(args.brain).expanduser()
+        _validate_brain_file(brain_path, parser)
+        is_disk = brain_path.suffix.lower() == ".dcrystal"
+        brain: Any = DiskCrystalVault(brain_path) if is_disk else MirrorCrystalEngine.load(brain_path)
+        try:
+            print("Mirror Crystal Interactive CPU Session (type 'exit' to quit, '/teach Q ||| A' to teach)")
+            while True:
+                try:
+                    user_input = input("\nYOU> ").strip()
+                except (EOFError, KeyboardInterrupt):
+                    print()
+                    break
+                if not user_input or user_input.lower() in {"exit", "quit"}:
+                    break
+                if user_input.startswith("/teach ") and "|||" in user_input:
+                    question, answer = user_input[7:].split("|||", 1)
+                    question, answer = question.strip(), answer.strip()
+                    if not question or not answer:
+                        print("Usage: /teach <question> ||| <answer>")
+                        continue
+                    added = brain.ingest_pair(question, answer)
+                    if is_disk:
+                        brain.optimize_disk()
+                    else:
+                        brain.save(brain_path)
+                    print("[NEW RULE SAVED]" if added else "[NO NEW RULE — DUPLICATE OR UNCHANGED]")
+                    continue
+                response = brain.respond(user_input, session_id="cli")
+                print(f"MIRROR CRYSTAL ({response.latency_ms:.2f} ms | {response.mode})>\n{response.answer}")
+        finally:
+            if is_disk:
+                brain.close()
         return 0
 
     if args.cmd == "benchmark":
-        ds = Path(args.dataset) if args.dataset else None
-        report = run_hardware_benchmark(dataset_path=ds, max_rows=args.max_rows)
+        dataset_path = Path(args.dataset).expanduser() if args.dataset else None
+        if dataset_path is not None and not dataset_path.is_file():
+            parser.error(f"Dataset file does not exist: {dataset_path}")
+        report = run_hardware_benchmark(dataset_path=dataset_path, max_rows=args.max_rows)
         print(json.dumps(report, indent=2))
-        return 0
+        required_checks = (
+            "unseen_number_slot_generalization_exact",
+            "continual_100_step_zero_forgetting",
+            "multi_hop_lock_chaining_verified",
+            "multi_turn_session_reality_check_verified",
+        )
+        return 0 if all(report.get(key) is True for key in required_checks) else 1
 
-    return 0
+    parser.error(f"Unsupported command: {args.cmd}")
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

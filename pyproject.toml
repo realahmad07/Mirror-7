@@ -11,7 +11,12 @@ dependencies = ["cryptography>=42.0"]
 license = {text = "Apache-2.0"}
 
 [project.scripts]
+mirror7 = "mirror_cli:main"
+mirror-crystal = "mirror_crystal.cli:main"
 mirror7-server = "mirror7_backend.http_server:serve"
+
+[tool.setuptools]
+py-modules = ["mirror_cli", "phase362_response_generation_config"]
 
 [tool.setuptools.packages.find]
 include = ["mirror7_backend*", "mirror_crystal*", "mirror_eval*"]

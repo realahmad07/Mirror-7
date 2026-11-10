@@ -147,14 +147,34 @@ class BackendService:
         return self._hygiene_pipeline
 
     def _init_default_crystal(self) -> None:
+        """Mount the configured or repository production vault independent of the caller's CWD."""
         try:
+            import os
             from pathlib import Path
             from mirror_crystal import DiskCrystalVault
-            vault_p = Path("artifacts/mirror_crystal_all_datasets.dcrystal")
-            if vault_p.exists():
-                import os
-                cache_sz = int(os.getenv("MIRROR_RULE_CACHE_SIZE", "8192"))
-                self.crystal_vault = DiskCrystalVault(vault_p, lru_rule_cache_size=cache_sz)
+
+            repo_root = Path(__file__).resolve().parents[1]
+            configured = os.getenv("MIRROR_CRYSTAL_VAULT", "").strip()
+            candidates = []
+            if configured:
+                configured_path = Path(configured).expanduser()
+                if not configured_path.is_absolute():
+                    configured_path = (Path.cwd() / configured_path).resolve()
+                candidates.append(configured_path)
+            candidates.extend([
+                repo_root / "restorevalutecrytaled" / "mirror_crystal_all_datasets.dcrystal",
+                repo_root / "artifacts" / "mirror_crystal_all_datasets.dcrystal",
+            ])
+            vault_path = next((path for path in candidates if path.is_file()), None)
+            if vault_path is None:
+                self.crystal_vault = None
+                return
+
+            cache_sz = int(os.getenv("MIRROR_RULE_CACHE_SIZE", "8192"))
+            self.crystal_vault = DiskCrystalVault(
+                vault_path,
+                lru_rule_cache_size=cache_sz,
+            )
         except Exception:
             self.crystal_vault = None
 

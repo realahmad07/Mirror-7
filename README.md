@@ -9,7 +9,6 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-1D4ED8.svg?style=flat-square)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-0F766E.svg?style=flat-square)](./pyproject.toml)
 [![Vault: 368k Rules Audited](https://img.shields.io/badge/Vault-368k_Rules_Audited-0F766E.svg?style=flat-square)](#10-mirror-crystal--cpu-first-autonomous-engines-zero-gpu-track)
-[![Benchmark: 55/55 100% Green](https://img.shields.io/badge/mirror__eval-55%2F55_100%25_Passed-0F766E.svg?style=flat-square)](#4-live-nvidia-a100--cpu-verification-showcase-zero-truncation)
 [![Inference: < 1.0 ms CPU Lock](https://img.shields.io/badge/CPU_Latency-%3C_1.0_ms_Direct_Lock-1D4ED8.svg?style=flat-square)](#2-architectural-differentiation--byte-first-cost-reduction-economics)
 [![Vocab: 259 Raw UTF-8 Bytes](https://img.shields.io/badge/Vocab-259_Raw_UTF--8_Bytes-0B192C.svg?style=flat-square)](#1-end-to-end-visual-execution-sequence--v6-architecture)
 [![V6 Hub: 556.6M / 185.5M Active](https://img.shields.io/badge/Params-556.6M_Hub_%7C_185.5M_Active-1D4ED8.svg?style=flat-square)](#1-end-to-end-visual-execution-sequence--v6-architecture)
@@ -25,7 +24,9 @@
 
 ## What Mirror 7 ("Quantum Mirror") Is
 
-**Mirror 7** is an open-source (`Apache-2.0`) foundation-model and weightless neuro-symbolic cognitive architecture led by **Ahmad Hassan**. It demonstrates how machine intelligence achieves higher sample efficiency, exact mathematical grounding, zero hallucination on deterministic tasks, and dramatically lower infrastructure costs through **raw UTF-8 byte-first processing (`vocab = 259`)**, **persistent cross-turn semantic state (`prev_state`)**, **sparse domain-specialist routing**, and **out-of-core discrete crystallization (`mirror_crystal/`)**—eliminating the severe memory taxes of static `128K–256K` subword (BPE) vocabularies, full-transcript quadratic KV-cache prefilling, and uninterpretable probabilistic hallucinations.
+**Mirror 7** is an open-source (`Apache-2.0`) AI research project combining byte-first learned-model experiments, a CPU-first symbolic and knowledge engine, a stateful backend, and a local developer CLI. The current usable system can retrieve from its SQLite Crystal vault, apply deterministic symbolic routines to supported mathematical tasks, represent and plan typed tasks, preserve session memory, run a narrow native-code generator through a test-and-verification cycle, and abstain when its stored evidence does not support an answer.
+
+Mirror 7 is **not yet a general-purpose frontier language model or AGI**. Its answers depend on the knowledge present in the vault, its implemented handlers, and the quality of independent verification. The learned-model checkpoints are a separate research track; their presence does not mean the CPU Crystal engine is a fluent general-purpose chatbot.
 
 The architecture comprises three cleanly separated, production-verified engineering tracks:
 
@@ -1128,3 +1129,78 @@ See [Backend Q&A Execution and Native Code Generation](./docs/32-backend-qna-exe
 - Promotion stops on any failed gate; full regression is required after each justified fix.
 - External reviewer identity and institutional-root ownership remain unverified, distinct from local signature validation.
 - Plan: [STAGE11_GENERALIZATION_EVALUATION_PLAN.md](artifacts/STAGE11_GENERALIZATION_EVALUATION_PLAN.md).
+
+
+---
+
+## Current Developer CLI — November 2026
+
+The repository has two supported command surfaces.
+
+### Mirror 7 backend CLI
+
+Run from the repository root:
+
+\`\`\`powershell
+python mirror_cli.py
+python mirror_cli.py --session research "What is a qubit?"
+python mirror_cli.py --vault "restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal" "Explain superposition"
+\`\`\`
+
+Interactive commands include \`/math\`, \`/code\`, \`/teach\`, \`/memory\`, \`/remember\`, \`/forget\`, \`/undo\`, \`/status\`, \`/ingest\`, \`/gaps\`, \`/gap_prompt\`, \`/upvote\`, \`/downvote\`, \`/purge_domain\`, \`/compact\` and \`/dream\`.
+
+- \`/code\` uses the configured native code-generation provider and then the non-vacuous TDD verification cycle. The built-in provider is intentionally limited to simple supported tasks; unsupported requests return a clear message.
+- \`/teach\` reports whether a new rule was actually inserted. A duplicate is a no-op; safety/data-hygiene rejections are shown as rejected teaching attempts.
+- The backend discovers the production vault at \`restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal\`. Set \`MIRROR_CRYSTAL_VAULT\` or pass \`--vault\` to use a different existing vault.
+- Windows users can launch with \`run_cli.bat\` or \`restorevalutecrytaled/mirror_crystal_vault_suite/run_cli.bat\`.
+
+### Mirror Crystal CLI
+
+\`\`\`powershell
+python -m mirror_crystal --help
+python -m mirror_crystal train --input .\\training\\data --save .\\artifacts\\my_brain.mcrystal
+python -m mirror_crystal query --brain .\\artifacts\\my_brain.mcrystal --prompt "What is a qubit?"
+python -m mirror_crystal chat --brain .\\artifacts\\my_brain.mcrystal
+python -m mirror_crystal benchmark
+\`\`\`
+
+It accepts \`.jsonl\`, \`.txt\`, \`.md\` and \`.py\` files (directories are scanned recursively). Use \`.dcrystal\` for a disk-backed SQLite brain and \`.mcrystal\` for the compact serialized in-memory engine. Missing input/brain files fail with a CLI usage error rather than silently creating an empty brain. The benchmark exits nonzero if a built-in check fails.
+
+After installing the project, \`mirror7\` and \`mirror-crystal\` console commands are registered.
+
+## What Mirror 7 Can Do Today — Practical Capability Boundary
+
+| Area | Current capability | Boundary |
+|---|---|---|
+| Knowledge | Retrieve from a local disk-backed vault (368,270 stored rules in the production artifact), teach selected Q&A pairs, ingest documents and inspect coverage gaps | Stored quantity is not the same as verified truth; source quality and rule coverage still matter |
+| Mathematics | Route supported requests to symbolic/CAS routines and return exact results where an implementation matches | Not a universal theorem prover; unsupported tasks may abstain |
+| Reasoning | Apply stored rules and multi-hop relations; represent task specifications, match typed capabilities and propose bounded compositions | Generalization to arbitrary unseen tasks remains under evaluation |
+| Coding | Generate a narrow set of simple Python tasks and run candidate output through TDD checks | Not an unrestricted coding agent; unsupported requests must be refused or clarified |
+| Memory | Maintain session memory, remember/recall/forget values and undo the last mutation | Session memory is separate from permanent knowledge-vault teaching |
+| Safety & verification | Apply data-hygiene checks, AST restrictions, bounded execution and independent task verification where configured | Untrusted workloads still require the configured container/VM boundary |
+
+## Phase 11 Roadmap — Generalization Before Expansion
+
+Phase 11 is evaluation-first. Each workstream freezes its data, uses independent oracles and stops promotion when a gate fails.
+
+| Subphase | What we will do | Expected improvement |
+|---|---|---|
+| **11.1 — CLI & Runtime Reliability** | Finish command tests, clean installation/launch paths, vault selection, error reporting and resource cleanup | Developers can install, launch, teach, query and evaluate without hidden path or command failures |
+| **11.2 — Frozen Baseline & Benchmark Harness** | Freeze commit, vault checksum, datasets, task generators and environment; record per-case outcomes | Trustworthy before/after measurements and no tuning on hidden tests |
+| **11.3 — Unseen Mathematics** | Add generated algebra, calculus, probability, linear algebra and combinatorics tasks with exact oracles | Measure and improve correctness beyond stored examples and fixed handlers |
+| **11.4 — Novel Reasoning & Transfer** | Compose unfamiliar multi-hop tasks and cross-domain combinations with adversarial near-misses | Better verified transfer instead of matching familiar prompt patterns |
+| **11.5 — Grounded Factual Answers** | Score atomic claims against frozen primary-source passages; calibrate confidence, coverage and abstention | Fewer unsupported claims and better uncertainty handling |
+| **11.6 — Continual Learning & Memory** | Test verified teaching, conflict handling, rollback, session isolation and prior-knowledge retention | Safer learning without silent overwrites or cross-session leakage |
+| **11.7 — Adversarial & Sandbox Robustness** | Test prompt injection, malformed inputs, tool misuse, unsafe code and resource-exhaustion controls | More reliable refusal and predictable failure under hostile inputs |
+| **11.8 — Integrated Release Gate** | Run full-history regression, unseen benchmarks, packaging, clean-machine smoke tests and operational profiling | A defensible Phase 11 release decision based on reproducible evidence |
+
+### Following Phase 11
+
+- **Phase 12 — Production Hardening & Ecosystem:** versioned APIs, signed artifacts, deployment profiles, telemetry, backup/restore, permissioned tool integrations and support policy. Improvement: easier deployment and maintenance without weakening trust controls.
+- **Phase 13 — Multimodal Inputs & Structured Tools:** evaluate image/audio/document inputs and tool-mediated tasks with domain-specific evidence checks. Improvement: broader input coverage while keeping results auditable. This begins only after Phase 11 demonstrates reliable task generalization.
+
+### Current verification status
+
+The latest fast CI and Security Guard passed on the Stage 11 plan commit. The last full historical run before these CLI changes reported **533 passed, 24 failed and 2 skipped**. Some failures were sandbox tests because the workflow had not pulled its pinned Docker image; the Deep Regression workflow now pulls that image before running the suite. Other earlier failures covered backend behavior, retrieval/synthesis, data curation and evaluation and are not being counted as CLI passes. A new full-regression run is required after this repair before Stage 11.1 can be marked complete.
+
+Detailed Stage 11 evaluation design: [STAGE11_GENERALIZATION_EVALUATION_PLAN.md](artifacts/STAGE11_GENERALIZATION_EVALUATION_PLAN.md).
