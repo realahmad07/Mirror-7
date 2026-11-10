@@ -365,7 +365,10 @@ def roadmap_blueprint(row: dict[str, Any]) -> tuple[Blueprint, dict[str, Any]]:
         blueprint_id=f"roadmap:{row.get('blueprint_id')}",
         kind=kind,
         domain=domain,
-        intent=re.sub(r"[^a-z0-9]+", "_", stage.casefold()).strip("_") or "roadmap",
+        # Stage is a curriculum bucket, not a single semantic intent. Give each
+        # distinct prompt its own intent key so unrelated lessons in the same
+        # stage are not reported as conflicting answers.
+        intent=f"roadmap_{re.sub(r'[^a-z0-9]+', '_', stage.casefold()).strip('_')}_{digest[:16]}",
         prompt_pattern=prompt,
         response_template=response,
         slots=slots,
