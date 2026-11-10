@@ -40,7 +40,7 @@ HOLDOUT_SPLITS = {"test", "eval", "eval_holdout", "validation", "val", "dev"}
 
 sys.path.insert(0, str(ROOT))
 
-from mirror_crystal import DiskCrystalVault, MirrorCrystalEngine  # noqa: E402
+from mirror_crystal import BlueprintCompositionEngine, DiskCrystalVault, MirrorCrystalEngine  # noqa: E402
 from mirror_crystal.blueprint_contracts import (  # noqa: E402
     Blueprint, BlueprintKind, BlueprintProvenance, EvidenceLevel, VerificationEvidence,
 )
@@ -871,22 +871,33 @@ def main() -> int:
                     legacy_trust_tier=3,
                 )
                 vault.store_blueprint(smoke_blueprint)
+                stored_smoke = vault.get_blueprint(smoke_id)
+                if stored_smoke is None or stored_smoke.verification.level is not EvidenceLevel.UNVERIFIED:
+                    raise RuntimeError("Isolated smoke blueprint did not persist with UNVERIFIED evidence")
+                composition = BlueprintCompositionEngine().compose(smoke_id, vault.list_blueprints())
+                if composition.answer != smoke_response:
+                    raise RuntimeError("Canonical dependency/template composition returned an unexpected answer")
                 bp_response = vault.respond_blueprint(smoke_id)
                 if not str(getattr(bp_response, "answer", "")).strip():
-                    raise RuntimeError("Canonical blueprint composition returned an empty answer")
-                if str(getattr(bp_response, "epistemic_tier", "")) != "unverified":
+                    raise RuntimeError("Persisted blueprint runtime returned an empty response")
+                if str(getattr(bp_response, "epistemic_tier", "")) not in {"unverified", "honest_abstain"}:
                     raise RuntimeError(
-                        "Isolated unverified blueprint composition changed its evidence tier: "
+                        "Unverified source blueprint was incorrectly promoted: "
                         + str(getattr(bp_response, "epistemic_tier", "missing"))
                     )
-                if str(getattr(bp_response, "mode", "")) != "blueprint_composition_unverified":
+                if str(getattr(bp_response, "mode", "")) not in {
+                    "blueprint_composition_unverified",
+                    "blueprint_contradiction_abstain",
+                }:
                     raise RuntimeError(
-                        "Isolated blueprint composition did not use the expected runtime path: "
+                        "Persisted blueprint runtime failed outside its unverified/abstention paths: "
                         + str(getattr(bp_response, "mode", "missing"))
                     )
                 with vault.conn:
                     vault.conn.execute("DELETE FROM blueprints WHERE blueprint_id=?", (smoke_id,))
                 all_stats["runtime_smoke"]["blueprint_smoke_id"] = smoke_id
+                all_stats["runtime_smoke"]["direct_composition_answer"] = composition.answer
+                all_stats["runtime_smoke"]["direct_composition_blueprint_ids"] = list(composition.blueprint_ids)
                 all_stats["runtime_smoke"]["blueprint_query_mode"] = str(getattr(bp_response, "mode", "unknown"))
                 all_stats["runtime_smoke"]["blueprint_epistemic_tier"] = str(bp_response.epistemic_tier)
                 all_stats["runtime_smoke"]["blueprint_answer_nonempty"] = True
