@@ -675,7 +675,7 @@ flowchart LR
 
 | Phase & Window | Open-Weights Release | Total Params | Active / Query | Byte Horizon | Curated Pure Data | Target Competitor Class Surpassed / Matched |
 |---|---|---:|---:|---:|---:|---|
-| **Phase 0** *(Completed)* | **Mirror-7 V6 + Crystal Vault** | **`556.6M`** | **`185.5M`** *(33.3%)* | `2,048` B | **No current verified rule feed** / `84K` Rows | Proven byte-native synthesis, `<tool_call>` loop, `83.3%` RL pass, and `368,270` crystal rules at sub-millisecond CPU speed |
+| **Phase 0** *(Completed)* | **Mirror-7 V6 + Crystal Vault** | **`556.6M`** | **`185.5M`** *(33.3%)* | `2,048` B | **No current verified rule feed** / `84K` Rows | Proven byte-native synthesis, `<tool_call>` loop, `83.3%` RL pass, and a historical crystal-rule count that is not present in this repository |
 | **Phase 1** *(Months 1–2)* | **`Mirror-1.5B-Edge`** | **`1.5B`** | **`1.5B`** *(Dense)* | `32,768` B | **`150B`** Pure Bytes | **[Immediate GPU Grant Milestone]** Outperforms `Llama-3.2-1B/3B` & `Qwen2.5-1.5B` on `4GB–8GB` edge RAM |
 | **Phase 2** *(Months 3–4)* | **`Mirror-8B-Core`** | **`8.2B`** | **`8.2B`** *(Dense)* | `131,072` B | **`800B`** Pure Bytes | Developer workstation engine; beats `Llama-3.1-8B` & `GPT-3.5-Turbo` on SWE & math |
 | **Phase 3** *(Months 5–7)* | **`Mirror-36B-Sparse`** | **`36.0B`** | **`5.5B`** *(15.3%)* | `262,144` B | **`2.4T`** Pure Bytes | Surpasses `GPT-4o-mini`, `Claude 3.5 Haiku` & `Phi-4-14B` at `< 6B` inference cost |
