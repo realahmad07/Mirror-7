@@ -1201,6 +1201,14 @@ Phase 11 is evaluation-first. Each workstream freezes its data, uses independent
 
 ### Current verification status
 
-The latest fast CI and Security Guard passed on the Stage 11 plan commit. The last full historical run before these CLI changes reported **533 passed, 24 failed and 2 skipped**. Some failures were sandbox tests because the workflow had not pulled its pinned Docker image; the Deep Regression workflow now pulls that image before running the suite. Other earlier failures covered backend behavior, retrieval/synthesis, data curation and evaluation and are not being counted as CLI passes. A new full-regression run is required after this repair before Stage 11.1 can be marked complete.
+The CLI/runtime repair implementation is at commit **[`143647a`](https://github.com/realahmad07/Mirror-7/commit/143647a4e1cd7bc3e1e81f31d5ffa87642f0fe58)**.
+
+- **Fast CI:** passed — 402 Mirror Crystal/evaluation tests (1 skipped), 62 backend tests, 4 release-boundary tests, 3 training-foundation tests and 3 free-running evaluator tests: **474 passed, 1 skipped**. This includes the new backend and Crystal CLI regression tests. [CI run](https://github.com/realahmad07/Mirror-7/actions/runs/42906117634)
+- **Package build:** passed in that CI run.
+- **Security Guard:** passed. [Security run](https://github.com/realahmad07/Mirror-7/actions/runs/42906117752)
+- **Native Brain Training Checks:** passed. [Training run](https://github.com/realahmad07/Mirror-7/actions/runs/42906117271)
+- **Full historical regression:** pending on the same implementation commit. It now fetches full Git history, validates the production SQLite vault, installs the pinned Python sandbox image and runs `python -m pytest -q`. [Deep Regression run](https://github.com/realahmad07/Mirror-7/actions/runs/42906117239)
+
+The earlier **533 passed, 24 failed, 2 skipped** result was from before the CLI repair and before the full-regression workflow pulled its pinned Docker image. It is historical, not the current result. The separate restored-bundle check on an earlier intermediate commit also exposed pre-existing memory-key test setup and three engine expectation mismatches; those are outside the CLI command fixes and still need independent attention. Stage 11.1 remains open until the full regression and clean-install smoke checks are closed.
 
 Detailed Stage 11 evaluation design: [STAGE11_GENERALIZATION_EVALUATION_PLAN.md](artifacts/STAGE11_GENERALIZATION_EVALUATION_PLAN.md).
