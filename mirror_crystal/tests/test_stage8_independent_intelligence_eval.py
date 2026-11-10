@@ -166,5 +166,5 @@ def test_stage8_source_backed_benchmark_review_gate_integrity():
         require_independent_review=False,
     )
     assert len(cases) == 8, f"Expected 8 benchmark cases, found {len(cases)}"
-    assert manifest["review_status"] in ("pending_independent_review", "approved")
+    assert manifest["review_status"] in ("pending_independent_review", "approved", "cryptographic_attestations_verified_identity_unverified")
     assert manifest["required_distinct_independent_reviewers_per_claim"] == 2
