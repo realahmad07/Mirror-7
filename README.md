@@ -1118,3 +1118,13 @@ See [Backend Q&A Execution and Native Code Generation](./docs/32-backend-qna-exe
 - Temporary-repository adversarial tests cover large blobs, revoked historical seeds, and unrelated private keys.
 - ORCID checksum validity and local cryptographic consistency are not proof of real-world identity. External reviewer and institutional-root ownership remain pending authoritative corroboration.
 - Detailed report: [STAGE10_5_1_TRUST_SCAN_CLOSURE_REPORT.md](artifacts/STAGE10_5_1_TRUST_SCAN_CLOSURE_REPORT.md).
+
+
+## Stage 11 — Generalization & Intelligence Evaluation (Initiated)
+
+- Evaluation-first phase; no new architecture is promoted on self-authored tests alone.
+- Frozen unseen mathematical, cross-domain, grounded factual, memory/learning, adversarial, and operational task families.
+- Three difficulty levels, at least three seeds, held-out templates, negative controls, and independent verification.
+- Promotion stops on any failed gate; full regression is required after each justified fix.
+- External reviewer identity and institutional-root ownership remain unverified, distinct from local signature validation.
+- Plan: [STAGE11_GENERALIZATION_EVALUATION_PLAN.md](artifacts/STAGE11_GENERALIZATION_EVALUATION_PLAN.md).
