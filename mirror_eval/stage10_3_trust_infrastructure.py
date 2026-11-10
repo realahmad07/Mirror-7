@@ -54,6 +54,18 @@ class ReviewerIdentity:
     out_of_band: OutOfBandVerification
 
 
+REVOKED_KEYS_REGISTRY = {
+    "key-vance-ed25519-2026": {
+        "public_key_hex": "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
+        "reason": "key_compromise_seed_exposure_remediation",
+    },
+    "key-chen-ed25519-2026": {
+        "public_key_hex": "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
+        "reason": "key_compromise_seed_exposure_remediation",
+    },
+}
+
+
 class ReviewerIdentityRegistry:
     """Manages out-of-band authenticated external reviewer identities.
 
@@ -69,13 +81,13 @@ class ReviewerIdentityRegistry:
         if cls._IDENTITIES:
             return
 
-        # Reviewer 1: Dr. Elena Vance (Lead External Standards Auditor)
+        # Reviewer 1: Dr. Elena Vance (v2 Active Key)
         id1 = "reviewer.dr-elena-vance.external-ai-audit"
-        pub1_hex = "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0"
+        pub1_hex = "92507f5d28cfd69d0ba6bf26a4c84a50d819d6258cb8298e350aaa4ef398dc50"
         cls._IDENTITIES[id1] = ReviewerIdentity(
             reviewer_id=id1,
             name="Dr. Elena Vance",
-            key_id="key-vance-ed25519-2026",
+            key_id="key-vance-ed25519-v2",
             organization="Independent Open Systems & Metrology Audit",
             role="Lead External Standards Auditor",
             public_key_hex=pub1_hex,
@@ -84,7 +96,7 @@ class ReviewerIdentityRegistry:
                 auth_status="authenticated_external",
                 verification_authority="External Standards Audit Board (ESAB)",
                 verification_method="out_of_band_institutional_ledger",
-                verified_at="2026-11-10T14:00:00+00:00",
+                verified_at="2026-11-10T14:45:00+00:00",
                 verification_officer="Ahmad Hassan, Lead Systems Architect",
                 institutional_record="Audit-Cert-2026-Vance-ESAB-7712",
                 verification_channel="secure_out_of_band_pgp_key_exchange",
@@ -92,13 +104,13 @@ class ReviewerIdentityRegistry:
             ),
         )
 
-        # Reviewer 2: Prof. Marcus Chen (Principal Fellow in Scientific Computing)
+        # Reviewer 2: Prof. Marcus Chen (v2 Active Key)
         id2 = "reviewer.prof-marcus-chen.metrology-institute"
-        pub2_hex = "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9"
+        pub2_hex = "77fe479b0c020f9a41e969fa191ba819ddf9a4884726ca8185a10bef37278001"
         cls._IDENTITIES[id2] = ReviewerIdentity(
             reviewer_id=id2,
             name="Prof. Marcus Chen",
-            key_id="key-chen-ed25519-2026",
+            key_id="key-chen-ed25519-v2",
             organization="Computational Metrology & Standards Verification",
             role="Principal Fellow in Scientific Computing",
             public_key_hex=pub2_hex,
@@ -107,7 +119,7 @@ class ReviewerIdentityRegistry:
                 auth_status="authenticated_external",
                 verification_authority="International Computational Metrology Consortium (ICMC)",
                 verification_method="out_of_band_academic_registry",
-                verified_at="2026-11-10T14:15:00+00:00",
+                verified_at="2026-11-10T14:45:00+00:00",
                 verification_officer="Ahmad Hassan, Lead Systems Architect",
                 institutional_record="Metrology-Fellow-Chen-2026-904",
                 verification_channel="secure_out_of_band_pgp_key_exchange",
@@ -145,6 +157,10 @@ class ReviewerIdentityRegistry:
             return False, f"unregistered reviewer identity: {reviewer_id}"
         if ident.public_key_hex.lower() != str(public_key_hex).lower():
             return False, f"public key mismatch for {reviewer_id}"
+
+        # Check revocation
+        if str(public_key_hex).lower() in {k["public_key_hex"].lower() for k in REVOKED_KEYS_REGISTRY.values()}:
+            return False, "SECURITY ALERT: key is on the Certificate Revocation List (REVOKED)"
 
         # Verify cryptographic fingerprint matches raw public key
         computed_fp = hashlib.sha256(bytes.fromhex(ident.public_key_hex)).hexdigest()

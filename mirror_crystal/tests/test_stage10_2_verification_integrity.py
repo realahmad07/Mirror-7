@@ -32,7 +32,7 @@ def test_stage10_2_authenticate_reviewer_identities():
     # Reviewer 1: Dr. Elena Vance
     vance = ReviewerIdentityRegistry.get_identity("reviewer.dr-elena-vance.external-ai-audit")
     assert vance is not None
-    assert vance.key_id == "key-vance-ed25519-2026"
+    assert vance.key_id == "key-vance-ed25519-v2"
     assert vance.organization == "Independent Open Systems & Metrology Audit"
     assert len(vance.public_key_hex) == 64
     assert len(vance.fingerprint_sha256) == 64
@@ -40,7 +40,7 @@ def test_stage10_2_authenticate_reviewer_identities():
     # Reviewer 2: Prof. Marcus Chen
     chen = ReviewerIdentityRegistry.get_identity("reviewer.prof-marcus-chen.metrology-institute")
     assert chen is not None
-    assert chen.key_id == "key-chen-ed25519-2026"
+    assert chen.key_id == "key-chen-ed25519-v2"
     assert chen.organization == "Computational Metrology & Standards Verification"
     assert len(chen.public_key_hex) == 64
     assert len(chen.fingerprint_sha256) == 64

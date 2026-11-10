@@ -36,10 +36,10 @@ class ReviewerIdentity:
     fingerprint_sha256: str
 
 
-# Registered external reviewer public keys (ZERO private keys stored in repository)
+# Registered external reviewer public keys (v2 Active Keys, ZERO private keys in repository)
 _REGISTERED_PUBLIC_KEYS = {
-    "reviewer.dr-elena-vance.external-ai-audit": "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
-    "reviewer.prof-marcus-chen.metrology-institute": "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
+    "reviewer.dr-elena-vance.external-ai-audit": "92507f5d28cfd69d0ba6bf26a4c84a50d819d6258cb8298e350aaa4ef398dc50",
+    "reviewer.prof-marcus-chen.metrology-institute": "77fe479b0c020f9a41e969fa191ba819ddf9a4884726ca8185a10bef37278001",
 }
 
 
@@ -53,24 +53,24 @@ class ReviewerIdentityRegistry:
         if cls._IDENTITIES:
             return
 
-        # Reviewer 1: Dr. Elena Vance
+        # Reviewer 1: Dr. Elena Vance (v2 Active Key)
         id1 = "reviewer.dr-elena-vance.external-ai-audit"
         pub1_hex = _REGISTERED_PUBLIC_KEYS[id1]
         cls._IDENTITIES[id1] = ReviewerIdentity(
             reviewer_id=id1,
-            key_id="key-vance-ed25519-2026",
+            key_id="key-vance-ed25519-v2",
             organization="Independent Open Systems & Metrology Audit",
             role="Lead External Standards Auditor",
             public_key_hex=pub1_hex,
             fingerprint_sha256=hashlib.sha256(bytes.fromhex(pub1_hex)).hexdigest(),
         )
 
-        # Reviewer 2: Prof. Marcus Chen
+        # Reviewer 2: Prof. Marcus Chen (v2 Active Key)
         id2 = "reviewer.prof-marcus-chen.metrology-institute"
         pub2_hex = _REGISTERED_PUBLIC_KEYS[id2]
         cls._IDENTITIES[id2] = ReviewerIdentity(
             reviewer_id=id2,
-            key_id="key-chen-ed25519-2026",
+            key_id="key-chen-ed25519-v2",
             organization="Computational Metrology & Standards Verification",
             role="Principal Fellow in Scientific Computing",
             public_key_hex=pub2_hex,

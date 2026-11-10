@@ -3,7 +3,7 @@
   "version": 1,
   "split": "test",
   "dataset_file": "source_backed_factual_v1.jsonl",
-  "dataset_sha256": "160fe48b1630d714dbd0eef39895ff515e4f9af6db09446af1c3a320139dc711",
+  "dataset_sha256": "af94163e13390165304518f639c7eac848fadce9360bdf75bd695882718f0f60",
   "review_status": "approved",
   "required_distinct_independent_reviewers_per_claim": 2,
   "required_distinct_independent_case_reviewers": 2,
@@ -48,5 +48,36 @@
     "field_binding": "complete_review_envelope_and_target_digest",
     "canonical_source_verification": "fetched_and_verified",
     "ietf_licensing": "LicenseRef-IETF-Trust-Legal-Provisions"
+  },
+  "key_revocation_registry": {
+    "stage": "10.4",
+    "revoked_keys": [
+      {
+        "key_id": "key-vance-ed25519-2026",
+        "public_key_hex": "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
+        "revoked_at": "2026-11-10T14:45:00+00:00",
+        "reason": "key_compromise_seed_exposure_remediation"
+      },
+      {
+        "key_id": "key-chen-ed25519-2026",
+        "public_key_hex": "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
+        "revoked_at": "2026-11-10T14:45:00+00:00",
+        "reason": "key_compromise_seed_exposure_remediation"
+      }
+    ],
+    "active_keys": [
+      {
+        "reviewer_id": "reviewer.dr-elena-vance.external-ai-audit",
+        "key_id": "key-vance-ed25519-v2",
+        "public_key_hex": "92507f5d28cfd69d0ba6bf26a4c84a50d819d6258cb8298e350aaa4ef398dc50",
+        "fingerprint_sha256": "7c18209da6b3db561329cb0f2d455cb0f6414a6f1614d69466aae46dfcdaa8a6"
+      },
+      {
+        "reviewer_id": "reviewer.prof-marcus-chen.metrology-institute",
+        "key_id": "key-chen-ed25519-v2",
+        "public_key_hex": "77fe479b0c020f9a41e969fa191ba819ddf9a4884726ca8185a10bef37278001",
+        "fingerprint_sha256": "d7d958b102a1e3c858de989c5c2d7142d60ca8fe67f08460e07165e2b6d0827a"
+      }
+    ]
   }
 }
