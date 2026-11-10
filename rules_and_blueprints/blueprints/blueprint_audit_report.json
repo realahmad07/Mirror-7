@@ -1,0 +1,126 @@
+{
+  "source_file": "mirror_all_1014_blueprints.jsonl",
+  "source_blob_sha": "bd7aee1701a54ad9d7e656c6e5b82f17cb58d590",
+  "input_records": 1014,
+  "parse_errors": 0,
+  "unique_blueprint_ids": 1014,
+  "normalized_prompt_keys": 1004,
+  "collision_groups": 7,
+  "records_in_collision_groups": 17,
+  "excess_repeated_occurrences": 10,
+  "unambiguous_prompt_candidate_records": 997,
+  "records_with_test_code": 8,
+  "trust_tier_counts": {
+    "1": 502,
+    "2": 512
+  },
+  "domain_counts": {
+    "foundation_pretraining": 220,
+    "general_chat": 89,
+    "instruction_following": 18,
+    "logical_reasoning": 205,
+    "math": 205,
+    "science_reasoning": 204,
+    "quantum_computing": 6,
+    "metacognitive": 4,
+    "active_thinking": 3,
+    "memory_intelligence": 3,
+    "autonomous_planning": 2,
+    "coding": 4,
+    "safety_alignment": 4,
+    "human_preference": 33,
+    "continuous_learning": 3,
+    "systems_programming": 4,
+    "bioinformatics": 3,
+    "quantitative_finance": 4
+  },
+  "collision_clusters": [
+    {
+      "normalized_prompt": "explain the fundamental principles of a preview of policies to fight unemployment",
+      "blueprint_ids": [
+        3,
+        112,
+        121
+      ],
+      "domain": "foundation_pretraining",
+      "stage": "Stage 1: Foundation Pretraining",
+      "record_count": 3,
+      "reason": "Same normalized prompt appears more than once; response conflict/equivalence requires review."
+    },
+    {
+      "normalized_prompt": "explain the fundamental principles of foundation topic",
+      "blueprint_ids": [
+        57,
+        96,
+        109,
+        170
+      ],
+      "domain": "foundation_pretraining",
+      "stage": "Stage 1: Foundation Pretraining",
+      "record_count": 4,
+      "reason": "Same normalized prompt appears more than once; response conflict/equivalence requires review."
+    },
+    {
+      "normalized_prompt": "explain the fundamental principles of model addition of integers",
+      "blueprint_ids": [
+        124,
+        167
+      ],
+      "domain": "foundation_pretraining",
+      "stage": "Stage 1: Foundation Pretraining",
+      "record_count": 2,
+      "reason": "Same normalized prompt appears more than once; response conflict/equivalence requires review."
+    },
+    {
+      "normalized_prompt": "explain the fundamental principles of issue on the table",
+      "blueprint_ids": [
+        156,
+        182
+      ],
+      "domain": "foundation_pretraining",
+      "stage": "Stage 1: Foundation Pretraining",
+      "record_count": 2,
+      "reason": "Same normalized prompt appears more than once; response conflict/equivalence requires review."
+    },
+    {
+      "normalized_prompt": "what can you tell me about vngenerateopticalflowrequest",
+      "blueprint_ids": [
+        978,
+        979
+      ],
+      "domain": "human_preference",
+      "stage": "Stage 14: Human Preference & Clarification",
+      "record_count": 2,
+      "reason": "Same normalized prompt appears more than once; response conflict/equivalence requires review."
+    },
+    {
+      "normalized_prompt": "hello can you help me with a html element media player issue",
+      "blueprint_ids": [
+        980,
+        981
+      ],
+      "domain": "human_preference",
+      "stage": "Stage 14: Human Preference & Clarification",
+      "record_count": 2,
+      "reason": "Same normalized prompt appears more than once; response conflict/equivalence requires review."
+    },
+    {
+      "normalized_prompt": "write 3 ui short dialog subtitle of restaurant table fully booked and suggest user to put themselves into waiting list",
+      "blueprint_ids": [
+        986,
+        987
+      ],
+      "domain": "human_preference",
+      "stage": "Stage 14: Human Preference & Clarification",
+      "record_count": 2,
+      "reason": "Same normalized prompt appears more than once; response conflict/equivalence requires review."
+    }
+  ],
+  "limitations": [
+    "This is exact normalized-prompt collision detection only; it is not semantic deduplication.",
+    "No production .dcrystal vault snapshot was available for cross-domain or vault-wide deduplication.",
+    "These legacy roadmap records have no per-record evidence field; trust_tier is not proof of verification.",
+    "The bundle license register marks the 1,014 blueprint source as NOASSERTION.",
+    "Test code is not evidence unless executed independently in the current sandbox."
+  ]
+}
