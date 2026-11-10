@@ -63,7 +63,7 @@ class ReasoningIntelligenceEngine:
 
     # Patterns for transitive syllogisms ("Given that all X are Y, and Z is an X, what is Z?")
     _PAT_SYLLOGISM = re.compile(
-        r"(?:given\s+that\s+|all\s+)(?P<all_subj>[a-zA-Z0-9_]+)\s+(?:are|have|travel\s+at)\s+(?P<all_prop>[a-zA-Z0-9_\s]+?)[,;\.]\s+(?:and\s+)?(?P<inst_subj>[a-zA-Z0-9_\s]+?)\s+(?:is\s+a|are|is\s+an)\s+(?P<inst_cat>[a-zA-Z0-9_]+)[,;\.]\s+(?:what|does|what\s+is)\s+(?:is\s+)?(?P<query_entity>[a-zA-Z0-9_\s]+?)\??$",
+        r"(?:given\s+that\s+(?:all\s+)?|all\s+)(?P<all_subj>[a-zA-Z0-9_\s]+?)\s+(?:are|have|travel\s+at)\s+(?P<all_prop>[a-zA-Z0-9_\s]+?)[,;\.]\s+(?:and\s+)?(?P<inst_subj>[a-zA-Z0-9_\s]+?)\s+(?:is\s+a|are|is\s+an)\s+(?P<inst_cat>[a-zA-Z0-9_\s]+?)[,;\.]\s+(?:what|does|what\s+is)\s+(?:is\s+)?(?P<query_entity>[a-zA-Z0-9_\s]+?)\??$",
         re.I,
     )
 
@@ -357,8 +357,24 @@ class ReasoningIntelligenceEngine:
         inst_subj = m.group("inst_subj").strip()
         inst_cat = m.group("inst_cat").strip().lower()
 
-        # Check category match (e.g. photons <-> photon)
-        if not (all_subj == inst_cat or all_subj.rstrip("s") == inst_cat.rstrip("s")):
+        def _norm_cat(cat_str: str) -> str:
+            s = cat_str.strip().lower()
+            if s.startswith("all "):
+                s = s[4:].strip()
+            words = s.split()
+            normed = []
+            for w in words:
+                if w.endswith("ies"):
+                    w = w[:-3] + "y"
+                elif w.endswith("es") and len(w) > 3 and not w.endswith("ies"):
+                    w = w[:-2]
+                elif w.endswith("s") and len(w) > 2 and not w.endswith("ss") and w not in ("gas", "bus", "lens", "basis"):
+                    w = w[:-1]
+                normed.append(w)
+            return " ".join(normed)
+
+        # Check category match (e.g. photons <-> photon, noble gases <-> noble gas)
+        if _norm_cat(all_subj) != _norm_cat(inst_cat):
             return None
 
         steps = [
@@ -527,7 +543,7 @@ class ReasoningIntelligenceEngine:
                 return ReasoningResult(
                     answer=f"{conclusion} (Chained from: {' ; '.join(hop_facts)})",
                     confidence=0.92,
-                    mode="causal_dag_deduction",
+                    mode="multi_hop_rule_chain",
                     steps=steps,
                     verified=True,
                     domain="causal_reasoning",

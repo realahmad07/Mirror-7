@@ -23,3 +23,5 @@ artifacts/*.pt
 !artifacts/mirror_crystal_v1.mcrystal
 
 # Note: .dcrystal, .sqlite, and rule/blueprint datasets are now permitted in git
+artifacts/*.sqlite
+training/data/

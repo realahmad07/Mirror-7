@@ -150,6 +150,14 @@ from .failure_repair import (
     FailureDiagnosis, FailureKind, FailureRepairEngine, FailureRepairError,
     RepairProposal, RepairStatus,
 )
+from .reasoning_engine import ReasoningIntelligenceEngine, ReasoningResult, ReasoningStep
+from .autonomous_learning import (
+    AutonomousLearningEngine,
+    AutonomousLearningReport,
+    BenchmarkTaskResult,
+    LearnedCandidate,
+    ProductionEvaluationReport,
+)
 
 
 __all__ = [
@@ -309,4 +317,10 @@ __all__ += [
 __all__ += [
     "FailureDiagnosis", "FailureKind", "FailureRepairEngine", "FailureRepairError",
     "RepairProposal", "RepairStatus",
+]
+
+__all__ += [
+    "ReasoningIntelligenceEngine", "ReasoningResult", "ReasoningStep",
+    "AutonomousLearningEngine", "AutonomousLearningReport", "BenchmarkTaskResult",
+    "LearnedCandidate", "ProductionEvaluationReport",
 ]
