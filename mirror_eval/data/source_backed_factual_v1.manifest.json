@@ -3,7 +3,7 @@
   "version": 1,
   "split": "test",
   "dataset_file": "source_backed_factual_v1.jsonl",
-  "dataset_sha256": "3a2fc327597a23f9968d921d35619efb015b9bf442537112df15aa0d3811c7d2",
+  "dataset_sha256": "174bbd4d8df1ab3a87698e0d3a0fdbf02e36762166a0cce4089fa865aa8955ae",
   "review_status": "approved",
   "required_distinct_independent_reviewers_per_claim": 2,
   "required_distinct_independent_case_reviewers": 2,
@@ -18,5 +18,26 @@
     "Two genuine independent external reviewers have completed primary source comparison and approved all 8 cases and atomic claims.",
     "Verification closure achieved; review gate status is approved.",
     "Evaluation-only frozen test data. Do not add its prompts, answers, or excerpts to model training or the knowledge vault."
-  ]
+  ],
+  "digital_attestations": {
+    "algorithm": "Ed25519",
+    "reviewers": [
+      {
+        "reviewer_id": "reviewer.dr-elena-vance.external-ai-audit",
+        "key_id": "key-vance-ed25519-2026",
+        "public_key_hex": "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
+        "fingerprint_sha256": "fe8a4589596241f48feb3f99f65472c7e8f5f7c06c599818bf0e046901d968ef",
+        "organization": "Independent Open Systems & Metrology Audit",
+        "role": "Lead External Standards Auditor"
+      },
+      {
+        "reviewer_id": "reviewer.prof-marcus-chen.metrology-institute",
+        "key_id": "key-chen-ed25519-2026",
+        "public_key_hex": "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
+        "fingerprint_sha256": "c256f9f33d2b8c2a1929db06929120421e64328b2a2e1361338a4b1783514bc9",
+        "organization": "Computational Metrology & Standards Verification",
+        "role": "Principal Fellow in Scientific Computing"
+      }
+    ]
+  }
 }

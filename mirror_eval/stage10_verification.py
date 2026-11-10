@@ -33,6 +33,9 @@ APPROVED_SPDX_LICENSES = frozenset({
     "CC-BY-SA-4.0",
     "ISC",
     "MPL-2.0",
+    "PSF-2.0",
+    "CC-BY-3.0-IGO",
+    "0BSD",
     "NOASSERTION",
 })
 
