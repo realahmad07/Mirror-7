@@ -1,0 +1,64 @@
+{
+  "pack_id": "mirror_general_reasoning_10k_candidate_v1",
+  "created_at": "2026-11-10T14:00:00+05:00",
+  "domain": "general_reasoning",
+  "total_records": 10266,
+  "synthetic_candidate_records": 10240,
+  "source_supported_method_records": 26,
+  "unique_base_families": 320,
+  "scenario_contexts": 32,
+  "synthetic_structure": "320 base reasoning procedures × 32 context specializations = 10,240 unverified candidate records",
+  "evidence_counts": {
+    "unverified": 10240,
+    "source_supported": 26
+  },
+  "subdomain_counts": {
+    "analogy_and_transfer": 640,
+    "collaborative_reasoning": 640,
+    "communication_and_argument": 643,
+    "conceptual_modeling": 640,
+    "decision_analysis": 645,
+    "diagnostic_reasoning": 640,
+    "error_and_quality_control": 640,
+    "evidence_evaluation": 645,
+    "experimental_learning": 640,
+    "explanation_and_mechanism": 643,
+    "metacognitive_control": 640,
+    "planning_and_search_control": 641,
+    "problem_framing_and_requirements": 645,
+    "resource_strategy": 640,
+    "systems_reasoning": 641,
+    "uncertainty_and_robustness": 643
+  },
+  "known_repo_dedupe_targets": [
+    "general_reasoning_001",
+    "general_reasoning_002",
+    "general_reasoning_003",
+    "general_reasoning_004",
+    "general_reasoning_005",
+    "general_reasoning_006",
+    "general_reasoning_007",
+    "general_reasoning_008",
+    "general_reasoning_009",
+    "general_reasoning_010"
+  ],
+  "important_limitations": [
+    "The 10,240 generated records are scenario-specialized candidate procedures derived from 320 authored families; they are not 10,240 independently established facts or 10,240 distinct cognitive primitives.",
+    "No semantic deduplication against the local production .dcrystal vault was possible because that vault is not tracked in Git and was not available in this session.",
+    "Existing general_reasoning seeds and adjacent-domain records may overlap. Local deduplication is mandatory before import.",
+    "All generated candidates are unverified; all tests are marked not_run. No claim is made that Mirror has executed or passed these tests.",
+    "The source-supported subset is paraphrased from identified sections. Source support is not independent expert review or formal verification.",
+    "OpenStax Psychology 2e was excluded because its problem-solving chapter states that ingestion into LLMs or generative AI offerings requires OpenStax permission.",
+    "Evaluation-only data and private/local production-vault data were not used as training sources."
+  ],
+  "required_next_gates": [
+    "Schema validation",
+    "Exact and semantic deduplication against all live vault domains",
+    "Provenance/license review",
+    "Sample manual review",
+    "Sandbox or capability-specific tests",
+    "Small-batch dry-run",
+    "Backup and transactional import",
+    "Post-import regression and vault integrity check"
+  ]
+}

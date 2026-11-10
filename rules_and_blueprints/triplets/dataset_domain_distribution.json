@@ -1,0 +1,10 @@
+{
+  "total_unique_triplets": 39428,
+  "domains": {
+    "general": 20340,
+    "provide a helpful, accurate response": 14399,
+    "coding": 2450,
+    "math": 1603,
+    "quantum_computing": 636
+  }
+}

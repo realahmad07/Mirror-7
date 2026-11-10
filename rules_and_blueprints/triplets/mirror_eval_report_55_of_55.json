@@ -1,0 +1,466 @@
+{
+  "suite": "mirror_eval_cpu_independent",
+  "overall_passed": 55,
+  "overall_total": 55,
+  "overall_pass_rate": 1.0,
+  "total_latency_ms": 5389.42,
+  "pillars": {
+    "math": {
+      "pillar": "compositional_symbolic_math",
+      "passed": 16,
+      "total": 16,
+      "accuracy": 1.0,
+      "mean_latency_ms": 4.888,
+      "cases": [
+        {
+          "name": "gsm8k_relative_chain",
+          "passed": true,
+          "ok": true,
+          "strategy": "word_quantity_chain",
+          "prm_reward": 1.0,
+          "latency_ms": 49.009
+        },
+        {
+          "name": "gsm8k_remaining_chain",
+          "passed": true,
+          "ok": true,
+          "strategy": "word_quantity_chain",
+          "prm_reward": 1.0,
+          "latency_ms": 7.602
+        },
+        {
+          "name": "percentage_basic",
+          "passed": true,
+          "ok": true,
+          "strategy": "percentage_arithmetic",
+          "prm_reward": 1.0,
+          "latency_ms": 0.765
+        },
+        {
+          "name": "percentage_discount",
+          "passed": true,
+          "ok": true,
+          "strategy": "percentage_arithmetic",
+          "prm_reward": 1.0,
+          "latency_ms": 0.716
+        },
+        {
+          "name": "number_theory_divisors",
+          "passed": true,
+          "ok": true,
+          "strategy": "number_theory_cas",
+          "prm_reward": 1.0,
+          "latency_ms": 0.707
+        },
+        {
+          "name": "number_theory_nth_prime",
+          "passed": true,
+          "ok": true,
+          "strategy": "number_theory_cas",
+          "prm_reward": 1.0,
+          "latency_ms": 0.327
+        },
+        {
+          "name": "combinatorics_line",
+          "passed": true,
+          "ok": true,
+          "strategy": "combinatorics_exact",
+          "prm_reward": 1.0,
+          "latency_ms": 0.317
+        },
+        {
+          "name": "combinatorics_choose",
+          "passed": true,
+          "ok": true,
+          "strategy": "combinatorics_exact",
+          "prm_reward": 1.0,
+          "latency_ms": 0.374
+        },
+        {
+          "name": "algebra_quadratic",
+          "passed": true,
+          "ok": true,
+          "strategy": "direct_symbolic_cas",
+          "prm_reward": 1.0,
+          "latency_ms": 2.392
+        },
+        {
+          "name": "calculus_definite_integral",
+          "passed": true,
+          "ok": true,
+          "strategy": "direct_symbolic_cas",
+          "prm_reward": 1.0,
+          "latency_ms": 3.267
+        },
+        {
+          "name": "rate_speed",
+          "passed": true,
+          "ok": true,
+          "strategy": "rate_kinematics_exact",
+          "prm_reward": 1.0,
+          "latency_ms": 3.774
+        },
+        {
+          "name": "modular_word_remainder",
+          "passed": true,
+          "ok": true,
+          "strategy": "modular_exponentiation",
+          "prm_reward": 1.0,
+          "latency_ms": 0.426
+        },
+        {
+          "name": "kinematics_calculus_chain",
+          "passed": true,
+          "ok": true,
+          "strategy": "kinematics_calculus_chain",
+          "prm_reward": 1.0,
+          "latency_ms": 2.789
+        },
+        {
+          "name": "proof_sqrt2_irrational",
+          "passed": true,
+          "ok": true,
+          "strategy": "symbolic_proof_synthesis",
+          "prm_reward": 1.0,
+          "latency_ms": 2.856
+        },
+        {
+          "name": "proof_sqrt9_counterexample",
+          "passed": true,
+          "ok": true,
+          "strategy": "symbolic_proof_synthesis",
+          "prm_reward": 1.0,
+          "latency_ms": 1.105
+        },
+        {
+          "name": "honest_non_math_refusal",
+          "passed": true,
+          "ok": false,
+          "strategy": "unrecognized_math_pattern",
+          "prm_reward": 0.0,
+          "latency_ms": 1.772
+        }
+      ]
+    },
+    "tdd_code": {
+      "pillar": "non_vacuous_tdd_verification",
+      "passed": 7,
+      "total": 7,
+      "accuracy": 1.0,
+      "mean_latency_ms": 47.915,
+      "cases": [
+        {
+          "name": "clean_fib",
+          "passed": true,
+          "verified": true,
+          "iterations_used": 1,
+          "tests_generated": 5,
+          "tests_passed": 5,
+          "latency_ms": 12.002
+        },
+        {
+          "name": "repair_fib_base_case",
+          "passed": true,
+          "verified": true,
+          "iterations_used": 2,
+          "tests_generated": 5,
+          "tests_passed": 5,
+          "latency_ms": 15.207
+        },
+        {
+          "name": "repair_two_sum_distinct_indices",
+          "passed": true,
+          "verified": true,
+          "iterations_used": 2,
+          "tests_generated": 2,
+          "tests_passed": 2,
+          "latency_ms": 84.661
+        },
+        {
+          "name": "repair_merge_intervals_stub",
+          "passed": true,
+          "verified": true,
+          "iterations_used": 2,
+          "tests_generated": 1,
+          "tests_passed": 1,
+          "latency_ms": 202.07
+        },
+        {
+          "name": "repair_lcm_wrong_formula",
+          "passed": true,
+          "verified": true,
+          "iterations_used": 2,
+          "tests_generated": 4,
+          "tests_passed": 4,
+          "latency_ms": 20.179
+        },
+        {
+          "name": "reject_unsafe_os_import",
+          "passed": true,
+          "verified": false,
+          "iterations_used": 1,
+          "tests_generated": 1,
+          "tests_passed": 0,
+          "latency_ms": 0.94
+        },
+        {
+          "name": "refuse_vacuous_unknown_zero_tests",
+          "passed": true,
+          "verified": false,
+          "iterations_used": 0,
+          "tests_generated": 0,
+          "tests_passed": 0,
+          "latency_ms": 0.347
+        }
+      ]
+    },
+    "vault_calibration": {
+      "pillar": "vault_precision_and_abstention",
+      "production_vault_checked": true,
+      "passed": 13,
+      "total": 13,
+      "accuracy": 1.0,
+      "mean_latency_ms": 141.247,
+      "cases": [
+        {
+          "name": "synth_match_sky",
+          "passed": true,
+          "mode": "direct_crystal_lock",
+          "epistemic_tier": "verified_exact",
+          "confidence": 1.0,
+          "latency_ms": 11.104
+        },
+        {
+          "name": "synth_typo_tcp_udp",
+          "passed": true,
+          "mode": "direct_crystal_lock",
+          "epistemic_tier": "verified_exact",
+          "confidence": 1.0,
+          "latency_ms": 3.614
+        },
+        {
+          "name": "synth_trap_missing_algorithm_dijkstra",
+          "passed": true,
+          "mode": "unmatched_honest_abstain",
+          "epistemic_tier": "honest_abstain",
+          "confidence": 0.0,
+          "latency_ms": 4.695
+        },
+        {
+          "name": "synth_trap_missing_future_year_2026",
+          "passed": true,
+          "mode": "unmatched_honest_abstain",
+          "epistemic_tier": "honest_abstain",
+          "confidence": 0.0,
+          "latency_ms": 7.391
+        },
+        {
+          "name": "synth_trap_missing_code_nth_prime",
+          "passed": true,
+          "mode": "unmatched_honest_abstain",
+          "epistemic_tier": "honest_abstain",
+          "confidence": 0.0,
+          "latency_ms": 4.759
+        },
+        {
+          "name": "synth_trap_missing_domain_atlantis",
+          "passed": true,
+          "mode": "unmatched_honest_abstain",
+          "epistemic_tier": "honest_abstain",
+          "confidence": 0.0,
+          "latency_ms": 3.967
+        },
+        {
+          "name": "prod_match_sky",
+          "passed": true,
+          "mode": "direct_crystal_lock",
+          "epistemic_tier": "high_confidence",
+          "confidence": 0.786,
+          "latency_ms": 8.449
+        },
+        {
+          "name": "prod_match_identity",
+          "passed": true,
+          "mode": "direct_crystal_lock",
+          "epistemic_tier": "verified_exact",
+          "confidence": 1.0,
+          "latency_ms": 0.36
+        },
+        {
+          "name": "prod_match_grover_typo",
+          "passed": true,
+          "mode": "direct_crystal_lock",
+          "epistemic_tier": "moderate_confidence",
+          "confidence": 0.567,
+          "latency_ms": 16.116
+        },
+        {
+          "name": "prod_abstain_atlantis_2045",
+          "passed": true,
+          "mode": "unmatched_honest_abstain",
+          "epistemic_tier": "honest_abstain",
+          "confidence": 0.0,
+          "latency_ms": 540.897
+        },
+        {
+          "name": "prod_abstain_2026_world_cup",
+          "passed": true,
+          "mode": "unmatched_honest_abstain",
+          "epistemic_tier": "honest_abstain",
+          "confidence": 0.0,
+          "latency_ms": 609.415
+        },
+        {
+          "name": "prod_abstain_2028_film_solar_echo",
+          "passed": true,
+          "mode": "unmatched_honest_abstain",
+          "epistemic_tier": "honest_abstain",
+          "confidence": 0.0,
+          "latency_ms": 604.487
+        },
+        {
+          "name": "prod_abstain_hamlet_act3",
+          "passed": true,
+          "mode": "unmatched_honest_abstain",
+          "epistemic_tier": "honest_abstain",
+          "confidence": 0.0,
+          "latency_ms": 20.963
+        }
+      ]
+    },
+    "quantum_and_capabilities": {
+      "pillar": "quantum_computing_and_subsystems",
+      "passed": 9,
+      "total": 9,
+      "accuracy": 1.0,
+      "mean_latency_ms": 4.947,
+      "cases": [
+        {
+          "name": "grover_iterations_10k",
+          "passed": true,
+          "latency_ms": 0.25
+        },
+        {
+          "name": "grover_iterations_25k",
+          "passed": true,
+          "latency_ms": 0.168
+        },
+        {
+          "name": "born_rule_1_sqrt2",
+          "passed": true,
+          "latency_ms": 0.349
+        },
+        {
+          "name": "born_rule_3_sqrt10",
+          "passed": true,
+          "latency_ms": 0.232
+        },
+        {
+          "name": "hilbert_register_8_qubits",
+          "passed": true,
+          "latency_ms": 0.174
+        },
+        {
+          "name": "hilbert_register_12_qubits",
+          "passed": true,
+          "latency_ms": 0.171
+        },
+        {
+          "name": "mcts_sieve_repair",
+          "passed": true,
+          "latency_ms": 13.629
+        },
+        {
+          "name": "mcts_dijkstra_repair",
+          "passed": true,
+          "latency_ms": 20.237
+        },
+        {
+          "name": "mcts_fast_modexp_repair",
+          "passed": true,
+          "latency_ms": 9.312
+        }
+      ]
+    },
+    "architecture_independence": {
+      "pillar": "independent_pure_python_audit",
+      "scanned_files": 60,
+      "violations": [],
+      "passed": 1,
+      "total": 1,
+      "accuracy": 1.0
+    },
+    "held_out_external_benchmarks": {
+      "pillar": "held_out_external_benchmarks",
+      "total": 9,
+      "passed": 9,
+      "accuracy": 1.0,
+      "mean_latency_ms": 1.39,
+      "cases": [
+        {
+          "name": "gsm8k_external_baker_chores",
+          "prompt": "A baker made 60 muffins. He sold 20 in the morning and 10 in the afternoon. How many muffins are left?",
+          "passed": true,
+          "answer": "30",
+          "latency_ms": 1.45
+        },
+        {
+          "name": "gsm8k_external_multiplicative_triplet",
+          "prompt": "Leo has 24 marbles. Maya has half as many. How many marbles do they have altogether?",
+          "passed": true,
+          "answer": "36",
+          "latency_ms": 1.05
+        },
+        {
+          "name": "gsm8k_external_triple_chain",
+          "prompt": "Tom caught 15 fish on Monday. He caught twice as many on Tuesday. How many fish did he catch altogether?",
+          "passed": true,
+          "answer": "45",
+          "latency_ms": 1.15
+        },
+        {
+          "name": "gsm8k_external_subtractive_remainder",
+          "prompt": "A farmer had 90 apples. He gave away 30 apples and sold 25 apples. How many apples remain?",
+          "passed": true,
+          "answer": "35",
+          "latency_ms": 1.2
+        },
+        {
+          "name": "math_external_modular_large_pow",
+          "prompt": "What is the remainder when 19^25 is divided by 1000000007?",
+          "passed": true,
+          "answer": "240323544",
+          "latency_ms": 0.31
+        },
+        {
+          "name": "math_external_calculus_higher_order",
+          "prompt": "Differentiate 2*x^4 - 5*x^3 + 7*x - 9 wrt x",
+          "passed": true,
+          "answer": "d/dx(2*x^4 - 5*x^3 + 7*x - 9) = 8*x^3 - 15*x^2 + 7",
+          "latency_ms": 1.66
+        },
+        {
+          "name": "math_external_definite_integral",
+          "prompt": "Integrate 6*x^2 + 4*x from 0 to 3",
+          "passed": true,
+          "answer": "Definite integral of 6*x^2 + 4*x from 0 to 3 = 72",
+          "latency_ms": 2.94
+        },
+        {
+          "name": "math_external_algebra_quadratic_roots",
+          "prompt": "Solve x^2 - 7*x + 12 = 0",
+          "passed": true,
+          "answer": "x = 3, 4",
+          "latency_ms": 2.27
+        },
+        {
+          "name": "math_external_combinatorics_choose",
+          "prompt": "Compute 8 choose 3",
+          "passed": true,
+          "answer": "56",
+          "latency_ms": 0.43
+        }
+      ]
+    }
+  }
+}

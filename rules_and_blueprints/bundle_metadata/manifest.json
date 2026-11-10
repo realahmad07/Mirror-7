@@ -1,0 +1,89 @@
+{
+  "bundle": "Mirror Crystal Publication Bundle v2",
+  "created_at": "2026-11-10",
+  "repository": "https://github.com/realahmad07/Mirror-7",
+  "target_branch": "datasets/crystal-archive-integration-2026-11-10",
+  "archives": [
+    {
+      "file": "Mirror_General_Reasoning_10K_Candidate_Pack_v1.zip",
+      "bytes": 2472251,
+      "sha256": "5b6e6f940f6d3fa09e4fb3f9b8292a31b3be1aeb965dc137fab53a8e340a6f14",
+      "zip_entries": 10,
+      "embedded_brain": null
+    },
+    {
+      "file": "crystal_1.zip",
+      "bytes": 3308719,
+      "sha256": "6c111bbfbc60c5fb0b0e5d4953fb352e043a88a50ce023eac0bd197601c10b47",
+      "zip_entries": 6,
+      "embedded_brain": null
+    },
+    {
+      "file": "crystal_2.zip",
+      "bytes": 3127489,
+      "sha256": "94c68635165aa666b82f06a5e1a798aca3ceaaf180817d9a41d327bcddb7392f",
+      "zip_entries": 5,
+      "embedded_brain": null
+    },
+    {
+      "file": "crystal_3.zip",
+      "bytes": 4170544,
+      "sha256": "b52a62bf0b393e5855760c0af75591c9475ffd3c9bffe63271e1fa752e57bf65",
+      "zip_entries": 5,
+      "embedded_brain": null
+    },
+    {
+      "file": "crystal_4.zip",
+      "bytes": 7373926,
+      "sha256": "b93cd1479415fa4eb98093e3fab54f6b718ddcacb5b45e9a51038c9e50204b55",
+      "zip_entries": 4,
+      "embedded_brain": {
+        "member": "mirror_crystal_v1.mcrystal",
+        "bytes": 4146587,
+        "sha256": "0178eaf0c464ca6454157ab7d832dc87be873c0fa96334e5936d80be26413402",
+        "version": "mirror_crystal_v1",
+        "rule_count": 6798,
+        "stats": {
+          "pairs_seen": 6798,
+          "surprises_crystallized": 6798,
+          "duplicates_skipped": 0,
+          "sandbox_verified_rules": 0,
+          "sandbox_rejected_rules": 0
+        }
+      }
+    }
+  ],
+  "inventory": {
+    "triplets": 39428,
+    "roadmap_blueprints": 1014,
+    "sample_rule_records": 500,
+    "mcrystal_embedded_rules": 6798,
+    "general_reasoning_candidates": 10266,
+    "general_reasoning_synthetic": 10240,
+    "general_reasoning_source_indexed": 26,
+    "external_taxonomy_claimed_total": 368270,
+    "full_external_368270_rule_database_included": false
+  },
+  "publication_policy": {
+    "repository_code_license": "Apache-2.0; applies to project code only, not automatically to all source datasets",
+    "oasst2": "Apache-2.0 as declared by official OpenAssistant/oasst2 dataset card",
+    "pre_quantum": "NOASSERTION; owner/source rights need confirmation",
+    "mirror_complete_master": "NOASSERTION; owner/source rights need confirmation",
+    "mirror_internet_curated": "NOASSERTION; per-record origins/terms absent",
+    "blueprints_1014": "NOASSERTION in supplied archive",
+    "sample_rules_500": "NOASSERTION in supplied archive; filenames/trust tiers are not licences",
+    "mcrystal": "NOASSERTION in supplied archive",
+    "general_reasoning_pack": "see record-level SPDX/source metadata; canonical evidence remains unverified"
+  },
+  "brain_deduplication": {
+    "standalone_artifact_path": "artifacts/mirror_crystal_v1.mcrystal",
+    "embedded_payload_path": "crystal_4.zip member mirror_crystal_v1.mcrystal",
+    "same_bytes_expected": true,
+    "embedded_sha256": "0178eaf0c464ca6454157ab7d832dc87be873c0fa96334e5936d80be26413402",
+    "removal_guard": "publisher checks exact SHA-256 equality and runs Mirror ZIP-load and response tests before removing the standalone copy"
+  },
+  "required_tests": [
+    "pytest -q mirror_crystal/tests/test_mirror_crystal.py -k mcrystal_archive_zip_loads_and_answers_stored_rule",
+    "python scripts/test_crystal_archive_responses.py --brain datasets/crystal_archive/raw/crystal_4.zip"
+  ]
+}

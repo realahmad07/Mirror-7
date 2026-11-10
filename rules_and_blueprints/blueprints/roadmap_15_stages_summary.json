@@ -1,0 +1,20 @@
+{
+  "Stage 1: Foundation Pretraining": 220,
+  "Stage 2: Conversational Interaction": 89,
+  "Stage 3: Complex Instruction Following": 18,
+  "Stage 4: Deep Logical Reasoning": 205,
+  "Stage 5: Mathematical Olympiad & CAS": 205,
+  "Stage 6: Scientific & Physics Intelligence": 204,
+  "Stage 7: Quantum Computing & Subsystems": 6,
+  "Stage 8: Metacognitive & Calibration": 4,
+  "Stage 9: Active Thinking & Verification": 3,
+  "Stage 10: Multi-Turn Memory & State Fusion": 3,
+  "Stage 11: Autonomous Planning & MCTS": 2,
+  "Stage 12: Autonomous Coding & TDD Repair": 4,
+  "Stage 13: Safety Guardrails & Zero Trust": 4,
+  "Stage 14: Human Preference & Clarification": 33,
+  "Stage 15: Continuous Learning & Auto-Crystallization": 3,
+  "Vertical: Systems Programming (Rust/WASM)": 4,
+  "Vertical: Bioinformatics & Genomics": 3,
+  "Vertical: Quantitative Finance & Derivatives": 4
+}

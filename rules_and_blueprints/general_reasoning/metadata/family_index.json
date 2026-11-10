@@ -1,0 +1,2470 @@
+{
+  "families": [
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_01",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Operationalize the desired outcome",
+      "method": "Translate the request into an observable result and state how the result will be recognized.",
+      "boundary": "Do not confuse a convenient proxy with the actual outcome."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_02",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Separate outcome from deliverable",
+      "method": "Record the change sought separately from the artifact or action proposed to produce it.",
+      "boundary": "A deliverable can be completed without producing the intended outcome."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_03",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Define the decision boundary",
+      "method": "State which choices are inside the current decision and which are fixed or delegated.",
+      "boundary": "Reopen a fixed boundary only when evidence shows the premise is invalid."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_04",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Build an assumptions register",
+      "method": "Write each assumption as a testable proposition and attach an owner or evidence source when possible.",
+      "boundary": "An assumption is not a fact merely because a plan depends on it."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_05",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Record negative requirements",
+      "method": "List outcomes, states, or side effects that must not occur.",
+      "boundary": "Check that a negative requirement does not contradict a mandatory objective."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_06",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Identify affected stakeholders",
+      "method": "List parties who use, supply, approve, maintain, or bear consequences of the result.",
+      "boundary": "Do not treat the loudest stakeholder as the complete stakeholder set."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_07",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Establish acceptance criteria",
+      "method": "Turn success into observable conditions that can be checked independently.",
+      "boundary": "Avoid criteria that merely repeat the proposed solution."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_08",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Create a shared term glossary",
+      "method": "Define ambiguous task terms before comparing claims that use them.",
+      "boundary": "Preserve competing definitions when the field has no single agreed meaning."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_09",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Set an explicit scope perimeter",
+      "method": "Name included cases, excluded cases, and the reason for each boundary.",
+      "boundary": "Do not silently generalize conclusions beyond the declared perimeter."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_10",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Capture the baseline state",
+      "method": "Describe the current state using the same measures intended for later comparison.",
+      "boundary": "Do not compare a measured future state with an unmeasured baseline."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_11",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Separate needs from preferences",
+      "method": "Classify each request as essential, desirable, optional, or prohibited.",
+      "boundary": "A preference can become mandatory only when an authorized decision-maker says so."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_12",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Specify the unit of analysis",
+      "method": "State whether the reasoning concerns an individual, instance, group, system, event, or time period.",
+      "boundary": "Do not switch units midway through an argument."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_13",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Bound the time horizon",
+      "method": "Specify when effects begin, how long they are assessed, and what counts as the endpoint.",
+      "boundary": "Do not omit long-term effects merely because they fall outside the immediate task."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_14",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Identify the responsible decision owner",
+      "method": "Record who has authority to choose, accept residual risk, or request more evidence.",
+      "boundary": "Do not infer authority from participation or technical expertise."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_15",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Turn vague adjectives into tests",
+      "method": "Replace words such as fast, robust, simple, or safe with measurable or inspectable criteria.",
+      "boundary": "When measurement is impossible, state the proxy and its limitation."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_16",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Record the reason for the task",
+      "method": "State the condition that makes the task necessary now.",
+      "boundary": "Do not confuse the stated motivation with an independently established cause."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_17",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Distinguish current state from target state",
+      "method": "Describe the starting condition and desired condition in separate fields.",
+      "boundary": "Do not present a desired state as though it already exists."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_18",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Define completion and handoff",
+      "method": "Specify the evidence needed to close the task and who receives the result.",
+      "boundary": "A finished analysis is not automatically an accepted implementation."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_19",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Capture environmental constraints",
+      "method": "List legal, physical, social, technical, and operational constraints that affect feasibility.",
+      "boundary": "Mark constraints that are merely assumed and verify them where consequential."
+    },
+    {
+      "family_id": "gr_family_problem_framing_and_requirements_20",
+      "subdomain": "problem_framing_and_requirements",
+      "title": "Write a decision brief before solving",
+      "method": "Summarize the question, objective, scope, constraints, and required decision in a compact brief.",
+      "boundary": "Revise the brief when new evidence changes the problem rather than hiding the change."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_01",
+      "subdomain": "conceptual_modeling",
+      "title": "Choose the model boundary",
+      "method": "Identify entities, processes, and external influences included in the model.",
+      "boundary": "A boundary is a modeling choice, not proof that excluded influences do not matter."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_02",
+      "subdomain": "conceptual_modeling",
+      "title": "Distinguish state from parameter",
+      "method": "Separate quantities that change during the process from settings treated as fixed for the analysis.",
+      "boundary": "Reclassify a parameter when evidence shows it varies on the relevant timescale."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_03",
+      "subdomain": "conceptual_modeling",
+      "title": "Choose a fit-for-purpose abstraction",
+      "method": "Retain details that affect the decision and omit details that do not change the result materially.",
+      "boundary": "Do not simplify away a known failure mode or safety constraint."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_04",
+      "subdomain": "conceptual_modeling",
+      "title": "Represent the process as stages",
+      "method": "Describe major stages and the outputs passed between them.",
+      "boundary": "Do not imply a strict sequence when stages can occur concurrently."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_05",
+      "subdomain": "conceptual_modeling",
+      "title": "Mark interfaces explicitly",
+      "method": "Specify what each component receives, produces, and assumes about adjacent components.",
+      "boundary": "An interface description is incomplete if units, timing, or error behavior are omitted."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_06",
+      "subdomain": "conceptual_modeling",
+      "title": "Separate mechanism from correlation",
+      "method": "Represent the proposed mechanism separately from observed co-variation.",
+      "boundary": "A plausible mechanism does not by itself establish that the mechanism operated."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_07",
+      "subdomain": "conceptual_modeling",
+      "title": "Track state transitions",
+      "method": "Define the conditions that move a system from one state to another.",
+      "boundary": "Include invalid, terminal, and recovery states when they are possible."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_08",
+      "subdomain": "conceptual_modeling",
+      "title": "Use a causal map cautiously",
+      "method": "Draw candidate influence links and label each as observed, assumed, or experimentally supported.",
+      "boundary": "Do not read a drawn arrow as proof of causation."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_09",
+      "subdomain": "conceptual_modeling",
+      "title": "Expose hidden intermediate variables",
+      "method": "Ask which unobserved stages could connect the input to the claimed outcome.",
+      "boundary": "Do not invent an intermediate variable solely to rescue a preferred explanation."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_10",
+      "subdomain": "conceptual_modeling",
+      "title": "Choose model granularity deliberately",
+      "method": "Select the smallest level of detail that preserves distinctions relevant to the task.",
+      "boundary": "Increase detail when aggregated values hide subgroup behavior or boundary failures."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_11",
+      "subdomain": "conceptual_modeling",
+      "title": "Represent feedback paths",
+      "method": "Identify outputs that feed back into earlier decisions or system states.",
+      "boundary": "Include delay and sign of influence; feedback is not always stabilizing."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_12",
+      "subdomain": "conceptual_modeling",
+      "title": "Mark external dependencies",
+      "method": "List conditions controlled outside the modeled system that can affect its behavior.",
+      "boundary": "Do not assume an external dependency is guaranteed or under local control."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_13",
+      "subdomain": "conceptual_modeling",
+      "title": "Separate observable from latent quantities",
+      "method": "Label directly measured variables and inferred constructs distinctly.",
+      "boundary": "State how a latent quantity is operationalized and what that proxy misses."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_14",
+      "subdomain": "conceptual_modeling",
+      "title": "Build a dependency map",
+      "method": "Connect prerequisite conditions to the tasks or results that rely on them.",
+      "boundary": "A dependency link should have a concrete reason, not merely temporal proximity."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_15",
+      "subdomain": "conceptual_modeling",
+      "title": "Identify conservation or accounting boundaries",
+      "method": "Define what flows into, out of, and remains within the modeled scope.",
+      "boundary": "Check for untracked transfers before interpreting a residual as unexplained loss."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_16",
+      "subdomain": "conceptual_modeling",
+      "title": "Represent multiple levels",
+      "method": "Separate local behavior, subsystem behavior, and whole-system outcomes.",
+      "boundary": "Do not assume local improvements sum to a system-level improvement."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_17",
+      "subdomain": "conceptual_modeling",
+      "title": "Separate policy from mechanism",
+      "method": "Represent chosen rules or controls apart from the process they influence.",
+      "boundary": "A policy description is not evidence that the policy is followed."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_18",
+      "subdomain": "conceptual_modeling",
+      "title": "Expose model assumptions in the diagram",
+      "method": "Attach assumptions to the elements or links that rely on them.",
+      "boundary": "Do not hide assumptions in labels that appear to be observed data."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_19",
+      "subdomain": "conceptual_modeling",
+      "title": "Select a proxy with a validity argument",
+      "method": "Explain why the proxy tracks the target and under what conditions it can fail.",
+      "boundary": "Do not use ease of measurement as the only reason for proxy selection."
+    },
+    {
+      "family_id": "gr_family_conceptual_modeling_20",
+      "subdomain": "conceptual_modeling",
+      "title": "Define model-use limits",
+      "method": "State which questions the model can answer and which it cannot.",
+      "boundary": "Do not transfer a model beyond its tested scope without a new validation step."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_01",
+      "subdomain": "planning_and_search_control",
+      "title": "Construct a milestone ladder",
+      "method": "Break the objective into observable intermediate milestones with completion evidence.",
+      "boundary": "Milestones should represent meaningful progress rather than arbitrary calendar divisions."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_02",
+      "subdomain": "planning_and_search_control",
+      "title": "Identify the critical dependency chain",
+      "method": "Find the longest sequence of dependent tasks that constrains completion.",
+      "boundary": "Recalculate when dependencies or task durations change."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_03",
+      "subdomain": "planning_and_search_control",
+      "title": "Reserve a contingency path",
+      "method": "Define a viable alternative for the most consequential plan failure.",
+      "boundary": "A contingency that requires the same failed resource is not independent."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_04",
+      "subdomain": "planning_and_search_control",
+      "title": "Prioritize by expected value of effort",
+      "method": "Rank work by likely contribution to the objective relative to effort and risk.",
+      "boundary": "Do not treat uncertain estimates as precise rankings."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_05",
+      "subdomain": "planning_and_search_control",
+      "title": "Use staged commitment",
+      "method": "Delay costly irreversible commitments until the information needed to justify them is available.",
+      "boundary": "Do not delay low-cost reversible actions that would safely produce useful information."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_06",
+      "subdomain": "planning_and_search_control",
+      "title": "Set a search frontier",
+      "method": "Maintain explicit candidate next actions and the reason each remains worth exploring.",
+      "boundary": "Remove actions whose prerequisites have failed or whose expected value is dominated."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_07",
+      "subdomain": "planning_and_search_control",
+      "title": "Allocate effort to the bottleneck",
+      "method": "Direct the next unit of effort toward the constraint limiting overall progress.",
+      "boundary": "Verify that the apparent bottleneck is not merely the most visible problem."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_08",
+      "subdomain": "planning_and_search_control",
+      "title": "Plan around resource peaks",
+      "method": "Schedule tasks so simultaneous demands do not exceed available capacity.",
+      "boundary": "Account for setup, recovery, and coordination time as resource use."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_09",
+      "subdomain": "planning_and_search_control",
+      "title": "Use a staged fallback",
+      "method": "Define a simpler acceptable outcome if the full plan becomes infeasible.",
+      "boundary": "Do not silently redefine the original success criterion after failure."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_10",
+      "subdomain": "planning_and_search_control",
+      "title": "Make the plan observable",
+      "method": "Attach a measurable progress signal to each major step.",
+      "boundary": "A progress signal should not reward activity that does not advance the objective."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_11",
+      "subdomain": "planning_and_search_control",
+      "title": "Separate exploration from execution",
+      "method": "Allocate explicit time or budget to learn and a separate budget to deliver.",
+      "boundary": "Do not allow open-ended exploration to consume the delivery reserve."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_12",
+      "subdomain": "planning_and_search_control",
+      "title": "Choose the next informative action",
+      "method": "Prefer a safe action that reduces a decision-relevant uncertainty.",
+      "boundary": "Information has little value when it cannot change the next decision."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_13",
+      "subdomain": "planning_and_search_control",
+      "title": "Batch independent work",
+      "method": "Group tasks that share setup costs when their outcomes do not depend on order.",
+      "boundary": "Do not batch tasks when early results should change later choices."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_14",
+      "subdomain": "planning_and_search_control",
+      "title": "Preserve option value",
+      "method": "Keep feasible alternatives open when the cost of waiting is low and new information is expected.",
+      "boundary": "Do not preserve options whose carrying cost exceeds their likely future value."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_15",
+      "subdomain": "planning_and_search_control",
+      "title": "Schedule prerequisite checks first",
+      "method": "Verify high-impact prerequisites before committing downstream work.",
+      "boundary": "Use proportionate checks; do not test trivial prerequisites more heavily than the risk warrants."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_16",
+      "subdomain": "planning_and_search_control",
+      "title": "Define a revisit trigger",
+      "method": "Specify what evidence or event would justify reopening the current plan.",
+      "boundary": "Avoid both constant reconsideration and rigid refusal to adapt."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_17",
+      "subdomain": "planning_and_search_control",
+      "title": "Control plan complexity",
+      "method": "Prefer the simplest plan that satisfies the objective and constraints.",
+      "boundary": "A short plan is not simpler when it hides coordination or recovery work."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_18",
+      "subdomain": "planning_and_search_control",
+      "title": "Sequence by risk exposure",
+      "method": "Complete low-cost checks that can prevent high-cost downstream mistakes early.",
+      "boundary": "Do not postpone mandatory safety or compliance checks for schedule convenience."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_19",
+      "subdomain": "planning_and_search_control",
+      "title": "Plan a clean stopping point",
+      "method": "Define a state in which work can pause without losing essential context.",
+      "boundary": "Record pending assumptions, open decisions, and restart conditions."
+    },
+    {
+      "family_id": "gr_family_planning_and_search_control_20",
+      "subdomain": "planning_and_search_control",
+      "title": "Use a decision checkpoint",
+      "method": "Pause at named milestones to compare actual state with the plan before proceeding.",
+      "boundary": "A checkpoint must be allowed to change or stop the plan."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_01",
+      "subdomain": "evidence_evaluation",
+      "title": "Trace each claim to its evidence",
+      "method": "Attach each material claim to the observation, document, measurement, or derivation that supports it.",
+      "boundary": "A nearby citation is not sufficient if it supports a different claim."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_02",
+      "subdomain": "evidence_evaluation",
+      "title": "Check source proximity",
+      "method": "Prefer evidence produced by the actor, instrument, or event directly relevant to the claim.",
+      "boundary": "Primary status does not remove the need to assess methods and bias."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_03",
+      "subdomain": "evidence_evaluation",
+      "title": "Record evidence collection conditions",
+      "method": "Capture when, where, how, and by whom the evidence was obtained.",
+      "boundary": "Missing collection context limits reproducibility and interpretation."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_04",
+      "subdomain": "evidence_evaluation",
+      "title": "Separate evidence quantity from quality",
+      "method": "Assess relevance, method, independence, and bias separately from the number of sources.",
+      "boundary": "Many copied sources do not create independent corroboration."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_05",
+      "subdomain": "evidence_evaluation",
+      "title": "Check source independence",
+      "method": "Determine whether apparently separate reports rely on the same original dataset or authority.",
+      "boundary": "Shared upstream evidence should not be counted as multiple confirmations."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_06",
+      "subdomain": "evidence_evaluation",
+      "title": "Assess sample coverage",
+      "method": "Compare who or what was observed with the population the conclusion concerns.",
+      "boundary": "A large but systematically selected sample can remain unrepresentative."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_07",
+      "subdomain": "evidence_evaluation",
+      "title": "Inspect missing-data patterns",
+      "method": "Record which observations are absent and whether absence is related to the outcome.",
+      "boundary": "Do not assume missing observations are random without support."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_08",
+      "subdomain": "evidence_evaluation",
+      "title": "Check measurement validity",
+      "method": "Explain why the instrument or proxy measures the property under discussion.",
+      "boundary": "Precision of a reading does not establish validity of the construct."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_09",
+      "subdomain": "evidence_evaluation",
+      "title": "Separate direct observation from report",
+      "method": "Label what was observed firsthand and what was relayed by another party.",
+      "boundary": "Do not silently upgrade a report into a direct observation."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_10",
+      "subdomain": "evidence_evaluation",
+      "title": "Check temporal relevance",
+      "method": "Compare the evidence date with the time period of the claim.",
+      "boundary": "Older evidence may remain useful for stable principles but not for changing conditions."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_11",
+      "subdomain": "evidence_evaluation",
+      "title": "Inspect selection mechanisms",
+      "method": "Ask how cases entered the observed dataset and which cases were excluded.",
+      "boundary": "Conclusions may not generalize when inclusion depends on the outcome."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_12",
+      "subdomain": "evidence_evaluation",
+      "title": "Check denominator completeness",
+      "method": "Identify the full set of opportunities, cases, or exposures behind a reported rate.",
+      "boundary": "A numerator without a reliable denominator cannot establish the rate."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_13",
+      "subdomain": "evidence_evaluation",
+      "title": "Preserve contradictory observations",
+      "method": "Store material evidence that does not fit the leading account.",
+      "boundary": "Do not discard a contradiction merely because it is inconvenient."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_14",
+      "subdomain": "evidence_evaluation",
+      "title": "Assess evidence relevance",
+      "method": "Map each item to the exact question it can answer.",
+      "boundary": "Evidence about a related population or outcome may not transfer."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_15",
+      "subdomain": "evidence_evaluation",
+      "title": "Check replication conditions",
+      "method": "Compare whether repeated observations used meaningfully independent settings or methods.",
+      "boundary": "Repeated use of one shared pipeline is not independent reproduction."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_16",
+      "subdomain": "evidence_evaluation",
+      "title": "Inspect reporting incentives",
+      "method": "Consider whether data collection or presentation creates incentives to omit unfavorable results.",
+      "boundary": "An incentive concern is a reason to inspect methods, not automatic proof of misconduct."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_17",
+      "subdomain": "evidence_evaluation",
+      "title": "Check version and provenance",
+      "method": "Record dataset, document, instrument, and method versions.",
+      "boundary": "Do not combine incompatible versions without documenting the change."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_18",
+      "subdomain": "evidence_evaluation",
+      "title": "Separate absence of evidence from evidence of absence",
+      "method": "Ask whether the observation process had enough power or coverage to detect the event.",
+      "boundary": "A failed detection is informative only relative to detection capability."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_19",
+      "subdomain": "evidence_evaluation",
+      "title": "Use triangulation across methods",
+      "method": "Compare evidence gathered through methods with different failure modes.",
+      "boundary": "Agreement among methods is weak when they share the same hidden assumption."
+    },
+    {
+      "family_id": "gr_family_evidence_evaluation_20",
+      "subdomain": "evidence_evaluation",
+      "title": "Create an evidence ledger",
+      "method": "Maintain claim, support, limitation, source, date, and review status in one traceable record.",
+      "boundary": "A ledger organizes evidence; it does not itself validate the evidence."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_01",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Write a mechanism chain",
+      "method": "Describe the intermediate steps connecting a proposed input to the observed outcome.",
+      "boundary": "Do not treat a gap in the chain as established merely because the endpoints correlate."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_02",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Distinguish necessary from sufficient conditions",
+      "method": "State whether a condition must be present, can produce the result alone, or merely contributes.",
+      "boundary": "Avoid using these terms without checking alternative routes and exceptions."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_03",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Identify enabling conditions",
+      "method": "List conditions that allow a mechanism to operate even if they do not cause the outcome alone.",
+      "boundary": "Do not confuse an enabling condition with the direct driver."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_04",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Identify blocking conditions",
+      "method": "List circumstances that prevent a proposed mechanism from reaching its outcome.",
+      "boundary": "A failed mechanism under a blocker does not always refute the mechanism generally."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_05",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Compare mechanism predictions",
+      "method": "Derive an observable implication from each proposed mechanism before checking the data.",
+      "boundary": "Avoid post-hoc predictions that could fit almost any outcome."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_06",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Explain intermediate timing",
+      "method": "Specify the expected order and delay of mechanism stages.",
+      "boundary": "A timing mismatch is evidence against a mechanism only when timing assumptions are justified."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_07",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Track mechanism scope",
+      "method": "State the settings or populations in which the mechanism is expected to operate.",
+      "boundary": "Do not universalize a context-dependent mechanism."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_08",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Separate actor intent from system effect",
+      "method": "Analyze what an actor intended and what the system actually produced as different claims.",
+      "boundary": "Observed impact does not prove intent."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_09",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Distinguish trigger from underlying condition",
+      "method": "Separate the immediate event that initiates a process from persistent conditions that make it possible.",
+      "boundary": "Removing a trigger may not eliminate the underlying vulnerability."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_10",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Map multiple pathways",
+      "method": "Represent alternative paths that can lead to the same observed result.",
+      "boundary": "Do not assume a single pathway when evidence allows multiple routes."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_11",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Inspect mechanism bottlenecks",
+      "method": "Identify the stage where the proposed process is most likely to stop or weaken.",
+      "boundary": "Do not attribute all failures to the most visible stage."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_12",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Test mechanism reversibility",
+      "method": "Ask whether reversing the proposed cause should reverse the effect and under what lag.",
+      "boundary": "Irreversible accumulation or hysteresis can invalidate a simple reversal expectation."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_13",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Separate proximate and distal explanations",
+      "method": "Distinguish immediate process explanations from background or structural explanations.",
+      "boundary": "Do not treat explanations at different levels as mutually exclusive by default."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_14",
+      "subdomain": "explanation_and_mechanism",
+      "title": "State the mechanism counterfactual",
+      "method": "Describe what the mechanism predicts would happen if a key component were absent.",
+      "boundary": "A counterfactual prediction depends on what else is held fixed."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_15",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Look for mediator evidence",
+      "method": "Identify observations that should occur between the intervention and final outcome.",
+      "boundary": "A mediator association alone does not establish the complete pathway."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_16",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Check mechanism consistency",
+      "method": "Verify that the proposed stages do not contradict known constraints or each other.",
+      "boundary": "An internally coherent story can still be empirically false."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_17",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Distinguish mechanism change from parameter change",
+      "method": "Ask whether the process itself changed or only its speed, scale, or threshold.",
+      "boundary": "Use evidence about process structure rather than labels alone."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_18",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Track unintended pathways",
+      "method": "List plausible routes by which an action could create effects outside its intended channel.",
+      "boundary": "Include beneficial and harmful side effects."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_19",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Explain failure at the right level",
+      "method": "Locate whether failure arose in assumptions, mechanism, implementation, or measurement.",
+      "boundary": "Do not change the theory to explain an implementation error without evidence."
+    },
+    {
+      "family_id": "gr_family_explanation_and_mechanism_20",
+      "subdomain": "explanation_and_mechanism",
+      "title": "Produce a minimal causal narrative",
+      "method": "Explain the smallest set of supported steps sufficient to account for the observation.",
+      "boundary": "Minimality is not a reason to omit known competing pathways."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_01",
+      "subdomain": "decision_analysis",
+      "title": "Generate a genuine option set",
+      "method": "Create materially different ways to meet the same objective, including a do-minimum or status-quo option where relevant.",
+      "boundary": "Do not compare a preferred option with deliberately weak alternatives."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_02",
+      "subdomain": "decision_analysis",
+      "title": "Apply hard constraints before scoring",
+      "method": "Remove options that violate non-negotiable requirements before comparing preferences.",
+      "boundary": "Record the violated constraint and do not hide it inside a low score."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_03",
+      "subdomain": "decision_analysis",
+      "title": "Use common comparison criteria",
+      "method": "Evaluate alternatives against the same defined criteria and evidence standard.",
+      "boundary": "Add criteria only when they are relevant to the decision and applied consistently."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_04",
+      "subdomain": "decision_analysis",
+      "title": "Expose trade-offs explicitly",
+      "method": "State what each option gains and sacrifices rather than collapsing all dimensions into one label.",
+      "boundary": "Do not invent weights where decision authority has not supplied them."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_05",
+      "subdomain": "decision_analysis",
+      "title": "Identify dominated alternatives",
+      "method": "Remove an option only when another is at least as good on all relevant dimensions and better on one.",
+      "boundary": "Check that criteria and uncertainty ranges are comparable before dominance claims."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_06",
+      "subdomain": "decision_analysis",
+      "title": "Separate value judgments from measurements",
+      "method": "Label empirical estimates separately from chosen weights or preferences.",
+      "boundary": "A numeric score does not make a value judgment objective."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_07",
+      "subdomain": "decision_analysis",
+      "title": "Include opportunity cost",
+      "method": "Record the best alternative use of resources displaced by the chosen option.",
+      "boundary": "Do not count the same foregone benefit twice."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_08",
+      "subdomain": "decision_analysis",
+      "title": "Evaluate reversibility",
+      "method": "Estimate the cost, delay, and feasibility of undoing each option.",
+      "boundary": "Do not treat a theoretically reversible decision as practically reversible if switching costs are high."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_09",
+      "subdomain": "decision_analysis",
+      "title": "Use a decision threshold",
+      "method": "Specify the evidence or performance level required to choose, defer, or reject.",
+      "boundary": "Set the threshold before seeing the final result when hindsight bias is a concern."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_10",
+      "subdomain": "decision_analysis",
+      "title": "Run a switching-value check",
+      "method": "Find how far a key assumption must change before the preferred option changes.",
+      "boundary": "A switching value is conditional on the model and other assumptions."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_11",
+      "subdomain": "decision_analysis",
+      "title": "Separate expected value from risk tolerance",
+      "method": "Report average projected outcomes and downside exposure separately.",
+      "boundary": "Do not assume the decision-maker is risk neutral."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_12",
+      "subdomain": "decision_analysis",
+      "title": "Include distributional effects",
+      "method": "Record which groups receive benefits, costs, risks, or burdens.",
+      "boundary": "An aggregate gain can conceal concentrated harm."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_13",
+      "subdomain": "decision_analysis",
+      "title": "Assess option interactions",
+      "method": "Check whether combining options creates synergies, conflicts, or duplicated costs.",
+      "boundary": "Do not add standalone benefits when the options interact."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_14",
+      "subdomain": "decision_analysis",
+      "title": "Use a staged decision",
+      "method": "Split a large choice into smaller decisions that can incorporate new information.",
+      "boundary": "Ensure early stages do not lock in the full cost unintentionally."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_15",
+      "subdomain": "decision_analysis",
+      "title": "Compare against business as usual",
+      "method": "Estimate what is likely under no new intervention to create a reference case.",
+      "boundary": "The baseline is not necessarily zero cost or zero change."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_16",
+      "subdomain": "decision_analysis",
+      "title": "Document the selection rationale",
+      "method": "Record criteria, alternatives, assumptions, results, and reasons for the final choice.",
+      "boundary": "Do not record only the recommendation; retain the rejected options and uncertainty."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_17",
+      "subdomain": "decision_analysis",
+      "title": "Assess unintended incentives",
+      "method": "Ask how each option changes incentives and what behavior it may reward.",
+      "boundary": "Do not assume stated policy intent determines actual behavior."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_18",
+      "subdomain": "decision_analysis",
+      "title": "Use proportionate analysis depth",
+      "method": "Match analytical effort to decision cost, reversibility, and potential harm.",
+      "boundary": "High stakes or irreversible outcomes require stronger evidence and review."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_19",
+      "subdomain": "decision_analysis",
+      "title": "Preserve a no-action option",
+      "method": "Evaluate whether acting now is better than waiting or doing nothing.",
+      "boundary": "Do not use no-action as a straw option; estimate its consequences fairly."
+    },
+    {
+      "family_id": "gr_family_decision_analysis_20",
+      "subdomain": "decision_analysis",
+      "title": "State the decision owner and review date",
+      "method": "Record who accepts the choice and when its assumptions should be revisited.",
+      "boundary": "A review date does not imply that the decision is automatically invalid then."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_01",
+      "subdomain": "experimental_learning",
+      "title": "Define the learning question",
+      "method": "State which uncertainty the test is intended to reduce and what decision depends on it.",
+      "boundary": "Do not run a test whose result cannot change any action."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_02",
+      "subdomain": "experimental_learning",
+      "title": "Pilot before scaling",
+      "method": "Test the procedure on a limited, representative scope before broad deployment.",
+      "boundary": "A small pilot may miss rare failures; state what it cannot establish."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_03",
+      "subdomain": "experimental_learning",
+      "title": "Change one controllable factor at a time",
+      "method": "When isolating a mechanism, keep other controllable conditions stable while varying the target factor.",
+      "boundary": "This is not appropriate when interactions are the main object of study."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_04",
+      "subdomain": "experimental_learning",
+      "title": "Predefine outcome measures",
+      "method": "Choose the outcome and measurement method before observing test results.",
+      "boundary": "Do not select the success metric after seeing which one favors the result."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_05",
+      "subdomain": "experimental_learning",
+      "title": "Include a comparison condition",
+      "method": "Use a suitable baseline or comparison group when the question requires separating change from background variation.",
+      "boundary": "The comparison must be sufficiently similar for the inference being made."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_06",
+      "subdomain": "experimental_learning",
+      "title": "Repeat under changed conditions",
+      "method": "Test whether a result persists across relevant environments, users, or operating conditions.",
+      "boundary": "Do not call repeated runs independent when they share the same failure source."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_07",
+      "subdomain": "experimental_learning",
+      "title": "Use a negative control",
+      "method": "Include a condition in which the proposed effect should not appear.",
+      "boundary": "A failed negative control may invalidate interpretation of the positive result."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_08",
+      "subdomain": "experimental_learning",
+      "title": "Use a positive control",
+      "method": "Include a condition expected to produce a known response when the setup is functioning.",
+      "boundary": "A positive control does not show that the target hypothesis is correct."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_09",
+      "subdomain": "experimental_learning",
+      "title": "Separate exploratory from confirmatory tests",
+      "method": "Label tests used to discover patterns separately from tests designed to confirm a prespecified prediction.",
+      "boundary": "Do not treat a pattern found during exploration as independently confirmed."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_10",
+      "subdomain": "experimental_learning",
+      "title": "Record failed trials",
+      "method": "Store unexpected and unsuccessful outcomes with the same care as successful ones.",
+      "boundary": "Do not remove failed runs without a documented exclusion reason."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_11",
+      "subdomain": "experimental_learning",
+      "title": "Check measurement repeatability",
+      "method": "Repeat the same measurement under comparable conditions to assess measurement variation.",
+      "boundary": "Repeatability does not establish accuracy."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_12",
+      "subdomain": "experimental_learning",
+      "title": "Vary boundary conditions",
+      "method": "Test near the limits of the stated operating range.",
+      "boundary": "Do not extrapolate beyond tested boundaries without a model and validation."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_13",
+      "subdomain": "experimental_learning",
+      "title": "Use an ablation test",
+      "method": "Remove one component at a time to determine whether it contributes to the result.",
+      "boundary": "Ablation can change interactions; interpret removal effects in context."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_14",
+      "subdomain": "experimental_learning",
+      "title": "Test an alternative implementation",
+      "method": "Use a distinct implementation or method to check whether the result depends on one pipeline.",
+      "boundary": "Different implementations can still share the same conceptual error."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_15",
+      "subdomain": "experimental_learning",
+      "title": "Measure side effects",
+      "method": "Record outcomes that could worsen while the primary metric improves.",
+      "boundary": "A narrow success metric can conceal harm elsewhere."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_16",
+      "subdomain": "experimental_learning",
+      "title": "Choose an informative sample",
+      "method": "Select cases that expose the decision-relevant range of conditions.",
+      "boundary": "Do not confuse a stress sample with a representative prevalence sample."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_17",
+      "subdomain": "experimental_learning",
+      "title": "Define a replication target",
+      "method": "Specify which finding, environment, and method another run must reproduce.",
+      "boundary": "A vague request to reproduce the result is not an executable replication plan."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_18",
+      "subdomain": "experimental_learning",
+      "title": "Preserve test configuration",
+      "method": "Record software, inputs, instruments, parameters, and environment for each run.",
+      "boundary": "A result without configuration cannot be reliably compared."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_19",
+      "subdomain": "experimental_learning",
+      "title": "Use a staged rollout",
+      "method": "Increase exposure gradually while monitoring predefined failure indicators.",
+      "boundary": "Stop or roll back when a safety or reliability threshold is crossed."
+    },
+    {
+      "family_id": "gr_family_experimental_learning_20",
+      "subdomain": "experimental_learning",
+      "title": "Close the learning loop",
+      "method": "Compare predicted and observed outcomes and update the relevant model or procedure.",
+      "boundary": "Do not update a rule from one atypical observation without assessing its cause."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_01",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Compare expected and observed behavior",
+      "method": "Write the expected output for the current inputs and compare it with the actual output.",
+      "boundary": "The expectation itself must be checked before treating the difference as a fault."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_02",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Localize the first divergence",
+      "method": "Trace the process until the earliest point where observed behavior departs from expectation.",
+      "boundary": "The first visible error may be downstream of the actual fault."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_03",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Isolate one subsystem",
+      "method": "Hold unaffected components constant while testing the suspected component.",
+      "boundary": "Isolation is invalid when the suspected behavior depends on cross-component interaction."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_04",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Reproduce the failure minimally",
+      "method": "Reduce a failure to the smallest input and sequence that still triggers it.",
+      "boundary": "Do not remove a condition that is necessary to reproduce the failure."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_05",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Classify failure mode",
+      "method": "Label the symptom as missing output, wrong output, timing error, resource exhaustion, or unsafe state.",
+      "boundary": "A symptom category is a starting point, not a root-cause conclusion."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_06",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Check recent changes first",
+      "method": "Compare the working and failing configurations for recent changes in code, process, data, or environment.",
+      "boundary": "Temporal proximity alone does not prove a change caused the failure."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_07",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Inspect boundary behavior",
+      "method": "Test empty, minimum, maximum, malformed, and transition inputs relevant to the system.",
+      "boundary": "Choose boundaries from the specification rather than arbitrary extremes."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_08",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Separate intermittent from deterministic failure",
+      "method": "Repeat under controlled conditions and record whether the same inputs yield the same outcome.",
+      "boundary": "Do not call a failure random until uncontrolled variables are considered."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_09",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Check resource exhaustion",
+      "method": "Measure resource use over time and compare it with capacity and expected load.",
+      "boundary": "A resource warning is not a root cause unless it aligns with the failure."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_10",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Trace error propagation",
+      "method": "Follow how an initial fault changes downstream state and outputs.",
+      "boundary": "Do not mistake the largest downstream symptom for the origin."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_11",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Use a fault tree",
+      "method": "Start from the undesired event and enumerate combinations of conditions that could produce it.",
+      "boundary": "A fault tree is incomplete until common-cause and dependency effects are considered."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_12",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Check configuration drift",
+      "method": "Compare deployed settings with the reviewed or intended configuration.",
+      "boundary": "A configuration difference matters only if it affects the relevant behavior."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_13",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Distinguish symptom suppression from repair",
+      "method": "Determine whether a change removes the cause or merely hides its visible effect.",
+      "boundary": "A workaround must remain labelled as a workaround until root cause is addressed."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_14",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Test recovery behavior",
+      "method": "After inducing a safe failure, observe whether the system returns to a valid state.",
+      "boundary": "Do not test recovery in production when the induced fault could cause harm."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_15",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Verify diagnostic instrumentation",
+      "method": "Confirm that logs, sensors, or traces faithfully represent the event being diagnosed.",
+      "boundary": "An instrument fault can mimic a system fault."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_16",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Check for multiple simultaneous faults",
+      "method": "Test whether one repair leaves another independent symptom unresolved.",
+      "boundary": "Do not force all observations into one root cause without evidence."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_17",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Compare failure and success cases",
+      "method": "Identify conditions that differ between otherwise comparable successful and failed runs.",
+      "boundary": "A difference is a lead for testing, not proof of causal relevance."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_18",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Use a rollback test",
+      "method": "Restore a known-good version or configuration in a controlled environment to assess whether behavior returns.",
+      "boundary": "Rollback may be confounded by persistent state or external changes."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_19",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Validate the repair against regression cases",
+      "method": "Re-run the original failure and nearby behaviors after applying a fix.",
+      "boundary": "A fix is incomplete if it resolves one case by breaking a required adjacent case."
+    },
+    {
+      "family_id": "gr_family_diagnostic_reasoning_20",
+      "subdomain": "diagnostic_reasoning",
+      "title": "Write a root-cause record",
+      "method": "Document the causal chain, evidence, contributing conditions, repair, and unresolved uncertainty.",
+      "boundary": "Do not label a suspected cause as confirmed without discriminating evidence."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_01",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Separate types of uncertainty",
+      "method": "Distinguish missing knowledge, natural variability, measurement error, and model uncertainty.",
+      "boundary": "Different uncertainty sources require different remedies."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_02",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Use bounded estimates",
+      "method": "Report a plausible interval or range when a point estimate would imply unjustified precision.",
+      "boundary": "State how the bounds were obtained and what they do not cover."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_03",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Compare plausible scenarios",
+      "method": "Evaluate the decision under a small set of materially different plausible conditions.",
+      "boundary": "Do not present selected scenarios as exhaustive forecasts."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_04",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Test assumption sensitivity",
+      "method": "Change important assumptions one at a time and observe whether the conclusion changes.",
+      "boundary": "One-at-a-time tests can miss interactions between assumptions."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_05",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Use a robust satisficing threshold",
+      "method": "Choose a solution that remains acceptable across the required range of conditions.",
+      "boundary": "A robust solution may sacrifice peak performance; state the trade-off."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_06",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Track confidence by claim",
+      "method": "Assign confidence separately to each material claim and explain the evidence basis.",
+      "boundary": "Do not transfer confidence from one well-supported claim to adjacent claims."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_07",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Maintain an uncertainty register",
+      "method": "List unresolved quantities, their potential impact, and the next way to reduce them.",
+      "boundary": "Do not let the register become a substitute for resolving high-impact unknowns."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_08",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Check tail consequences",
+      "method": "Examine low-probability outcomes whose consequences would be severe.",
+      "boundary": "Do not imply that rare means impossible or quantify tails without data."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_09",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Use a conservative fallback",
+      "method": "Define an action that remains safe when critical information is unavailable.",
+      "boundary": "The fallback should not be described as optimal when it is only protective."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_10",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Separate confidence from importance",
+      "method": "Assess how strongly a claim is supported and how much the decision depends on it.",
+      "boundary": "A low-confidence claim may be unimportant; a high-impact claim may need further verification."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_11",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Use a value-of-information check",
+      "method": "Estimate whether obtaining more information could change the choice enough to justify its cost.",
+      "boundary": "Do not collect information indefinitely when it cannot alter the decision."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_12",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Record forecast calibration data",
+      "method": "Store predictions and outcomes in a form that permits later comparison.",
+      "boundary": "Do not evaluate calibration using only memorable or selectively retained forecasts."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_13",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Consider model disagreement",
+      "method": "Compare outputs from genuinely different models and inspect why they diverge.",
+      "boundary": "Do not average outputs when models use incompatible assumptions or scales."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_14",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Use uncertainty-aware language",
+      "method": "Match wording to the strength and scope of the evidence.",
+      "boundary": "Avoid numerical probabilities unless there is a defensible basis for them."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_15",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Identify robust conclusions",
+      "method": "Find which conclusions remain unchanged across plausible assumptions or models.",
+      "boundary": "Do not call a conclusion robust if the tested range is narrow or arbitrary."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_16",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Set an uncertainty acceptance limit",
+      "method": "Specify which unknowns are tolerable before action and which require escalation.",
+      "boundary": "The limit must reflect consequence severity and authority."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_17",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Avoid false precision",
+      "method": "Round outputs to a precision justified by input quality and method.",
+      "boundary": "Do not discard meaningful variation merely to make a result look neat."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_18",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Update estimates transparently",
+      "method": "When new information arrives, record which estimate changed and why.",
+      "boundary": "Do not overwrite earlier estimates when auditability matters."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_19",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "Distinguish possibility from likelihood",
+      "method": "State whether a scenario is merely conceivable or supported as reasonably likely.",
+      "boundary": "A vivid possible event is not thereby probable."
+    },
+    {
+      "family_id": "gr_family_uncertainty_and_robustness_20",
+      "subdomain": "uncertainty_and_robustness",
+      "title": "State conditions for abstention",
+      "method": "Define which missing evidence or failed checks make a conclusion unsafe to provide.",
+      "boundary": "Abstention should identify what would resolve the limitation when possible."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_01",
+      "subdomain": "resource_strategy",
+      "title": "Budget effort by task uncertainty",
+      "method": "Spend more investigative effort where uncertainty can materially change the outcome.",
+      "boundary": "Do not spend high effort on details that cannot affect the decision."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_02",
+      "subdomain": "resource_strategy",
+      "title": "Protect critical resources",
+      "method": "Reserve scarce resources for tasks that are prerequisites to the objective.",
+      "boundary": "Do not reserve capacity without a defined use or release condition."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_03",
+      "subdomain": "resource_strategy",
+      "title": "Account for coordination overhead",
+      "method": "Include communication, integration, review, and handoff effort in resource estimates.",
+      "boundary": "Do not assume parallel work reduces elapsed time when coordination is the bottleneck."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_04",
+      "subdomain": "resource_strategy",
+      "title": "Prefer low-cost information first",
+      "method": "Use safe inexpensive checks before expensive investigations when they can discriminate between options.",
+      "boundary": "Do not let cheap but weak checks replace necessary high-assurance evidence."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_05",
+      "subdomain": "resource_strategy",
+      "title": "Use a resource reserve",
+      "method": "Set aside capacity for predictable variance and recovery.",
+      "boundary": "A reserve is not free capacity for unplanned scope expansion."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_06",
+      "subdomain": "resource_strategy",
+      "title": "Measure marginal benefit",
+      "method": "Compare the expected improvement from the next unit of effort with its cost.",
+      "boundary": "Do not assume the next unit has the same benefit as earlier units."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_07",
+      "subdomain": "resource_strategy",
+      "title": "Avoid premature optimization",
+      "method": "Resolve the dominant requirement before tuning secondary performance details.",
+      "boundary": "Do not defer a known structural flaw under the label of later optimization."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_08",
+      "subdomain": "resource_strategy",
+      "title": "Reduce switching overhead",
+      "method": "Group related work to reduce repeated setup and context changes.",
+      "boundary": "Batching must not delay time-critical results."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_09",
+      "subdomain": "resource_strategy",
+      "title": "Use graceful degradation",
+      "method": "Define how service or solution quality should reduce when resources become scarce.",
+      "boundary": "Degraded operation must remain within safety and correctness constraints."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_10",
+      "subdomain": "resource_strategy",
+      "title": "Match tool to task scale",
+      "method": "Choose a tool whose capacity and precision fit the size and consequence of the task.",
+      "boundary": "A sophisticated tool can add error when its assumptions are misunderstood."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_11",
+      "subdomain": "resource_strategy",
+      "title": "Track resource consumption",
+      "method": "Measure actual time, compute, materials, and attention used by major activities.",
+      "boundary": "Do not infer future cost from one atypical run."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_12",
+      "subdomain": "resource_strategy",
+      "title": "Separate fixed from variable cost",
+      "method": "Identify costs that remain regardless of volume and costs that change with use.",
+      "boundary": "Check the relevant time horizon before classifying a cost as fixed."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_13",
+      "subdomain": "resource_strategy",
+      "title": "Include maintenance burden",
+      "method": "Estimate the ongoing effort required to keep a chosen solution usable.",
+      "boundary": "Initial build cost alone is not total cost of ownership."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_14",
+      "subdomain": "resource_strategy",
+      "title": "Use the smallest sufficient experiment",
+      "method": "Choose the smallest trial that can safely answer the decision question.",
+      "boundary": "Do not under-size the trial when rare failure or subgroup effects matter."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_15",
+      "subdomain": "resource_strategy",
+      "title": "Prioritize irreversible resource use",
+      "method": "Review commitments that permanently consume capacity before optional spending.",
+      "boundary": "Do not delay essential investment merely because it is irreversible."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_16",
+      "subdomain": "resource_strategy",
+      "title": "Set a scope-change budget",
+      "method": "Define how much additional work can be accepted without renegotiating the objective.",
+      "boundary": "A scope budget does not authorize changes that violate safety or contract constraints."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_17",
+      "subdomain": "resource_strategy",
+      "title": "Compare buy, build, reuse, and defer",
+      "method": "Evaluate materially different acquisition paths using the same lifetime criteria.",
+      "boundary": "Do not assume reuse is free or external procurement is always faster."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_18",
+      "subdomain": "resource_strategy",
+      "title": "Identify resource substitution limits",
+      "method": "Record which resources can replace one another and which cannot.",
+      "boundary": "Do not treat unlike skills, materials, or compute resources as interchangeable."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_19",
+      "subdomain": "resource_strategy",
+      "title": "Plan for resource contention",
+      "method": "Identify activities that compete for the same constrained resource.",
+      "boundary": "A schedule is infeasible when shared resource demand exceeds capacity."
+    },
+    {
+      "family_id": "gr_family_resource_strategy_20",
+      "subdomain": "resource_strategy",
+      "title": "Release unused reservations",
+      "method": "Return capacity to the shared pool when a dependency or task no longer needs it.",
+      "boundary": "Confirm that the reservation is genuinely unnecessary before release."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_01",
+      "subdomain": "analogy_and_transfer",
+      "title": "Map source and target roles",
+      "method": "Identify which entities and relationships correspond between an analogy source and target.",
+      "boundary": "Do not map by surface resemblance alone."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_02",
+      "subdomain": "analogy_and_transfer",
+      "title": "Transfer structure before detail",
+      "method": "Carry over the relationship pattern while re-deriving target-specific values.",
+      "boundary": "A source example does not establish target-specific facts."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_03",
+      "subdomain": "analogy_and_transfer",
+      "title": "List disanalogies explicitly",
+      "method": "Record features that differ and may break a proposed transfer.",
+      "boundary": "A single decisive disanalogy can invalidate the analogy for the intended use."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_04",
+      "subdomain": "analogy_and_transfer",
+      "title": "Identify invariant relationships",
+      "method": "Find the structure that remains stable under changes in names, units, or representation.",
+      "boundary": "Do not claim invariance without checking the allowed transformations."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_05",
+      "subdomain": "analogy_and_transfer",
+      "title": "Use a counter-domain test",
+      "method": "Try the proposed principle in a context where its assumptions may fail.",
+      "boundary": "A failed transfer narrows scope rather than necessarily refuting the source principle."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_06",
+      "subdomain": "analogy_and_transfer",
+      "title": "Translate examples into schemas",
+      "method": "Extract roles, constraints, and relations from a concrete case.",
+      "boundary": "Do not preserve incidental details as if they were essential."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_07",
+      "subdomain": "analogy_and_transfer",
+      "title": "Use analogy to generate a test",
+      "method": "Derive a candidate prediction from the source structure and test it directly in the target.",
+      "boundary": "Treat the prediction as a hypothesis until tested."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_08",
+      "subdomain": "analogy_and_transfer",
+      "title": "Separate metaphor from mechanism",
+      "method": "Label figurative comparisons and state what concrete mechanism, if any, they represent.",
+      "boundary": "Do not use a metaphor as evidence."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_09",
+      "subdomain": "analogy_and_transfer",
+      "title": "Compare abstraction levels",
+      "method": "Check that source and target are described at compatible levels before transfer.",
+      "boundary": "A micro-level mechanism may not predict a macro-level outcome."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_10",
+      "subdomain": "analogy_and_transfer",
+      "title": "Re-derive units and scales",
+      "method": "Recompute quantitative relationships using target units and scales.",
+      "boundary": "Never copy a source numerical value solely because the analogy is close."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_11",
+      "subdomain": "analogy_and_transfer",
+      "title": "Transfer only tested invariants",
+      "method": "Use a cross-domain principle only after its key assumptions are checked in the new setting.",
+      "boundary": "Do not generalize from one successful transfer to every domain."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_12",
+      "subdomain": "analogy_and_transfer",
+      "title": "Use contrasting analogies",
+      "method": "Compare multiple analogies that illuminate different aspects of the target.",
+      "boundary": "Do not let one analogy hide features that another exposes."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_13",
+      "subdomain": "analogy_and_transfer",
+      "title": "Create a boundary example",
+      "method": "Construct a target case near the limit of the analogy's assumptions.",
+      "boundary": "A boundary example is a probe, not a full validation."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_14",
+      "subdomain": "analogy_and_transfer",
+      "title": "Identify role reversals",
+      "method": "Check whether source and target roles preserve direction and responsibility.",
+      "boundary": "A reversed role can reverse the meaning of the relationship."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_15",
+      "subdomain": "analogy_and_transfer",
+      "title": "Abstract the shared constraint",
+      "method": "Find the constraint that makes two different problems structurally similar.",
+      "boundary": "Shared vocabulary alone is not structural similarity."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_16",
+      "subdomain": "analogy_and_transfer",
+      "title": "Separate reusable method from domain facts",
+      "method": "Transfer a reasoning procedure while sourcing domain-specific premises independently.",
+      "boundary": "A valid method cannot compensate for false target facts."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_17",
+      "subdomain": "analogy_and_transfer",
+      "title": "Record transfer confidence",
+      "method": "State which parts are structurally matched and which remain speculative.",
+      "boundary": "Do not turn a plausible analogy into an asserted equivalence."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_18",
+      "subdomain": "analogy_and_transfer",
+      "title": "Test a negative analogy",
+      "method": "Identify a superficially similar case where the principle should not apply.",
+      "boundary": "Use the negative case to mark the boundary, not as an irrelevant exception."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_19",
+      "subdomain": "analogy_and_transfer",
+      "title": "Translate constraints across representations",
+      "method": "Map each source constraint into an equivalent target condition before applying the method.",
+      "boundary": "If no faithful mapping exists, do not claim direct transfer."
+    },
+    {
+      "family_id": "gr_family_analogy_and_transfer_20",
+      "subdomain": "analogy_and_transfer",
+      "title": "Extract a reusable pattern",
+      "method": "Replace domain-specific labels with roles and operations that preserve the essential structure.",
+      "boundary": "The abstraction must retain conditions that make the pattern valid."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_01",
+      "subdomain": "error_and_quality_control",
+      "title": "Run an independent consistency pass",
+      "method": "Re-read the result using a separate checklist focused on contradictions and omissions.",
+      "boundary": "A repeated review using the same assumptions may repeat the same error."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_02",
+      "subdomain": "error_and_quality_control",
+      "title": "Check claims against their definitions",
+      "method": "Verify that each key term is used consistently with the definition chosen for the task.",
+      "boundary": "Do not change a definition mid-argument to preserve a result."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_03",
+      "subdomain": "error_and_quality_control",
+      "title": "Inspect edge conditions",
+      "method": "Test limiting, empty, extreme, and transition cases relevant to the claim.",
+      "boundary": "An edge case must satisfy the problem's stated preconditions to count as a refutation."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_04",
+      "subdomain": "error_and_quality_control",
+      "title": "Check input-output alignment",
+      "method": "Confirm that every output field or conclusion corresponds to a requested input or operation.",
+      "boundary": "Do not add plausible but unrequested conclusions."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_05",
+      "subdomain": "error_and_quality_control",
+      "title": "Verify units and dimensions",
+      "method": "Check that combined quantities have compatible units and that outputs have expected dimensions.",
+      "boundary": "Dimensional consistency is necessary but does not prove a numerical result is correct."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_06",
+      "subdomain": "error_and_quality_control",
+      "title": "Perform a reverse audit trail",
+      "method": "Start from the final conclusion and trace each step back to its evidence or assumption.",
+      "boundary": "A traceable chain can still contain an invalid inference."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_07",
+      "subdomain": "error_and_quality_control",
+      "title": "Check completeness against the objective",
+      "method": "Compare the final result with every acceptance criterion stated at the start.",
+      "boundary": "Do not declare completion based only on the easiest criteria."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_08",
+      "subdomain": "error_and_quality_control",
+      "title": "Look for hidden scope changes",
+      "method": "Compare the original question with the one actually answered.",
+      "boundary": "A narrower answer is acceptable only when the limitation is made explicit."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_09",
+      "subdomain": "error_and_quality_control",
+      "title": "Use a second representation",
+      "method": "Re-express the result as a table, diagram, narrative, or independent calculation where useful.",
+      "boundary": "Different representations may share the same underlying faulty assumptions."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_10",
+      "subdomain": "error_and_quality_control",
+      "title": "Audit copied and transformed data",
+      "method": "Check whether transformations changed ordering, units, labels, precision, or missing-value meaning.",
+      "boundary": "A clean-looking output does not prove the transformation preserved meaning."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_11",
+      "subdomain": "error_and_quality_control",
+      "title": "Check rounding and aggregation effects",
+      "method": "Compare the aggregate result with underlying values and assess information lost.",
+      "boundary": "Rounding errors can accumulate or reverse close comparisons."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_12",
+      "subdomain": "error_and_quality_control",
+      "title": "Test contradiction handling",
+      "method": "Introduce incompatible inputs and verify that the system flags rather than silently merges them.",
+      "boundary": "Do not resolve a contradiction by arbitrarily preferring the latest record."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_13",
+      "subdomain": "error_and_quality_control",
+      "title": "Verify exception paths",
+      "method": "Check how the procedure behaves when a required input is absent or invalid.",
+      "boundary": "A documented exception is not handled until the runtime or workflow enforces it."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_14",
+      "subdomain": "error_and_quality_control",
+      "title": "Audit result reproducibility",
+      "method": "Record the inputs, procedure version, settings, and environment needed to repeat the result.",
+      "boundary": "Reproducibility does not guarantee correctness."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_15",
+      "subdomain": "error_and_quality_control",
+      "title": "Use a failure-first review",
+      "method": "Ask how the proposed result could be wrong and identify the cheapest discriminating check.",
+      "boundary": "Do not manufacture remote objections that cannot affect the decision."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_16",
+      "subdomain": "error_and_quality_control",
+      "title": "Check for duplicated counting",
+      "method": "Trace whether the same event, cost, benefit, or source appears in multiple parts of the result.",
+      "boundary": "Duplicates can remain hidden when labels differ."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_17",
+      "subdomain": "error_and_quality_control",
+      "title": "Check sign and direction conventions",
+      "method": "Confirm the meaning of positive, negative, increase, decrease, and direction labels.",
+      "boundary": "Do not assume conventions are shared across sources."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_18",
+      "subdomain": "error_and_quality_control",
+      "title": "Check temporal ordering",
+      "method": "Ensure events and evidence are placed in an order compatible with the proposed process.",
+      "boundary": "Timestamp precision and clock alignment may limit ordering claims."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_19",
+      "subdomain": "error_and_quality_control",
+      "title": "Validate the final artifact against its schema",
+      "method": "Check required fields, data types, identifiers, and allowed values before use.",
+      "boundary": "Schema validity does not establish semantic validity."
+    },
+    {
+      "family_id": "gr_family_error_and_quality_control_20",
+      "subdomain": "error_and_quality_control",
+      "title": "Keep a correction record",
+      "method": "Record what changed, why it changed, and which previous result is superseded.",
+      "boundary": "Do not erase audit history when correcting a result."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_01",
+      "subdomain": "communication_and_argument",
+      "title": "State the answer before supporting detail",
+      "method": "Lead with the decision or conclusion, then present the reasons needed to evaluate it.",
+      "boundary": "Do not state a decisive answer first when key uncertainty makes it misleading."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_02",
+      "subdomain": "communication_and_argument",
+      "title": "Make the reasoning chain inspectable",
+      "method": "Show the important intermediate steps between evidence and conclusion.",
+      "boundary": "Do not expose irrelevant internal detail that obscures the argument."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_03",
+      "subdomain": "communication_and_argument",
+      "title": "Label fact, inference, and recommendation",
+      "method": "Mark direct evidence, derived interpretation, and value-based advice distinctly.",
+      "boundary": "A recommendation may combine facts and values; identify both."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_04",
+      "subdomain": "communication_and_argument",
+      "title": "Attach qualifications to the relevant claim",
+      "method": "Place scope limits and uncertainty beside the statement they qualify.",
+      "boundary": "A distant disclaimer may not prevent a local overstatement."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_05",
+      "subdomain": "communication_and_argument",
+      "title": "Use a claim-reason-evidence structure",
+      "method": "State a claim, the reason connecting evidence to it, and the evidence itself.",
+      "boundary": "A reason without evidence or an evidence list without inference is incomplete."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_06",
+      "subdomain": "communication_and_argument",
+      "title": "Explain technical terms on first use",
+      "method": "Define specialized language when the intended audience may not know it.",
+      "boundary": "Do not replace a precise term with an inaccurate simplification."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_07",
+      "subdomain": "communication_and_argument",
+      "title": "Separate disagreement types",
+      "method": "Identify whether parties disagree about facts, definitions, methods, values, or priorities.",
+      "boundary": "Resolving one type does not automatically resolve another."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_08",
+      "subdomain": "communication_and_argument",
+      "title": "Use a comparison table for multiple options",
+      "method": "Choose dimensions first, then describe each option using the same structure.",
+      "boundary": "Tables should not conceal incomparable measurements or missing values."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_09",
+      "subdomain": "communication_and_argument",
+      "title": "Preserve source attribution",
+      "method": "Name the origin of material claims and distinguish quotation from paraphrase.",
+      "boundary": "Do not imply that a source endorses an inference it does not make."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_10",
+      "subdomain": "communication_and_argument",
+      "title": "Summarize without changing emphasis",
+      "method": "Retain the source's central claim, evidence, uncertainty, and material caveats.",
+      "boundary": "Do not promote a minor example into the source's main conclusion."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_11",
+      "subdomain": "communication_and_argument",
+      "title": "Write a decision-ready recommendation",
+      "method": "State the recommended action, rationale, trade-offs, confidence, and review trigger.",
+      "boundary": "Do not omit alternatives when the decision-maker needs a genuine choice."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_12",
+      "subdomain": "communication_and_argument",
+      "title": "Use an explicit unknowns section",
+      "method": "List unresolved information that could change the answer.",
+      "boundary": "Do not bury critical unknowns in generic caveats."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_13",
+      "subdomain": "communication_and_argument",
+      "title": "Use precise quantifiers",
+      "method": "Choose terms such as all, most, some, or at least one to match the evidence.",
+      "boundary": "Avoid universal language when only sampled cases were observed."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_14",
+      "subdomain": "communication_and_argument",
+      "title": "Distinguish disagreement from contradiction",
+      "method": "Check whether two claims concern the same object, time, definition, and scope.",
+      "boundary": "Different scopes can explain apparent disagreement without either claim being false."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_15",
+      "subdomain": "communication_and_argument",
+      "title": "Adapt detail to audience needs",
+      "method": "Include the minimum background needed for the audience to assess or act on the result.",
+      "boundary": "Do not remove critical assumptions merely to shorten the explanation."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_16",
+      "subdomain": "communication_and_argument",
+      "title": "Use examples to clarify boundaries",
+      "method": "Pair a representative case with a nearby non-example when confusion is likely.",
+      "boundary": "Do not let an illustrative example substitute for the rule itself."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_17",
+      "subdomain": "communication_and_argument",
+      "title": "Preserve uncertainty in summaries",
+      "method": "Retain uncertainty that materially affects interpretation or action.",
+      "boundary": "Do not convert tentative findings into definitive headlines."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_18",
+      "subdomain": "communication_and_argument",
+      "title": "Separate evidence from rhetoric",
+      "method": "Remove persuasive wording that does not add a testable reason.",
+      "boundary": "Neutral wording should not erase legitimate value differences."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_19",
+      "subdomain": "communication_and_argument",
+      "title": "End with an actionable next step",
+      "method": "Identify the next check, decision, or action required to make progress.",
+      "boundary": "Do not imply that an unperformed next step has already occurred."
+    },
+    {
+      "family_id": "gr_family_communication_and_argument_20",
+      "subdomain": "communication_and_argument",
+      "title": "Make disagreement auditable",
+      "method": "Record each position and the evidence or assumption on which it depends.",
+      "boundary": "Do not summarize a minority view so weakly that it becomes a straw position."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_01",
+      "subdomain": "collaborative_reasoning",
+      "title": "Elicit independent initial estimates",
+      "method": "Ask contributors to record an initial view before group discussion when anchoring is a risk.",
+      "boundary": "Independent estimates are not useful when contributors lack the relevant information or skill."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_02",
+      "subdomain": "collaborative_reasoning",
+      "title": "Assign distinct review roles",
+      "method": "Separate evidence gathering, method checking, implementation review, and decision authority.",
+      "boundary": "Do not let role separation prevent essential cross-checking."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_03",
+      "subdomain": "collaborative_reasoning",
+      "title": "Use a shared evidence ledger",
+      "method": "Give collaborators a common record of claims, sources, dates, and unresolved issues.",
+      "boundary": "A shared ledger requires ownership and update rules."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_04",
+      "subdomain": "collaborative_reasoning",
+      "title": "Record dissenting views",
+      "method": "Capture material minority interpretations and the reasons supporting them.",
+      "boundary": "Do not equate consensus with correctness."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_05",
+      "subdomain": "collaborative_reasoning",
+      "title": "Clarify decision rights",
+      "method": "State who recommends, who approves, and who is accountable for implementation.",
+      "boundary": "Do not confuse consultation with veto authority."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_06",
+      "subdomain": "collaborative_reasoning",
+      "title": "Normalize terminology across teams",
+      "method": "Agree on working definitions for terms that cross team boundaries.",
+      "boundary": "Preserve domain-specific meanings when one shared definition would be misleading."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_07",
+      "subdomain": "collaborative_reasoning",
+      "title": "Separate coordination from evaluation",
+      "method": "First clarify what each contributor did; then independently assess the quality of the result.",
+      "boundary": "Do not mistake activity reporting for evidence of effectiveness."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_08",
+      "subdomain": "collaborative_reasoning",
+      "title": "Use structured challenge",
+      "method": "Ask a reviewer to identify the strongest failure case for the preferred proposal.",
+      "boundary": "Challenge should target assumptions and evidence, not the person."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_09",
+      "subdomain": "collaborative_reasoning",
+      "title": "Rotate critical review",
+      "method": "Assign reviewers to examine different assumptions or components over time.",
+      "boundary": "Rotation is useful only when reviewers have enough context and competence."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_10",
+      "subdomain": "collaborative_reasoning",
+      "title": "Make handoff state explicit",
+      "method": "Transfer current status, artifacts, pending decisions, and known limitations.",
+      "boundary": "A handoff is incomplete when assumptions remain only in the previous owner's memory."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_11",
+      "subdomain": "collaborative_reasoning",
+      "title": "Resolve interface ownership",
+      "method": "Assign responsibility for information and outputs shared between groups.",
+      "boundary": "Unowned interfaces create gaps even when each team completes its local task."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_12",
+      "subdomain": "collaborative_reasoning",
+      "title": "Distinguish consensus from unanimity",
+      "method": "Record whether a decision is unanimous, majority-supported, or authorized despite dissent.",
+      "boundary": "Do not represent an authorized decision as unanimous agreement."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_13",
+      "subdomain": "collaborative_reasoning",
+      "title": "Use asynchronous review windows",
+      "method": "Give contributors a fixed period and clear questions for independent review.",
+      "boundary": "Time-boxing must not replace urgent safety escalation."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_14",
+      "subdomain": "collaborative_reasoning",
+      "title": "Reconcile duplicate work",
+      "method": "Compare parallel outputs and identify shared evidence before merging conclusions.",
+      "boundary": "Do not combine duplicated evidence as independent confirmation."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_15",
+      "subdomain": "collaborative_reasoning",
+      "title": "Preserve provenance across handoffs",
+      "method": "Keep source references and transformation history when transferring data or analysis.",
+      "boundary": "Do not detach a claim from its limitations during summarization."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_16",
+      "subdomain": "collaborative_reasoning",
+      "title": "Use a common issue taxonomy",
+      "method": "Classify open problems consistently so owners can compare and prioritize them.",
+      "boundary": "Do not force unique issues into categories that distort their meaning."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_17",
+      "subdomain": "collaborative_reasoning",
+      "title": "Escalate unresolved authority conflicts",
+      "method": "Identify the rule or role needed to resolve competing instructions.",
+      "boundary": "Do not invent authority when governance is unclear."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_18",
+      "subdomain": "collaborative_reasoning",
+      "title": "Protect independent review",
+      "method": "Prevent the author of a result from being its only reviewer when stakes are high.",
+      "boundary": "Independence needs access to inputs and method, not just a different name."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_19",
+      "subdomain": "collaborative_reasoning",
+      "title": "Close the feedback loop with contributors",
+      "method": "Tell contributors which issues were accepted, rejected, or left open and why.",
+      "boundary": "Do not imply that feedback was incorporated when no change was made."
+    },
+    {
+      "family_id": "gr_family_collaborative_reasoning_20",
+      "subdomain": "collaborative_reasoning",
+      "title": "Maintain a decision log",
+      "method": "Record what was decided, by whom, when, and on which evidence and assumptions.",
+      "boundary": "A decision log records governance; it does not make the decision correct."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_01",
+      "subdomain": "metacognitive_control",
+      "title": "Select a reasoning mode before acting",
+      "method": "Choose whether the task calls for exploration, estimation, diagnosis, comparison, or formal checking.",
+      "boundary": "Switch modes when the evidence or task changes."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_02",
+      "subdomain": "metacognitive_control",
+      "title": "Estimate the consequence of error",
+      "method": "Classify the downside of a wrong answer before deciding how much verification is needed.",
+      "boundary": "Do not use low stakes as a reason to fabricate missing facts."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_03",
+      "subdomain": "metacognitive_control",
+      "title": "Set a stopping condition",
+      "method": "Define what evidence or result is sufficient to stop the current search.",
+      "boundary": "Reopen the search if a new material contradiction appears."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_04",
+      "subdomain": "metacognitive_control",
+      "title": "Monitor method effectiveness",
+      "method": "Check whether the current approach is reducing uncertainty or making measurable progress.",
+      "boundary": "Do not continue a method solely because effort has already been invested."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_05",
+      "subdomain": "metacognitive_control",
+      "title": "Detect unproductive repetition",
+      "method": "Notice when repeated steps produce no new information or change in state.",
+      "boundary": "Repeat when independent replication is the goal."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_06",
+      "subdomain": "metacognitive_control",
+      "title": "Escalate when competence is insufficient",
+      "method": "Identify when specialized knowledge, authority, or tools are required beyond current capability.",
+      "boundary": "Do not use escalation to avoid ordinary checks that can be completed safely."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_07",
+      "subdomain": "metacognitive_control",
+      "title": "Choose tools by decision relevance",
+      "method": "Select a tool only when its output can inform a stated subgoal or test.",
+      "boundary": "Tool availability is not a reason to use it."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_08",
+      "subdomain": "metacognitive_control",
+      "title": "Preserve working context",
+      "method": "Record current goal, assumptions, completed checks, and next action before pausing.",
+      "boundary": "Do not store unnecessary personal or sensitive material."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_09",
+      "subdomain": "metacognitive_control",
+      "title": "Audit confidence after new evidence",
+      "method": "Revisit confidence when a new observation materially changes the evidence base.",
+      "boundary": "Do not change confidence merely to match a preferred conclusion."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_10",
+      "subdomain": "metacognitive_control",
+      "title": "Separate familiarity from competence",
+      "method": "Check whether the task has actually been performed successfully rather than merely recognized.",
+      "boundary": "Prior exposure is not proof of present capability."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_11",
+      "subdomain": "metacognitive_control",
+      "title": "Identify motivated reasoning risk",
+      "method": "Ask what evidence would make the preferred conclusion less credible.",
+      "boundary": "Do not assume disagreement is motivated simply because it challenges a view."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_12",
+      "subdomain": "metacognitive_control",
+      "title": "Use a pre-mortem",
+      "method": "Imagine the plan failed and list plausible failure causes before commitment.",
+      "boundary": "Treat the list as risk discovery, not a prediction that all failures will occur."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_13",
+      "subdomain": "metacognitive_control",
+      "title": "Use a post-mortem",
+      "method": "After completion or failure, compare expectations with events and identify changeable causes.",
+      "boundary": "Avoid hindsight certainty and blame without causal evidence."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_14",
+      "subdomain": "metacognitive_control",
+      "title": "Separate confidence from fluency",
+      "method": "Check whether an answer is supported rather than relying on how easily it was produced.",
+      "boundary": "A difficult explanation is not automatically more accurate."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_15",
+      "subdomain": "metacognitive_control",
+      "title": "Protect time for verification",
+      "method": "Reserve time to inspect the result before delivery or irreversible action.",
+      "boundary": "Do not let verification become an unlimited second project."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_16",
+      "subdomain": "metacognitive_control",
+      "title": "Define escalation thresholds",
+      "method": "Specify conditions that require human review, specialist input, or a halt.",
+      "boundary": "Thresholds should reflect consequence and legal or safety obligations."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_17",
+      "subdomain": "metacognitive_control",
+      "title": "Track unresolved questions",
+      "method": "Keep an explicit list of questions that remain open after the current pass.",
+      "boundary": "Do not present unresolved questions as settled merely because the task is closing."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_18",
+      "subdomain": "metacognitive_control",
+      "title": "Change method after a failed test",
+      "method": "Diagnose why the current approach failed before selecting a materially different method.",
+      "boundary": "Do not randomly switch methods without preserving the failure evidence."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_19",
+      "subdomain": "metacognitive_control",
+      "title": "Avoid sunk-cost continuation",
+      "method": "Evaluate the next action using future costs and benefits rather than effort already spent.",
+      "boundary": "Past investment may still matter if it creates a real transferable asset."
+    },
+    {
+      "family_id": "gr_family_metacognitive_control_20",
+      "subdomain": "metacognitive_control",
+      "title": "Review the final answer from the user's goal",
+      "method": "Check whether the result actually answers the requested question or advances the stated objective.",
+      "boundary": "Do not optimize presentation at the expense of task completion."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_01",
+      "subdomain": "systems_reasoning",
+      "title": "Identify system stocks and flows",
+      "method": "Separate accumulated quantities from rates that change those quantities.",
+      "boundary": "Do not infer a flow directly from one stock measurement."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_02",
+      "subdomain": "systems_reasoning",
+      "title": "Map feedback polarity",
+      "method": "Record whether a feedback loop amplifies or counteracts a change.",
+      "boundary": "A loop's overall effect may depend on delay and operating conditions."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_03",
+      "subdomain": "systems_reasoning",
+      "title": "Account for time delays",
+      "method": "Identify lags between action, intermediate effects, and measured outcomes.",
+      "boundary": "Do not interpret an early measurement as the final system response."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_04",
+      "subdomain": "systems_reasoning",
+      "title": "Find system bottlenecks",
+      "method": "Identify the constrained stage that limits overall throughput or performance.",
+      "boundary": "Local capacity increases may not improve the system if the bottleneck is elsewhere."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_05",
+      "subdomain": "systems_reasoning",
+      "title": "Check for displacement effects",
+      "method": "Ask whether an improvement in one area shifts cost or load to another.",
+      "boundary": "Do not claim a net improvement without checking the system boundary."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_06",
+      "subdomain": "systems_reasoning",
+      "title": "Inspect coupled components",
+      "method": "Identify components whose behavior changes when another component changes.",
+      "boundary": "Independent component tests may miss coupled failure."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_07",
+      "subdomain": "systems_reasoning",
+      "title": "Consider emergent behavior",
+      "method": "Check whether interactions create system-level behavior not present in any component alone.",
+      "boundary": "Do not invoke emergence as an explanation without identifying interactions."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_08",
+      "subdomain": "systems_reasoning",
+      "title": "Track cumulative effects",
+      "method": "Assess whether small repeated changes accumulate over the relevant horizon.",
+      "boundary": "Do not extrapolate linear accumulation when saturation or thresholds may occur."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_09",
+      "subdomain": "systems_reasoning",
+      "title": "Check threshold behavior",
+      "method": "Identify points where gradual input changes trigger a discontinuous response.",
+      "boundary": "Do not assume smooth proportional behavior around a threshold."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_10",
+      "subdomain": "systems_reasoning",
+      "title": "Assess resilience to component loss",
+      "method": "Determine whether the system can maintain essential functions after a component fails.",
+      "boundary": "Redundancy is ineffective when backups share the same failure mode."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_11",
+      "subdomain": "systems_reasoning",
+      "title": "Map external feedback",
+      "method": "Identify how users, markets, institutions, or environments respond to system outputs.",
+      "boundary": "External actors may adapt, making past behavior a poor guide to future response."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_12",
+      "subdomain": "systems_reasoning",
+      "title": "Inspect second-order effects",
+      "method": "Trace how the first consequence changes conditions that produce later consequences.",
+      "boundary": "Do not extend a causal chain indefinitely without evidence or a useful stopping point."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_13",
+      "subdomain": "systems_reasoning",
+      "title": "Separate local from global optimization",
+      "method": "Check whether a locally optimal action worsens whole-system performance.",
+      "boundary": "Use the actual system objective, not a proxy chosen by one component."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_14",
+      "subdomain": "systems_reasoning",
+      "title": "Identify common-cause failures",
+      "method": "Look for shared conditions that can disable multiple supposedly independent components.",
+      "boundary": "Do not count correlated backups as independent resilience."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_15",
+      "subdomain": "systems_reasoning",
+      "title": "Assess path dependence",
+      "method": "Check whether the sequence of earlier states changes which future states are reachable.",
+      "boundary": "Do not assume a reset is possible when prior actions leave persistent effects."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_16",
+      "subdomain": "systems_reasoning",
+      "title": "Locate irreversible state changes",
+      "method": "Identify transitions that cannot be cheaply or fully undone.",
+      "boundary": "Treat irreversible changes with stronger pre-commitment checks."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_17",
+      "subdomain": "systems_reasoning",
+      "title": "Model adaptation by other actors",
+      "method": "Consider how people or components may change behavior in response to a rule or incentive.",
+      "boundary": "Do not assume behavior remains fixed after the intervention."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_18",
+      "subdomain": "systems_reasoning",
+      "title": "Track interactions between objectives",
+      "method": "Identify where improving one objective worsens another.",
+      "boundary": "Do not collapse competing objectives without an explicit priority rule."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_19",
+      "subdomain": "systems_reasoning",
+      "title": "Use system boundary stress tests",
+      "method": "Test what happens when external inputs, demand, or environment approach boundary conditions.",
+      "boundary": "A boundary stress test does not estimate normal operating frequency."
+    },
+    {
+      "family_id": "gr_family_systems_reasoning_20",
+      "subdomain": "systems_reasoning",
+      "title": "Reassess after structural change",
+      "method": "Rebuild the model when components, relationships, or incentives materially change.",
+      "boundary": "Do not continue using a model whose structure no longer matches the system."
+    }
+  ],
+  "contexts": [
+    {
+      "context_id": "ambiguous_goal",
+      "trigger_condition": "the requested outcome has more than one plausible interpretation",
+      "adjustment": "state the competing interpretations and avoid choosing silently; use the interpretation that is explicitly supported or request the missing decision",
+      "guard": "do not treat an inferred preference as an instruction",
+      "example_hint": "a request to make a process better without defining better"
+    },
+    {
+      "context_id": "incomplete_inputs",
+      "trigger_condition": "one or more required inputs are absent",
+      "adjustment": "mark each missing input and determine whether it is blocking, estimable, or safely defaultable",
+      "guard": "never invent a missing value that materially changes the result",
+      "example_hint": "a plan request omits its budget and deadline"
+    },
+    {
+      "context_id": "noisy_observations",
+      "trigger_condition": "observations contain measurement noise or inconsistent readings",
+      "adjustment": "preserve raw readings, characterize the noise source, and avoid overreacting to a single deviation",
+      "guard": "do not remove outliers without a documented reason",
+      "example_hint": "several measurements vary around an expected operating range"
+    },
+    {
+      "context_id": "conflicting_reports",
+      "trigger_condition": "credible reports disagree about the same event or state",
+      "adjustment": "align time, scope, definitions, and source lineage before deciding whether the reports truly conflict",
+      "guard": "do not count copied reports as independent evidence",
+      "example_hint": "two teams report different completion states for one task"
+    },
+    {
+      "context_id": "sparse_evidence",
+      "trigger_condition": "only a small number of relevant observations are available",
+      "adjustment": "narrow the conclusion to what the observed cases support and identify the most informative next check",
+      "guard": "do not generalize frequency or prevalence from a tiny selected sample",
+      "example_hint": "a new process has only been tried twice"
+    },
+    {
+      "context_id": "tight_time_budget",
+      "trigger_condition": "the decision must be made under a short deadline",
+      "adjustment": "prioritize checks that can change the decision or prevent severe harm; label deferred checks",
+      "guard": "do not omit mandatory safety, legal, or authorization checks",
+      "example_hint": "a team must choose a temporary workaround before a deadline"
+    },
+    {
+      "context_id": "limited_compute_or_tools",
+      "trigger_condition": "the reasoning process has limited compute, tools, or access",
+      "adjustment": "choose a lower-cost representation or test and record what capability was unavailable",
+      "guard": "do not present a resource-limited approximation as a full verification",
+      "example_hint": "only a small local machine is available for a large analysis"
+    },
+    {
+      "context_id": "irreversible_action",
+      "trigger_condition": "the next action is difficult or costly to undo",
+      "adjustment": "increase pre-commitment review and preserve a safe reversible step when available",
+      "guard": "do not delay urgent protective action when delay itself creates greater harm",
+      "example_hint": "a one-time migration would alter live records"
+    },
+    {
+      "context_id": "multiple_objectives",
+      "trigger_condition": "several outcomes must be optimized at once",
+      "adjustment": "show the separate objectives and their trade-offs before combining them",
+      "guard": "do not hide conflicts inside one unexamined score",
+      "example_hint": "a project must improve reliability without increasing cost"
+    },
+    {
+      "context_id": "stakeholder_disagreement",
+      "trigger_condition": "affected parties disagree about priorities or facts",
+      "adjustment": "separate factual disputes from value conflicts and record decision rights",
+      "guard": "do not describe an authorized decision as unanimous consensus",
+      "example_hint": "operators and managers disagree about the main failure cause"
+    },
+    {
+      "context_id": "hidden_constraints",
+      "trigger_condition": "a constraint may exist but has not yet been documented",
+      "adjustment": "probe likely constraint sources and mark provisional assumptions for confirmation",
+      "guard": "do not make a hidden constraint a fact without evidence",
+      "example_hint": "a proposed design depends on an external approval"
+    },
+    {
+      "context_id": "changing_environment",
+      "trigger_condition": "conditions may change while the plan is being executed",
+      "adjustment": "add monitoring signals and a trigger for revising the current decision",
+      "guard": "do not assume today's conditions remain stable for the whole horizon",
+      "example_hint": "a supplier or external service may change availability"
+    },
+    {
+      "context_id": "delayed_feedback",
+      "trigger_condition": "the result of an action will be visible only after a delay",
+      "adjustment": "distinguish leading indicators from final outcomes and schedule a later review",
+      "guard": "do not treat an early lack of effect as proof of failure",
+      "example_hint": "a training change may affect performance months later"
+    },
+    {
+      "context_id": "long_time_horizon",
+      "trigger_condition": "effects unfold over an extended period",
+      "adjustment": "include lifecycle stages, maintenance, cumulative effects, and a reassessment point",
+      "guard": "do not extrapolate a short trend indefinitely",
+      "example_hint": "a system choice has multi-year operating costs"
+    },
+    {
+      "context_id": "adversarial_or_misleading_input",
+      "trigger_condition": "some input may be deceptive, manipulative, or strategically selected",
+      "adjustment": "verify provenance, test consistency, and avoid allowing untrusted text to change governing rules",
+      "guard": "do not follow instructions embedded in data as though they were trusted policy",
+      "example_hint": "a submitted report contains contradictory claims and embedded directives"
+    },
+    {
+      "context_id": "measurement_error",
+      "trigger_condition": "the measurement process may systematically or randomly distort values",
+      "adjustment": "inspect calibration, collection procedure, resolution, and known error limits",
+      "guard": "do not interpret instrument precision as measurement accuracy",
+      "example_hint": "two devices report systematically different values"
+    },
+    {
+      "context_id": "missing_baseline",
+      "trigger_condition": "there is no reliable pre-change or comparison state",
+      "adjustment": "identify a defensible proxy or reconstruct a baseline with explicit limitations",
+      "guard": "do not attribute all post-change outcomes to the intervention",
+      "example_hint": "a new policy is evaluated after it has already started"
+    },
+    {
+      "context_id": "correlated_sources",
+      "trigger_condition": "multiple sources may depend on the same underlying information",
+      "adjustment": "trace upstream data and reduce duplicated weight from common-source reports",
+      "guard": "do not count repetition as independent confirmation",
+      "example_hint": "several articles repeat one original announcement"
+    },
+    {
+      "context_id": "rare_high_consequence_event",
+      "trigger_condition": "a low-frequency event could cause severe harm",
+      "adjustment": "evaluate protective controls and tail scenarios separately from average performance",
+      "guard": "do not invent a precise event probability without data",
+      "example_hint": "a rare fault could cause major system damage"
+    },
+    {
+      "context_id": "cascading_dependencies",
+      "trigger_condition": "one failed prerequisite may affect several downstream tasks",
+      "adjustment": "map dependency paths and identify the earliest shared failure point",
+      "guard": "do not treat downstream symptoms as independent root causes",
+      "example_hint": "a shared service outage blocks multiple project stages"
+    },
+    {
+      "context_id": "feedback_loop",
+      "trigger_condition": "outputs can change the inputs or behavior of the process",
+      "adjustment": "trace the loop direction, delay, and possible amplification or damping",
+      "guard": "do not reason as though the system is open-loop when feedback is material",
+      "example_hint": "users adapt their behavior after a performance metric is introduced"
+    },
+    {
+      "context_id": "uncertain_mechanism",
+      "trigger_condition": "the process linking action and outcome is not established",
+      "adjustment": "separate observed effects from proposed pathways and seek an intermediate prediction",
+      "guard": "do not promote a plausible story into a demonstrated mechanism",
+      "example_hint": "a change coincides with an improvement but the pathway is unclear"
+    },
+    {
+      "context_id": "similar_alternatives",
+      "trigger_condition": "candidate options appear nearly equivalent",
+      "adjustment": "identify the criterion on which they differ and test whether that difference matters",
+      "guard": "do not manufacture a winner when the available evidence cannot distinguish them",
+      "example_hint": "two approaches meet the same acceptance criteria"
+    },
+    {
+      "context_id": "incomparable_tradeoffs",
+      "trigger_condition": "options perform differently across dimensions with no obvious common scale",
+      "adjustment": "retain a multi-dimensional comparison and ask for explicit priorities when needed",
+      "guard": "do not add unlike quantities without a defensible conversion or weighting rule",
+      "example_hint": "one option is cheaper while another is more reliable"
+    },
+    {
+      "context_id": "hard_to_observe_outcome",
+      "trigger_condition": "the target outcome is difficult to measure directly",
+      "adjustment": "select an observable proxy and state the validation argument and known bias",
+      "guard": "do not substitute proxy improvement for proof of target improvement",
+      "example_hint": "the goal is trust or usability rather than a directly countable event"
+    },
+    {
+      "context_id": "model_mismatch",
+      "trigger_condition": "observed behavior does not fit the model's assumptions or predictions",
+      "adjustment": "identify which assumption failed and decide whether to revise, restrict, or replace the model",
+      "guard": "do not patch a model with arbitrary exceptions without checking structure",
+      "example_hint": "a model predicts stable behavior but the real process oscillates"
+    },
+    {
+      "context_id": "distribution_shift",
+      "trigger_condition": "future cases differ from the cases used to form the current method",
+      "adjustment": "identify which input or environment distributions changed and revalidate affected conclusions",
+      "guard": "do not assume past performance transfers automatically",
+      "example_hint": "a workflow is moved from a small pilot group to a wider population"
+    },
+    {
+      "context_id": "partial_failure",
+      "trigger_condition": "some outputs succeed while other parts fail",
+      "adjustment": "separate completed, failed, and unknown portions and preserve unaffected results",
+      "guard": "do not label the whole task successful or failed without checking each required part",
+      "example_hint": "most components work but one integration stage is broken"
+    },
+    {
+      "context_id": "high_uncertainty",
+      "trigger_condition": "several key assumptions remain unresolved",
+      "adjustment": "rank unknowns by their potential to change the decision and choose the next discriminating check",
+      "guard": "do not use confident wording when the decision depends on unresolved assumptions",
+      "example_hint": "several plausible future conditions produce different outcomes"
+    },
+    {
+      "context_id": "negative_evidence",
+      "trigger_condition": "an expected observation was not found",
+      "adjustment": "check whether the observation process would likely have detected it before updating the conclusion",
+      "guard": "do not treat non-detection as disproof when detection capability is weak",
+      "example_hint": "a monitoring system did not record an expected event"
+    },
+    {
+      "context_id": "unknown_unknown_risk",
+      "trigger_condition": "important failure modes may not yet be identified",
+      "adjustment": "use diverse reviews, boundary stress tests, and monitoring rather than a closed checklist alone",
+      "guard": "do not claim exhaustive coverage of unenumerated possibilities",
+      "example_hint": "a new system has no meaningful failure history"
+    },
+    {
+      "context_id": "cross_domain_transfer",
+      "trigger_condition": "a method is being moved into a different field or setting",
+      "adjustment": "map roles, assumptions, units, and disanalogies before applying the method",
+      "guard": "do not transfer domain facts merely because the method transfers",
+      "example_hint": "a planning method from engineering is applied to organizational work"
+    }
+  ]
+}

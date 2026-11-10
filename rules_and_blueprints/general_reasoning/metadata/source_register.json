@@ -1,0 +1,30 @@
+{
+  "magenta": {
+    "title": "Magenta Book Annex A analytical methods for use within an evaluation (HTML)",
+    "publisher": "HM Treasury and Evaluation Task Force",
+    "url": "https://www.gov.uk/government/publications/the-magenta-book/magenta-book-annex-a-analytical-methods-for-use-within-an-evaluation-html",
+    "date": "Updated 15 May 2026",
+    "license": "OGL-UK-3.0"
+  },
+  "green": {
+    "title": "The Green Book (2026)",
+    "publisher": "HM Treasury and Government Finance Function",
+    "url": "https://www.gov.uk/government/publications/the-green-book--2/the-green-book-2026",
+    "date": "Updated 28 October 2026",
+    "license": "OGL-UK-3.0"
+  },
+  "nasa": {
+    "title": "NASA Systems Engineering Handbook: Appendix",
+    "publisher": "National Aeronautics and Space Administration",
+    "url": "https://www.nasa.gov/reference/system-engineering-handbook-appendix/",
+    "date": "Current online appendix; publication metadata varies by section",
+    "license": "NOASSERTION"
+  },
+  "nasa_decision": {
+    "title": "NASA Systems Engineering Handbook",
+    "publisher": "National Aeronautics and Space Administration",
+    "url": "https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf",
+    "date": "2016 edition; PDF located at NASA website",
+    "license": "NOASSERTION"
+  }
+}
