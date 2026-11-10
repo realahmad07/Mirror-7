@@ -18,8 +18,10 @@ jobs:
       MIRROR_REQUIRE_CONTAINER_SANDBOX: "1"
     timeout-minutes: 20
     steps:
-      - name: Checkout
+      - name: Checkout full Git history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Fetch production Crystal vault from Git LFS
         run: |
           git lfs version
