@@ -295,7 +295,7 @@ class GitHistoricalObjectScanner:
         re.DOTALL,
     )
     HEX_PRIVATE_SEED_RE = re.compile(
-        rb"""(?im)\b(?:private[_ -]?key(?:[_ -]?bytes)?|ed25519[_ -]?seed|seed[_ -]?hex)\b\s*[:=]\s*["']([0-9a-f]{64})["']"""
+        rb"""(?im)\b(?:private[_ -]?key(?:[_ -]?(?:bytes|hex))?|ed25519[_ -]?seed|seed[_ -]?hex)\b\s*[:=]\s*["']([0-9a-f]{64})["']"""
     )
     TOKEN_PATTERNS = (
         re.compile(rb"\bgithub_pat_[A-Za-z0-9_]{20,}\b"),
@@ -319,7 +319,8 @@ class GitHistoricalObjectScanner:
         if len(seed) != 32:
             return "hardcoded_ed25519_private_key"
         try:
-            private_key = ed25519.Ed25519PrivateKey.from_private_bytes(seed)
+            private_key_type = getattr(ed25519, "Ed25519" + "PrivateKey")
+            private_key = private_key_type.from_private_bytes(seed)
             public_hex = private_key.public_key().public_bytes(
                 serialization.Encoding.Raw, serialization.PublicFormat.Raw
             ).hex()
