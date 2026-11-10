@@ -1,0 +1,37 @@
+name: Mirror 7 | Restored Crystal bundle checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "restorevalutecrytaled/**"
+      - ".github/workflows/restored-crystal-bundle.yml"
+  pull_request:
+    paths:
+      - "restorevalutecrytaled/**"
+      - ".github/workflows/restored-crystal-bundle.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  restored-crystal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MIRROR_SANDBOX_MODE: process
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pytest cryptography
+      - name: Compile restored package and helper tools
+        run: |
+          python -m compileall -q restorevalutecrytaled/mirror_crystal
+          python -m compileall -q restorevalutecrytaled/mirror_crystal_vault_suite/tools
+      - name: Run restored Crystal test suites
+        working-directory: restorevalutecrytaled
+        run: python -m pytest -q mirror_crystal/tests

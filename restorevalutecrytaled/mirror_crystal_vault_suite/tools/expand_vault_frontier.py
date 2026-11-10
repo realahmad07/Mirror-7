@@ -2,10 +2,35 @@
 Expand Mirror 7 rule vault with verified frontier algorithms, math, and reasoning primitives.
 Runs fully on CPU with zero GPU / zero Colab requirements, verifying each rule with ZeroTrustSandboxJudge.
 """
+import argparse
+import sys
 import time
 from pathlib import Path
+
+RESTORE_ROOT = Path(__file__).resolve().parents[2]
+if str(RESTORE_ROOT) not in sys.path:
+    sys.path.insert(0, str(RESTORE_ROOT))
+
 from mirror_crystal.disk_vault import DiskCrystalVault
 from mirror_crystal.grammar_and_sandbox import ZeroTrustSandboxJudge
+
+
+def require_existing_sqlite_vault(path: Path) -> Path:
+    """Refuse to create a new empty database or treat MCRYSTAL as SQLite."""
+    resolved = path.expanduser().resolve()
+    if not resolved.is_file():
+        raise FileNotFoundError(
+            f"Production .dcrystal vault not found: {resolved}. "
+            "Pass the actual existing SQLite vault with --vault."
+        )
+    with resolved.open("rb") as handle:
+        header = handle.read(16)
+    if header != b"SQLite format 3\x00":
+        raise ValueError(
+            f"Not a SQLite .dcrystal vault: {resolved}. "
+            "Do not rename or open a .mcrystal artifact as .dcrystal."
+        )
+    return resolved
 
 FRONTIER_PRIMITIVES = [
     {
@@ -885,8 +910,14 @@ assert bfs_shortest_path(adj, 1, 99) == []
 ]
 
 
-def main():
-    vault_path = Path("artifacts/mirror_crystal_all_datasets.dcrystal")
+def main(argv: list[str] | None = None):
+    parser = argparse.ArgumentParser(
+        description="Expand an existing Mirror SQLite .dcrystal vault with sandbox-tested frontier primitives."
+    )
+    parser.add_argument("--vault", required=True, type=Path,
+                        help="Path to the existing SQLite .dcrystal file; it will not be created.")
+    args = parser.parse_args(argv)
+    vault_path = require_existing_sqlite_vault(args.vault)
     vault = DiskCrystalVault(vault_path)
     before_count = vault.rule_count()
     print(f"Initial Vault Rule Count: {before_count}")
