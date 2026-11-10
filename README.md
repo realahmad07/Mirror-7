@@ -8,7 +8,7 @@
 [![Training CI](https://github.com/realahmad07/Mirror-7/actions/workflows/training-native.yml/badge.svg)](https://github.com/realahmad07/Mirror-7/actions/workflows/training-native.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-1D4ED8.svg?style=flat-square)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-0F766E.svg?style=flat-square)](./pyproject.toml)
-[![Vault: 368,270+ Verified Rules](https://img.shields.io/badge/Vault-368%2C270%2B_Verified_Rules-0B192C.svg?style=flat-square)](#10-mirror-crystal--cpu-first-autonomous-engines-zero-gpu-track)
+[![Vault: Awaiting Fresh Verified Feed](https://img.shields.io/badge/Vault-Awaiting_Fresh_Verified_Feed-0B192C.svg?style=flat-square)](#10-mirror-crystal--cpu-first-autonomous-engines-zero-gpu-track)
 [![Benchmark: 55/55 100% Green](https://img.shields.io/badge/mirror__eval-55%2F55_100%25_Passed-0F766E.svg?style=flat-square)](#4-live-nvidia-a100--cpu-verification-showcase-zero-truncation)
 [![Inference: < 1.0 ms CPU Lock](https://img.shields.io/badge/CPU_Latency-%3C_1.0_ms_Direct_Lock-1D4ED8.svg?style=flat-square)](#2-architectural-differentiation--byte-first-cost-reduction-economics)
 [![Vocab: 259 Raw UTF-8 Bytes](https://img.shields.io/badge/Vocab-259_Raw_UTF--8_Bytes-0B192C.svg?style=flat-square)](#1-end-to-end-visual-execution-sequence--v6-architecture)
@@ -33,7 +33,7 @@ The architecture comprises three cleanly separated, production-verified engineer
 |---|---|---|
 | **1. Mirror Runtime & Production Backend** | UI-independent stateful session lifecycle, persistent memory graphs, allow-listed action gateways, realization contracts, output validation, Prometheus telemetry, Docker containers, and HTTP REST API. | [`mirror7_backend/`](./mirror7_backend) • [`Dockerfile`](./Dockerfile) • [`docker-compose.yml`](./docker-compose.yml) |
 | **2. Byte-Native Stateful Learned Models** | Controlled semantic-state transition networks (`Experiments 1–7`) and the **Mirror-7 V6 Master Prototype (`185.5M` single specialist / `556.6M` 3-specialist hub)** verified on `NVIDIA A100-SXM4-40GB` with `RoPE-2048`, execution-guided `RLVR / GRPO`, and `DPO` preference alignment. | [`training/`](./training) • [`colab_backup/`](./colab_backup) • [`artifacts/`](./artifacts) |
-| **3. Mirror Crystal & CPU-First Engines** | **Zero-weight, zero-gradient CPU crystallization engine (`mirror_crystal/`)** with an indexed **368,270+ rule out-of-core SQLite WAL + OS-mmap vault**, exact Symbolic Computer Algebra System (`SymbolicCASOrgan`), AST code fast-path, and the **`1.58`-bit / parallel-scan CPU autonomous subsystem (`training/cpu_autonomous_engine.py`)** running on commodity laptops (`0` CUDA required, `< 20 MB` RAM). | [`mirror_crystal/`](./mirror_crystal) • [`docs/10-mirror-crystal-weightless-engine.md`](docs/10-mirror-crystal-weightless-engine.md) • [`mirror_eval/`](./mirror_eval) |
+| **3. Mirror Crystal & CPU-First Engines** | **Zero-weight, zero-gradient CPU crystallization engine (`mirror_crystal/`)** with an indexed rule out-of-core SQLite WAL + OS-mmap vault (legacy data not included), exact Symbolic Computer Algebra System (`SymbolicCASOrgan`), AST code fast-path, and the **`1.58`-bit / parallel-scan CPU autonomous subsystem (`training/cpu_autonomous_engine.py`)** running on commodity laptops (`0` CUDA required, `< 20 MB` RAM). | [`mirror_crystal/`](./mirror_crystal) • [`docs/10-mirror-crystal-weightless-engine.md`](docs/10-mirror-crystal-weightless-engine.md) • [`mirror_eval/`](./mirror_eval) |
 
 ---
 
@@ -242,7 +242,7 @@ timeline
             : V6 Master Prototype : 556.6M Hub / 185.5M Active on A100 (RoPE-2048, RLVR 83.3% pass, DPO 100%)
     2026-Q3 : Mirror Crystal Engine : Zero-weight discrete crystallization (2,048-bit POPCNT + Slot Abstractor)
             : Out-of-Core Vault : SQLite WAL + OS-mmap B-Tree scaling beyond memory limits
-    2026-Q4 : Multi-Dataset Direct Harvest : Scaled vault from 38k to 147k, 270k, then 368,270+ verified rules
+    2026-Q4 : Multi-Dataset Direct Harvest : Historical vault-count claims are not treated as current verified data
             : Coding Gating Breakthrough : Overhauled Code Fast-Path & Autonomous Multi-Arity AST Synthesizer
             : Dual-Topology Studio UI : Live comparison of Discrete Blueprint Lattice vs Continuous Deep Neural Net
             : 55/55 Benchmark (100%) : 6 evaluation pillars pass with 0.0% hallucination on CPU
@@ -255,7 +255,7 @@ timeline
 | **Semantic-State Research (`Exp 1–7`)** | ✅ | Replicated across multi-seed runs; **`87.18%` held-out compositional Top-1** (`Exp 4B`) and **`65.56%` unseen-concept generalization** (`Exp 7`). |
 | **Stateless ByteGRU Diagnostic** | ✅ | `1.7M` & `10.57M` stateless ByteGRU runs exposed long-span free-running drift—directly motivating our stateful V5/V6 architecture. |
 | **Mirror-7 V6 Stateful Prototype** | ✅ | **`185.5M` single / `556.6M` 3-Specialist Hub** verified on `1x NVIDIA A100` (`0.1296` CE loss across `2,048` bytes, `83.3%` live sandbox unit-test pass rate, `100%` preference alignment, `0.9999` continual retention across 12 stages). |
-| **Out-of-Core Crystal Vault** | ✅ | **`368,270+` verified ground-truth rules** indexed on disk via SQLite WAL + zero-copy OS-mmap postings (`artifacts/mirror_crystal_all_datasets.dcrystal`). RAM usage remains $< 20\text{ MB}$ regardless of vault size. |
+| **Out-of-Core Crystal Vault** | ✅ | Legacy 368,270+ rule-vault claim: data is not included in this repository and is not counted as current verified knowledge. |
 | **Autonomous Direct Harvesting** | ✅ | Ingested **122,336** Olympiad Math rules, **51,720** Stanford Alpaca reasoning rules, **14,771** Databricks Dolly rules, **19,642** Code Alpaca rules, **974** Google MBPP algorithms, and **11,862** SQuAD 2.0 comprehension rules directly into the vault. |
 | **Code Fast-Path & Gating Breakthrough** | ✅ | Resolved the 4 historical coding bottlenecks (Ambiguity Gate, Lexical Coverage Gate, Proper Entity Gate, Vacuous Test Gate). Integrated generalized multi-arity AST test synthesis and safe stdlib execution (`cmath`, `decimal`, `operator`, `queue`, `enum`). |
 | **Dual-Topology Visualizer Studio** | ✅ | Interactive Web UI serving Discrete Blueprint Constellation vs. Continuous Deep Neural Network (ChatGPT-4o / Astra) vs. Side-by-Side Dual View with live status streaming. |
@@ -315,7 +315,7 @@ flowchart TD
     HUB -->|"Math, Quantum & Sci"| S1["Specialist 1 (185.5M)<br/>84 STEM Categories"]:::spec
     HUB -->|"Logic, Meta & Memory"| S2["Specialist 2 (185.5M)<br/>68 Cognitive Categories"]:::spec
 
-    CODE_ROUTER --> DISK_VAULT[("Out-of-Core Crystal Vault<br/>368,270+ Blueprints (OS-mmap)")]:::memory
+    CODE_ROUTER --> DISK_VAULT[("Out-of-Core Crystal Vault<br/>Awaiting new verified feed")]:::memory
     DISK_VAULT --> TDD["AutonomousTDDEngine<br/>Multi-Arity AST Test Synthesizer"]:::sandbox
 
     S0 & S1 & S2 --> DEC["8-Head RoPE-2048<br/>Causal Byte Decoder"]:::input
@@ -354,7 +354,7 @@ flowchart TD
 
 | Architectural Metric | **Mirror 7 (Current Vault & V6 Hub)** | **ChatGPT-4o / Astra (OpenAI)** | **Claude 3.5 Sonnet (Anthropic)** | **Llama 3.3 70B (Meta)** |
 | :--- | :--- | :--- | :--- | :--- |
-| **Substrate & Parameters** | **368,270 Discrete Blueprints + 556M Hub (185.5M active)** | ~1.8 Trillion Dense Float Parameters | ~1.5 Trillion Dense Float Parameters | 70 Billion Quantized Parameters |
+| **Substrate & Parameters** | **Rule vault awaiting fresh verified feed + 556M Hub (185.5M active)** | ~1.8 Trillion Dense Float Parameters | ~1.5 Trillion Dense Float Parameters | 70 Billion Quantized Parameters |
 | **Inference Latency** | **< 1.0 ms (Direct CPU Lock) / ~25 ms (V6)** | 450 ms – 1,200 ms | 550 ms – 1,400 ms | 600 ms – 2,100 ms |
 | **Runtime Hardware Required**| **Pure Python on Standard CPU (< 20 MB RAM)** | Multi-GPU Cloud Clusters (> 160 GB VRAM) | Cloud Clusters (AWS Trainium / H100) | 2x A100 (80 GB) or 4x RTX 4090 |
 | **Hallucination Rate** | **0.0% (Verified CAS + AST Sandbox + Honest Abstain)**| 14.0% – 19.5% | 9.0% – 15.2% | 18.0% – 26.5% |
@@ -373,7 +373,7 @@ flowchart TD
 <img src="docs/assets/mirror_domain_taxonomy_sequence.svg" alt="Mirror 7-Pillar Multi-Domain Cognitive Taxonomy and 12-Stage Continual Progression" width="100%"/>
 </div>
 
-Across `18` curated Google Drive datasets (`83,912` indexed training records / `39,428` deduplicated multi-domain triplets) and **368,270+ crystallized rules**, Mirror 7 consolidates **7 primary intelligence pillars spanning 186 specialized subcategories**:
+Across `18` curated Google Drive datasets (`83,912` indexed training records / `39,428` deduplicated multi-domain triplets) and a legacy crystallized-rule vault (not included in this repository), Mirror 7 consolidates **7 primary intelligence pillars spanning 186 specialized subcategories**:
 
 | Routed Specialist | Intelligence Pillar | Categories | Representative Capabilities & Verified Domains |
 |---|---|:---:|---|
@@ -649,7 +649,7 @@ Every prototype checkpoint and dataset across Google Drive (`75` files = **`37.3
 | `mirror7_general_ai_leap6_mathematics_master.pt` | `707.78 MB` | Leap 6 — 28-Category Formal Mathematics | `0b55a807436e53372207b445ec4ebea1` |
 | `mirror7_v5_a100-max_ASTRA_FINAL.pt` | `2,075.33 MB` | Full State — Astra Quantum & Symbolic Math | `f2a8471b7dfcda91f1d50ed9977c2899` |
 | `mirror7_native_conversation_v5_ep5.best.pt` | `3.66 MB` | **Tracked in Git** (`artifacts/`) — Local CI Reference | Verified via `pytest` |
-| **`mirror_crystal_all_datasets.dcrystal`** | **`428.6 MB`** | **Tracked in Artifacts — 368,270+ Rules SQLite WAL Vault** | Verified via `mirror_eval` (55/55) |
+| **Legacy `.dcrystal` vault** | Not tracked in this repository | Historical count is not a current verified-data claim |
 
 ---
 
@@ -675,7 +675,7 @@ flowchart LR
 
 | Phase & Window | Open-Weights Release | Total Params | Active / Query | Byte Horizon | Curated Pure Data | Target Competitor Class Surpassed / Matched |
 |---|---|---:|---:|---:|---:|---|
-| **Phase 0** *(Completed)* | **Mirror-7 V6 + Crystal Vault** | **`556.6M`** | **`185.5M`** *(33.3%)* | `2,048` B | **`368K+` Rules** / `84K` Rows | Proven byte-native synthesis, `<tool_call>` loop, `83.3%` RL pass, and `368,270` crystal rules at sub-millisecond CPU speed |
+| **Phase 0** *(Completed)* | **Mirror-7 V6 + Crystal Vault** | **`556.6M`** | **`185.5M`** *(33.3%)* | `2,048` B | **No current verified rule feed** / `84K` Rows | Proven byte-native synthesis, `<tool_call>` loop, `83.3%` RL pass, and `368,270` crystal rules at sub-millisecond CPU speed |
 | **Phase 1** *(Months 1–2)* | **`Mirror-1.5B-Edge`** | **`1.5B`** | **`1.5B`** *(Dense)* | `32,768` B | **`150B`** Pure Bytes | **[Immediate GPU Grant Milestone]** Outperforms `Llama-3.2-1B/3B` & `Qwen2.5-1.5B` on `4GB–8GB` edge RAM |
 | **Phase 2** *(Months 3–4)* | **`Mirror-8B-Core`** | **`8.2B`** | **`8.2B`** *(Dense)* | `131,072` B | **`800B`** Pure Bytes | Developer workstation engine; beats `Llama-3.1-8B` & `GPT-3.5-Turbo` on SWE & math |
 | **Phase 3** *(Months 5–7)* | **`Mirror-36B-Sparse`** | **`36.0B`** | **`5.5B`** *(15.3%)* | `262,144` B | **`2.4T`** Pure Bytes | Surpasses `GPT-4o-mini`, `Claude 3.5 Haiku` & `Phi-4-14B` at `< 6B` inference cost |
@@ -769,7 +769,7 @@ Once running, navigate to **`http://127.0.0.1:8787/`** or **`http://127.0.0.1:87
   - `Mode A (Discrete Blueprint Lattice)`: Constellation graph of 8 domain clusters connected by 64-bit MinHash LSH similarity bridges.
   - `Mode B (Continuous Deep Neural Network)`: Layered dense MLP & self-attention matrix flow (ChatGPT-4o / Astra representation).
   - `Mode C (Side-by-Side Dual View)`: Split canvas real-time comparative inspection.
-- **Sub-Millisecond Direct Lock:** Sub-1ms queries backed by `368,270+` verified rules in SQLite WAL.
+- **Sub-Millisecond Direct Lock:** Sub-1ms queries backed by a fresh verified rule feed (not yet populated) in SQLite WAL.
 - **Symbolic CAS Organ:** Exact rational differentiation, indefinite/definite integrals, linear algebra, and unit conversions.
 - **Autonomous TDD Engine:** Test synthesis and AST repair for Python coding tasks.
 - **Instant 1-Shot Teaching:** Teach new factual rules in 1 turn without backpropagation or training runs.
@@ -792,7 +792,7 @@ Mirror-7/
 │   ├── service.py                    # BackendService orchestrating memory graphs, crystal vault & lattice sampler
 │   └── studio.html                   # Dual-Topology Studio Web UI (Lattice vs. Continuous Neural Net + LLM Matrix)
 ├── mirror_crystal/                   # Zero-weight, zero-gradient CPU crystallization engine
-│   ├── disk_vault.py                 # Out-of-core SQLite WAL + OS-mmap B-Tree engine (368,270+ rules)
+│   ├── disk_vault.py                 # Out-of-core SQLite WAL + OS-mmap B-Tree engine (awaiting fresh verified feed)
 │   ├── bit_signatures.py             # 2,048-bit context bit signatures, hardware POPCNT & token IDF
 │   ├── phase2_cognitive_core.py      # EpistemicConfidenceCalibrator, homonym sense tracker, proper entity gates
 │   ├── phase5_bicameral_and_cas.py   # SymbolicCASOrgan, 1.58-bit TernaryFluidComposer, CuriosityPlanner
@@ -835,7 +835,7 @@ Alongside our GPU-trained V6 byte-stateful neural checkpoints, Mirror 7 ships tw
 
 Replaces floating-point weight matrices and iterative backpropagation with **2,048-bit Context Barcodes (`int.bit_count()` hardware `POPCNT`)**, **1-Shot Variable/Formula Slot Abstraction (`{v0}`, `{v1}`)**, **`array('I')` Locality-Sensitive Rule Indexing (`LSH`)**, **Multi-Hop Causal Lock Chaining**, and **Zero-Trust CPU AST/Sandbox Reality Verification** in pure Python 3.11+ standard library:
 
-- **Massive Ingested Knowledge Substrate (368,270+ Rules):**
+- **Massive Ingested Knowledge Substrate (legacy rule-vault claim (not included)):**
   - **124,467 Olympiad & Competition Math Problems:** Vectors, arithmetic sequences, geometry, combinatorics, number theory, and symbolic calculus.
   - **146,388 General Reasoning & Instruction Rules:** Stanford Alpaca multi-step reasoning, Databricks Dolly 15k human-authored Q&A, and SQuAD 2.0 reading comprehension.
   - **59,944 Algorithmic & Systems Code Rules:** Code Alpaca, Google MBPP with executable unit test assertions, and 8 frontier algorithmic primitives (Fenwick, Segment Tree, Manacher's Linear Palindrome, Cooley-Tukey FFT, Simpson's Rule, Kahn's Topo-sort, Monotonic Stack, BFS).
