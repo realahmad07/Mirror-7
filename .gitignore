@@ -11,6 +11,7 @@ build/
 *.egg-info/
 .env
 *.zip
+*.bak
 
 # Confidential internal founder drafts & raw source vault (never push publicly)
 docs/MIRROR_OPEN_SOURCE_COMPANY_MASTER_PLAN.*

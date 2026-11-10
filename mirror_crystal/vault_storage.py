@@ -201,6 +201,15 @@ class VaultStorageMixin:
             )
         row_max = cur.execute("SELECT COALESCE(MAX(rule_id) + 1, 0) FROM rules").fetchone()
         self._next_rule_id = int(row_max[0]) if row_max else 0
+        row_q = cur.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='rule_hygiene_quarantine'").fetchone()
+        self._has_quarantine = bool(row_q)
+
+    def is_quarantined(self, rule_id: int) -> bool:
+        """Check if a rule ID is quarantined for hygiene/defect reasons."""
+        if not getattr(self, "_has_quarantine", False):
+            return False
+        row = self.conn.execute("SELECT 1 FROM rule_hygiene_quarantine WHERE rule_id = ?", (int(rule_id),)).fetchone()
+        return row is not None
 
     def _save_lightweight_meta(self) -> None:
         bt_blob = zlib.compress(
@@ -249,6 +258,13 @@ class VaultStorageMixin:
                 return cached
 
         d = json.loads(zlib.decompress(payload).decode("utf-8"))
+        eff_fail_c = int(fail_c)
+        eff_tt = int(d.get("tt", 2))
+        if getattr(self, "_has_quarantine", False):
+            if self.is_quarantined(rid_int):
+                eff_fail_c = max(eff_fail_c, int(pass_c) + 1)
+            eff_tt = 3  # Enforce unverified heuristic baseline for unreviewed rules
+
         rule = CrystalRule(
             rule_id=rid_int,
             signature=int.from_bytes(sig_bytes, "little"),
@@ -259,9 +275,9 @@ class VaultStorageMixin:
             num_slots=int(num_slots),
             derived_expr=d.get("de", ""),
             pass_count=int(pass_c),
-            fail_count=int(fail_c),
+            fail_count=eff_fail_c,
             domain=d.get("dom", "general"),
-            trust_tier=int(d.get("tt", 2)),
+            trust_tier=eff_tt,
             updated_seq=int(d.get("seq", rid_int + 1)),
         )
         if hasattr(self, "_rule_lru") and self.lru_rule_cache_size > 0:
