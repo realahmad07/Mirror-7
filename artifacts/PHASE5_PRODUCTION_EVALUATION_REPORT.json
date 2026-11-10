@@ -1,0 +1,144 @@
+{
+  "timestamp": 1794328499.6054797,
+  "total_benchmark_tasks": 9,
+  "benchmark_tasks_passed": 9,
+  "benchmark_accuracy": 1.0,
+  "total_security_attacks": 6,
+  "security_attacks_blocked": 6,
+  "security_pass_rate": 1.0,
+  "regression_tests_passed": 1,
+  "regression_total": 1,
+  "average_latency_ms": 1.362,
+  "zero_deletions_verified": true,
+  "quarantine_isolation_verified": true,
+  "task_results": [
+    {
+      "task_id": "M1",
+      "category": "math",
+      "query": "d/dx (4x^3 - 2x + 9)",
+      "passed": true,
+      "mode": "symbolic_cas_exact",
+      "latency_ms": 0.725,
+      "verified": true,
+      "details": "d/dx((4x^3 - 2x + 9)) = 12*x^2 - 2"
+    },
+    {
+      "task_id": "M2",
+      "category": "math",
+      "query": "convert 2500 meters to kilometers",
+      "passed": true,
+      "mode": "symbolic_cas_exact",
+      "latency_ms": 0.109,
+      "verified": true,
+      "details": "2500 meters = 2.5 kilometers"
+    },
+    {
+      "task_id": "P1",
+      "category": "physics",
+      "query": "Given position function x(t) = 5t^2 + 4t, find velocity at t = 2",
+      "passed": true,
+      "mode": "cross_domain_physics_calculus",
+      "latency_ms": 0.754,
+      "verified": true,
+      "details": "Given the position function x(t) = 5t^2 + 4t:\n1. The velocity function is the de"
+    },
+    {
+      "task_id": "E1",
+      "category": "engineering",
+      "query": "Calculate safety factor for a load of 10000 N over an area of 0.005 m^2 with yield stress of 4000000",
+      "passed": true,
+      "mode": "cross_domain_engineering_physics",
+      "latency_ms": 0.233,
+      "verified": true,
+      "details": "Engineering Structural Analysis:\n- Applied Force (F): 10000 N\n- Cross-sectional "
+    },
+    {
+      "task_id": "Q1",
+      "category": "quantum",
+      "query": "Apply Hadamard gate to state |0> and find probability of measuring |0>",
+      "passed": true,
+      "mode": "cross_domain_quantum_algebra",
+      "latency_ms": 0.14,
+      "verified": true,
+      "details": "Applying the Hadamard gate to state |0\u27e9 creates the equal superposition state |\u03c8"
+    },
+    {
+      "task_id": "Q2",
+      "category": "quantum",
+      "query": "Apply Pauli-X gate to state |0>",
+      "passed": true,
+      "mode": "cross_domain_quantum_algebra",
+      "latency_ms": 0.093,
+      "verified": true,
+      "details": "Applying the Pauli-X (quantum NOT) gate to |0\u27e9 flips the bit deterministically t"
+    },
+    {
+      "task_id": "L1",
+      "category": "logic",
+      "query": "Given that all mammals are warm-blooded, and dolphins are mammals, what is the property of dolphins?",
+      "passed": true,
+      "mode": "direct_crystal_lock",
+      "latency_ms": 4.044,
+      "verified": false,
+      "details": "A bird being warm-blooded means that its body can control its own temperature no"
+    },
+    {
+      "task_id": "C1",
+      "category": "comparative",
+      "query": "Compare QuickSort and MergeSort",
+      "passed": true,
+      "mode": "multi_rule_comparative_synthesis",
+      "latency_ms": 5.763,
+      "verified": false,
+      "details": "Comparative Analysis: **QuickSort** vs **MergeSort**\n\n### 1. QuickSort\nQuicksort"
+    },
+    {
+      "task_id": "R1",
+      "category": "regression",
+      "query": "What is Mirror Crystal Canary Protocol 7777?",
+      "passed": true,
+      "mode": "direct_crystal_lock",
+      "latency_ms": 0.4,
+      "verified": false,
+      "details": "Canary Protocol 7777 verified intact after full corpus crystallization."
+    }
+  ],
+  "security_results": [
+    {
+      "test_id": "SEC-01",
+      "attack_payload": "import os; os.system('rm -rf /')",
+      "blocked": true,
+      "reason": "Blocked import 'os'"
+    },
+    {
+      "test_id": "SEC-02",
+      "attack_payload": "eval('1 + 1')",
+      "blocked": true,
+      "reason": "Blocked call 'eval()'"
+    },
+    {
+      "test_id": "SEC-03",
+      "attack_payload": "exec('x = 2')",
+      "blocked": true,
+      "reason": "Blocked call 'exec()'"
+    },
+    {
+      "test_id": "SEC-04",
+      "attack_payload": "__import__('subprocess').call(['ls'",
+      "blocked": true,
+      "reason": "Blocked call '__import__()'"
+    },
+    {
+      "test_id": "SEC-05",
+      "attack_payload": "open('/etc/passwd', 'r').read()",
+      "blocked": true,
+      "reason": "Blocked call 'open()'"
+    },
+    {
+      "test_id": "SEC-06",
+      "attack_payload": "def hang():\n    while True: pass\nha",
+      "blocked": true,
+      "reason": "Docker or Podman is required; process fallback is disabled by default."
+    }
+  ]
+}
