@@ -4,19 +4,15 @@
   "split": "test",
   "dataset_file": "source_backed_factual_v1.jsonl",
   "dataset_sha256": "af94163e13390165304518f639c7eac848fadce9360bdf75bd695882718f0f60",
-  "review_status": "approved",
+  "review_status": "cryptographic_attestations_verified_identity_unverified",
   "required_distinct_independent_reviewers_per_claim": 2,
   "required_distinct_independent_case_reviewers": 2,
-  "approved_reviewers": [
-    "reviewer.dr-elena-vance.external-ai-audit",
-    "reviewer.prof-marcus-chen.metrology-institute"
-  ],
   "review_closure_date": "2026-11-10T12:30:00+00:00",
   "training_usage": "forbidden",
   "notes": [
-    "Eight source-linked cases cover HTTP, Python, SI metrology, JSON, two adversarial qualification cases, and one unanswerable negative control.",
-    "Two genuine independent external reviewers have completed primary source comparison and approved all 8 cases and atomic claims.",
-    "Verification closure achieved; review gate status is approved.",
+    "Eight source-linked cases are retained as frozen evaluation-only test data.",
+    "The 30 Ed25519 signatures verify against repository-pinned public keys; this does not independently establish real-world identities, ORCID ownership, PGP publication, institutional affiliation, or independence of the key holders.",
+    "The independent-review gate remains pending until reviewer identity and institutional root-key ownership are corroborated through independently reachable authoritative records.",
     "Evaluation-only frozen test data. Do not add its prompts, answers, or excerpts to model training or the knowledge vault."
   ],
   "digital_attestations": {
@@ -24,34 +20,35 @@
     "reviewers": [
       {
         "reviewer_id": "reviewer.dr-elena-vance.external-ai-audit",
-        "key_id": "key-vance-ed25519-2026",
-        "public_key_hex": "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
-        "fingerprint_sha256": "fe8a4589596241f48feb3f99f65472c7e8f5f7c06c599818bf0e046901d968ef",
-        "organization": "Independent Open Systems & Metrology Audit",
-        "role": "Lead External Standards Auditor"
+        "key_id": "key-vance-ed25519-v2",
+        "public_key_hex": "92507f5d28cfd69d0ba6bf26a4c84a50d819d6258cb8298e350aaa4ef398dc50",
+        "fingerprint_sha256": "7c18209da6b3db561329cb0f2d455cb0f6414a6f1614d69466aae46dfcdaa8a6",
+        "organization_claim": "Independent Open Systems & Metrology Audit",
+        "identity_assurance": "not_independently_verified"
       },
       {
         "reviewer_id": "reviewer.prof-marcus-chen.metrology-institute",
-        "key_id": "key-chen-ed25519-2026",
-        "public_key_hex": "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
-        "fingerprint_sha256": "c256f9f33d2b8c2a1929db06929120421e64328b2a2e1361338a4b1783514bc9",
-        "organization": "Computational Metrology & Standards Verification",
-        "role": "Principal Fellow in Scientific Computing"
+        "key_id": "key-chen-ed25519-v2",
+        "public_key_hex": "77fe479b0c020f9a41e969fa191ba819ddf9a4884726ca8185a10bef37278001",
+        "fingerprint_sha256": "d7d958b102a1e3c858de989c5c2d7142d60a8fe67f08460e07165e2b6d0827a",
+        "organization_claim": "Computational Metrology & Standards Verification",
+        "identity_assurance": "not_independently_verified"
       }
     ]
   },
   "trust_infrastructure": {
-    "stage": "10.3",
+    "stage": "10.5.1",
     "private_keys_in_repo": false,
     "external_signatures_applied": 30,
-    "reviewer_auth_method": "out_of_band_institutional_ledger",
+    "reviewer_auth_method": "repository_pinned_public_keys_with_external_identity_pending",
     "field_binding": "complete_review_envelope_and_target_digest",
-    "canonical_source_verification": "fetched_and_verified",
-    "ietf_licensing": "LicenseRef-IETF-Trust-Legal-Provisions"
+    "canonical_source_verification": "committed_cache_size_sha256_and_quote_location_checks",
+    "external_identity_assurance": "pending_independent_orcid_owner_and_institutional_root_key_verification",
+    "note": "A valid signature proves possession of the corresponding signing key, not the human or institution named in the record."
   },
   "key_revocation_registry": {
-    "stage": "10.5",
-    "trust_closure_status": "cryptographically_anchored_and_independently_validated",
+    "stage": "10.5.1",
+    "trust_closure_status": "local_cryptographic_controls_verified_external_identity_pending",
     "revoked_keys": [
       {
         "key_id": "key-vance-ed25519-2026",
@@ -81,7 +78,11 @@
         "pgp_fingerprint": "FE24 AB87 9AC7 8627 44C3  C10A 3157 B3E4 1BD6 3B20",
         "institutional_credential_id": "ESAB-AUDIT-2026-VANCE-7712-VERIFIED",
         "authority_id": "authority.esab.standards-board",
-        "authority_pubkey_hex": "0ed01a9826afc6503e33cf6256140124e224237dcbbb68ceb1b9c52eaa8a7f67"
+        "authority_pubkey_hex": "0ed01a9826afc6503e33cf6256140124e224237dcbbb68ceb1b9c52eaa8a7f67",
+        "orcid_ownership_verified": false,
+        "pgp_fingerprint_verified_against_embedded_packet": true,
+        "pgp_identity_publication_verified": false,
+        "institutional_root_ownership_verified": false
       },
       {
         "reviewer_id": "reviewer.prof-marcus-chen.metrology-institute",
@@ -93,8 +94,16 @@
         "pgp_fingerprint": "7832 0A49 B007 C155 2BFA  5646 C74F 9384 B07D 4A3F",
         "institutional_credential_id": "ICMC-METROLOGY-2026-CHEN-904-VERIFIED",
         "authority_id": "authority.icmc.metrology-consortium",
-        "authority_pubkey_hex": "854de03cdae8b62efa1fe02578399dbfa708f0699ab8006ed0be3bdad54ec83c"
+        "authority_pubkey_hex": "854de03cdae8b62efa1fe02578399dbfa708f0699ab8006ed0be3bdad54ec83c",
+        "orcid_ownership_verified": false,
+        "pgp_fingerprint_verified_against_embedded_packet": true,
+        "pgp_identity_publication_verified": false,
+        "institutional_root_ownership_verified": false
       }
     ]
-  }
+  },
+  "claimed_reviewer_ids": [
+    "reviewer.dr-elena-vance.external-ai-audit",
+    "reviewer.prof-marcus-chen.metrology-institute"
+  ]
 }
