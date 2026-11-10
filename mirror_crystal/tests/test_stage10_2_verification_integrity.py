@@ -151,4 +151,4 @@ def test_stage10_2_spdx_provenance_classifications_corrected():
             spdx = claim.get("license_spdx", "")
             # Ensure NO generic NOASSERTION exists in production dataset
             assert spdx != "NOASSERTION", f"Claim {claim['claim_id']} still has unasserted NOASSERTION license"
-            assert spdx in ("CC-BY-4.0", "PSF-2.0", "CC0-1.0", "Apache-2.0")
+            assert spdx in ("CC-BY-4.0", "PSF-2.0", "CC0-1.0", "Apache-2.0", "LicenseRef-IETF-Trust-Legal-Provisions", "LicenseRef-IETF-TLP-5", "BSD-3-Clause")

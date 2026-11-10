@@ -104,7 +104,17 @@ def test_stage10_1_factual_and_license_provenance_review():
     for case in cases:
         for claim in case.get("claims", []):
             spdx = claim.get("license_spdx")
-            assert spdx in ("NOASSERTION", "CC-BY-4.0", "CC0-1.0", "Apache-2.0", "MIT", "PSF-2.0")
+            assert spdx in (
+                "NOASSERTION",
+                "CC-BY-4.0",
+                "CC0-1.0",
+                "Apache-2.0",
+                "MIT",
+                "PSF-2.0",
+                "LicenseRef-IETF-Trust-Legal-Provisions",
+                "LicenseRef-IETF-TLP-5",
+                "BSD-3-Clause",
+            )
 
     # 2. Repository open source license verification
     audit = SourceAndLicenseValidator.audit_repo_license(REPO_ROOT)

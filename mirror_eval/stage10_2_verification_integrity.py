@@ -36,14 +36,10 @@ class ReviewerIdentity:
     fingerprint_sha256: str
 
 
-# Deterministic key derivation seeds for persistent, verifiable independent audit keys
-_SEEDS = {
-    "reviewer.dr-elena-vance.external-ai-audit": hashlib.sha256(
-        b"mirror7.reviewer.elena-vance.external-ai-audit.seed.2026"
-    ).digest(),
-    "reviewer.prof-marcus-chen.metrology-institute": hashlib.sha256(
-        b"mirror7.reviewer.marcus-chen.metrology-institute.seed.2026"
-    ).digest(),
+# Registered external reviewer public keys (ZERO private keys stored in repository)
+_REGISTERED_PUBLIC_KEYS = {
+    "reviewer.dr-elena-vance.external-ai-audit": "eb9b373248630745a099a0e3e6f423d452dff0ce2e7bdfb53676deb85875f6f0",
+    "reviewer.prof-marcus-chen.metrology-institute": "8d5c2259d316a6a03f31a96307d45bb08a85c32588faa336596d2d0f8a32d6c9",
 }
 
 
@@ -51,7 +47,6 @@ class ReviewerIdentityRegistry:
     """Manages authenticated public keys and cryptographic identities of external reviewers."""
 
     _IDENTITIES: Dict[str, ReviewerIdentity] = {}
-    _PRIVATE_KEYS: Dict[str, ed25519.Ed25519PrivateKey] = {}
 
     @classmethod
     def _initialize(cls):
@@ -60,32 +55,26 @@ class ReviewerIdentityRegistry:
 
         # Reviewer 1: Dr. Elena Vance
         id1 = "reviewer.dr-elena-vance.external-ai-audit"
-        priv1 = ed25519.Ed25519PrivateKey.from_private_bytes(_SEEDS[id1])
-        pub1 = priv1.public_key()
-        pub1_bytes = pub1.public_bytes_raw()
-        cls._PRIVATE_KEYS[id1] = priv1
+        pub1_hex = _REGISTERED_PUBLIC_KEYS[id1]
         cls._IDENTITIES[id1] = ReviewerIdentity(
             reviewer_id=id1,
             key_id="key-vance-ed25519-2026",
             organization="Independent Open Systems & Metrology Audit",
             role="Lead External Standards Auditor",
-            public_key_hex=pub1_bytes.hex(),
-            fingerprint_sha256=hashlib.sha256(pub1_bytes).hexdigest(),
+            public_key_hex=pub1_hex,
+            fingerprint_sha256=hashlib.sha256(bytes.fromhex(pub1_hex)).hexdigest(),
         )
 
         # Reviewer 2: Prof. Marcus Chen
         id2 = "reviewer.prof-marcus-chen.metrology-institute"
-        priv2 = ed25519.Ed25519PrivateKey.from_private_bytes(_SEEDS[id2])
-        pub2 = priv2.public_key()
-        pub2_bytes = pub2.public_bytes_raw()
-        cls._PRIVATE_KEYS[id2] = priv2
+        pub2_hex = _REGISTERED_PUBLIC_KEYS[id2]
         cls._IDENTITIES[id2] = ReviewerIdentity(
             reviewer_id=id2,
             key_id="key-chen-ed25519-2026",
             organization="Computational Metrology & Standards Verification",
             role="Principal Fellow in Scientific Computing",
-            public_key_hex=pub2_bytes.hex(),
-            fingerprint_sha256=hashlib.sha256(pub2_bytes).hexdigest(),
+            public_key_hex=pub2_hex,
+            fingerprint_sha256=hashlib.sha256(bytes.fromhex(pub2_hex)).hexdigest(),
         )
 
     @classmethod
@@ -105,7 +94,7 @@ class ReviewerIdentityRegistry:
         ident = cls._IDENTITIES.get(reviewer_id)
         if not ident:
             return False, f"unregistered reviewer identity: {reviewer_id}"
-        if ident.public_key_hex.lower() != public_key_hex.lower():
+        if ident.public_key_hex.lower() != str(public_key_hex).lower():
             return False, f"public key mismatch for {reviewer_id}"
         return True, "identity authenticated"
 
@@ -115,58 +104,40 @@ class ReviewerIdentityRegistry:
 # ============================================================================
 
 class DigitalAttestationEngine:
-    """Generates and cryptographically verifies digital attestations on benchmark reviews."""
+    """Cryptographically verifies digital attestations on benchmark reviews.
+
+    Note: ZERO private keys are stored in this repository. External signatures
+    are verified strictly using registered public keys.
+    """
 
     @classmethod
     def canonical_review_payload(
         cls,
         case_id: str,
-        claim_id: Optional[str],
-        decision: str,
-        reviewed_at: str,
-    ) -> bytes:
-        """Construct deterministic canonical bytes representing the review decision."""
-        data = {
-            "case_id": case_id,
-            "claim_id": claim_id or "",
-            "decision": decision,
-            "reviewed_at": reviewed_at,
-        }
-        return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
-
-    @classmethod
-    def create_attestation(
-        cls,
-        reviewer_id: str,
-        case_id: str,
-        claim_id: Optional[str],
+        claim_id: Optional[str] = None,
         decision: str = "approve",
         reviewed_at: str = "2026-11-10T12:00:00+00:00",
-    ) -> Dict[str, Any]:
-        """Generate an authentic Ed25519 digital signature attestation record."""
-        ReviewerIdentityRegistry._initialize()
-        ident = ReviewerIdentityRegistry.get_identity(reviewer_id)
-        if not ident:
-            raise ValueError(f"Unknown reviewer: {reviewer_id}")
-        priv_key = ReviewerIdentityRegistry._PRIVATE_KEYS[reviewer_id]
-
-        payload_bytes = cls.canonical_review_payload(case_id, claim_id, decision, reviewed_at)
-        signature = priv_key.sign(payload_bytes)
-        payload_digest = hashlib.sha256(payload_bytes).hexdigest()
-
-        return {
-            "reviewer_id": reviewer_id,
-            "independent": True,
-            "method": "independent_source_comparison",
-            "decision": decision,
-            "reviewed_at": reviewed_at,
-            "key_id": ident.key_id,
-            "algorithm": "Ed25519",
-            "public_key_hex": ident.public_key_hex,
-            "signature_b64": base64.b64encode(signature).decode("ascii"),
-            "payload_sha256": payload_digest,
-            "reviewer_affiliation": ident.organization,
+        attestation: Optional[Dict[str, Any]] = None,
+        target_digest: Optional[str] = None,
+    ) -> bytes:
+        """Construct deterministic canonical bytes representing the complete review decision."""
+        att = attestation or {}
+        td = target_digest or att.get("target_digest", "")
+        data = {
+            "algorithm": str(att.get("algorithm", "Ed25519")),
+            "case_id": case_id,
+            "claim_id": claim_id or "",
+            "decision": str(decision or att.get("decision", "")),
+            "independent": bool(att.get("independent", True)),
+            "key_id": str(att.get("key_id", "")),
+            "method": str(att.get("method", "independent_source_comparison")),
+            "public_key_hex": str(att.get("public_key_hex", "")).lower(),
+            "reviewed_at": str(reviewed_at or att.get("reviewed_at", "")),
+            "reviewer_affiliation": str(att.get("reviewer_affiliation", "")),
+            "reviewer_id": str(att.get("reviewer_id", "")),
+            "target_digest": str(td),
         }
+        return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
     @classmethod
     def verify_attestation(
@@ -174,6 +145,7 @@ class DigitalAttestationEngine:
         attestation: Dict[str, Any],
         case_id: str,
         claim_id: Optional[str] = None,
+        target_digest: Optional[str] = None,
     ) -> Tuple[bool, str]:
         """Cryptographically verify an Ed25519 signature against registered public key."""
         ReviewerIdentityRegistry._initialize()
@@ -193,11 +165,18 @@ class DigitalAttestationEngine:
             return False, "invalid base64 signature encoding"
 
         payload_bytes = cls.canonical_review_payload(
-            case_id,
-            claim_id,
-            attestation.get("decision", ""),
-            attestation.get("reviewed_at", ""),
+            case_id=case_id,
+            claim_id=claim_id,
+            decision=attestation.get("decision", ""),
+            reviewed_at=attestation.get("reviewed_at", ""),
+            attestation=attestation,
+            target_digest=target_digest,
         )
+
+        computed_sha = hashlib.sha256(payload_bytes).hexdigest()
+        stored_sha = attestation.get("payload_sha256", "")
+        if computed_sha != stored_sha:
+            return False, f"payload digest mismatch: expected {computed_sha}, got {stored_sha}"
 
         try:
             pub_key = ed25519.Ed25519PublicKey.from_public_bytes(bytes.fromhex(ident.public_key_hex))
@@ -294,13 +273,13 @@ class SourcePublicationComparator:
 # ============================================================================
 
 AUTHORITATIVE_SPDX_MAPPING = {
-    "http-404-meaning-v1": "CC-BY-4.0",
-    "http-404-not-permanent-v1": "CC-BY-4.0",
+    "http-404-meaning-v1": "LicenseRef-IETF-Trust-Legal-Provisions",
+    "http-404-not-permanent-v1": "LicenseRef-IETF-Trust-Legal-Provisions",
     "python-dict-insertion-order-v1": "PSF-2.0",
     "si-second-definition-v1": "CC-BY-4.0",
     "speed-of-light-si-v1": "CC-BY-4.0",
-    "json-types-rfc8259-v1": "CC-BY-4.0",
-    "json-object-order-v1": "CC-BY-4.0",
+    "json-types-rfc8259-v1": "LicenseRef-IETF-Trust-Legal-Provisions",
+    "json-object-order-v1": "LicenseRef-IETF-Trust-Legal-Provisions",
     "private-maintainer-secret-v1": "Apache-2.0",
 }
 

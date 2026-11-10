@@ -1,0 +1,45 @@
+{
+  "retrieved_at": "2026-11-10T14:00:00+00:00",
+  "documents": {
+    "rfc9110": {
+      "doc_id": "rfc9110",
+      "title": "RFC 9110: HTTP Semantics",
+      "url": "https://datatracker.ietf.org/doc/html/rfc9110",
+      "filename": "rfc9110.html",
+      "bytes": 1232150,
+      "sha256": "6b7311f5a57e49f2c93fdda572d2210df384299b37c4d791ddbc2e925dfa4b08",
+      "publisher": "Internet Engineering Task Force (IETF)",
+      "license_spdx": "LicenseRef-IETF-Trust-Legal-Provisions"
+    },
+    "rfc8259": {
+      "doc_id": "rfc8259",
+      "title": "RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format",
+      "url": "https://datatracker.ietf.org/doc/html/rfc8259",
+      "filename": "rfc8259.html",
+      "bytes": 81865,
+      "sha256": "738a6112239d2acb99f262eb2afc05be443fc3cf4269d67cc18f3890bf728b26",
+      "publisher": "Internet Engineering Task Force (IETF)",
+      "license_spdx": "LicenseRef-IETF-Trust-Legal-Provisions"
+    },
+    "python311_datamodel": {
+      "doc_id": "python311_datamodel",
+      "title": "Python 3.11 Language Reference: Data Model",
+      "url": "https://docs.python.org/3.11/reference/datamodel.html",
+      "filename": "python311_datamodel.html",
+      "bytes": 397539,
+      "sha256": "13518b0a0fa225660c02067ffed1f1cfea313f3596861828626d3bb0f548e2c9",
+      "publisher": "Python Software Foundation",
+      "license_spdx": "PSF-2.0"
+    },
+    "bipm_defining_constants": {
+      "doc_id": "bipm_defining_constants",
+      "title": "BIPM SI Defining Constants & Units",
+      "url": "https://www.bipm.org/en/measurement-units/si-defining-constants",
+      "filename": "bipm_defining_constants.html",
+      "bytes": 240199,
+      "sha256": "f91bc3790f7242ceaebe282e3dc25e77ca06a6324f7796615cbc8d9928f96044",
+      "publisher": "Bureau International des Poids et Mesures (BIPM)",
+      "license_spdx": "CC-BY-4.0"
+    }
+  }
+}

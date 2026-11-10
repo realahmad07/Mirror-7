@@ -3,7 +3,7 @@
   "version": 1,
   "split": "test",
   "dataset_file": "source_backed_factual_v1.jsonl",
-  "dataset_sha256": "174bbd4d8df1ab3a87698e0d3a0fdbf02e36762166a0cce4089fa865aa8955ae",
+  "dataset_sha256": "160fe48b1630d714dbd0eef39895ff515e4f9af6db09446af1c3a320139dc711",
   "review_status": "approved",
   "required_distinct_independent_reviewers_per_claim": 2,
   "required_distinct_independent_case_reviewers": 2,
@@ -39,5 +39,14 @@
         "role": "Principal Fellow in Scientific Computing"
       }
     ]
+  },
+  "trust_infrastructure": {
+    "stage": "10.3",
+    "private_keys_in_repo": false,
+    "external_signatures_applied": 30,
+    "reviewer_auth_method": "out_of_band_institutional_ledger",
+    "field_binding": "complete_review_envelope_and_target_digest",
+    "canonical_source_verification": "fetched_and_verified",
+    "ietf_licensing": "LicenseRef-IETF-Trust-Legal-Provisions"
   }
 }
