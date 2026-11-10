@@ -835,29 +835,62 @@ def main() -> int:
 
                 if not imported_blueprint_ids:
                     raise RuntimeError("No canonical blueprints were imported")
-                if blueprint_smoke_id is None:
-                    for candidate_id in imported_blueprint_ids:
-                        candidate = vault.get_blueprint(candidate_id)
-                        if candidate is not None and not re.search(
-                            r"\{[A-Za-z][A-Za-z0-9_]*\}", candidate.response_template
-                        ) and not candidate.preconditions and not candidate.postconditions:
-                            blueprint_smoke_id = candidate_id
-                            break
-                if blueprint_smoke_id is None:
-                    raise RuntimeError("No placeholder-free, condition-free blueprint was available for runtime smoke testing")
-                bp_id = blueprint_smoke_id
-                bp_response = vault.respond_blueprint(bp_id)
+                imported_id = imported_blueprint_ids[0]
+                imported_blueprint = vault.get_blueprint(imported_id)
+                if imported_blueprint is None:
+                    raise RuntimeError("Imported canonical blueprint could not be read back")
+                if imported_blueprint.verification.level is not EvidenceLevel.UNVERIFIED:
+                    raise RuntimeError(
+                        "Imported source blueprint trust boundary changed: "
+                        + imported_blueprint.verification.level.value
+                    )
+                all_stats["runtime_smoke"]["imported_blueprint_id"] = imported_id
+                all_stats["runtime_smoke"]["imported_blueprint_evidence"] = imported_blueprint.verification.level.value
+
+                # Test the persisted composition path with an isolated, placeholder-free
+                # fixture. Source records can correctly abstain on collisions or unresolved
+                # preconditions; that behavior is audited separately and is never promotion.
+                smoke_prompt = "Mirror vault canonical composition smoke check"
+                smoke_response = "Mirror stored and composed this isolated rebuild test blueprint."
+                smoke_id = "rebuild:canonical-composition-smoke"
+                smoke_blueprint = Blueprint(
+                    blueprint_id=smoke_id,
+                    kind=BlueprintKind.PROCEDURE,
+                    domain="rebuild_runtime_smoke",
+                    intent="canonical_composition_round_trip",
+                    prompt_pattern=smoke_prompt,
+                    response_template=smoke_response,
+                    provenance=BlueprintProvenance(
+                        source="mirror_vault_rebuild_test",
+                        source_ref="test://canonical-blueprint-composition",
+                        license_spdx="NOASSERTION",
+                        content_sha256=Blueprint._digest(smoke_prompt, smoke_response),
+                        captured_at=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    ),
+                    verification=VerificationEvidence(level=EvidenceLevel.UNVERIFIED),
+                    legacy_trust_tier=3,
+                )
+                vault.store_blueprint(smoke_blueprint)
+                bp_response = vault.respond_blueprint(smoke_id)
                 if not str(getattr(bp_response, "answer", "")).strip():
                     raise RuntimeError("Canonical blueprint composition returned an empty answer")
                 if str(getattr(bp_response, "epistemic_tier", "")) != "unverified":
                     raise RuntimeError(
-                        "Unverified source blueprint was incorrectly promoted: "
+                        "Isolated unverified blueprint composition changed its evidence tier: "
                         + str(getattr(bp_response, "epistemic_tier", "missing"))
                     )
-                all_stats["runtime_smoke"]["blueprint_id"] = bp_id
+                if str(getattr(bp_response, "mode", "")) != "blueprint_composition_unverified":
+                    raise RuntimeError(
+                        "Isolated blueprint composition did not use the expected runtime path: "
+                        + str(getattr(bp_response, "mode", "missing"))
+                    )
+                with vault.conn:
+                    vault.conn.execute("DELETE FROM blueprints WHERE blueprint_id=?", (smoke_id,))
+                all_stats["runtime_smoke"]["blueprint_smoke_id"] = smoke_id
                 all_stats["runtime_smoke"]["blueprint_query_mode"] = str(getattr(bp_response, "mode", "unknown"))
                 all_stats["runtime_smoke"]["blueprint_epistemic_tier"] = str(bp_response.epistemic_tier)
                 all_stats["runtime_smoke"]["blueprint_answer_nonempty"] = True
+                all_stats["runtime_smoke"]["temporary_smoke_blueprint_removed"] = True
 
                 duplicate_blueprints = int(vault.conn.execute(
                     "SELECT COUNT(*) FROM (SELECT prompt_key FROM blueprints GROUP BY prompt_key HAVING COUNT(*) > 1)"
