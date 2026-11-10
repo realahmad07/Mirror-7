@@ -131,6 +131,36 @@ def test_blueprint_storage_and_runtime_never_promote_unverified_source(tmp_path)
         vault.close()
 
 
+def test_persisted_runtime_resolves_requested_chain_without_global_blueprint_scan(tmp_path):
+    vault = DiskCrystalVault(tmp_path / "large-blueprint-vault.dcrystal")
+    try:
+        prerequisite = make_blueprint(
+            "late:prerequisite", "Prepare {v1}", intent="prerequisite"
+        )
+        root = make_blueprint(
+            "late:root", "Complete {v1}", intent="root",
+            dependencies=("late:prerequisite",),
+        )
+        vault.store_blueprint(prerequisite)
+        vault.store_blueprint(root)
+
+        original_list = vault.list_blueprints
+
+        def forbid_global_blueprint_scan(*, domain=None, intent=None, limit=10000):
+            assert domain is not None and intent is not None, (
+                "runtime must not enumerate the entire capped blueprint collection"
+            )
+            return original_list(domain=domain, intent=intent, limit=limit)
+
+        vault.list_blueprints = forbid_global_blueprint_scan
+        response = vault.respond_blueprint("late:root", values={"v1": "task"})
+        assert response.mode == "blueprint_composition_unverified"
+        assert response.epistemic_tier == "unverified"
+        assert response.answer == "Prepare task\n\nComplete task"
+    finally:
+        vault.close()
+
+
 def test_conflicting_blueprints_force_abstention(tmp_path):
     vault = DiskCrystalVault(tmp_path / "vault.dcrystal")
     try:

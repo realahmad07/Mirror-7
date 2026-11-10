@@ -874,7 +874,7 @@ def main() -> int:
                 stored_smoke = vault.get_blueprint(smoke_id)
                 if stored_smoke is None or stored_smoke.verification.level is not EvidenceLevel.UNVERIFIED:
                     raise RuntimeError("Isolated smoke blueprint did not persist with UNVERIFIED evidence")
-                composition = BlueprintCompositionEngine().compose(smoke_id, vault.list_blueprints())
+                composition = BlueprintCompositionEngine().compose(smoke_id, [smoke_blueprint])
                 if composition.answer != smoke_response:
                     raise RuntimeError("Canonical dependency/template composition returned an unexpected answer")
                 bp_response = vault.respond_blueprint(smoke_id)

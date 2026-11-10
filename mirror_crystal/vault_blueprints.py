@@ -269,10 +269,24 @@ class VaultBlueprintRuntimeMixin:
                 epistemic_tier="honest_abstain",
             )
         try:
-            all_blueprints = self.list_blueprints()
+            # Resolve only the requested blueprint and its transitive prerequisites.
+            # A full-vault list is capped at 10,000 rows and can silently omit a
+            # requested blueprint when the vault grows beyond that size.
+            dependency_blueprints: dict[str, Blueprint] = {}
+            pending_ids = [blueprint_id]
+            while pending_ids:
+                current_id = pending_ids.pop()
+                if current_id in dependency_blueprints:
+                    continue
+                current_blueprint = self.get_blueprint(current_id)
+                if current_blueprint is None:
+                    # Let the composition engine produce its standard missing-dependency error.
+                    continue
+                dependency_blueprints[current_id] = current_blueprint
+                pending_ids.extend(current_blueprint.dependencies)
             composition = BlueprintCompositionEngine().compose(
                 blueprint_id,
-                all_blueprints,
+                dependency_blueprints.values(),
                 values=values,
                 verified_conditions=verified_conditions,
                 postcondition_verifier=postcondition_verifier,
@@ -291,9 +305,10 @@ class VaultBlueprintRuntimeMixin:
                 epistemic_tier="honest_abstain",
             )
 
-        all_blueprints = self.list_blueprints()
         composed_blueprints = [
-            item for item in all_blueprints if item.blueprint_id in set(composition.blueprint_ids)
+            dependency_blueprints[item_id]
+            for item_id in composition.blueprint_ids
+            if item_id in dependency_blueprints
         ]
         verification_reports = []
         claim_reports = []
