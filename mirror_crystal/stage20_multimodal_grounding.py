@@ -212,6 +212,8 @@ class GroundedObservation:
     observed_at: str
     integrity_verified: bool
     origin_verified: bool
+    signer_id: str
+    signature_sha256: str
     derivation: str
 
     def to_dict(self) -> dict[str, Any]:
@@ -309,6 +311,8 @@ class SourceTrustRegistry:
             raise GroundingError("Ed25519 public keys must be exactly 32 bytes")
         if identity in self._keys:
             raise GroundingError(f"identity {identity!r} is already registered")
+        if len(self._keys) >= 1024:
+            raise GroundingError("trusted identity registry limit exceeded")
         self._keys[identity] = bytes(public_key)
 
     def verify(self, identity_id: str | None, signature_b64: str | None, payload: bytes) -> bool:
@@ -350,6 +354,7 @@ class RealWorldGroundingEngine:
         self._assets: dict[str, AssetProvenance] = {}
         self._segments: dict[str, DocumentEvidenceSegment] = {}
         self._observations: dict[str, GroundedObservation] = {}
+        self._telemetry_samples: set[tuple[str, str]] = set()
         self._source_bytes_total = 0
 
     @property
@@ -430,6 +435,8 @@ class RealWorldGroundingEngine:
         locator: str,
         observed_at: str | None = None,
         origin_verified: bool | None = None,
+        signer_id: str | None = None,
+        signature_sha256: str | None = None,
         derivation: str,
     ) -> GroundedObservation:
         if len(self._observations) >= self.MAX_OBSERVATIONS:
@@ -439,6 +446,10 @@ class RealWorldGroundingEngine:
         location = _required_text(locator, "locator", 512)
         normalized, canonical_unit, dimension = _parse_cell_value(value, unit)
         stamp = _utc_timestamp(observed_at or asset.retrieved_at, "observed_at")
+        selected_signer = asset.signer_id if signer_id is None else _required_text(signer_id, "signer_id", 128)
+        selected_signature_hash = asset.signature_sha256 if signature_sha256 is None else signature_sha256
+        if selected_signature_hash and not _SHA256.fullmatch(selected_signature_hash):
+            raise GroundingError("observation signature_sha256 must be a lowercase SHA-256 digest")
         payload = {
             "source_id": asset.source_id,
             "source_sha256": asset.sha256,
@@ -450,6 +461,8 @@ class RealWorldGroundingEngine:
             "dimension": dimension,
             "locator": location,
             "observed_at": stamp,
+            "signer_id": selected_signer,
+            "signature_sha256": selected_signature_hash,
             "derivation": derivation,
         }
         observation_id = _digest(_canonical(payload).encode("utf-8"))
@@ -469,6 +482,8 @@ class RealWorldGroundingEngine:
             observed_at=stamp,
             integrity_verified=asset.integrity_verified,
             origin_verified=asset.origin_verified if origin_verified is None else bool(origin_verified),
+            signer_id=selected_signer,
+            signature_sha256=selected_signature_hash,
             derivation=_required_text(derivation, "derivation", 256),
         )
         self._observations[observation_id] = observation
@@ -620,10 +635,12 @@ class RealWorldGroundingEngine:
         }
         canonical = _canonical(payload).encode("utf-8")
         self.trust_registry.verify(annotator_id, signature_b64, canonical)
+        signature_hash = _digest(base64.b64decode(signature_b64, validate=True))
         return self._add_observation(
             asset, entity_key=payload["entity_key"], attribute=payload["attribute"],
             value=value, unit=unit, locator=payload["locator"], observed_at=payload["observed_at"],
-            origin_verified=True, derivation=f"signed-perception-adapter:{annotator_id}",
+            origin_verified=True, signer_id=annotator_id, signature_sha256=signature_hash,
+            derivation=f"signed-perception-adapter:{annotator_id}",
         )
 
     @staticmethod
@@ -788,6 +805,8 @@ class RealWorldGroundingEngine:
             segments, rows = self._csv_segments(text)
             if len(rows) > 1:
                 headers = [str(item).strip().casefold() for item in rows[0]]
+                if len(headers) != len(set(headers)):
+                    raise GroundingError("CSV document contains duplicate column headers")
                 structured = [
                     {headers[i]: row[i] for i in range(min(len(headers), len(row)))}
                     for row in rows[1:]
@@ -851,6 +870,8 @@ class RealWorldGroundingEngine:
                 raise GroundingError("extractor must yield an iterable of ExtractedSegment records") from exc
         if not segments:
             raise GroundingError("document extraction produced no evidence segments")
+        if len(self._segments) + len(segments) > self.MAX_SEGMENTS:
+            raise GroundingError("total document segment count limit exceeded")
         text_size = sum(len(item.text.encode("utf-8")) for item in segments)
         if text_size > self.MAX_EXTRACTED_TEXT_BYTES:
             raise GroundingError("extracted document text exceeds the 4 MB limit")
@@ -922,6 +943,11 @@ class RealWorldGroundingEngine:
         }
         signing_payload = self.telemetry_signing_bytes(clean)
         device_id = _required_text(device_id, "device_id", 128)
+        if not _IDENTITY.fullmatch(device_id):
+            raise GroundingError("device_id contains unsupported characters")
+        sample_identity = (device_id, str(clean["sample_id"]))
+        if sample_identity in self._telemetry_samples:
+            raise GroundingError("telemetry sample replay detected for this device")
         verified = self.trust_registry.verify(
             device_id if signature_b64 is not None else None, signature_b64, signing_payload,
         )
@@ -943,6 +969,7 @@ class RealWorldGroundingEngine:
             value=clean["value"], unit=str(clean["unit"]), locator=f"device:{device_id}:sample:{clean['sample_id']}",
             observed_at=str(clean["observed_at"]), derivation="signed-telemetry-record" if verified else "unsigned-telemetry-record",
         )
+        self._telemetry_samples.add(sample_identity)
         return asset, observation
 
     @staticmethod
