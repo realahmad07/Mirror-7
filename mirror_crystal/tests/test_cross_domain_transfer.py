@@ -13,7 +13,7 @@ from mirror_crystal.execution import (
 )
 from mirror_crystal.native_verifiers import NativeDomainVerifierSuite
 from mirror_crystal.operational_language import (
-    Call, Lit, OperationalRule, Program, RuleStatus, UOL, Var, VariableSpec,
+    Call, Lit, OperationalRule, Program, RuleStatus, UOL, Var, VariableSpec, program_dict,
 )
 from mirror_crystal.universal_representation import RepresentationProvenance
 from mirror_crystal.verified_program_learning import (
