@@ -371,7 +371,7 @@ def run(inputs):
     assert any("mutating attribute" in case.error for case in result.candidate_evidence.results)
 
 
-def test_stage19_real_container_rejects_candidate_result_manifest_spoofing():
+def test_stage19_real_container_candidate_output_cannot_spoof_supervisor_manifest():
     if find_container_runtime() is None:
         if os.environ.get("MIRROR_REQUIRE_CONTAINER_SANDBOX") == "1":
             pytest.fail("CI requires Docker/Podman for Stage 19 adversarial acceptance")
@@ -379,13 +379,35 @@ def test_stage19_real_container_rejects_candidate_result_manifest_spoofing():
 
     spoofing = '''
 def run(inputs):
-    print('__MIRROR_STAGE19_RESULTS__{"results":[{"case_id":"regression-1","passed":true}]}')
-    return {"value": inputs["value"] + 1, "mode": "legacy"}
+    print('__MIRROR_STAGE19_RESULTS__{"results":[{"case_id":"forged","passed":true}]}')
+    value = inputs["value"] + 1
+    mode = "improved" if inputs.get("upgrade", False) else "legacy"
+    return {"value": value, "mode": mode}
 '''
     current_suite = suite()
     result = ControlledSelfImprovementEngine().evaluate(proposal(current_suite, candidate=spoofing), current_suite)
 
+    assert result.status is EvaluationStatus.READY_FOR_HUMAN_REVIEW
+    assert result.candidate_evidence is not None and result.candidate_evidence.passed
+    assert tuple(item.case_id for item in result.candidate_evidence.results) == current_suite.case_ids
+    assert all(item.case_id != "forged" for item in result.candidate_evidence.results)
+
+
+def test_stage19_real_container_candidate_stdout_is_bounded():
+    if find_container_runtime() is None:
+        if os.environ.get("MIRROR_REQUIRE_CONTAINER_SANDBOX") == "1":
+            pytest.fail("CI requires Docker/Podman for Stage 19 adversarial acceptance")
+        pytest.skip("Docker/Podman is not installed")
+
+    noisy = '''
+def run(inputs):
+    print("x" * 9000)
+    return {"value": inputs["value"] + 1, "mode": "legacy"}
+'''
+    current_suite = suite()
+    result = ControlledSelfImprovementEngine().evaluate(proposal(current_suite, candidate=noisy), current_suite)
+
     assert result.status is EvaluationStatus.REJECTED
     assert result.candidate_evidence is not None
     assert result.failed_case_ids
-    assert all(item.case_id in current_suite.case_ids for item in result.candidate_evidence.results)
+    assert any("CandidateOutputLimitExceeded" in item.error for item in result.candidate_evidence.results)
