@@ -131,7 +131,7 @@ def test_stage18_research_synthesis_preserves_provenance_and_reports_grounded_cl
     assert report.report_id == digest(canonical_json({
         "question_plan": report.question_plan.to_dict(),
         "status": report.status.value,
-        "source_manifest": list(report.source_manifest),
+        "source_manifest": report.to_dict()["source_manifest"],
         "discovery_errors": list(report.discovery_errors),
         "evidence": report.evidence.to_dict(),
         "experiment_design": None,
