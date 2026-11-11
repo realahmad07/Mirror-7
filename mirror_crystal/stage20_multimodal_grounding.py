@@ -168,7 +168,13 @@ def _parse_cell_value(value: Any, unit: str = "") -> tuple[Any, str, str]:
             except ValueError:
                 number = float("nan")
             if math.isfinite(number):
-                selected_unit = unit or match.group(2)
+                embedded_unit = match.group(2)
+                if unit and embedded_unit:
+                    explicit_info = _UNIT_ALIASES.get(unit.strip().casefold())
+                    embedded_info = _UNIT_ALIASES.get(embedded_unit.strip().casefold())
+                    if explicit_info is None or embedded_info is None or explicit_info != embedded_info:
+                        raise GroundingError("embedded value unit conflicts with its explicit unit field")
+                selected_unit = unit or embedded_unit
                 number, canonical_unit, dimension = _normalise_numeric(number, selected_unit)
                 return number, canonical_unit, dimension
         return text, "", "text"
