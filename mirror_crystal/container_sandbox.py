@@ -199,6 +199,7 @@ def run_python_regression_in_container(
     max_pids: int = 32,
     max_loop_steps: int = 50000,
     image: str | None = None,
+    runtime: str | None = None,
 ) -> ContainerExecutionResult:
     """Run candidate code and a trusted regression harness in a fresh container."""
     if not isinstance(candidate_source, str) or not candidate_source.strip():
@@ -224,7 +225,15 @@ def run_python_regression_in_container(
     if len(payload.encode("utf-8")) > 1_000_000:
         return ContainerExecutionResult(False, "", "regression payload exceeds 1 MB limit", "", None, None)
 
-    found = find_container_runtime()
+    if runtime is not None:
+        if runtime not in {"docker", "podman"}:
+            return ContainerExecutionResult(False, "", "runtime must be docker or podman", "", None, None)
+        runtime_path = shutil.which(runtime)
+        if runtime_path is None:
+            return ContainerExecutionResult(False, "", f"requested container runtime '{runtime}' is unavailable", "", None, None)
+        found = (runtime, runtime_path)
+    else:
+        found = find_container_runtime()
     if found is None:
         return ContainerExecutionResult(
             False, "", "Docker or Podman is required; process fallback is disabled by default.", "", None, None
