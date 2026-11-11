@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from enum import Enum
 import hashlib
+import json
 import math
 import statistics
 from typing import Any, Callable, Iterable, Mapping
@@ -53,13 +54,6 @@ def _require_text(value: str, field: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ResearchError(f"{field} must be a non-empty string")
     return value.strip()
-
-
-def _json_snapshot(value: Any, field: str) -> Any:
-    try:
-        return __import__("json").loads(canonical_json(value))
-    except (TypeError, ValueError) as exc:
-        raise ResearchError(f"{field} must contain finite JSON-compatible values") from exc
 
 
 @dataclass(frozen=True)
@@ -446,6 +440,7 @@ class AutonomousResearchEngine:
             raise ResearchError("passage identifiers must be globally unique")
 
         claims: list[AtomicClaim] = []
+        claim_counts: dict[str, int] = {}
         for candidate in candidates:
             statements = candidate.claims
             if not statements:
@@ -454,6 +449,7 @@ class AutonomousResearchEngine:
                     for passage in candidate.passages
                     for claim in self.evidence_engine.decompose_statements(passage.text)
                 )
+            claim_counts[candidate.provenance.source_id] = len(statements)
             for index, statement in enumerate(statements):
                 claims.append(AtomicClaim(
                     claim_id=f"{candidate.provenance.source_id}:claim:{index + 1}",
@@ -497,7 +493,7 @@ class AutonomousResearchEngine:
             "retrieved_at": item.provenance.retrieved_at,
             "content_sha256": item.provenance.sha256_hash,
             "passage_ids": [passage.passage_id for passage in item.passages],
-            "claim_count": len(item.claims),
+            "claim_count": claim_counts[item.provenance.source_id],
         } for item in candidates)
         report_payload = {
             "question_plan": plan.to_dict(),
