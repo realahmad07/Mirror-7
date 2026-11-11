@@ -446,6 +446,17 @@ class ContinuousExpansionEngine:
         )
         if not expected_fingerprints or actual_fingerprints != expected_fingerprints:
             raise ContinuousExpansionError("epoch proposals do not match their recorded fingerprints")
+        for proposal in result.proposals:
+            if (
+                proposal.handler.program != proposal.program
+                or proposal.capability.provenance.source != "mirror_verified_uol_program_learning"
+                or proposal.capability.provenance.source_ref != proposal.program.fingerprint
+                or not proposal.capability.executable
+                or not proposal.capability.verification.checks_passed
+            ):
+                raise ContinuousExpansionError(
+                    "epoch proposal is not bound to its independently learned UOL program"
+                )
 
         domain = str(target_domain).strip().casefold()
         matches = [
