@@ -242,3 +242,110 @@ def test_transfer_accepts_only_verified_global_rule_dependencies():
     assert transferred.capability.provenance.parent_ids == (
         source.capability.capability_id, "general-increment",
     )
+
+
+# Strategic Phase 8/9 acceptance: sealed transfer evaluation and multi-cycle expansion.
+from mirror_crystal.phase8_cross_domain_intelligence import (
+    CrossDomainBenchmarkCase, CrossDomainBenchmarkManifest, CrossDomainBenchmarkRunner,
+)
+from mirror_crystal.phase9_continuous_expansion import (
+    ContinuousExpansionEngine, ExpansionCycleEvidence,
+)
+
+
+def phase8_manifest(name, offset=0):
+    source = source_proposal()
+    cases = []
+    for index, start in enumerate((2, 5, 9)):
+        train = tuple(Example({"x": x + offset + index}, x + offset + index + 1)
+                      for x in (start, start + 2, start + 4))
+        heldout = tuple(Example({"x": x + offset + index}, x + offset + index + 1)
+                        for x in (start + 20, start + 30))
+        cases.append(CrossDomainBenchmarkCase(
+            f"{name}-positive-{index}", source, UOL(), "mathematics",
+            train, heldout, target_math_postconditions(),
+        ))
+    cases.append(CrossDomainBenchmarkCase(
+        f"{name}-negative-same-domain", source, UOL(), "programming",
+        (Example({"x": 1}, 2), Example({"x": 2}, 3), Example({"x": 3}, 4)),
+        (Example({"x": 5}, 6), Example({"x": 6}, 7)),
+        (), expect_transfer=False, expected_rejection="must differ",
+    ))
+    return CrossDomainBenchmarkManifest(
+        name, tuple(cases), minimum_source_domains=1,
+        minimum_target_domains=1, minimum_domain_pairs=1,
+    )
+
+
+def run_phase8_manifest(name, offset=0, with_verifiers=True):
+    manifest = phase8_manifest(name, offset)
+    verifiers = {}
+    if with_verifiers:
+        for case in manifest.cases:
+            if case.expect_transfer:
+                verifiers[case.case_id] = lambda proposal: make_math_observations(
+                    proposal.program, proposal.capability,
+                )
+    return CrossDomainBenchmarkRunner().run(manifest, target_verifiers=verifiers)
+
+
+def test_phase8_benchmark_requires_target_verification_and_passes_negative_control():
+    report = run_phase8_manifest("phase8-accepted")
+    assert report.passed
+    assert len(report.learned_proposals) == 3
+    assert sum(item.passed and not item.transferred for item in report.results) == 1
+    assert all(item.capability.executable for item in report.learned_proposals)
+
+
+def test_phase8_benchmark_fails_closed_without_target_verifier():
+    report = run_phase8_manifest("phase8-no-verifier", with_verifiers=False)
+    assert not report.passed
+    assert all(not item.passed for item in report.results if item.transferred)
+
+
+def test_phase9_requires_three_distinct_benchmark_cycles_and_unseen_tasks():
+    reports = tuple(
+        run_phase8_manifest(f"phase9-cycle-{index}", offset=index * 50)
+        for index in range(3)
+    )
+    assert all(item.passed for item in reports)
+    cycles = tuple(
+        ExpansionCycleEvidence(
+            f"cycle-{index}", report,
+            tuple(f"task-{index}-{part}" for part in range(3)),
+            (f"unseen-{index}-a", f"unseen-{index}-b"),
+            ("reviewer-a", "reviewer-b"), True, "f" * 64,
+        )
+        for index, report in enumerate(reports)
+    )
+    proposal = ContinuousExpansionEngine().propose(cycles)
+    assert proposal.requires_explicit_promotion
+    assert len(proposal.cycle_ids) == 3
+    assert len(set(proposal.benchmark_fingerprints)) == 3
+    assert proposal.target_domains == ("mathematics",)
+    assert len(proposal.learned_proposals) >= 3
+
+
+def test_phase9_rejects_reused_tasks_and_baseline_drift():
+    import pytest
+    reports = tuple(
+        run_phase8_manifest(f"phase9-invalid-{index}", offset=index * 70)
+        for index in range(3)
+    )
+    duplicate_tasks = tuple(
+        ExpansionCycleEvidence(
+            f"duplicate-{index}", report, ("same", "task-b", "task-c"),
+            (f"unseen-{index}",), ("reviewer-a", "reviewer-b"), True, "f" * 64,
+        )
+        for index, report in enumerate(reports)
+    )
+    with pytest.raises(ValueError, match="disjoint"):
+        ContinuousExpansionEngine().propose(duplicate_tasks)
+
+    drifted = (
+        ExpansionCycleEvidence("baseline-a", reports[0], ("a1", "a2", "a3"), ("ua",), ("reviewer-a", "reviewer-b"), True, "a" * 64),
+        ExpansionCycleEvidence("baseline-b", reports[1], ("b1", "b2", "b3"), ("ub",), ("reviewer-a", "reviewer-b"), True, "b" * 64),
+        ExpansionCycleEvidence("baseline-c", reports[2], ("c1", "c2", "c3"), ("uc",), ("reviewer-a", "reviewer-b"), True, "a" * 64),
+    )
+    with pytest.raises(ValueError, match="same frozen baseline"):
+        ContinuousExpansionEngine().propose(drifted)
