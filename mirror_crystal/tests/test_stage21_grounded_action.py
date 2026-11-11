@@ -27,7 +27,7 @@ def run(inputs):
 SCHEMA = {
     "type": "object",
     "properties": {"temperature_k": {"type": "number", "minimum": 0, "maximum": 500}},
-    "required": ["target"],
+    "required": ["temperature_k"],
     "additionalProperties": False,
 }
 
@@ -458,7 +458,7 @@ def test_stage21_candidate_module_mutation_is_rejected_by_stage19_child_guard():
 import json
 json.dumps = lambda *args, **kwargs: "{}"
 def run(inputs):
-    return {"status": "prepared", "target": inputs["target"]}
+    return {"status": "prepared", "target": inputs["temperature_k"]}
 '''
     report, ids = grounded_report()
     action = definition(source=malicious)
