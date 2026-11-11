@@ -111,9 +111,17 @@ def _validate_source(source: UOLProgramLearningProposal, language: UOL) -> None:
         raise TransferBenchmarkError("source program domain is not declared by its capability")
     if getattr(handler, "program", None) != program:
         raise TransferBenchmarkError("source handler is not bound to the exact source program")
-    if isinstance(source.minimum_successes, bool) or source.minimum_successes < 3:
+    if (
+        isinstance(source.minimum_successes, bool)
+        or not isinstance(source.minimum_successes, int)
+        or source.minimum_successes < 3
+    ):
         raise TransferBenchmarkError("source evidence must require at least three distinct observations")
-    if isinstance(source.minimum_verifiers, bool) or source.minimum_verifiers < 2:
+    if (
+        isinstance(source.minimum_verifiers, bool)
+        or not isinstance(source.minimum_verifiers, int)
+        or source.minimum_verifiers < 2
+    ):
         raise TransferBenchmarkError("source evidence must require at least two verifier identities")
     if len(source.observation_task_ids) < source.minimum_successes:
         raise TransferBenchmarkError("source proposal is missing required task observations")
@@ -133,8 +141,34 @@ def _validate_source(source: UOLProgramLearningProposal, language: UOL) -> None:
         raise TransferBenchmarkError("source proposal lacks distinct verifier identities")
     if not capability.verification.checks_passed or not capability.verification.verifier.strip():
         raise TransferBenchmarkError("source capability has no recorded passing verification")
-    if language.validate(program) not in {"integer", "number", "text", "boolean", "array", "record", "null", "any"}:
-        raise TransferBenchmarkError("source program has an unsupported result type")
+    language.validate(program)
+    handler_rules = {
+        item.rule_id: item for item in getattr(handler, "rules", ())
+    }
+    language_rules = {
+        item.rule_id: item for item in language.rules.values()
+    }
+    pending = list(program.rule_refs)
+    visited: set[str] = set()
+    while pending:
+        rule_id = pending.pop()
+        if rule_id in visited:
+            continue
+        visited.add(rule_id)
+        source_rule = handler_rules.get(rule_id)
+        transfer_rule = language_rules.get(rule_id)
+        if source_rule is None or transfer_rule is None or source_rule != transfer_rule:
+            raise TransferBenchmarkError(
+                f"source handler and transfer language disagree about rule: {rule_id}"
+            )
+        if source_rule.status.value != "verified":
+            raise TransferBenchmarkError("source program rule dependency is not independently verified")
+        for node in __import__(
+            "mirror_crystal.operational_language", fromlist=["_walk"]
+        )._walk(source_rule.body):
+            operator = getattr(node, "operator", None)
+            if operator and operator not in {"add", "subtract", "multiply", "divide", "modulo", "power", "minimum", "maximum", "equal", "less_than", "less_equal", "greater_than", "greater_equal", "and", "or", "not", "negate", "absolute", "concat", "length", "sum", "product"}:
+                pending.append(operator)
 
 
 class CrossDomainTransferBenchmarkEngine:
@@ -215,6 +249,7 @@ class CrossDomainTransferBenchmarkEngine:
         all_task_ids: set[str] = set()
         all_execution_ids: set[str] = set()
         blockers: list[str] = []
+        all_sample_ids: set[str] = set()
         for target in target_items:
             try:
                 transfer = self.transfer_engine.propose(
@@ -232,6 +267,25 @@ class CrossDomainTransferBenchmarkEngine:
                     raise TransferBenchmarkError("task identifiers must be non-empty and unique across target domains")
                 if any(not item or item in all_execution_ids for item in execution_ids):
                     raise TransferBenchmarkError("execution fingerprints must be unique across target domains")
+                used_inputs = {
+                    stable_representation_id("transfer-input", dict(item.inputs))
+                    for item in (*target.training, *target.held_out)
+                }
+                for observation in observations:
+                    if len(observation.execution.steps) != 1:
+                        raise TransferBenchmarkError("each target verification observation must cover exactly one step")
+                    fresh_inputs = {
+                        key: value
+                        for key, value in observation.execution.steps[0].inputs.items()
+                        if key != "__mirror_verification__"
+                    }
+                    sample_id = stable_representation_id("transfer-input", fresh_inputs)
+                    if sample_id in used_inputs or sample_id in all_sample_ids:
+                        raise TransferBenchmarkError(
+                            "target verification observations must be disjoint from transfer train/held-out data"
+                        )
+                    used_inputs.add(sample_id)
+                    all_sample_ids.add(sample_id)
                 all_task_ids.update(task_ids)
                 all_execution_ids.update(execution_ids)
                 learned = self.learning_engine.propose(
