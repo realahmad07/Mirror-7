@@ -465,6 +465,62 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 })
                 return
 
+            if parts in (["api", "memory", "search"], ["api", "v1", "memory", "search"]):
+                q = str(payload.get("query", ""))
+                limit = int(payload.get("limit", 5))
+                from mirror_crystal.long_term_memory import LongTermMemoryManager
+                mem_mgr = LongTermMemoryManager()
+                results = mem_mgr.search_memories(q, limit=limit)
+                self._send(200, {
+                    "ok": True,
+                    "results": [
+                        {"node": node.to_dict(), "score": score} for node, score in results
+                    ],
+                })
+                return
+
+            if parts in (["api", "memory", "feedback"], ["api", "v1", "memory", "feedback"]):
+                mid = str(payload.get("memory_id", ""))
+                correction = str(payload.get("correction", ""))
+                notes = str(payload.get("notes", ""))
+                from mirror_crystal.long_term_memory import LongTermMemoryManager, MemoryProtectionError
+                mem_mgr = LongTermMemoryManager()
+                try:
+                    new_node = mem_mgr.apply_feedback_correction(
+                        memory_id=mid,
+                        correction_content=correction,
+                        feedback_notes=notes,
+                    )
+                    self._send(200, {"ok": True, "corrected_memory": new_node.to_dict()})
+                except MemoryProtectionError as mpe:
+                    self._send(403, {"ok": False, "error": str(mpe)})
+                except Exception as exc:
+                    self._send(400, {"ok": False, "error": str(exc)})
+                return
+
+            if parts in (["api", "reasoning", "verify_math"], ["api", "v1", "reasoning", "verify_math"]):
+                left = str(payload.get("left", ""))
+                right = str(payload.get("right", ""))
+                from mirror_crystal.advanced_reasoning import ExactMathVerifier
+                is_valid, note = ExactMathVerifier.verify_rational_equality(left, right)
+                self._send(200, {"ok": True, "is_valid": is_valid, "note": note})
+                return
+
+            if parts in (["api", "planning", "execute"], ["api", "v1", "planning", "execute"]):
+                goal = str(payload.get("goal", ""))
+                subtasks = payload.get("subtasks", [])
+                from mirror_crystal.planning_and_tools import (
+                    TaskDecomposer, PlanningAndToolEngine, ToolRegistry, ToolDefinition
+                )
+                reg = ToolRegistry()
+                # Default built-in echo tool
+                reg.register(ToolDefinition(name="echo", description="Echoes text", handler=lambda text="": text))
+                plan = TaskDecomposer.create_plan_from_subtasks(goal, subtasks)
+                engine = PlanningAndToolEngine(registry=reg)
+                executed = engine.execute_plan(plan)
+                self._send(200, {"ok": True, "plan": executed.to_dict()})
+                return
+
             if parts in (["api", "crystal", "feedback"], ["api", "crystal", "downvote"]):
                 rid = int(payload.get("rule_id", 0))
                 pos = bool(payload.get("is_positive", False if parts == ["api", "crystal", "downvote"] else True))

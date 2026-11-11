@@ -16,7 +16,7 @@
 [![Retention: 0.9999 Cosine](https://img.shields.io/badge/Continual_Retention-0.9999_Cosine-0B192C.svg?style=flat-square)](#3-multi-domain-cognitive-taxonomy-7-pillars--186-categories)
 
 **Founder & Principal Architect:** **Ahmad Hassan** &nbsp;•&nbsp; **Official Repository:** [github.com/realahmad07/Mirror-7](https://github.com/realahmad07/Mirror-7)  
-📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 📊 **[Phase 2 Audit](artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Phase 3 Purification](artifacts/PHASE3_KNOWLEDGE_PURIFICATION_REPORT.md)** &nbsp;|&nbsp; 🧠 **[Phase 4 Reasoning](artifacts/PHASE4_REASONING_RETRIEVAL_REPORT.md)** &nbsp;|&nbsp; 🚀 **[Phase 5 Evaluation](artifacts/PHASE5_PRODUCTION_EVALUATION_REPORT.md)** &nbsp;|&nbsp; 🏁 **[Stage 5 & 6](artifacts/STAGE5_STAGE6_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🏆 **[Stage 7-9](artifacts/STAGE7_8_9_RELEASE_REPORT.md)** &nbsp;|&nbsp; 🔬 **[Stage 10-10.5 Trust](artifacts/STAGE10_5_INDEPENDENT_TRUST_VALIDATION_REPORT.md)** &nbsp;|&nbsp; 🧩 **[Stage 11 Intelligence](artifacts/STAGE11_AUTONOMOUS_INTELLIGENCE_REPORT.md)** &nbsp;|&nbsp; ⚙️ **[Stage 12 Readiness](artifacts/STAGE12_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Stage 13 Safety](artifacts/STAGE13_SAFETY_ALIGNMENT_REPORT.md)** &nbsp;|&nbsp; 🔍 **[Stage 14 Evidence](artifacts/STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
+📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 📊 **[Phase 2 Audit](artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Phase 3 Purification](artifacts/PHASE3_KNOWLEDGE_PURIFICATION_REPORT.md)** &nbsp;|&nbsp; 🧠 **[Phase 4 Reasoning](artifacts/PHASE4_REASONING_RETRIEVAL_REPORT.md)** &nbsp;|&nbsp; 🚀 **[Phase 5 Evaluation](artifacts/PHASE5_PRODUCTION_EVALUATION_REPORT.md)** &nbsp;|&nbsp; 🏁 **[Stage 5 & 6](artifacts/STAGE5_STAGE6_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🏆 **[Stage 7-9](artifacts/STAGE7_8_9_RELEASE_REPORT.md)** &nbsp;|&nbsp; 🔬 **[Stage 10-10.5 Trust](artifacts/STAGE10_5_INDEPENDENT_TRUST_VALIDATION_REPORT.md)** &nbsp;|&nbsp; 🧩 **[Stage 11 Intelligence](artifacts/STAGE11_AUTONOMOUS_INTELLIGENCE_REPORT.md)** &nbsp;|&nbsp; ⚙️ **[Stage 12 Readiness](artifacts/STAGE12_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Stage 13 Safety](artifacts/STAGE13_SAFETY_ALIGNMENT_REPORT.md)** &nbsp;|&nbsp; 🔍 **[Stage 14 Evidence](artifacts/STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md)** &nbsp;|&nbsp; 💾 **[Stage 15 Memory](artifacts/STAGE15_LONG_TERM_MEMORY_REPORT.md)** &nbsp;|&nbsp; 🌲 **[Stage 16 Reasoning](artifacts/STAGE16_ADVANCED_REASONING_REPORT.md)** &nbsp;|&nbsp; 🛠️ **[Stage 17 Planning](artifacts/STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
 
 </div>
 
@@ -1237,13 +1237,43 @@ Phase 14 eliminates uncalibrated hallucinations and distinguishes verified empir
 
 Detailed Stage 14 operational verification report: [STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md](artifacts/STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md).
 
-### Stages 15–21 Master Roadmap
+### Phase 15 — Long-Term Memory & Learning (Complete)
+
+Phase 15 operationalizes cross-session stateful continuity and feedback learning:
+- **Multi-Tier Memory Architecture:** Segregates memories into `WORKING_EPISODIC` (turn-level plasticity), `CONSOLIDATED_SEMANTIC` (cross-session experiences), and `IMMUTABLE_TRUSTED_VAULT` (gold-standard axioms).
+- **Ebbinghaus Forgetting Dynamics:** Mathematical decay scheduling ($R = e^{-\Delta t / S}$) where memory stability scales with access frequency and intrinsic importance. Prunes low-retention items ($< 0.08$).
+- **Memory Correction & Lineage Auditing:** Tombstones superseded memories with forward pointers and complete feedback audit trails.
+- **Strict Trust Invariant Guard:** Cryptographically blocks any feedback or correction attempt directed at `IMMUTABLE_TRUSTED_VAULT` records, raising `MemoryProtectionError`.
+- **REST API Endpoints:** `/api/memory/search` and `/api/memory/feedback`.
+
+Detailed Stage 15 operational verification report: [STAGE15_LONG_TERM_MEMORY_REPORT.md](artifacts/STAGE15_LONG_TERM_MEMORY_REPORT.md).
+
+### Phase 16 — Advanced Reasoning (Complete)
+
+Phase 16 establishes deterministic reasoning and multi-step process verification:
+- **Multi-Step Reasoning Trees:** Discrete `ReasoningStep` executions supervised by step-level invariant contracts.
+- **Exact Rational Mathematical Verification:** Python AST-based exact rational arithmetic (`fractions.Fraction`) evaluating multi-term rational equality and algebraic identities with 0% floating-point hallucination.
+- **Causal Graph Inference & Do-Calculus:** Directed causal graph analysis calculating cumulative path effects and simulating Judea Pearl's interventional $do(X = x)$ operator.
+- **Independent Dual-Path Consensus Certification:** Compares two orthogonal solution paths (forward derivation vs. secondary invariant oracle), certifying high consensus confidence ($0.98$) or alerting on divergence.
+- **REST API Endpoints:** `/api/reasoning/verify_math`.
+
+Detailed Stage 16 operational verification report: [STAGE16_ADVANCED_REASONING_REPORT.md](artifacts/STAGE16_ADVANCED_REASONING_REPORT.md).
+
+### Phase 17 — Planning & Tool Intelligence (Complete)
+
+Phase 17 implements autonomous, failure-resilient agentic workflow planning:
+- **Hierarchical Task Decomposition:** Decomposes complex goals into typed `TaskNode` workflows and verifies acyclicity via DFS cycle detection (`PlanningError` on circular dependencies).
+- **Sandboxed Tool Registry:** Allow-listed tool registry with strict schema enforcement and risk classification (`READ_ONLY`, `MUTATING_SAFE`, `MUTATING_PRIVILEGED`).
+- **Automated Failure Recovery & Tool Fallbacks:** Handles tool execution failures via exponential retry backoffs, dynamic routing to registered fallback tools, and clean downstream `SKIPPED` state propagation.
+- **Result Verification Contracts:** Enforces output sanity before marking steps completed, rejecting empty or error returns.
+- **REST API Endpoints:** `/api/planning/execute`.
+
+Detailed Stage 17 operational verification report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md](artifacts/STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md).
+
+### Stages 18–21 Master Roadmap
 
 | Stage | Subsystem / Focus | Core Objectives & Invariants |
 | :--- | :--- | :--- |
-| **Stage 15** | **Long-Term Memory & Learning** | Persistent cross-session graph memory, experience consolidation, decay/forgetting schedules, memory conflict resolution, and feedback assimilation without corrupting trusted knowledge. |
-| **Stage 16** | **Advanced Reasoning** | Multi-step reasoning trees, formal mathematical proof verification, causal graph inference, hypothesis generation, and dual-brain answer verification. |
-| **Stage 17** | **Planning & Tool Intelligence** | Hierarchical task decomposition, autonomous tool selection, execution planning, real-time progress tracking, error recovery, and result verification contracts. |
 | **Stage 18** | **Autonomous Research** | Research question synthesis, literature and source discovery, evidence comparison, reproducible experiment design, and structured empirical reports. |
 | **Stage 19** | **Controlled Self-Improvement** | Proposal of code/rule changes, isolated sandbox testing, baseline regression comparisons, automatic regression rejection, and human-in-the-loop deployment gating. |
 | **Stage 20** | **Multimodal & Real-World Grounding** | Cross-modal processing for images, documents, and real-world telemetry; grounding latent conclusions into verified observable sensory evidence. |

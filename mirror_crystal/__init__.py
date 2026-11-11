@@ -409,4 +409,76 @@ __all__ += [
     "EvidenceBasedIntelligenceEngine",
 ]
 
+from .long_term_memory import (
+    MemoryTier,
+    MemoryProtectionError,
+    MemoryError,
+    MemoryNode,
+    ForgettingCurveScheduler,
+    MemoryConsolidationEngine,
+    LongTermMemoryManager,
+)
+
+__all__ += [
+    "MemoryTier",
+    "MemoryProtectionError",
+    "MemoryError",
+    "MemoryNode",
+    "ForgettingCurveScheduler",
+    "MemoryConsolidationEngine",
+    "LongTermMemoryManager",
+]
+
+from .advanced_reasoning import (
+    ReasoningStepType,
+    ReasoningError,
+    ReasoningStep,
+    CausalEdge,
+    CausalReasoningGraph,
+    ExactMathVerifier,
+    HypothesisGenerator,
+    IndependentAnswerChecker,
+    AdvancedReasoningEngine,
+)
+
+__all__ += [
+    "ReasoningStepType",
+    "ReasoningError",
+    "ReasoningStep",
+    "CausalEdge",
+    "CausalReasoningGraph",
+    "ExactMathVerifier",
+    "HypothesisGenerator",
+    "IndependentAnswerChecker",
+    "AdvancedReasoningEngine",
+]
+
+from .planning_and_tools import (
+    StepStatus,
+    ToolRiskProfile,
+    PlanningError,
+    ToolDefinition,
+    ToolRegistry,
+    TaskNode,
+    ExecutionPlan,
+    TaskDecomposer,
+    FailureRecoveryManager,
+    ResultVerificationContract,
+    PlanningAndToolEngine,
+)
+
+__all__ += [
+    "StepStatus",
+    "ToolRiskProfile",
+    "PlanningError",
+    "ToolDefinition",
+    "ToolRegistry",
+    "TaskNode",
+    "ExecutionPlan",
+    "TaskDecomposer",
+    "FailureRecoveryManager",
+    "ResultVerificationContract",
+    "PlanningAndToolEngine",
+]
+
 
