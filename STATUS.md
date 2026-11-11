@@ -247,4 +247,18 @@ See [Stage 18 design](docs/33-stage18-autonomous-research.md) and [acceptance re
 
 **Explicit limits:** candidate artifacts use a bounded `run(inputs) -> JSON` entrypoint. Reviewer identity authentication and durable approval/audit storage belong to the host application. Promotion, deployment, rollback and automatic PR application are not performed. The injected fake executor is for unit tests only; production uses `ContainerRegressionExecutor`.
 
+
+## Stage 20 — Multimodal & Real-World Grounding
+
+**Status: PASS within bounded multimodal ingestion and cross-modal comparison.**
+
+- CRC/decompression-checked PNG ingest and pixel statistics; semantic image labels require a signed host perception adapter bound to the image digest.
+- TXT/Markdown, CSV, JSON and DOCX extraction with source/passage hashes and stable line/row/paragraph/table locators; PDF and other formats require an explicit host extractor.
+- Telemetry with typed units, timezone-aware observation timestamps, trusted Ed25519 device signatures and per-device sample replay rejection.
+- Cross-modal outcomes distinguish verified agreement, unsigned corroboration, disagreement, incomparable units and insufficient evidence. Source authenticity is never inferred from byte integrity alone.
+
+**Explicit limits:** native image processing is pixel-statistical, not a built-in general vision/OCR model; host key enrollment, PDF/OCR adapters, physical sensor calibration and durable audit storage remain external responsibilities.
+
+See [Stage 20 design](docs/35-stage20-multimodal-grounding.md) and [acceptance report](artifacts/STAGE20_MULTIMODAL_GROUNDING_REPORT.md).
+
 See [Stage 19 design](docs/34-stage19-controlled-self-improvement.md) and [acceptance report](artifacts/STAGE19_CONTROLLED_SELF_IMPROVEMENT_REPORT.md).
