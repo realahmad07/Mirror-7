@@ -510,11 +510,11 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 goal = str(payload.get("goal", ""))
                 subtasks = payload.get("subtasks", [])
                 from mirror_crystal.planning_and_tools import (
-                    TaskDecomposer, PlanningAndToolEngine, ToolRegistry, ToolDefinition
+                    TaskDecomposer, PlanningAndToolEngine, ToolRegistry, ToolDefinition, _echo_tool
                 )
                 reg = ToolRegistry()
-                # Default built-in echo tool
-                reg.register(ToolDefinition(name="echo", description="Echoes text", handler=lambda text="": text))
+                # Built-in, allow-listed read-only echo handler; arbitrary handler code is not accepted over HTTP.
+                reg.register(ToolDefinition(name="echo", description="Echoes text", handler=_echo_tool))
                 plan = TaskDecomposer.create_plan_from_subtasks(goal, subtasks)
                 engine = PlanningAndToolEngine(registry=reg)
                 executed = engine.execute_plan(plan)
