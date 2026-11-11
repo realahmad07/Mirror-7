@@ -340,6 +340,36 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 self._send(200, res)
                 return
 
+            if parts in (["api", "safety", "evaluate"], ["api", "v1", "safety", "evaluate"]):
+                prompt = str(payload.get("prompt", "") or payload.get("text", ""))
+                from mirror_crystal.safety_alignment import SafetyAlignmentManager
+                mgr = SafetyAlignmentManager()
+                result = mgr.evaluate_request(prompt)
+                self._send(200, {
+                    "ok": True,
+                    "is_safe": result.is_safe,
+                    "category": result.category.value,
+                    "risk_score": result.risk_score,
+                    "violations": result.detected_violations,
+                    "tainted": result.tainted,
+                    "refusal": result.refusal_contract.format_full_response() if result.refusal_contract else None,
+                    "latency_ms": result.latency_ms,
+                })
+                return
+
+            if parts in (["api", "safety", "sanitize"], ["api", "v1", "safety", "sanitize"]):
+                prompt = str(payload.get("prompt", "") or payload.get("text", ""))
+                from mirror_crystal.safety_alignment import PrivacyProtectionEngine
+                priv = PrivacyProtectionEngine()
+                sanitized, counts = priv.scrub_pii_and_credentials(prompt)
+                self._send(200, {
+                    "ok": True,
+                    "sanitized_text": sanitized,
+                    "redacted_counts": counts,
+                    "total_redacted": sum(counts.values()),
+                })
+                return
+
             if parts in (["api", "crystal", "feedback"], ["api", "crystal", "downvote"]):
                 rid = int(payload.get("rule_id", 0))
                 pos = bool(payload.get("is_positive", False if parts == ["api", "crystal", "downvote"] else True))
