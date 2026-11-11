@@ -101,7 +101,7 @@ def test_hypothesis_generation_for_diagnostics():
     assert any("falsifiable_prediction" in h for h in hyps)
 
 
-def test_dual_path_independent_answer_checking():
+def test_dual_path_output_consistency_does_not_claim_independent_proof():
     """Verify consensus certification when two orthogonal methods agree, and divergence flagging when they disagree."""
     # 1. Numerical consensus
     agreed, conf, note = IndependentAnswerChecker.verify_dual_path(
@@ -110,8 +110,8 @@ def test_dual_path_independent_answer_checking():
         path_b_solution=28.2743339,
     )
     assert agreed is True
-    assert conf >= 0.95
-    assert "converged" in note
+    assert conf == 0.50
+    assert "not proof of independent derivation" in note
 
     # 2. Numerical divergence
     diverged, d_conf, d_note = IndependentAnswerChecker.verify_dual_path(
@@ -130,7 +130,7 @@ def test_dual_path_independent_answer_checking():
         path_b_solution="acyclic",
     )
     assert agree_discrete is True
-    assert disc_conf >= 0.95
+    assert disc_conf == 0.50
 
 
 def test_end_to_end_advanced_reasoning_orchestrator():
@@ -166,6 +166,75 @@ def test_end_to_end_advanced_reasoning_orchestrator():
 
     assert result["all_steps_valid"] is True
     assert result["consensus_verified"] is True
-    assert result["calibrated_confidence"] >= 0.95
+    assert result["calibrated_confidence"] == 0.50
     assert result["final_answer"] == 50
     assert len(result["steps"]) == 2
+
+
+def test_causal_graph_rejects_self_edges_cycles_and_nonfinite_strengths():
+    graph = CausalReasoningGraph()
+    graph.add_edge("a", "b", 0.5)
+    graph.add_edge("b", "c", 0.5)
+    with pytest.raises(ReasoningError, match="directed cycle"):
+        graph.add_edge("c", "a", 0.2)
+    with pytest.raises(ReasoningError, match="directed cycle"):
+        graph.add_edge("x", "x", 0.2)
+    with pytest.raises(ReasoningError, match="finite"):
+        graph.add_edge("c", "d", float("nan"))
+
+
+def test_causal_intervention_terminates_and_accumulates_dag_parents_once():
+    graph = CausalReasoningGraph()
+    graph.add_edge("cause", "left", 0.5)
+    graph.add_edge("cause", "right", 0.25)
+    graph.add_edge("left", "effect", 0.4)
+    graph.add_edge("right", "effect", 0.8)
+
+    states = graph.simulate_do_intervention("cause", 2.0)
+    assert states["cause"] == 2.0
+    assert states["left"] == 1.0
+    assert states["right"] == 0.5
+    assert states["effect"] == 0.8
+
+
+@pytest.mark.parametrize("expression", ["0.1 + 0.2", "True", "False", "1e100"])
+def test_exact_rational_parser_rejects_float_and_boolean_literals(expression):
+    with pytest.raises(ValueError):
+        ExactMathVerifier.parse_fraction(expression)
+
+
+def test_exact_rational_parser_enforces_expression_and_ast_complexity_limits():
+    with pytest.raises(ValueError, match="characters"):
+        ExactMathVerifier.parse_fraction("1" * 5000)
+    with pytest.raises(ValueError, match="AST nodes|nesting"):
+        ExactMathVerifier.parse_fraction("+".join(["1"] * 200))
+
+
+def test_dual_path_checker_never_assigns_high_confidence_from_matching_outputs():
+    agreed, confidence, note = IndependentAnswerChecker.verify_dual_path(
+        "independently derive a value", Fraction(1, 3), Fraction(1, 3)
+    )
+    assert agreed is True
+    assert confidence <= 0.50
+    assert "not proof of independent derivation" in note
+
+    with pytest.raises(ReasoningError, match="tolerance"):
+        IndependentAnswerChecker.verify_dual_path("test", 1, 1, tolerance=float("nan"))
+
+
+def test_reasoning_without_independent_verifier_is_not_consensus_certified():
+    engine = AdvancedReasoningEngine()
+    result = engine.solve_multi_step_problem(
+        problem="Show one arithmetic identity",
+        steps=[ReasoningStep(
+            step_number=1,
+            step_type=ReasoningStepType.MATHEMATICAL_VERIFICATION,
+            premise="1/3 + 1/6",
+            deduction="1/3 + 1/6 == 1/2",
+            intermediate_value=Fraction(1, 2),
+        )],
+    )
+    assert result["all_steps_valid"] is True
+    assert result["consensus_verified"] is False
+    assert result["calibrated_confidence"] == 0.50
+    assert "no independent verifier" in result["consensus_note"]
