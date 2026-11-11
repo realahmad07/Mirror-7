@@ -189,12 +189,27 @@ try:
         "__name__": "mirror_candidate",
         "_mc_step_tick": tick,
     }
-    exec(compiled, namespace)
-    entrypoint = namespace.get("run")
-    if not callable(entrypoint):
-        raise TypeError("candidate must expose callable run(inputs)")
-    actual = entrypoint(inputs)
-    encoded = json.dumps({"ok": True, "actual": actual}, allow_nan=False, sort_keys=True, separators=(",", ":"))
+    class OutputLimiter:
+        def __init__(self, maximum=8192):
+            self.maximum = maximum
+            self.written = 0
+        def write(self, value):
+            self.written += len(value.encode("utf-8", errors="replace"))
+            if self.written > self.maximum:
+                raise RuntimeError("CandidateOutputLimitExceeded")
+            return len(value)
+        def flush(self):
+            return None
+    with contextlib.redirect_stdout(OutputLimiter()):
+        exec(compiled, namespace)
+        entrypoint = namespace.get("run")
+        if not callable(entrypoint):
+            raise TypeError("candidate must expose callable run(inputs)")
+        actual = entrypoint(inputs)
+    actual_json = json.dumps(actual, allow_nan=False, sort_keys=True, separators=(",", ":"))
+    if len(actual_json.encode("utf-8")) > 16_384:
+        raise RuntimeError("CandidateResultSizeLimitExceeded")
+    encoded = json.dumps({"ok": True, "actual_json": actual_json}, allow_nan=False, sort_keys=True, separators=(",", ":"))
 except BaseException as exc:
     encoded = json.dumps({"ok": False, "error": type(exc).__name__ + ": " + str(exc)[:1000]})
 sys.stdout.write(encoded + "\n")
