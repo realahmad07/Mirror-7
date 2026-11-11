@@ -49,6 +49,8 @@ modules = {
     "copy": copy, "dataclasses": dataclasses,
 }
 allowed = set(modules)
+if stage19_mode:
+    allowed.difference_update({"typing", "dataclasses", "enum"})
 for checked_source in sources_to_check:
     for node in ast.walk(ast.parse(checked_source)):
         if isinstance(node, ast.Import):
