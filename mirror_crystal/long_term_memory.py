@@ -10,6 +10,8 @@ Provides:
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+import ast
+import json
 from datetime import datetime, timezone
 from enum import Enum
 import hashlib
@@ -18,6 +20,7 @@ import os
 from pathlib import Path
 import sqlite3
 import threading
+import uuid
 from typing import Any, Dict, List, Optional, Tuple
 
 from .production_readiness import StructuredLogger
@@ -64,14 +67,34 @@ class MemoryNode:
     sha256_hash: str = ""
 
     def __post_init__(self) -> None:
-        if not self.memory_id.strip():
+        if not isinstance(self.memory_id, str) or not self.memory_id.strip():
             raise MemoryError("memory_id must not be empty")
-        if not self.content.strip():
+        if not isinstance(self.content, str) or not self.content.strip():
             raise MemoryError("content must not be empty")
-        if not self.sha256_hash:
-            self.sha256_hash = _compute_sha256(self.content)
-        if not (0.0 <= self.importance_score <= 1.0):
+        if not isinstance(self.tier, MemoryTier):
+            raise MemoryError("tier must be a MemoryTier value")
+        if not math.isfinite(float(self.importance_score)) or not (0.0 <= self.importance_score <= 1.0):
             raise MemoryError("importance_score must be between 0.0 and 1.0")
+        if isinstance(self.access_count, bool) or not isinstance(self.access_count, int) or self.access_count < 0:
+            raise MemoryError("access_count must be a non-negative integer")
+        if not math.isfinite(float(self.half_life_seconds)) or self.half_life_seconds <= 0:
+            raise MemoryError("half_life_seconds must be a positive finite number")
+        if not isinstance(self.metadata, dict):
+            raise MemoryError("metadata must be a JSON object")
+        if not isinstance(self.feedback_history, list):
+            raise MemoryError("feedback_history must be a JSON array")
+        try:
+            json.dumps(self.metadata, allow_nan=False)
+            json.dumps(self.feedback_history, allow_nan=False)
+        except (TypeError, ValueError) as exc:
+            raise MemoryError(f"metadata and feedback_history must contain JSON-safe values: {exc}") from exc
+        expected_hash = _compute_sha256(self.content)
+        if not self.sha256_hash:
+            self.sha256_hash = expected_hash
+        elif not isinstance(self.sha256_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", self.sha256_hash):
+            raise MemoryError("sha256_hash must be a 64-character lowercase hex digest")
+        elif self.sha256_hash != expected_hash:
+            raise MemoryError("stored memory content SHA-256 hash mismatch")
 
     def to_dict(self) -> Dict[str, Any]:
         res = asdict(self)
@@ -196,6 +219,27 @@ class LongTermMemoryManager:
                 conn.execute("CREATE INDEX IF NOT EXISTS idx_mem_tier ON memories(tier)")
                 conn.execute("CREATE INDEX IF NOT EXISTS idx_mem_active ON memories(is_active)")
                 conn.execute("CREATE INDEX IF NOT EXISTS idx_mem_hash ON memories(sha256_hash)")
+                # Trusted rows may be read/touched, but content, lineage, and trust cannot be changed.
+                conn.execute("""
+                    CREATE TRIGGER IF NOT EXISTS protect_immutable_memory_update
+                    BEFORE UPDATE OF content, tier, importance_score, created_at,
+                        half_life_seconds, metadata, feedback_history, superseded_by,
+                        is_active, sha256_hash ON memories
+                    WHEN OLD.tier = 'immutable_trusted'
+                    BEGIN SELECT RAISE(ABORT, 'immutable trusted memory record'); END
+                """)
+                conn.execute("""
+                    CREATE TRIGGER IF NOT EXISTS protect_immutable_memory_delete
+                    BEFORE DELETE ON memories
+                    WHEN OLD.tier = 'immutable_trusted'
+                    BEGIN SELECT RAISE(ABORT, 'immutable trusted memory record'); END
+                """)
+                conn.execute("""
+                    CREATE TRIGGER IF NOT EXISTS prevent_mutable_to_trusted_promotion
+                    BEFORE UPDATE OF tier ON memories
+                    WHEN NEW.tier = 'immutable_trusted' AND OLD.tier <> 'immutable_trusted'
+                    BEGIN SELECT RAISE(ABORT, 'trusted tier requires a new canonical insert'); END
+                """)
                 conn.commit()
 
     def store_memory(
@@ -225,7 +269,7 @@ class LongTermMemoryManager:
         with self._lock:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute("""
-                    INSERT OR REPLACE INTO memories (
+                    INSERT INTO memories (
                         memory_id, content, tier, importance_score, access_count,
                         created_at, last_accessed_at, half_life_seconds, metadata,
                         feedback_history, superseded_by, is_active, sha256_hash
@@ -239,8 +283,8 @@ class LongTermMemoryManager:
                     node.created_at,
                     node.last_accessed_at,
                     node.half_life_seconds,
-                    str(node.metadata),
-                    str(node.feedback_history),
+                    json.dumps(node.metadata, sort_keys=True, separators=(",", ":"), allow_nan=False),
+                    json.dumps(node.feedback_history, sort_keys=True, separators=(",", ":"), allow_nan=False),
                     node.superseded_by,
                     1 if node.is_active else 0,
                     node.sha256_hash,
@@ -302,7 +346,7 @@ class LongTermMemoryManager:
                     )
 
                 # Create the corrected superseding memory
-                new_id = f"mem_corr_{_compute_sha256(correction_content)[:12]}"
+                new_id = f"mem_corr_{_compute_sha256(correction_content)[:12]}_{uuid.uuid4().hex[:8]}"
                 now = _iso_utc_now()
                 meta = dict(old_node.metadata)
                 meta["supersedes"] = old_node.memory_id
@@ -332,11 +376,11 @@ class LongTermMemoryManager:
                     UPDATE memories
                     SET superseded_by = ?, is_active = 0, feedback_history = ?
                     WHERE memory_id = ?
-                """, (new_id, str(new_history), old_node.memory_id))
+                """, (new_id, json.dumps(new_history, sort_keys=True, separators=(',', ':'), allow_nan=False), old_node.memory_id))
 
                 # Insert new memory
                 conn.execute("""
-                    INSERT OR REPLACE INTO memories (
+                    INSERT INTO memories (
                         memory_id, content, tier, importance_score, access_count,
                         created_at, last_accessed_at, half_life_seconds, metadata,
                         feedback_history, superseded_by, is_active, sha256_hash
@@ -350,8 +394,8 @@ class LongTermMemoryManager:
                     new_node.created_at,
                     new_node.last_accessed_at,
                     new_node.half_life_seconds,
-                    str(new_node.metadata),
-                    str(new_node.feedback_history),
+                    json.dumps(new_node.metadata, sort_keys=True, separators=(",", ":"), allow_nan=False),
+                    json.dumps(new_node.feedback_history, sort_keys=True, separators=(",", ":"), allow_nan=False),
                     None,
                     1,
                     new_node.sha256_hash,
@@ -443,7 +487,29 @@ class LongTermMemoryManager:
         results.sort(key=lambda x: x[1], reverse=True)
         return results[:limit]
 
+    @staticmethod
+    def _decode_persisted_json(raw_value: Any, expected_type: type, field_name: str) -> Any:
+        """Decode JSON storage; safely read old str(dict/list) rows with literal_eval."""
+        if not isinstance(raw_value, str) or len(raw_value) > 1_000_000:
+            raise MemoryError(f"Persisted {field_name} is missing or exceeds the 1 MB safety limit")
+        try:
+            value = json.loads(raw_value)
+        except (json.JSONDecodeError, RecursionError, MemoryError):
+            try:
+                value = ast.literal_eval(raw_value)
+            except (ValueError, SyntaxError, TypeError, MemoryError, RecursionError) as exc:
+                raise MemoryError(f"Persisted {field_name} is malformed") from exc
+        if not isinstance(value, expected_type):
+            raise MemoryError(f"Persisted {field_name} has an invalid data type")
+        try:
+            json.dumps(value, allow_nan=False)
+        except (TypeError, ValueError) as exc:
+            raise MemoryError(f"Persisted {field_name} contains non-JSON data") from exc
+        return value
+
     def _row_to_node(self, row: Tuple[Any, ...]) -> MemoryNode:
+        metadata = self._decode_persisted_json(row[8], dict, "metadata")
+        feedback_history = self._decode_persisted_json(row[9], list, "feedback_history")
         return MemoryNode(
             memory_id=row[0],
             content=row[1],
@@ -453,8 +519,8 @@ class LongTermMemoryManager:
             created_at=row[5],
             last_accessed_at=row[6],
             half_life_seconds=float(row[7]),
-            metadata=eval(row[8]) if isinstance(row[8], str) and row[8].startswith("{") else {},
-            feedback_history=eval(row[9]) if isinstance(row[9], str) and row[9].startswith("[") else [],
+            metadata=metadata,
+            feedback_history=feedback_history,
             superseded_by=row[10],
             is_active=bool(row[11]),
             sha256_hash=row[12],
