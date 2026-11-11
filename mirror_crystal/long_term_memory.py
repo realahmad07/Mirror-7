@@ -223,7 +223,7 @@ class LongTermMemoryManager:
                 # Trusted rows may be read/touched, but content, lineage, and trust cannot be changed.
                 conn.execute("""
                     CREATE TRIGGER IF NOT EXISTS protect_immutable_memory_update
-                    BEFORE UPDATE OF content, tier, importance_score, created_at,
+                    BEFORE UPDATE OF memory_id, content, tier, importance_score, created_at,
                         half_life_seconds, metadata, feedback_history, superseded_by,
                         is_active, sha256_hash ON memories
                     WHEN OLD.tier = 'immutable_trusted'
