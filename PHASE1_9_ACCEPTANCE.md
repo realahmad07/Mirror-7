@@ -1,7 +1,7 @@
 # Mirror 7 — Core Pipeline Acceptance and Strategic Roadmap Alignment
 
 **Core implementation layers:** PASS  
-**Original strategic roadmap:** Phases 1–5 PASS (bounded where stated), Phases 6–7 PARTIAL, Phases 8–9 NOT YET ACCEPTED.  
+**Original strategic roadmap:** Phases 1–5 PASS (bounded where stated), Phases 6–7 retain their documented bounded/partial status; new Phase 8 and Phase 9 implementations are in CI review and must not be treated as accepted until their focused and full repository workflows pass.  
 **Accepted code commit:** `906f912b44db5fede143d8df141fd7280a2762df`  
 **Documentation/status commit:** `06d199f9670cab95da35c3c7c4f3f814d8c2fdf0`  
 **Branch:** `main`  
@@ -11,7 +11,7 @@
 
 The nine concrete engineering layers of Mirror's shared knowledge-to-learning core passed a combined end-to-end acceptance test and the active CI suite. The test stores two knowledge-backed native procedures, interprets three distinct task instances, matches capabilities, composes a two-step typed plan, executes registered handlers, independently verifies every executed step with two verifier identities, and explicitly promotes the resulting reusable composite capability.
 
-These nine engineering layers divide the implementation into testable components. They do **not** replace or falsely mark complete all outcomes in the repository's original strategic nine-phase roadmap. The original Phase 8 cross-domain transfer and Phase 9 continuous open-world expansion remain unaccepted; original Phases 6 and 7 are only partial.
+These nine engineering layers divide the implementation into testable components. They do **not** replace or falsely mark complete all outcomes in the repository's original strategic nine-phase roadmap. Strategic Phase 8 cross-domain transfer and Phase 9 continuous expansion are now implemented as separate bounded additions, but their acceptance is pending the current PR's focused and full repository workflows. Original Phase 6 remains partial; Phase 7 remains limited to typed diagnosis and oracle-backed UOL repair.
 
 ## Nine engineering layers — all PASS
 
@@ -136,3 +136,30 @@ verification-contract gap; it does not prove that every domain has a functioning
 proof/simulation/experimental verification backend. Strategic Phase 6 therefore
 remains **PARTIAL** pending real domain adapters and frozen held-out/adversarial
 acceptance benchmarks.
+
+
+## Strategic Phase 8 — cross-domain transfer (new bounded gate; CI pending)
+
+Implementation and test coverage:
+- `mirror_crystal/phase8_cross_domain_acceptance.py`
+- `mirror_crystal/tests/test_phase8_cross_domain_acceptance.py`
+- [Phase 8 design and limitations](docs/31-strategic-phase8-cross-domain-transfer.md)
+
+A passing Phase 8 benchmark requires multiple target domains, exact source-program/handler binding, recursively consistent verified rule dependencies, fresh target train/held-out examples, non-leaking verification probes, execution-bound target evidence, and repeated learning from distinct tasks with multiple verifier identities. Source verification is not inherited by the target. Transferred candidates remain UNVERIFIED until target-specific verification succeeds.
+
+The benchmark manifest is a canonical SHA-256 digest. The focused tests include two-target success and negative controls for duplicate/source domains, missing evidence, counterfeit source binding, held-out mismatch and verifier-probe leakage. Full CI/Security Guard acceptance is pending on the current implementation PR.
+
+## Strategic Phase 9 — continuous expansion (new bounded gate; CI pending)
+
+Implementation and test coverage:
+- `mirror_crystal/phase9_continuous_expansion.py`
+- `mirror_crystal/tests/test_phase9_continuous_expansion.py`
+- [Phase 9 design and limitations](docs/32-strategic-phase9-continuous-open-world-expansion.md)
+
+A Phase 9 epoch accepts only a passing Phase 8 report, novel task IDs and previously unaccepted target capability IDs. It snapshots regression cases as canonical JSON, hashes the exact frozen inputs/expected outputs, and rejects any baseline regression or baseline-runner failure. Every accepted or rejected epoch is persisted in a sequenced SHA-256 hash chain. Explicit promotion requires an intact ledger record and exact proposal/program binding.
+
+Focused tests exercise success/promotion, regression rejection, reused task evidence, duplicate epochs, append-only SQL triggers, out-of-band ledger tampering, unavailable baseline execution, forged result rejection and regression-manifest changes. Full CI/Security Guard acceptance is pending.
+
+### Acceptance boundary
+
+These additions close a bounded cross-domain transfer and regression-gated capability-admission path. They do **not** establish unrestricted open-world knowledge discovery, automatic creation/authentication of ground truth, arbitrary semantic analogies, unattended autonomous improvement, broad scientific validation or AGI. Host-supplied target datasets, verifiers, verification identities and baseline runners remain explicit trust dependencies.
