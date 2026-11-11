@@ -92,7 +92,28 @@ class ContinuousExpansionEngine:
         if len(reviewers) < 2:
             raise ContinuousExpansionError("independent reviewer coverage is insufficient")
         by_id = {}
+        observed_tasks, observed_executions, observed_evidence = set(), set(), set()
         for cycle in items:
+            cycle_tasks, cycle_executions, cycle_evidence = set(), set(), set()
+            for proposal in cycle.benchmark.learned_proposals:
+                if len(proposal.observation_task_ids) < 3 or len(set(proposal.observation_task_ids)) != len(proposal.observation_task_ids):
+                    raise ContinuousExpansionError("each learned capability needs three distinct verified observation tasks")
+                if len(proposal.execution_fingerprints) < 3 or len(set(proposal.execution_fingerprints)) != len(proposal.execution_fingerprints):
+                    raise ContinuousExpansionError("each learned capability needs three distinct execution fingerprints")
+                if len(proposal.evidence_fingerprints) < 3 or len(set(proposal.evidence_fingerprints)) != len(proposal.evidence_fingerprints):
+                    raise ContinuousExpansionError("each learned capability needs three distinct evidence fingerprints")
+                cycle_tasks.update(proposal.observation_task_ids)
+                cycle_executions.update(proposal.execution_fingerprints)
+                cycle_evidence.update(proposal.evidence_fingerprints)
+            if cycle_tasks & observed_tasks:
+                raise ContinuousExpansionError("verified observation task IDs must be fresh across cycles")
+            if cycle_executions & observed_executions:
+                raise ContinuousExpansionError("verified execution fingerprints must be fresh across cycles")
+            if cycle_evidence & observed_evidence:
+                raise ContinuousExpansionError("verification evidence fingerprints must be fresh across cycles")
+            observed_tasks.update(cycle_tasks)
+            observed_executions.update(cycle_executions)
+            observed_evidence.update(cycle_evidence)
             for proposal in cycle.benchmark.learned_proposals:
                 if proposal.capability.domains[0] not in cycle.benchmark.target_domains:
                     raise ContinuousExpansionError("learned capability is outside benchmark target coverage")
