@@ -178,7 +178,7 @@ class FrozenRegressionSuite:
         regression_count = sum(item.kind is RegressionCaseKind.REGRESSION for item in cases)
         improvement_count = sum(item.kind is RegressionCaseKind.IMPROVEMENT for item in cases)
         if regression_count < 3 or improvement_count < 1:
-            raise SelfImprovementError("suite requires at least three regression cases and one improvement case")
+            raise SelfImprovementError("suite requires at least three regression cases and at least one of the required improvement cases")
         if len(_canonical([item.to_dict() for item in cases]).encode("utf-8")) > 512_000:
             raise SelfImprovementError("frozen regression suite exceeds 512 KB")
         object.__setattr__(self, "cases", cases)
