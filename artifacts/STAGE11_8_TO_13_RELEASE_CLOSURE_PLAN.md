@@ -14,7 +14,7 @@ Required gates:
 - Repeat on a clean environment with no developer-local state or undeclared secrets.
 - Any failure blocks promotion; fix the smallest evidenced defect and rerun the full affected regression.
 
-**Current evidence:** the review branch's latest CI run is being checked. The earlier run exposed a path-containment diagnostic compatibility failure; the message was corrected while retaining resolved-path containment. The current run must finish before this phase can pass.
+**Current evidence:** full fast CI and Security Guard both passed on commit `d7bbcb6c0b0bf1813ee48eec3b62aaae315b2653` (runs `42998750114` and `42998750127`). Fast CI completed compile, Crystal/evaluation, frozen benchmark manifest, backend, release-boundary, training, evaluator, smoke-dataset, and package-build steps. Subsequent exact-math boundary hardening and expanded tests were committed at `7a81c1dc25f512a7b9dc36106238c06ee53dd33c`; that newer head still requires its own CI run. Full historical regression and clean-environment end-to-end verification also remain open.
 
 ## 11.9 — Security closure
 
