@@ -72,8 +72,8 @@ The end-to-end test runs three distinct task instances through the full core pat
 | 5 | Composition engine | PASS (bounded integration example) |
 | 6 | Universal verification across execution, proof and simulation | PARTIAL — evidence-carrying domain verifier contract and five-domain policy tests added; actual independent proof/simulation/scientific verifier implementations remain host-provided. |
 | 7 | Failure diagnosis, targeted repair and self-improvement | PASS (bounded UOL repair; broad autonomous self-modification remains out of scope) |
-| 8 | Cross-domain transfer | NOT YET ACCEPTED |
-| 9 | Continuous open-world expansion | NOT YET ACCEPTED |
+| 8 | Cross-domain transfer | PASS (bounded multi-domain benchmark; see docs/31) |
+| 9 | Continuous open-world expansion | PARTIAL (three-cycle evidence admission gate; autonomous discovery/persistent ledger remain open; see docs/32) |
 
 The nine tested engineering layers subdivide implementation work. They do not mean the broader original Phase 6–9 outcomes have passed.
 
@@ -203,3 +203,18 @@ the existing Phase 4 domain verification and Phase 5 repeated-observation learni
 The engine does not automatically retry potentially side-effecting handlers or promote
 repairs. It does not repair arbitrary Python/native code or establish unrestricted
 self-modification. See [Phase 7 implementation and limits](docs/30-phase7-failure-diagnosis-and-targeted-repair.md).
+
+
+## Strategic Phase 8 — sealed cross-domain intelligence
+
+**Status: PASS within the tested bounded transfer scope.** The Phase 8 runner evaluates a frozen multi-domain manifest, requires positive and adversarial negative cases, checks target train/held-out separation through the existing transfer engine, and requires target-domain execution-bound evidence plus repeated multi-verifier learning before counting a positive case. Candidates remain proposals for explicit promotion.
+
+See [Phase 8 design and boundaries](docs/31-phase8-cross-domain-intelligence.md).
+
+## Strategic Phase 9 — continuous expansion
+
+**Status: PARTIAL — bounded multi-cycle admission gate implemented.** The Phase 9 engine requires three distinct passing Phase 8 benchmark fingerprints, a frozen common baseline, disjoint task and unseen-case identifiers, passed negative controls, at least two target domains, multiple reviewer identities, and learned target capabilities. It returns a deterministic proposal and never mutates registries.
+
+Autonomous open-world task generation, a persistent append-only expansion ledger, authenticated external reviewers, and automatic rollback remain unimplemented and are not claimed.
+
+See [Phase 9 design and boundaries](docs/32-phase9-continuous-expansion.md).
