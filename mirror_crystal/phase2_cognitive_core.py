@@ -1352,7 +1352,39 @@ class SandboxMCTSPlanner:
     ) -> list[tuple[str, str]]:
         """Compose retrieved helper functions into candidate solutions for `target_fn`."""
         candidates: list[tuple[str, str]] = []
+        preferred_candidates: list[tuple[str, str]] = []
         h_items = list(helpers.items())
+
+        def is_boolean_predicate(name: str, source: str) -> bool:
+            return (
+                name.lower().startswith(("is_", "has_", "can_", "check_", "valid_"))
+                or "-> bool" in source
+                or "->bool" in source
+            )
+
+        # Prioritize predicate(transform(x)) when helper contracts identify
+        # a boolean predicate and a separate unary value transformation.
+        # This tests the most semantically direct composition before low-value
+        # aliases and generic pairwise templates consume the bounded search budget.
+        if arity == 1 and len(h_items) >= 2:
+            for i, (predicate_name, (predicate_arity, predicate_source)) in enumerate(h_items):
+                if predicate_arity != 1 or not is_boolean_predicate(predicate_name, predicate_source):
+                    continue
+                for j, (transform_name, (transform_arity, transform_source)) in enumerate(h_items):
+                    if i == j or transform_arity != 1 or is_boolean_predicate(transform_name, transform_source):
+                        continue
+                    preamble = predicate_source + "\n\n" + transform_source
+                    candidate = (
+                        preamble
+                        + "\n\ndef " + target_fn + "(limit):\n"
+                        + "    return [x for x in range(2, limit + 1) "
+                        + "if " + predicate_name + "(x) and "
+                        + predicate_name + "(" + transform_name + "(x))]"
+                    )
+                    preferred_candidates.append((
+                        candidate,
+                        f"compose_predicate_transform:{predicate_name}+{transform_name}",
+                    ))
 
         # Direct single-helper alias / range-filter / sum-pipeline
         for h_name, (h_arity, h_src) in h_items:
@@ -1428,7 +1460,7 @@ class SandboxMCTSPlanner:
                             f"compose_filter_sum:{n1}->{n2}",
                         )
                     )
-        return candidates
+        return preferred_candidates + candidates
 
     def solve_and_verify(
         self,
@@ -1506,8 +1538,12 @@ class SandboxMCTSPlanner:
                         helpers[h_name] = (h_arity, h_src)
 
         # Step 2: Build initial Best-First / UCB1 search pool
-        seed_programs: list[tuple[str, str]] = list(raw_code_blocks)
-        seed_programs.extend(self._synthesize_helper_compositions(helpers, target_fn=target_fn, arity=arity))
+        # Evaluate composed solutions first; standalone helper definitions
+        # cannot satisfy a target that requires combining multiple capabilities.
+        seed_programs: list[tuple[str, str]] = self._synthesize_helper_compositions(
+            helpers, target_fn=target_fn, arity=arity
+        )
+        seed_programs.extend(raw_code_blocks)
 
         dedup_codes: set[str] = set()
         frontier: list[_MCTSCodeNode] = []
