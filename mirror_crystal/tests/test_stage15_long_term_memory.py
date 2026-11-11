@@ -380,3 +380,29 @@ def test_memory_loader_detects_content_hash_tampering(tmp_path: Path):
         conn.commit()
     with pytest.raises(MemoryError, match="SHA-256 hash mismatch"):
         mgr.get_memory("hash-check", touch=False)
+
+
+def test_sqlite_replace_cannot_overwrite_any_memory_id(tmp_path: Path):
+    import sqlite3
+
+    mgr = LongTermMemoryManager(db_path=tmp_path / "replace_guard.sqlite")
+    mgr.store_memory(
+        content="Preserve this memory identity",
+        tier=MemoryTier.IMMUTABLE_TRUSTED_VAULT,
+        importance_score=1.0,
+        memory_id="no-replace-id",
+    )
+    with sqlite3.connect(mgr.db_path) as conn:
+        row = list(conn.execute(
+            "SELECT memory_id, content, tier, importance_score, access_count, created_at, "
+            "last_accessed_at, half_life_seconds, metadata, feedback_history, superseded_by, "
+            "is_active, sha256_hash FROM memories WHERE memory_id = ?",
+            ("no-replace-id",),
+        ).fetchone())
+        row[1] = "attempted overwrite"
+        with pytest.raises(sqlite3.IntegrityError, match="cannot be replaced"):
+            conn.execute(
+                "INSERT OR REPLACE INTO memories VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                row,
+            )
+    assert mgr.get_memory("no-replace-id", touch=False).content == "Preserve this memory identity"
