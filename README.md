@@ -1271,6 +1271,17 @@ Phase 17 provides dependency planning and allow-listed tool dispatch with explic
 
 Detailed Stage 17 correction report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md](artifacts/STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md).
 
+## Strategic Phases 8–9 — Cross-Domain Transfer & Continuous Expansion
+
+These are the original strategic intelligence roadmap phases, distinct from the numbered product/research **Stages 18–21** below.
+
+- **Phase 8 — Cross-Domain Transfer:** evaluates independently learned UOL procedures across multiple target domains with disjoint target train/held-out examples, fresh target-verifier probes, execution-bound evidence and separate target learning. Transferred capabilities do not inherit source trust.
+- **Phase 9 — Continuous Expansion:** admits only passing Phase 8 proposals after frozen regression replay, rejects reused task evidence, records every accepted/rejected epoch in a hash-chained SQLite ledger, and requires explicit promotion.
+
+Implementation status and boundaries: [Strategic Phase 8](docs/31-strategic-phase8-cross-domain-transfer.md) · [Strategic Phase 9](docs/32-strategic-phase9-continuous-open-world-expansion.md) · [Current status](STATUS.md).
+
+**Scope boundary:** these are bounded engineering mechanisms over typed UOL programs and host-supplied examples/verifiers/baseline runners. They do not establish arbitrary semantic transfer, unattended open-world discovery, unrestricted self-modification or AGI. The feature branch's focused/full CI gates are the acceptance requirement before these phases are marked complete.
+
 ### Stages 18–21 Master Roadmap
 
 | Stage | Subsystem / Focus | Core Objectives & Invariants |
