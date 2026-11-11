@@ -108,7 +108,7 @@ safe_builtins = {
 _CANDIDATE_CHILD = r"""
 import ast, bisect, builtins, cmath, collections, copy, csv, dataclasses, decimal
 import enum, fractions, functools, heapq, itertools, json, math, operator, queue
-import random, re, statistics, string, sys, types
+import random, re, statistics, string, sys, types, contextlib
 try:
     data = json.loads(sys.stdin.read())
     candidate_source = data["candidate_source"]
@@ -262,7 +262,13 @@ try:
                             "error": str(data.get("error") or completed.stderr.strip() or "candidate child failed")[:1000],
                         })
                         continue
-                    actual_json = json.dumps(data["actual"], allow_nan=False, sort_keys=True, separators=(",", ":"))
+                    actual_json = data.get("actual_json")
+                    if not isinstance(actual_json, str):
+                        results.append({
+                            "case_id": case_id, "passed": False, "actual_json": "",
+                            "error": "candidate child returned no canonical JSON result",
+                        })
+                        continue
                     expected_json = json.dumps(case[expected_key], allow_nan=False, sort_keys=True, separators=(",", ":"))
                     results.append({
                         "case_id": case_id,
