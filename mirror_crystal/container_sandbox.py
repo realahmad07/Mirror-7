@@ -28,37 +28,6 @@ class ContainerExecutionResult:
 
 DEFAULT_IMAGE = "python:3.11-slim-bookworm@sha256:a83ba18aef0f865b1a4a611c2cf460fe446f2795673bbb9fe43be570439e3b39"
 
-_STAGE19_HARNESS = r'''
-import json
-
-results = []
-entrypoint = candidate_namespace.get("run")
-for case in regression_cases:
-    case_id = case["case_id"]
-    try:
-        if not callable(entrypoint):
-            raise TypeError("candidate must expose callable run(inputs)")
-        actual = entrypoint(case["inputs"])
-        actual_json = json.dumps(actual, allow_nan=False, sort_keys=True, separators=(",", ":"))
-        expected_json = json.dumps(case[expected_key], allow_nan=False, sort_keys=True, separators=(",", ":"))
-        results.append({
-            "case_id": case_id,
-            "passed": actual_json == expected_json,
-            "actual_json": actual_json[:2_000],
-            "error": "",
-        })
-    except Exception as exc:
-        results.append({
-            "case_id": case_id,
-            "passed": False,
-            "actual_json": "",
-            "error": str(exc)[:1_000],
-        })
-
-print("__MIRROR_STAGE19_RESULTS__" + json.dumps(
-    {"results": results}, allow_nan=False, sort_keys=True, separators=(",", ":")
-))
-'''
 
 
 def find_container_runtime() -> tuple[str, str] | None:
