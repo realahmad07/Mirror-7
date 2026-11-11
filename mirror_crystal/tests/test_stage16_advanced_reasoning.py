@@ -102,7 +102,7 @@ def test_hypothesis_generation_for_diagnostics():
 
 
 def test_dual_path_output_consistency_does_not_claim_independent_proof():
-    """Verify consensus certification when two orthogonal methods agree, and divergence flagging when they disagree."""
+    """Verify consensus certification when two supplied outputs agree, and divergence flagging when they disagree."""
     # 1. Numerical consensus
     agreed, conf, note = IndependentAnswerChecker.verify_dual_path(
         problem_description="Calculate area of circle with r=3",
