@@ -58,3 +58,58 @@ def test_matrix_multiplication_rejects_ragged_and_empty_matrices():
 def test_trace_requires_square_matrix():
     with pytest.raises(ValueError):
         ExactLinearAlgebraOracle.trace([[1, 2], [3, 4], [5, 6]])
+
+
+@pytest.mark.parametrize("bad", [0.5, True, -1])
+def test_polynomial_coefficients_reject_float_bool_and_negative_powers(bad):
+    from mirror_crystal.exact_math_oracles import ExactCalculusOracle
+
+    if bad == -1:
+        with pytest.raises(ValueError):
+            ExactCalculusOracle.evaluate_polynomial({-1: 2}, 3)
+    else:
+        with pytest.raises(TypeError):
+            ExactCalculusOracle.evaluate_polynomial({1: bad}, 3)
+
+
+def test_calculus_rejects_invalid_order_and_float_inputs():
+    from mirror_crystal.exact_math_oracles import ExactCalculusOracle
+
+    with pytest.raises(ValueError):
+        ExactCalculusOracle.differentiate_polynomial({1: 2}, -1)
+    with pytest.raises(TypeError):
+        ExactCalculusOracle.integrate_polynomial_definite({1: 2}, 0.1, 2)
+    with pytest.raises(TypeError):
+        ExactCalculusOracle.evaluate_polynomial({1: 2}, 0.25)
+
+
+def test_linear_system_rejects_float_and_boolean_matrix_entries():
+    from mirror_crystal.exact_math_oracles import ExactAlgebraOracle
+
+    matrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    with pytest.raises(TypeError):
+        ExactAlgebraOracle.solve_linear_system_3x3(
+            [[0.1, *matrix[0][1:]], *matrix[1:]], [1, 2, 3]
+        )
+    with pytest.raises(TypeError):
+        ExactAlgebraOracle.solve_linear_system_3x3(
+            [[True, 0, 0], *matrix[1:]], [1, 2, 3]
+        )
+
+
+@pytest.mark.parametrize("oracle_call", [
+    lambda: ExactLinearAlgebraOracle.matrix_mult([[1.0]], [[1]]),
+    lambda: ExactLinearAlgebraOracle.determinant_3x3([[1.0, 0, 0], [0, 1, 0], [0, 0, 1]]),
+    lambda: ExactLinearAlgebraOracle.matrix_inverse_2x2([[1, 0], [0, 0.5]]),
+    lambda: ExactLinearAlgebraOracle.trace([[True]]),
+])
+def test_linear_algebra_rejects_float_and_boolean_entries(oracle_call):
+    with pytest.raises(TypeError):
+        oracle_call()
+
+
+def test_exact_quadratic_rejects_boolean_coefficients():
+    from mirror_crystal.exact_math_oracles import ExactAlgebraOracle
+
+    with pytest.raises(TypeError):
+        ExactAlgebraOracle.solve_quadratic(True, 2, 1)
