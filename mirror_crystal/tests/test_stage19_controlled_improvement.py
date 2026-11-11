@@ -143,11 +143,21 @@ def test_stage19_proposal_is_immutable_and_bound_to_source_and_frozen_suite():
 
 
 def test_stage19_rejects_suite_without_minimum_regressions_and_improvement_case():
-    with pytest.raises(SelfImprovementError, match="three regression cases"):
+    with pytest.raises(SelfImprovementError, match="at least four typed cases"):
         FrozenRegressionSuite(
             "too-small", BASELINE_REVISION, ENVIRONMENT,
             (RegressionCase("one", {}, 1, 1), RegressionCase("two", {}, 2, 2),
              RegressionCase("three", {}, 3, 3)),
+        )
+    with pytest.raises(SelfImprovementError, match="three regression cases"):
+        FrozenRegressionSuite(
+            "too-few-regressions", BASELINE_REVISION, ENVIRONMENT,
+            (
+                RegressionCase("r1", {}, 1, 1),
+                RegressionCase("r2", {}, 2, 2),
+                RegressionCase("i1", {}, "old", "new", RegressionCaseKind.IMPROVEMENT),
+                RegressionCase("i2", {}, "old2", "new2", RegressionCaseKind.IMPROVEMENT),
+            ),
         )
     with pytest.raises(SelfImprovementError, match="improvement cases"):
         FrozenRegressionSuite(
@@ -317,3 +327,23 @@ def test_stage19_decisions_require_engine_recorded_evaluation_and_are_single_use
 def test_stage19_rejects_custom_executor_outside_explicit_test_mode():
     with pytest.raises(SelfImprovementError, match="test-only"):
         ControlledSelfImprovementEngine(FakeExecutor())
+
+
+def test_stage19_frozen_environment_must_match_real_resource_and_image_contract():
+    with pytest.raises(SelfImprovementError, match="environment fingerprint"):
+        FrozenRegressionSuite(
+            suite_id="wrong-environment",
+            baseline_revision=BASELINE_REVISION,
+            environment_sha256=digest("not-the-computed-environment"),
+            container_runtime=RUNTIME,
+            cases=suite().cases,
+        )
+    with pytest.raises(SelfImprovementError, match="immutable SHA-256"):
+        FrozenRegressionSuite(
+            suite_id="mutable-image",
+            baseline_revision=BASELINE_REVISION,
+            environment_sha256=ENVIRONMENT,
+            container_runtime=RUNTIME,
+            container_image="python:3.11-slim",
+            cases=suite().cases,
+        )
