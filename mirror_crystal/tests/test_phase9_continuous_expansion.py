@@ -315,3 +315,15 @@ def test_phase9_regression_manifest_changes_when_expected_values_change():
     )
     assert first.regression_manifest_sha256 != second.regression_manifest_sha256
     assert not second.accepted
+
+
+
+def test_phase9_rejects_phase8_report_that_did_not_require_multiple_domains():
+    result = ContinuousExpansionEngine(ExpansionLedger()).run_epoch(
+        "epoch-single-domain-phase8",
+        make_report(("mathematics",)),
+        regression_cases(),
+        baseline_runner,
+    )
+    assert not result.accepted
+    assert any("at least two target domains" in item for item in result.blockers)
