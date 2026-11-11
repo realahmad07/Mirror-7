@@ -57,6 +57,11 @@ class CrossDomainBenchmarkCase:
         return stable_representation_id("phase8-case-v1", {
             "id": self.case_id, "source": self.source.program.fingerprint,
             "capability": self.source.capability.fingerprint, "target": self.target_domain,
+            "language_rules": [rule.to_dict() for rule in self.language.rules.values()],
+            "language_limits": {
+                "max_steps": self.language.max_steps, "max_depth": self.language.max_depth,
+                "max_items": self.language.max_items, "max_magnitude": self.language.max_magnitude,
+            },
             "train": [{"inputs": dict(x.inputs), "expected": x.expected} for x in self.training],
             "heldout": [{"inputs": dict(x.inputs), "expected": x.expected} for x in self.validation],
             "postconditions": list(self.target_postconditions), "positive": self.expect_transfer,
