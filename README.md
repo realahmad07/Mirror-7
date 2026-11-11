@@ -1237,38 +1237,39 @@ Phase 14 organizes claims by evidence status and applies explicit abstention rul
 
 Detailed Stage 14 verification and limitations: [STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md](artifacts/STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md).
 
-### Phase 15 — Long-Term Memory & Learning (Complete)
+### Phase 15 — Long-Term Memory & Learning (Persistence Hardened; CI Pending)
 
-Phase 15 operationalizes cross-session stateful continuity and feedback learning:
-- **Multi-Tier Memory Architecture:** Segregates memories into `WORKING_EPISODIC` (turn-level plasticity), `CONSOLIDATED_SEMANTIC` (cross-session experiences), and `IMMUTABLE_TRUSTED_VAULT` (gold-standard axioms).
-- **Ebbinghaus Forgetting Dynamics:** Mathematical decay scheduling ($R = e^{-\Delta t / S}$) where memory stability scales with access frequency and intrinsic importance. Prunes low-retention items ($< 0.08$).
-- **Memory Correction & Lineage Auditing:** Tombstones superseded memories with forward pointers and complete feedback audit trails.
-- **Strict Trust Invariant Guard:** Cryptographically blocks any feedback or correction attempt directed at `IMMUTABLE_TRUSTED_VAULT` records, raising `MemoryProtectionError`.
+Phase 15 provides cross-session memory, consolidation, correction lineage, and trust-tier separation:
+- **Multi-Tier Memory Architecture:** Segregates `WORKING_EPISODIC`, `CONSOLIDATED_SEMANTIC`, and `IMMUTABLE_TRUSTED_VAULT` records.
+- **Forgetting & Consolidation:** Uses the configured Ebbinghaus-style retention function to schedule semantic promotion and pruning of eligible mutable memories.
+- **Safe Persistence:** Stores metadata/history as JSON; legacy rows are parsed with `ast.literal_eval` only; loaded content hashes are checked.
+- **Trusted-Record Guards:** Insert-only IDs, duplicate/replacement rejection, and SQLite triggers block trusted-row updates/deletes and mutable-to-trusted promotion. These are application/database safeguards, not cryptographic protection against a database owner who can rewrite the file or drop triggers.
 - **REST API Endpoints:** `/api/memory/search` and `/api/memory/feedback`.
 
-Detailed Stage 15 operational verification report: [STAGE15_LONG_TERM_MEMORY_REPORT.md](artifacts/STAGE15_LONG_TERM_MEMORY_REPORT.md).
+Detailed Stage 15 correction report: [STAGE15_LONG_TERM_MEMORY_REPORT.md](artifacts/STAGE15_LONG_TERM_MEMORY_REPORT.md).
 
-### Phase 16 — Advanced Reasoning (Complete)
+### Phase 16 — Advanced Reasoning (Reasoning Boundaries Hardened; CI Pending)
 
-Phase 16 establishes deterministic reasoning and multi-step process verification:
-- **Multi-Step Reasoning Trees:** Discrete `ReasoningStep` executions supervised by step-level invariant contracts.
-- **Exact Rational Mathematical Verification:** Python AST-based exact rational arithmetic (`fractions.Fraction`) evaluating multi-term rational equality and algebraic identities with 0% floating-point hallucination.
-- **Causal Graph Inference & Do-Calculus:** Directed causal graph analysis calculating cumulative path effects and simulating Judea Pearl's interventional $do(X = x)$ operator.
-- **Independent Dual-Path Consensus Certification:** Compares two orthogonal solution paths (forward derivation vs. secondary invariant oracle), certifying high consensus confidence ($0.98$) or alerting on divergence.
-- **REST API Endpoints:** `/api/reasoning/verify_math`.
+Phase 16 provides bounded rational arithmetic and DAG-based linear propagation helpers:
+- **Step Validation:** Discrete `ReasoningStep` executions use local mathematical verification contracts; non-mathematical natural-language steps are not formal proofs.
+- **Exact Rational Expressions:** AST arithmetic accepts integer literals and rational division, rejects floats/booleans, and bounds input length, node count, nesting, and rational magnitude.
+- **Causal DAG Propagation:** Rejects self-edges/cycles and applies one topological propagation pass. This is a deterministic linear structural helper, not a general implementation of Pearl's do-calculus or causal identification.
+- **Output Consistency Checks:** Compares supplied outputs but caps consistency confidence at 0.50; matching outputs do not prove independently derived answers. Without a supplied second verifier, consensus is not certified.
+- **REST API Endpoint:** `/api/reasoning/verify_math`.
 
-Detailed Stage 16 operational verification report: [STAGE16_ADVANCED_REASONING_REPORT.md](artifacts/STAGE16_ADVANCED_REASONING_REPORT.md).
+Detailed Stage 16 correction report: [STAGE16_ADVANCED_REASONING_REPORT.md](artifacts/STAGE16_ADVANCED_REASONING_REPORT.md).
 
-### Phase 17 — Planning & Tool Intelligence (Complete)
+### Phase 17 — Planning & Tool Intelligence (Execution Controls Hardened; CI Pending)
 
-Phase 17 implements autonomous, failure-resilient agentic workflow planning:
-- **Hierarchical Task Decomposition:** Decomposes complex goals into typed `TaskNode` workflows and verifies acyclicity via DFS cycle detection (`PlanningError` on circular dependencies).
-- **Sandboxed Tool Registry:** Allow-listed tool registry with strict schema enforcement and risk classification (`READ_ONLY`, `MUTATING_SAFE`, `MUTATING_PRIVILEGED`).
-- **Automated Failure Recovery & Tool Fallbacks:** Handles tool execution failures via exponential retry backoffs, dynamic routing to registered fallback tools, and clean downstream `SKIPPED` state propagation.
-- **Result Verification Contracts:** Enforces output sanity before marking steps completed, rejecting empty or error returns.
-- **REST API Endpoints:** `/api/planning/execute`.
+Phase 17 provides dependency planning and allow-listed tool dispatch with explicit execution boundaries:
+- **Hierarchical Task Decomposition:** Validates task dependency DAGs, duplicate task IDs, and dependency contracts.
+- **Tool Schemas & Risk Policy:** Validates a supported JSON Schema subset; safe mutations are disabled by default; privileged tools require an application authorization callback; fallbacks cannot increase risk level.
+- **Bounded Child-Process Execution:** Callable handlers run in a killable child process with deadlines, bounded JSON input/output, and POSIX resource limits where supported.
+- **Container Execution for Untrusted Code:** Explicit Docker/Podman mode uses the existing no-network, read-only-root, non-root, dropped-capability, resource-limited container runner.
+- **Important Boundary:** Process mode does not remove host filesystem, environment, or network access; it is for trusted allow-listed handlers, not arbitrary untrusted code. The HTTP planning endpoint exposes only the built-in read-only echo tool.
+- **REST API Endpoint:** `/api/planning/execute`.
 
-Detailed Stage 17 operational verification report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md](artifacts/STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md).
+Detailed Stage 17 correction report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md](artifacts/STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md).
 
 ### Stages 18–21 Master Roadmap
 
