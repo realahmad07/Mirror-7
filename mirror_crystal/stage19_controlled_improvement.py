@@ -186,6 +186,43 @@ class ImprovementProposal:
     candidate_artifact_sha256: str
     regression_suite_fingerprint: str
 
+    def __post_init__(self) -> None:
+        _require_sha256(self.proposal_id, "proposal_id")
+        object.__setattr__(self, "title", _required_text(self.title, "title", 256))
+        object.__setattr__(self, "rationale", _required_text(self.rationale, "rationale", 4_000))
+        object.__setattr__(self, "created_by", _required_text(self.created_by, "created_by", 128))
+        object.__setattr__(self, "change_kind", ChangeKind(self.change_kind))
+        if not isinstance(self.artifact_path, str) or not self.artifact_path or self.artifact_path.startswith("/"):
+            raise SelfImprovementError("artifact_path must be a normalized relative path")
+        if any(part in {"", ".", ".."} for part in self.artifact_path.split("/")) or re.match(r"^[A-Za-z]:", self.artifact_path):
+            raise SelfImprovementError("artifact_path must not contain traversal or drive prefixes")
+        if not isinstance(self.baseline_revision, str) or not _REVISION.fullmatch(self.baseline_revision):
+            raise SelfImprovementError("baseline_revision must be a 40- or 64-character lowercase Git revision")
+        if not isinstance(self.baseline_source, str) or not self.baseline_source.strip():
+            raise SelfImprovementError("baseline_source must be non-empty source code")
+        if not isinstance(self.candidate_source, str) or not self.candidate_source.strip():
+            raise SelfImprovementError("candidate_source must be non-empty source code")
+        if len(self.baseline_source.encode("utf-8")) > 512_000 or len(self.candidate_source.encode("utf-8")) > 512_000:
+            raise SelfImprovementError("baseline and candidate source are each limited to 512 KB")
+        if self.baseline_artifact_sha256 != _digest_text(self.baseline_source):
+            raise SelfImprovementError("baseline artifact digest does not match its source")
+        if self.candidate_artifact_sha256 != _digest_text(self.candidate_source):
+            raise SelfImprovementError("candidate artifact digest does not match its source")
+        _require_sha256(self.regression_suite_fingerprint, "regression_suite_fingerprint")
+        expected_id = _digest_text(_canonical({
+            "title": self.title,
+            "rationale": self.rationale,
+            "artifact_path": self.artifact_path,
+            "change_kind": self.change_kind.value,
+            "created_by": self.created_by,
+            "baseline_revision": self.baseline_revision,
+            "baseline_artifact_sha256": self.baseline_artifact_sha256,
+            "candidate_artifact_sha256": self.candidate_artifact_sha256,
+            "regression_suite_fingerprint": self.regression_suite_fingerprint,
+        }))
+        if expected_id != self.proposal_id:
+            raise SelfImprovementError("proposal ID does not fingerprint the exact proposal contents")
+
     @classmethod
     def create(
         cls,
@@ -427,6 +464,12 @@ class ControlledSelfImprovementEngine:
 
     def __init__(self, executor: ContainerRegressionExecutor | Any | None = None) -> None:
         self.executor = executor or ContainerRegressionExecutor()
+        self._verified_evaluations: dict[str, SelfImprovementEvaluation] = {}
+        self._decisions_by_evaluation: dict[str, HumanApprovalRecord] = {}
+
+    def _remember(self, evaluation: SelfImprovementEvaluation) -> SelfImprovementEvaluation:
+        self._verified_evaluations[evaluation.evaluation_id] = evaluation
+        return evaluation
 
     @staticmethod
     def _validate_evidence(
@@ -461,13 +504,13 @@ class ControlledSelfImprovementEngine:
             raise TypeError("proposal and suite have invalid types")
         started = datetime.now(timezone.utc).isoformat()
         if proposal.regression_suite_fingerprint != suite.fingerprint:
-            return self._rejected(proposal, None, None, (), "proposal is not bound to this frozen regression suite", started)
+            return self._remember(self._rejected(proposal, None, None, (), "proposal is not bound to this frozen regression suite", started))
         if proposal.baseline_revision != suite.baseline_revision:
-            return self._rejected(proposal, None, None, (), "proposal baseline revision drifted from the frozen suite", started)
+            return self._remember(self._rejected(proposal, None, None, (), "proposal baseline revision drifted from the frozen suite", started))
         if proposal.baseline_artifact_sha256 != _digest_text(proposal.baseline_source):
-            return self._rejected(proposal, None, None, (), "baseline source digest mismatch", started)
+            return self._remember(self._rejected(proposal, None, None, (), "baseline source digest mismatch", started))
         if proposal.candidate_artifact_sha256 != _digest_text(proposal.candidate_source):
-            return self._rejected(proposal, None, None, (), "candidate source digest mismatch", started)
+            return self._remember(self._rejected(proposal, None, None, (), "candidate source digest mismatch", started))
 
         baseline_evidence = None
         candidate_evidence = None
@@ -480,11 +523,11 @@ class ControlledSelfImprovementEngine:
                 suite=suite, expected_key="baseline_expected",
             )
             if baseline_failures or not baseline_evidence.passed:
-                return self._rejected(
+                return self._remember(self._rejected(
                     proposal, baseline_evidence, None, baseline_failures,
                     "frozen baseline did not pass every regression and improvement control; candidate comparison is invalid",
                     started,
-                )
+                ))
             candidate_evidence = self.executor.execute(
                 proposal.candidate_source, suite, expected_key="candidate_expected",
             )
@@ -493,11 +536,11 @@ class ControlledSelfImprovementEngine:
                 suite=suite, expected_key="candidate_expected",
             )
             if failed or not candidate_evidence.passed:
-                return self._rejected(
+                return self._remember(self._rejected(
                     proposal, baseline_evidence, candidate_evidence, failed,
                     "candidate failed one or more frozen regression/improvement cases; deployment is blocked",
                     started,
-                )
+                ))
             if baseline_evidence.runtime != candidate_evidence.runtime:
                 raise SelfImprovementError("baseline and candidate were not run with the same container runtime")
             status = EvaluationStatus.READY_FOR_HUMAN_REVIEW
@@ -513,21 +556,22 @@ class ControlledSelfImprovementEngine:
                 "candidate": candidate_evidence.result_fingerprint,
                 "suite": suite.fingerprint,
                 "environment": suite.environment_sha256,
+                "evaluated_at": started,
             }
             evaluation_id = _digest_text(_canonical(payload))
-            return SelfImprovementEvaluation(
+            return self._remember(SelfImprovementEvaluation(
                 evaluation_id, proposal.proposal_id, status, baseline_evidence,
                 candidate_evidence,
                 tuple(x.case_id for x in suite.cases if x.kind is RegressionCaseKind.REGRESSION),
                 tuple(x.case_id for x in suite.cases if x.kind is RegressionCaseKind.IMPROVEMENT),
                 (), explanation, started,
-            )
+            ))
         except Exception as exc:
-            return self._rejected(
+            return self._remember(self._rejected(
                 proposal, baseline_evidence, candidate_evidence, (),
                 f"fail-closed evaluation error: {type(exc).__name__}: {str(exc)[:500]}",
                 started,
-            )
+            ))
 
     @staticmethod
     def _rejected(
@@ -545,6 +589,7 @@ class ControlledSelfImprovementEngine:
             "candidate": candidate.result_fingerprint if candidate else None,
             "failed": list(failed),
             "explanation": explanation,
+            "evaluated_at": started,
         }
         return SelfImprovementEvaluation(
             _digest_text(_canonical(payload)), proposal.proposal_id,
@@ -569,6 +614,11 @@ class ControlledSelfImprovementEngine:
             raise SelfImprovementError("approved must be boolean")
         if evaluation.proposal_id != proposal.proposal_id:
             raise SelfImprovementError("evaluation does not belong to this proposal")
+        registered = self._verified_evaluations.get(evaluation.evaluation_id)
+        if registered is None or registered != evaluation:
+            raise SelfImprovementError("evaluation is not a verified result recorded by this engine instance")
+        if evaluation.evaluation_id in self._decisions_by_evaluation:
+            raise SelfImprovementError("a human decision has already been recorded for this evaluation")
         if reviewer == proposal.created_by:
             raise SelfImprovementError("proposal authors cannot approve their own changes")
         if approved and evaluation.status is not EvaluationStatus.READY_FOR_HUMAN_REVIEW:
@@ -577,7 +627,8 @@ class ControlledSelfImprovementEngine:
         created_at = datetime.now(timezone.utc).isoformat()
         authorization = None
         if approved:
-            assert evaluation.candidate_evidence is not None
+            if evaluation.candidate_evidence is None:
+                raise SelfImprovementError("passing evaluation lacks candidate execution evidence")
             authorization = PromotionAuthorization(
                 proposal_id=proposal.proposal_id,
                 evaluation_id=evaluation.evaluation_id,
@@ -596,7 +647,7 @@ class ControlledSelfImprovementEngine:
             "approved_at": created_at,
             "authorization": authorization.fingerprint if authorization else None,
         }
-        return HumanApprovalRecord(
+        record = HumanApprovalRecord(
             approval_id=_digest_text(_canonical(payload)),
             proposal_id=proposal.proposal_id,
             evaluation_id=evaluation.evaluation_id,
@@ -606,6 +657,8 @@ class ControlledSelfImprovementEngine:
             approved_at=created_at,
             authorization=authorization,
         )
+        self._decisions_by_evaluation[evaluation.evaluation_id] = record
+        return record
 
 
 @dataclass(frozen=True)
@@ -643,6 +696,7 @@ class PromotionAuthorization:
             isinstance(proposal, ImprovementProposal)
             and isinstance(evaluation, SelfImprovementEvaluation)
             and evaluation.status is EvaluationStatus.READY_FOR_HUMAN_REVIEW
+            and evaluation.candidate_evidence is not None
             and self.proposal_id == proposal.proposal_id == evaluation.proposal_id
             and self.evaluation_id == evaluation.evaluation_id
             and self.candidate_artifact_sha256 == proposal.candidate_artifact_sha256
