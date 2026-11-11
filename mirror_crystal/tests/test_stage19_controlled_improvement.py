@@ -172,7 +172,7 @@ def test_stage19_regression_suite_and_nested_inputs_are_immutable():
 
 def test_stage19_evaluation_runs_baseline_and_candidate_and_requires_human_review():
     executor = FakeExecutor()
-    engine = ControlledSelfImprovementEngine(executor)
+    engine = ControlledSelfImprovementEngine(executor, allow_test_executor=True)
     current_suite = suite()
     item = proposal(current_suite)
 
@@ -192,7 +192,7 @@ def test_stage19_evaluation_runs_baseline_and_candidate_and_requires_human_revie
 def test_stage19_candidate_regression_is_rejected_and_cannot_be_approved():
     current_suite = suite()
     item = proposal(current_suite)
-    engine = ControlledSelfImprovementEngine(FakeExecutor(fail_source=CANDIDATE_SOURCE))
+    engine = ControlledSelfImprovementEngine(FakeExecutor(fail_source=CANDIDATE_SOURCE), allow_test_executor=True)
 
     result = engine.evaluate(item, current_suite)
 
@@ -206,7 +206,7 @@ def test_stage19_candidate_regression_is_rejected_and_cannot_be_approved():
 
 def test_stage19_baseline_failure_blocks_candidate_execution():
     current_suite = suite()
-    engine = ControlledSelfImprovementEngine(FakeExecutor(fail_source=BASELINE_SOURCE))
+    engine = ControlledSelfImprovementEngine(FakeExecutor(fail_source=BASELINE_SOURCE), allow_test_executor=True)
     result = engine.evaluate(proposal(current_suite), current_suite)
 
     assert result.status is EvaluationStatus.REJECTED
@@ -216,7 +216,7 @@ def test_stage19_baseline_failure_blocks_candidate_execution():
 
 def test_stage19_fails_closed_on_misbound_executor_evidence():
     current_suite = suite()
-    engine = ControlledSelfImprovementEngine(FakeExecutor(wrong_binding=True))
+    engine = ControlledSelfImprovementEngine(FakeExecutor(wrong_binding=True), allow_test_executor=True)
     result = engine.evaluate(proposal(current_suite), current_suite)
 
     assert result.status is EvaluationStatus.REJECTED
@@ -244,7 +244,7 @@ def test_stage19_proposal_rejects_baseline_drift_and_path_traversal():
 def test_stage19_requires_independent_human_approval_and_binds_exact_candidate():
     current_suite = suite()
     item = proposal(current_suite)
-    engine = ControlledSelfImprovementEngine(FakeExecutor())
+    engine = ControlledSelfImprovementEngine(FakeExecutor(), allow_test_executor=True)
     evaluation = engine.evaluate(item, current_suite)
     with pytest.raises(SelfImprovementError, match="cannot approve their own"):
         engine.record_human_decision(
@@ -265,7 +265,7 @@ def test_stage19_requires_independent_human_approval_and_binds_exact_candidate()
 def test_stage19_human_rejection_never_returns_promotion_authorization():
     current_suite = suite()
     item = proposal(current_suite)
-    engine = ControlledSelfImprovementEngine(FakeExecutor())
+    engine = ControlledSelfImprovementEngine(FakeExecutor(), allow_test_executor=True)
     evaluation = engine.evaluate(item, current_suite)
     record = engine.record_human_decision(
         item, evaluation, reviewer_id="reviewer-c", approved=False,
@@ -296,9 +296,9 @@ def test_stage19_real_container_evaluates_baseline_and_candidate_in_separate_run
 def test_stage19_decisions_require_engine_recorded_evaluation_and_are_single_use():
     current_suite = suite()
     item = proposal(current_suite)
-    first_engine = ControlledSelfImprovementEngine(FakeExecutor())
+    first_engine = ControlledSelfImprovementEngine(FakeExecutor(), allow_test_executor=True)
     evaluation = first_engine.evaluate(item, current_suite)
-    second_engine = ControlledSelfImprovementEngine(FakeExecutor())
+    second_engine = ControlledSelfImprovementEngine(FakeExecutor(), allow_test_executor=True)
 
     with pytest.raises(SelfImprovementError, match="not a verified result"):
         second_engine.record_human_decision(
@@ -312,3 +312,8 @@ def test_stage19_decisions_require_engine_recorded_evaluation_and_are_single_use
         first_engine.record_human_decision(
             item, evaluation, reviewer_id="reviewer-e", approved=True, reason="attempted second approval",
         )
+
+
+def test_stage19_rejects_custom_executor_outside_explicit_test_mode():
+    with pytest.raises(SelfImprovementError, match="test-only"):
+        ControlledSelfImprovementEngine(FakeExecutor())
