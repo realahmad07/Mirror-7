@@ -43,8 +43,8 @@ class ApprovalDecision(str, Enum):
     REJECTED = "rejected"
 
 
-_SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
-_REVISION = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+_REVISION = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 
 
 def _digest_text(value: str) -> str:
@@ -204,7 +204,7 @@ class ImprovementProposal:
             raise TypeError("suite must be FrozenRegressionSuite")
         title = _required_text(title, "title", 256)
         rationale = _required_text(rationale, "rationale", 4_000)
-        artifact_path = _required_text(artifact_path, "artifact_path", 512).replace("\\\\", "/")
+        artifact_path = _required_text(artifact_path, "artifact_path", 512).replace("\\", "/")
         if artifact_path.startswith("/") or re.match(r"^[A-Za-z]:", artifact_path) or any(
             part in {"", ".", ".."} for part in artifact_path.split("/")
         ):
