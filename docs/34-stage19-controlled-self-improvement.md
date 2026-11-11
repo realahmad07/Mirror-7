@@ -34,7 +34,7 @@ The environment fingerprint is computed from the selected Docker/Podman runtime,
 1. Validate proposal ID, baseline/candidate source digests, artifact path, Git revision and suite fingerprint.
 2. Run the baseline artifact in a new container against the baseline expected outputs.
 3. Stop if any baseline case fails; comparison against a broken baseline is invalid.
-4. Run the candidate artifact in a second new container against candidate expected outputs. A trusted supervisor remains in the container's PID 1 process; it starts a separate short-lived Python child for each candidate case. Each child has its own restricted namespace and cloned import-module map. Candidate stdout is never treated as the supervisor's result manifest.
+4. Run the candidate artifact in a second new container against candidate expected outputs. A trusted supervisor remains in the container's PID 1 process; it starts a separate short-lived Python child for each candidate case. Each child has its own restricted namespace and cloned import-module map. Candidate stdout is discarded behind an 8 KiB output limiter, and a single case result is limited to 16 KiB of canonical JSON. Candidate stdout is never treated as the supervisor's result manifest.
 5. Require every frozen case to pass. A failure, missing case, duplicate case, non-zero exit, wrong PID namespace, runtime mismatch, malformed supervisor result or missing container runtime rejects the candidate.
 6. Produce a deterministic evaluation record. A passing candidate is marked `READY_FOR_HUMAN_REVIEW`, never deployed automatically.
 7. Require an explicit independent reviewer decision. The proposal author cannot approve their own change. The engine accepts only evaluation objects it recorded in that same engine instance and permits one decision per evaluation.
@@ -52,7 +52,7 @@ python -m pytest -q mirror_crystal/tests/test_container_sandbox.py
 python -m pytest -q mirror_crystal mirror_eval
 ```
 
-The Stage 19 tests cover immutable proposals/suites, minimum test composition, dual baseline/candidate comparisons, baseline failure, candidate regression, wrong artifact/suite/environment evidence, self-approval, cross-engine forged evaluation, approval replay, explicit rejection, real container execution, candidate attempts to mutate JSON machinery, and result-manifest spoofing.
+The Stage 19 tests cover immutable proposals/suites, minimum test composition, dual baseline/candidate comparisons, baseline failure, candidate regression, wrong artifact/suite/environment evidence, self-approval, cross-engine forged evaluation, approval replay, explicit rejection, real container execution, candidate attempts to mutate JSON machinery, output-limit violations, and result-manifest spoofing. Stage 19's stricter AST rules are scoped to this candidate runner; the legacy Stage 17 process-sandbox policy remains unchanged.
 
 ## Explicit limitations
 
