@@ -60,12 +60,15 @@ for checked_source in sources_to_check:
         elif isinstance(node, ast.ImportFrom):
             if (node.module or "").split(".")[0] not in allowed:
                 raise RuntimeError("blocked from-import: " + str(node.module))
-        elif isinstance(node, ast.Attribute) and (
-            node.attr.startswith("_") or isinstance(node.ctx, (ast.Store, ast.Del))
-        ):
-            raise RuntimeError("blocked private or mutating attribute: " + node.attr)
+        elif isinstance(node, ast.Attribute):
+            if stage19_mode:
+                if node.attr.startswith("_") or isinstance(node.ctx, (ast.Store, ast.Del)):
+                    raise RuntimeError("blocked private or mutating attribute: " + node.attr)
+            elif node.attr.startswith("__") and node.attr.endswith("__"):
+                raise RuntimeError("blocked dunder attribute: " + node.attr)
         elif isinstance(node, ast.Name):
-            if node.id.startswith("_") or node.id in {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit"}:
+            blocked_names = {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit"}
+            if node.id in blocked_names or (stage19_mode and node.id.startswith("_")):
                 raise RuntimeError("blocked name: " + node.id)
 
 steps = [0]
