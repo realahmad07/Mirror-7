@@ -72,8 +72,8 @@ The end-to-end test runs three distinct task instances through the full core pat
 | 5 | Composition engine | PASS (bounded integration example) |
 | 6 | Universal verification across execution, proof and simulation | PARTIAL — evidence-carrying domain verifier contract and five-domain policy tests added; actual independent proof/simulation/scientific verifier implementations remain host-provided. |
 | 7 | Failure diagnosis, targeted repair and self-improvement | PASS (bounded UOL repair; broad autonomous self-modification remains out of scope) |
-| 8 | Cross-domain transfer | NOT YET ACCEPTED |
-| 9 | Continuous open-world expansion | NOT YET ACCEPTED |
+| 8 | Cross-domain transfer | IMPLEMENTED — bounded multi-target transfer gate added; full CI acceptance pending. |
+| 9 | Continuous open-world expansion | IMPLEMENTED — bounded regression-gated expansion epochs added; full CI acceptance pending. |
 
 The nine tested engineering layers subdivide implementation work. They do not mean the broader original Phase 6–9 outcomes have passed.
 
@@ -203,3 +203,45 @@ the existing Phase 4 domain verification and Phase 5 repeated-observation learni
 The engine does not automatically retry potentially side-effecting handlers or promote
 repairs. It does not repair arbitrary Python/native code or establish unrestricted
 self-modification. See [Phase 7 implementation and limits](docs/30-phase7-failure-diagnosis-and-targeted-repair.md).
+
+
+## Strategic Phase 8 — cross-domain transfer (bounded acceptance)
+
+Implementation: `mirror_crystal/phase8_cross_domain_acceptance.py`; tests:
+`mirror_crystal/tests/test_phase8_cross_domain_acceptance.py`; design:
+[Phase 8 report](docs/31-strategic-phase8-cross-domain-transfer.md).
+
+The new benchmark wrapper evaluates one independently reproduced source UOL
+capability against multiple distinct target domains. It binds the source
+handler/program and recursive verified rule catalog, requires fresh disjoint
+target train/held-out data, requires new verifier probes that do not overlap
+those data or one another, and uses the existing target-domain verifier and
+repeated-learning gates. A transfer candidate remains UNVERIFIED; a separately
+learned target capability is only proposed, never automatically registered.
+
+**Acceptance status: implementation and focused tests added; full CI and security
+workflows pending.** This demonstrates bounded typed-procedure transfer on the
+declared benchmark domains, not arbitrary semantic transfer. Host-supplied
+target examples, verifier callbacks and verifier identity configuration remain
+trust responsibilities.
+
+## Strategic Phase 9 — continuous, regression-gated expansion (bounded)
+
+Implementation: `mirror_crystal/phase9_continuous_expansion.py`; tests:
+`mirror_crystal/tests/test_phase9_continuous_expansion.py`; design:
+[Phase 9 report](docs/32-strategic-phase9-continuous-open-world-expansion.md).
+
+The new engine consumes a passing Phase 8 report, rejects reused task evidence
+and previously accepted capability identifiers, snapshots and SHA-256 hashes a
+frozen regression manifest, tests every declared baseline behavior, and appends
+accepted or rejected decisions to an append-only SQLite hash chain. Promotion
+requires an intact ledger and an exact matching accepted record; proposals are
+not registered automatically.
+
+**Acceptance status: implementation and focused tests added; full CI and security
+workflows pending.** This is a repeatable bounded expansion mechanism, not
+unattended open-world discovery or unrestricted self-modification. New candidate
+generation, target oracles/examples, verifier callbacks and baseline runners
+remain host/operator responsibilities. The ledger's SQLite triggers are
+application-level append-only controls; they are not a defense against an
+attacker with direct control of the database file and trigger definitions.
