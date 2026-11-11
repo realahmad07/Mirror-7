@@ -14,6 +14,61 @@ import math
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 
+def _exact_fraction(value: int | Fraction, name: str) -> Fraction:
+    """Accept integers/rationals only; reject bool and float coercion."""
+    if isinstance(value, bool) or isinstance(value, float) or not isinstance(value, (int, Fraction)):
+        raise TypeError(f"{name} must be an int or Fraction; floats are not exact inputs")
+    return Fraction(value)
+
+
+def _integer(value: int, name: str, minimum: int = 0) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise TypeError(f"{name} must be an integer")
+    if value < minimum:
+        raise ValueError(f"{name} must be >= {minimum}")
+    return value
+
+
+def _probability(value: int | Fraction, name: str) -> Fraction:
+    result = _exact_fraction(value, name)
+    if result < 0 or result > 1:
+        raise ValueError(f"{name} must be between 0 and 1 inclusive")
+    return result
+
+
+def _polynomial(coefficients: Dict[int, int | Fraction], name: str = "coefficients") -> Dict[int, Fraction]:
+    if not isinstance(coefficients, dict):
+        raise TypeError(f"{name} must be a mapping of non-negative integer powers to exact coefficients")
+    result: Dict[int, Fraction] = {}
+    for power, coefficient in coefficients.items():
+        _integer(power, f"{name} power")
+        result[power] = _exact_fraction(coefficient, f"{name}[{power}]")
+    return result
+
+
+def _matrix(matrix: List[List[int | Fraction]], name: str, rows: Optional[int] = None,
+            cols: Optional[int] = None) -> List[List[Fraction]]:
+    if not isinstance(matrix, (list, tuple)) or not matrix:
+        raise ValueError(f"{name} must be a non-empty matrix")
+    if not all(isinstance(row, (list, tuple)) for row in matrix):
+        raise TypeError(f"{name} rows must be sequences")
+    width = len(matrix[0])
+    if width == 0 or any(len(row) != width for row in matrix):
+        raise ValueError(f"{name} must be rectangular and non-empty")
+    if rows is not None and len(matrix) != rows:
+        raise ValueError(f"{name} must have {rows} rows")
+    if cols is not None and width != cols:
+        raise ValueError(f"{name} must have {cols} columns")
+    return [[_exact_fraction(cell, f"{name}[{i}][{j}]") for j, cell in enumerate(row)]
+            for i, row in enumerate(matrix)]
+
+
+def _vector(vector: List[int | Fraction], name: str, length: int) -> List[Fraction]:
+    if not isinstance(vector, (list, tuple)) or len(vector) != length:
+        raise ValueError(f"{name} must contain exactly {length} values")
+    return [_exact_fraction(value, f"{name}[{i}]") for i, value in enumerate(vector)]
+
+
 # ============================================================================
 # 1. Exact Algebra Oracle
 # ============================================================================
@@ -24,9 +79,9 @@ class ExactAlgebraOracle:
     @classmethod
     def solve_quadratic(cls, a: int | Fraction, b: int | Fraction, c: int | Fraction) -> Dict[str, Any]:
         """Solves ax^2 + bx + c = 0 exactly over rationals or exact radical strings."""
-        a = Fraction(a)
-        b = Fraction(b)
-        c = Fraction(c)
+        a = _exact_fraction(a, "a")
+        b = _exact_fraction(b, "b")
+        c = _exact_fraction(c, "c")
         if a == 0:
             if b == 0:
                 return {"solvable": False, "roots": [], "nature": "degenerate"}
@@ -76,11 +131,11 @@ class ExactAlgebraOracle:
         vector_b: List[int | Fraction],
     ) -> Optional[List[Fraction]]:
         """Solves Ax = b for a 3x3 system via exact rational Gauss-Jordan elimination."""
-        if len(matrix_a) != 3 or any(len(row) != 3 for row in matrix_a) or len(vector_b) != 3:
-            raise ValueError("Expected 3x3 matrix and 3-element vector")
+        matrix_a = _matrix(matrix_a, "matrix_a", rows=3, cols=3)
+        vector_b = _vector(vector_b, "vector_b", 3)
 
         # Augmented matrix [A | b]
-        aug = [[Fraction(matrix_a[i][j]) for j in range(3)] + [Fraction(vector_b[i])] for i in range(3)]
+        aug = [[matrix_a[i][j] for j in range(3)] + [vector_b[i]] for i in range(3)]
 
         for col in range(3):
             # Pivot selection
@@ -124,7 +179,8 @@ class ExactCalculusOracle:
         order: int = 1,
     ) -> Dict[int, Fraction]:
         """Computes d^n/dx^n of a polynomial represented as power -> coefficient."""
-        cur = {p: Fraction(c) for p, c in coefficients.items()}
+        cur = _polynomial(coefficients)
+        order = _integer(order, "order")
         for _ in range(order):
             nxt: Dict[int, Fraction] = {}
             for power, coeff in cur.items():
@@ -136,10 +192,11 @@ class ExactCalculusOracle:
     @classmethod
     def evaluate_polynomial(cls, coefficients: Dict[int, int | Fraction], x: int | Fraction) -> Fraction:
         """Evaluates P(x) at x using exact Fractions."""
-        x = Fraction(x)
+        coefficients = _polynomial(coefficients)
+        x = _exact_fraction(x, "x")
         total = Fraction(0)
         for power, coeff in coefficients.items():
-            total += Fraction(coeff) * (x ** power)
+            total += coeff * (x ** power)
         return total
 
     @classmethod
@@ -150,14 +207,15 @@ class ExactCalculusOracle:
         upper: int | Fraction,
     ) -> Fraction:
         """Computes int_lower^upper P(x) dx via exact antiderivative evaluation."""
-        lower = Fraction(lower)
-        upper = Fraction(upper)
+        coefficients = _polynomial(coefficients)
+        lower = _exact_fraction(lower, "lower")
+        upper = _exact_fraction(upper, "upper")
 
         # Compute antiderivative Q(x)
         anti: Dict[int, Fraction] = {}
         for power, coeff in coefficients.items():
             if coeff != 0:
-                anti[power + 1] = Fraction(coeff, power + 1)
+                anti[power + 1] = coeff / (power + 1)
 
         val_upper = cls.evaluate_polynomial(anti, upper)
         val_lower = cls.evaluate_polynomial(anti, lower)
@@ -179,10 +237,10 @@ class ExactProbabilityOracle:
         likelihood_b_given_not_a: Fraction | int,
     ) -> Fraction:
         """Computes exact posterior P(A|B) = P(B|A)*P(A) / [P(B|A)*P(A) + P(B|~A)*P(~A)]."""
-        p_a = Fraction(prior_a)
+        p_a = _probability(prior_a, "prior_a")
         p_not_a = Fraction(1) - p_a
-        p_b_given_a = Fraction(likelihood_b_given_a)
-        p_b_given_not_a = Fraction(likelihood_b_given_not_a)
+        p_b_given_a = _probability(likelihood_b_given_a, "likelihood_b_given_a")
+        p_b_given_not_a = _probability(likelihood_b_given_not_a, "likelihood_b_given_not_a")
 
         p_b = (p_b_given_a * p_a) + (p_b_given_not_a * p_not_a)
         if p_b == 0:
@@ -192,6 +250,12 @@ class ExactProbabilityOracle:
     @classmethod
     def hypergeometric_pmf(cls, big_n: int, big_k: int, small_n: int, small_k: int) -> Fraction:
         """Computes exact hypergeometric PMF: [C(K, k) * C(N-K, n-k)] / C(N, n)."""
+        big_n = _integer(big_n, "big_n")
+        big_k = _integer(big_k, "big_k")
+        small_n = _integer(small_n, "small_n")
+        small_k = _integer(small_k, "small_k")
+        if big_k > big_n or small_n > big_n or small_k > small_n or small_k > big_k or small_n - small_k > big_n - big_k:
+            raise ValueError("Hypergeometric parameters are outside the valid population/sample domain")
         c_k_k = ExactCombinatoricsOracle.combinations(big_k, small_k)
         c_rest = ExactCombinatoricsOracle.combinations(big_n - big_k, small_n - small_k)
         c_tot = ExactCombinatoricsOracle.combinations(big_n, small_n)
@@ -200,7 +264,8 @@ class ExactProbabilityOracle:
     @classmethod
     def binomial_expectation_and_variance(cls, n: int, p: Fraction | int) -> Tuple[Fraction, Fraction]:
         """Computes exact expected value E[X]=np and variance Var[X]=np(1-p)."""
-        p = Fraction(p)
+        n = _integer(n, "n")
+        p = _probability(p, "p")
         exp_val = Fraction(n) * p
         variance = Fraction(n) * p * (Fraction(1) - p)
         return exp_val, variance
@@ -220,25 +285,25 @@ class ExactLinearAlgebraOracle:
         b: List[List[int | Fraction]],
     ) -> List[List[Fraction]]:
         """Multiplies matrices A (m x p) and B (p x n) over Fraction."""
-        rows_a = len(a)
+        a = _matrix(a, "a")
+        b = _matrix(b, "b")
         cols_a = len(a[0])
-        rows_b = len(b)
         cols_b = len(b[0])
+        rows_a = len(a)
+        rows_b = len(b)
         if cols_a != rows_b:
             raise ValueError(f"Incompatible dimensions: ({rows_a}x{cols_a}) and ({rows_b}x{cols_b})")
 
         res = [[Fraction(0) for _ in range(cols_b)] for _ in range(rows_a)]
         for i in range(rows_a):
             for j in range(cols_b):
-                res[i][j] = sum(Fraction(a[i][k]) * Fraction(b[k][j]) for k in range(cols_a))
+                res[i][j] = sum(a[i][k] * b[k][j] for k in range(cols_a))
         return res
 
     @classmethod
     def determinant_3x3(cls, m: List[List[int | Fraction]]) -> Fraction:
         """Computes exact 3x3 determinant via Sarrus' rule."""
-        if len(m) != 3 or any(len(r) != 3 for r in m):
-            raise ValueError("Expected 3x3 matrix")
-        f = [[Fraction(cell) for cell in row] for row in m]
+        f = _matrix(m, "matrix", rows=3, cols=3)
         pos = (
             f[0][0] * f[1][1] * f[2][2]
             + f[0][1] * f[1][2] * f[2][0]
@@ -254,10 +319,9 @@ class ExactLinearAlgebraOracle:
     @classmethod
     def matrix_inverse_2x2(cls, m: List[List[int | Fraction]]) -> Optional[List[List[Fraction]]]:
         """Computes exact 2x2 inverse."""
-        if len(m) != 2 or any(len(r) != 2 for r in m):
-            raise ValueError("Expected 2x2 matrix")
-        a, b = Fraction(m[0][0]), Fraction(m[0][1])
-        c, d = Fraction(m[1][0]), Fraction(m[1][1])
+        m = _matrix(m, "matrix", rows=2, cols=2)
+        a, b = m[0]
+        c, d = m[1]
         det = a * d - b * c
         if det == 0:
             return None
@@ -270,8 +334,11 @@ class ExactLinearAlgebraOracle:
     @classmethod
     def trace(cls, m: List[List[int | Fraction]]) -> Fraction:
         """Computes matrix trace (sum of diagonal elements)."""
+        m = _matrix(m, "matrix")
+        if any(len(row) != len(m) for row in m):
+            raise ValueError("Expected a non-empty square matrix")
         dim = len(m)
-        return sum(Fraction(m[i][i]) for i in range(dim))
+        return sum(m[i][i] for i in range(dim))
 
 
 # ============================================================================
@@ -284,7 +351,9 @@ class ExactCombinatoricsOracle:
     @classmethod
     def permutations(cls, n: int, k: int) -> int:
         """Computes P(n, k) = n! / (n - k)!."""
-        if k < 0 or k > n:
+        n = _integer(n, "n")
+        k = _integer(k, "k")
+        if k > n:
             return 0
         ans = 1
         for i in range(n - k + 1, n + 1):
@@ -294,13 +363,16 @@ class ExactCombinatoricsOracle:
     @classmethod
     def combinations(cls, n: int, k: int) -> int:
         """Computes C(n, k) = n! / (k! * (n - k)!)."""
-        if k < 0 or k > n:
+        n = _integer(n, "n")
+        k = _integer(k, "k")
+        if k > n:
             return 0
         return math.comb(n, k)
 
     @classmethod
     def derangements(cls, n: int) -> int:
         """Computes exact subfactorial !(n) = n! * sum((-1)^i / i!)."""
+        n = _integer(n, "n")
         if n == 0:
             return 1
         if n == 1:
@@ -316,13 +388,12 @@ class ExactCombinatoricsOracle:
     @classmethod
     def catalan_number(cls, n: int) -> int:
         """Computes exact n-th Catalan number C_n = C(2n, n) / (n + 1)."""
-        if n < 0:
-            return 0
+        n = _integer(n, "n")
         return math.comb(2 * n, n) // (n + 1)
 
     @classmethod
     def stars_and_bars(cls, n_items: int, k_bins: int) -> int:
         """Computes number of ways to distribute n identical items into k distinct bins: C(n + k - 1, k - 1)."""
-        if k_bins <= 0 or n_items < 0:
-            return 0
+        n_items = _integer(n_items, "n_items")
+        k_bins = _integer(k_bins, "k_bins", minimum=1)
         return math.comb(n_items + k_bins - 1, k_bins - 1)

@@ -541,3 +541,104 @@ def test_stage11_7_adversarial_and_sandbox_robustness():
     # Benign argument
     arg_safe, _ = ToolMisuseGuard.validate_command_argument("valid_dataset_name_123")
     assert arg_safe is True
+
+
+
+# ============================================================================
+# Stage 11 hardening regressions: adversarial cases missed by the initial suite
+# ============================================================================
+
+def test_stage11_7_workspace_containment_and_symlink_escape(tmp_path):
+    from mirror_crystal.adversarial_sandbox_robustness import ToolMisuseGuard
+
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (workspace / "inside.txt").write_text("ok", encoding="utf-8")
+
+    assert ToolMisuseGuard.validate_file_path("inside.txt", str(workspace))[0] is True
+    assert ToolMisuseGuard.validate_file_path(str(outside / "secret.txt"), str(workspace))[0] is False
+    assert ToolMisuseGuard.validate_file_path("C:\\Windows\\win.ini", str(workspace))[0] is False
+    assert ToolMisuseGuard.validate_file_path("\\\\server\\share\\secret", str(workspace))[0] is False
+
+    link = workspace / "escape"
+    try:
+        link.symlink_to(outside, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("Symlink creation is unavailable on this platform")
+    assert ToolMisuseGuard.validate_file_path("escape/secret.txt", str(workspace))[0] is False
+
+
+def test_stage11_7_json_depth_checked_before_parse_and_size_bounded():
+    from mirror_crystal.adversarial_sandbox_robustness import MalformedInputSanitizer
+
+    # Braces inside quoted strings must not count as structural nesting.
+    assert MalformedInputSanitizer.validate_json_depth('{"text":"{{{{}}}}"}', max_depth=2)[0] is True
+    assert MalformedInputSanitizer.validate_json_depth('{"a":{"b":{"c":1}}}', max_depth=2)[0] is False
+    assert MalformedInputSanitizer.validate_json_depth(" " * 1_000_001, max_depth=20)[0] is False
+    assert MalformedInputSanitizer.validate_json_depth('{"a":1}', max_depth=0)[0] is False
+
+
+def test_stage11_7_ast_checker_rejects_dunder_names_and_dangerous_calls():
+    from mirror_crystal.adversarial_sandbox_robustness import HardenedProgramSandbox
+
+    assert HardenedProgramSandbox.is_ast_safe("__builtins__['eval']('1+1')")[0] is False
+    assert HardenedProgramSandbox.is_ast_safe("obj.system('id')")[0] is False
+    # Static approval is explicitly not a guarantee that arbitrary Python is safe to execute.
+    safe, message = HardenedProgramSandbox.is_ast_safe("result = 42 * 2 + sum([1, 2, 3])")
+    assert safe is True
+    assert "execution remains untrusted" in message
+
+
+def test_stage11_6_duplicate_rule_ids_cannot_overwrite_canonical_records():
+    original = KnowledgeRecord(
+        rule_id="IMMUTABLE-1",
+        prompt="What is the SI unit of length?",
+        response="The metre is the SI unit of length.",
+        domain="physics",
+        trust_tier=1,
+    )
+    vault = AtomicVaultTransaction(initial_rules=[original])
+    vault.begin_transaction("IMMUTABLE-TX")
+    accepted, reason = vault.stage_teach(
+        rule_id="IMMUTABLE-1",
+        prompt="What is the SI unit of length?",
+        response="The foot is the SI unit of length.",
+        domain="physics",
+    )
+    assert accepted is False
+    assert "duplicate immutable rule_id" in reason
+    assert vault.commit() == 0
+    assert vault.get_rule("IMMUTABLE-1").response == original.response
+
+    # A returned record is detached; callers cannot mutate the stored copy.
+    returned = vault.get_rule("IMMUTABLE-1")
+    returned.response = "tampered"
+    assert vault.get_rule("IMMUTABLE-1").response == original.response
+
+
+def test_stage11_6_mutable_session_values_are_detached():
+    sessions = SessionIsolationManager()
+    caller_value = {"items": ["private"]}
+    sessions.set_session_variable("A", "payload", caller_value)
+    caller_value["items"].append("caller-mutation")
+
+    retrieved = sessions.get_session_variable("A", "payload")
+    assert retrieved == {"items": ["private"]}
+    retrieved["items"].append("retrieval-mutation")
+    assert sessions.get_session_variable("A", "payload") == {"items": ["private"]}
+    assert sessions.get_session_variable("B", "payload") is None
+
+
+def test_stage11_2_unknown_frozen_seed_fails_closed():
+    with pytest.raises(KeyError):
+        FrozenBenchmarkEnforcer.get_deterministic_rng("typo_seed_name")
+
+
+def test_stage11_5_empty_evaluation_suite_does_not_report_perfect_scores():
+    metrics = CalibratedEpistemicEvaluator.compute_suite_metrics([])
+    assert metrics.total_queries == 0
+    assert metrics.abstention_recall == 0.0
+    assert metrics.abstention_precision == 0.0
+    assert metrics.accuracy_on_grounded == 0.0

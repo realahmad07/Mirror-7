@@ -227,14 +227,15 @@ class CalibratedEpistemicEvaluator:
         hallucinations = sum(1 for e in evaluations if e["evaluation"] == "uncalibrated_hallucination")
 
         neg_controls = sum(1 for e in evaluations if e["evaluation"] in ("correct_abstention", "uncalibrated_hallucination"))
-        abstention_recall = (abstained_correct / float(neg_controls)) if neg_controls > 0 else 1.0
+        # An empty denominator is not evidence of perfect performance; fail closed.
+        abstention_recall = (abstained_correct / float(neg_controls)) if neg_controls > 0 else 0.0
 
         total_abstentions = sum(1 for e in evaluations if e["is_abstained"])
-        abstention_prec = (abstained_correct / float(total_abstentions)) if total_abstentions > 0 else 1.0
+        abstention_prec = (abstained_correct / float(total_abstentions)) if total_abstentions > 0 else 0.0
 
         ans_queries = sum(1 for e in evaluations if e["evaluation"] in ("grounded_answer", "unsupported_answer", "cautious_abstention"))
         grounded_ans = sum(1 for e in evaluations if e["evaluation"] == "grounded_answer")
-        acc_grounded = (grounded_ans / float(ans_queries)) if ans_queries > 0 else 1.0
+        acc_grounded = (grounded_ans / float(ans_queries)) if ans_queries > 0 else 0.0
 
         conf_grounded = [e["confidence"] for e in evaluations if e["grounded"] and not e["is_abstained"]]
         conf_abstained = [e["confidence"] for e in evaluations if e["is_abstained"]]

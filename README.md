@@ -1005,16 +1005,16 @@ The production SQLite knowledge vault is now **fully present in the repository v
   - **5. Strictly Exact BIPM Primary Source Quotations:** Augmented canonical source with official CGPM Resolution 1 (1967) and (1983) definitions; both SI claims match verbatim at exact character offsets (`7313` and `7142`) with 0 heuristic fallbacks.
   - **6. Reconciled Trust Architecture:** Unified `ReconciledTrustRegistry` links CRL, active v2 PKI, ORCID, PGP, and institutional credentials with zero drift.
 
-- **Stage 11 — Planning and Autonomous Intelligence (11.2 – 11.7 Complete):**
-  - Full report: **[`artifacts/STAGE11_AUTONOMOUS_INTELLIGENCE_REPORT.md`](artifacts/STAGE11_AUTONOMOUS_INTELLIGENCE_REPORT.md)** • Test suite: **[`mirror_crystal/tests/test_stage11_planning_and_autonomous_intelligence.py`](mirror_crystal/tests/test_stage11_planning_and_autonomous_intelligence.py)** (6/6 Passed in 0.18s)
+- **Stage 11 — Planning and Autonomous Intelligence (11.2 – 11.7 implementation delivered; follow-up audit corrections pending CI):**
+  - Full report: **[`artifacts/STAGE11_AUTONOMOUS_INTELLIGENCE_REPORT.md`](artifacts/STAGE11_AUTONOMOUS_INTELLIGENCE_REPORT.md)** • Test suite: **[`mirror_crystal/tests/test_stage11_planning_and_autonomous_intelligence.py`](mirror_crystal/tests/test_stage11_planning_and_autonomous_intelligence.py)** (6 original Stage 11 tests; 5 additional security regression tests added on the audit branch, pending CI)
   - **11.2 Frozen Benchmark Infrastructure:** [`mirror_eval/stage11_frozen_benchmarks.py`](mirror_eval/stage11_frozen_benchmarks.py) — Locks 368,270 vault rules, cryptographic SHA-256 dataset digest (`af94163e...`), canonical source invariants, and deterministic generator seeds.
   - **11.3 Unseen Mathematics Exact Oracles:** [`mirror_crystal/exact_math_oracles.py`](mirror_crystal/exact_math_oracles.py) — Exact pure-Python Fraction oracles (0 floating-point drift) for algebra (quadratic/complex/rational, 3x3 Gauss-Jordan), calculus (arbitrary-order $d^n/dx^n$, definite integrals), probability (Bayes' theorem, hypergeometric PMF, binomial moments), linear algebra (determinant, 2x2 inverse, trace), and combinatorics (derangements, Catalan numbers, stars & bars).
   - **11.4 Novel Reasoning & Cross-Domain Transfer:** [`mirror_crystal/novel_reasoning_transfer.py`](mirror_crystal/novel_reasoning_transfer.py) — Cross-domain transfer (quantum Grover search steps $\to$ thermal dissipation $\to$ factor of safety; relativistic Doppler $\to$ BIPM frequency standard $\to$ Nyquist rate) and adversarial multi-hop reasoner detecting and rejecting formal fallacies (affirming the consequent, denying the antecedent, insufficient premises).
   - **11.5 Grounded Factual Intelligence:** [`mirror_eval/grounded_factual_intelligence.py`](mirror_eval/grounded_factual_intelligence.py) — Token/n-gram passage alignment verifier and calibrated epistemic evaluator enforcing **Negative Control Abstention Recall = 1.0**.
   - **11.6 Continual Learning & Memory:** [`mirror_crystal/continual_learning_memory.py`](mirror_crystal/continual_learning_memory.py) — Verified teaching organ, contradiction quarantine (preserving original records per Rule 1), atomic vault transactions with rollback, and multi-tenant session isolation.
-  - **11.7 Adversarial & Sandbox Robustness:** [`mirror_crystal/adversarial_sandbox_robustness.py`](mirror_crystal/adversarial_sandbox_robustness.py) — Prompt injection defense gateway (plaintext and obfuscated base64), hardened AST program sandbox, loop bounding, ReDoS regex check, malformed input sanitizer, and path traversal/command injection tool misuse guards.
+  - **11.7 Adversarial & Sandbox Robustness:** [`mirror_crystal/adversarial_sandbox_robustness.py`](mirror_crystal/adversarial_sandbox_robustness.py) — Heuristic prompt-injection scanning, static AST policy checks (not an execution sandbox), a bounded-loop demonstration, heuristic ReDoS detection, bounded JSON validation, and resolved workspace path-containment checks.
 
-- **Grand Total Repository Verification:** **573 passed, 1 skipped in 308.26s (100% green!)**
+- **Grand Total Repository Verification:** **Historical regression count requires reconciliation:** commit `b38981c` records 560 passed / 1 skipped, while a later README update reports 573 passed / 1 skipped. Follow-up security regression tests are pending CI; see the Stage 11 audit report.
 
 ```bash
 # Query the verified production vault directly (sub-millisecond lock):
@@ -1131,6 +1131,9 @@ See [Backend Q&A Execution and Native Code Generation](./docs/32-backend-qna-exe
 
 
 ## Stage 11 — Generalization & Intelligence Evaluation (Initiated)
+
+**Stage 11.8–11.13 closure gates:** [Integration, security, reasoning, grounding, benchmark and release acceptance plan](artifacts/STAGE11_8_TO_13_RELEASE_CLOSURE_PLAN.md). These phases remain open until their evidence gates pass.
+
 
 - Evaluation-first phase; no new architecture is promoted on self-authored tests alone.
 - Frozen unseen mathematical, cross-domain, grounded factual, memory/learning, adversarial, and operational task families.
