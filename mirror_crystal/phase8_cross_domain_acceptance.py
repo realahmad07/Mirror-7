@@ -18,7 +18,7 @@ from .cross_domain_transfer import (
     CrossDomainTransferError,
     CrossDomainTransferProposal,
 )
-from .operational_language import UOL
+from .operational_language import UOL, _OPS, _walk
 from .universal_representation import stable_representation_id
 from .verified_program_learning import (
     UOLProgramLearningProposal,
@@ -163,11 +163,9 @@ def _validate_source(source: UOLProgramLearningProposal, language: UOL) -> None:
             )
         if source_rule.status.value != "verified":
             raise TransferBenchmarkError("source program rule dependency is not independently verified")
-        for node in __import__(
-            "mirror_crystal.operational_language", fromlist=["_walk"]
-        )._walk(source_rule.body):
+        for node in _walk(source_rule.body):
             operator = getattr(node, "operator", None)
-            if operator and operator not in {"add", "subtract", "multiply", "divide", "modulo", "power", "minimum", "maximum", "equal", "less_than", "less_equal", "greater_than", "greater_equal", "and", "or", "not", "negate", "absolute", "concat", "length", "sum", "product"}:
+            if operator and operator not in _OPS:
                 pending.append(operator)
 
 
