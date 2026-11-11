@@ -228,6 +228,9 @@ def _eval_ast_math(node: Any) -> Fraction:
             raise ValueError("Exact rational result exceeds the 4096-bit safety limit")
         return result
     raise ValueError(f"Unsupported expression node: {type(node).__name__}")
+class ExactMathVerifier:
+    """Bounded exact rational expression verifier; accepts integer literals and rational division only."""
+
     MAX_EXPRESSION_CHARS = 4096
     MAX_AST_NODES = 256
     MAX_AST_DEPTH = 32
