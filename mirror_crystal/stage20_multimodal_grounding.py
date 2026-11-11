@@ -371,7 +371,10 @@ class RealWorldGroundingEngine:
 
     @property
     def segments(self) -> tuple[DocumentEvidenceSegment, ...]:
-        return tuple(self._segments[key] for key in sorted(self._segments))
+        return tuple(sorted(
+            self._segments.values(),
+            key=lambda item: (item.source_id, item.locator, item.segment_id),
+        ))
 
     @property
     def observations(self) -> tuple[GroundedObservation, ...]:
@@ -616,6 +619,36 @@ class RealWorldGroundingEngine:
             )
         return asset
 
+    @staticmethod
+    def image_annotation_signing_bytes(
+        source_id: str,
+        source_sha256: str,
+        *,
+        entity_key: str,
+        attribute: str,
+        value: Any,
+        unit: str = "",
+        locator: str,
+        observed_at: str,
+    ) -> bytes:
+        """Canonical signed envelope for a host perception adapter annotation."""
+        if not isinstance(source_sha256, str) or not _SHA256.fullmatch(source_sha256):
+            raise GroundingError("source_sha256 must be a lowercase SHA-256 digest")
+        payload = {
+            "source_id": _required_text(source_id, "source_id", 128),
+            "source_sha256": source_sha256,
+            "entity_key": _required_text(entity_key, "entity_key", 256).casefold(),
+            "attribute": _required_text(attribute, "attribute", 256).casefold(),
+            "value": value,
+            "unit": unit,
+            "locator": _required_text(locator, "locator", 512),
+            "observed_at": _utc_timestamp(observed_at, "observed_at"),
+        }
+        if not isinstance(unit, str):
+            raise GroundingError("annotation unit must be text")
+        _parse_cell_value(value, unit)
+        return _canonical(payload).encode("utf-8")
+
     def add_signed_image_annotation(
         self,
         source_id: str,
@@ -633,23 +666,20 @@ class RealWorldGroundingEngine:
         asset = self._assets.get(source_id)
         if asset is None or asset.modality is not Modality.IMAGE:
             raise GroundingError("image annotation must reference an ingested image asset")
-        payload = {
-            "source_id": asset.source_id,
-            "source_sha256": asset.sha256,
-            "entity_key": _required_text(entity_key, "entity_key", 256).casefold(),
-            "attribute": _required_text(attribute, "attribute", 256).casefold(),
-            "value": value,
-            "unit": unit,
-            "locator": _required_text(locator, "locator", 512),
-            "observed_at": _utc_timestamp(observed_at, "observed_at"),
-        }
-        canonical = _canonical(payload).encode("utf-8")
+        entity = _required_text(entity_key, "entity_key", 256).casefold()
+        attr = _required_text(attribute, "attribute", 256).casefold()
+        location = _required_text(locator, "locator", 512)
+        stamp = _utc_timestamp(observed_at, "observed_at")
+        canonical = self.image_annotation_signing_bytes(
+            asset.source_id, asset.sha256, entity_key=entity, attribute=attr,
+            value=value, unit=unit, locator=location, observed_at=stamp,
+        )
         self.trust_registry.verify(annotator_id, signature_b64, canonical)
         signature_hash = _digest(base64.b64decode(signature_b64, validate=True))
         return self._add_observation(
-            asset, entity_key=payload["entity_key"], attribute=payload["attribute"],
-            value=value, unit=unit, locator=payload["locator"], observed_at=payload["observed_at"],
-            origin_verified=True, signer_id=annotator_id, signature_sha256=signature_hash,
+            asset, entity_key=entity, attribute=attr, value=value, unit=unit,
+            locator=location, observed_at=stamp, origin_verified=True,
+            signer_id=annotator_id, signature_sha256=signature_hash,
             derivation=f"signed-perception-adapter:{annotator_id}",
         )
 
