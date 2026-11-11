@@ -21,6 +21,7 @@ import math
 import re
 import struct
 from typing import Any, Callable, Iterable, Mapping
+from urllib.parse import urlparse
 import zipfile
 import xml.etree.ElementTree as ET
 
@@ -121,10 +122,19 @@ def _source_uri(value: str | None, digest: str) -> str:
     uri = _required_text(value, "source_uri", 2048)
     if any(ord(ch) < 32 for ch in uri):
         raise GroundingError("source_uri contains control characters")
-    if uri.startswith("https://") and len(uri) > 8:
-        return uri
-    if re.fullmatch(r"urn:[A-Za-z0-9][A-Za-z0-9-]{0,31}:.+", uri, re.IGNORECASE):
-        return uri
+    try:
+        parsed = urlparse(uri)
+        if parsed.scheme.casefold() == "https":
+            if not parsed.hostname or parsed.username is not None or parsed.password is not None:
+                raise GroundingError("source_uri must be HTTPS or a URN; local file URLs are not accepted")
+            _ = parsed.port
+            return uri
+        if parsed.scheme.casefold() == "urn" and re.fullmatch(
+            r"urn:[A-Za-z0-9][A-Za-z0-9-]{0,31}:.+", uri, re.IGNORECASE
+        ):
+            return uri
+    except ValueError as exc:
+        raise GroundingError("source_uri is malformed") from exc
     raise GroundingError("source_uri must be HTTPS or a URN; local file URLs are not accepted")
 
 
@@ -223,6 +233,21 @@ class ExtractedSegment:
 
 
 @dataclass(frozen=True)
+class DocumentEvidenceSegment:
+    segment_id: str
+    source_id: str
+    source_sha256: str
+    locator: str
+    text: str
+    text_sha256: str
+    segment_kind: str
+    extractor_id: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class ModalConclusion:
     entity_key: str
     attribute: str
@@ -247,6 +272,7 @@ class ModalConclusion:
 @dataclass(frozen=True)
 class GroundingReport:
     assets: tuple[AssetProvenance, ...]
+    segments: tuple[DocumentEvidenceSegment, ...]
     observations: tuple[GroundedObservation, ...]
     conclusions: tuple[ModalConclusion, ...]
     unknowns: tuple[str, ...]
@@ -256,6 +282,7 @@ class GroundingReport:
     def to_dict(self) -> dict[str, Any]:
         return {
             "assets": [item.to_dict() for item in self.assets],
+            "segments": [item.to_dict() for item in self.segments],
             "observations": [item.to_dict() for item in self.observations],
             "conclusions": [item.to_dict() for item in self.conclusions],
             "unknowns": list(self.unknowns),
@@ -321,12 +348,17 @@ class RealWorldGroundingEngine:
     def __init__(self, trust_registry: SourceTrustRegistry | None = None) -> None:
         self.trust_registry = trust_registry or SourceTrustRegistry()
         self._assets: dict[str, AssetProvenance] = {}
+        self._segments: dict[str, DocumentEvidenceSegment] = {}
         self._observations: dict[str, GroundedObservation] = {}
         self._source_bytes_total = 0
 
     @property
     def assets(self) -> tuple[AssetProvenance, ...]:
         return tuple(self._assets[key] for key in sorted(self._assets))
+
+    @property
+    def segments(self) -> tuple[DocumentEvidenceSegment, ...]:
+        return tuple(self._segments[key] for key in sorted(self._segments))
 
     @property
     def observations(self) -> tuple[GroundedObservation, ...]:
@@ -780,6 +812,26 @@ class RealWorldGroundingEngine:
                 structured = parsed
         elif suffix == "docx":
             segments = self._docx_segments(raw)
+            table_groups: dict[int, list[tuple[int, list[str]]]] = {}
+            for segment in segments:
+                match = re.fullmatch(r"table:([0-9]+):row:([0-9]+)", segment.locator)
+                if match:
+                    cells = segment.text.split(" | ")
+                    table_groups.setdefault(int(match.group(1)), []).append((int(match.group(2)), cells))
+            for table_number, table_rows in sorted(table_groups.items()):
+                ordered_rows = [cells for _, cells in sorted(table_rows)]
+                if len(ordered_rows) < 2:
+                    continue
+                headers = [item.strip().casefold() for item in ordered_rows[0]]
+                if len(headers) != len(set(headers)):
+                    raise GroundingError("DOCX table contains duplicate column headers")
+                if not {"attribute", "value"}.issubset(headers):
+                    continue
+                for row in ordered_rows[1:]:
+                    structured.append({
+                        headers[index]: row[index]
+                        for index in range(min(len(headers), len(row)))
+                    })
         else:
             if extractor is None or not callable(extractor):
                 raise GroundingError(
@@ -811,6 +863,20 @@ class RealWorldGroundingEngine:
             retrieved_at=retrieved_at, publisher=publisher, license_spdx=license_spdx,
             signer_id=signer_id, signature_b64=signature_b64,
         )
+        selected_extractor = extractor_id or f"mirror-native-{suffix}"
+        for segment in segments:
+            text_hash = _digest(segment.text.encode("utf-8"))
+            identity_payload = {
+                "source_id": asset.source_id, "source_sha256": asset.sha256,
+                "locator": segment.locator, "text_sha256": text_hash,
+                "segment_kind": segment.segment_kind, "extractor_id": selected_extractor,
+            }
+            segment_id = _digest(_canonical(identity_payload).encode("utf-8"))
+            self._segments[segment_id] = DocumentEvidenceSegment(
+                segment_id=segment_id, source_id=asset.source_id, source_sha256=asset.sha256,
+                locator=segment.locator, text=segment.text, text_sha256=text_hash,
+                segment_kind=segment.segment_kind, extractor_id=selected_extractor,
+            )
         if structured:
             self._structured_rows(source_id, asset, structured, entity_default, "document")
         return asset, tuple(segments)
@@ -826,7 +892,9 @@ class RealWorldGroundingEngine:
         payload["entity_key"] = _required_text(payload["entity_key"], "entity_key", 256).casefold()
         payload["attribute"] = _required_text(payload["attribute"], "attribute", 256).casefold()
         payload["observed_at"] = _utc_timestamp(payload["observed_at"], "observed_at")
-        _parse_cell_value(payload["value"], str(payload["unit"]))
+        if not isinstance(payload["unit"], str):
+            raise GroundingError("telemetry unit must be text")
+        _parse_cell_value(payload["value"], payload["unit"])
         return _canonical(payload).encode("utf-8")
 
     def ingest_telemetry(
@@ -854,7 +922,9 @@ class RealWorldGroundingEngine:
         }
         signing_payload = self.telemetry_signing_bytes(clean)
         device_id = _required_text(device_id, "device_id", 128)
-        verified = self.trust_registry.verify(device_id, signature_b64, signing_payload)
+        verified = self.trust_registry.verify(
+            device_id if signature_b64 is not None else None, signature_b64, signing_payload,
+        )
         raw = signing_payload
         asset = self._register_asset(
             source_id, Modality.TELEMETRY, "application/vnd.mirror.telemetry+json", raw,
@@ -946,13 +1016,15 @@ class RealWorldGroundingEngine:
             ))
         report_payload = {
             "assets": [item.to_dict() for item in self.assets],
+            "segments": [item.to_dict() for item in self.segments],
             "observations": [item.to_dict() for item in self.observations],
             "conclusions": [item.to_dict() for item in conclusions],
             "unknowns": unknowns,
         }
         fingerprint = _digest(_canonical(report_payload).encode("utf-8"))
         return GroundingReport(
-            assets=self.assets, observations=self.observations, conclusions=tuple(conclusions),
+            assets=self.assets, segments=self.segments,
+            observations=self.observations, conclusions=tuple(conclusions),
             unknowns=tuple(unknowns), report_fingerprint=fingerprint,
             generated_at=datetime.now(timezone.utc).isoformat(),
         )
