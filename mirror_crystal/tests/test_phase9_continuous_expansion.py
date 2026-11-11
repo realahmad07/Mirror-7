@@ -68,75 +68,87 @@ def make_source():
     )
 
 
-def make_report():
+def make_report(target_domains=("mathematics", "physics")):
     source = make_source()
     suite = NativeDomainVerifierSuite()
-    target_domain = "mathematics"
-    program = Program(
-        source.program.program_id + ":math",
-        source.program.name,
-        source.program.inputs,
-        source.program.body,
-        target_domain,
-    )
-    training_values = (201, 203, 205)
-    held_values = (207, 209)
-    observation_values = (221, 223, 225)
+    targets = []
 
-    def observe(transfer):
-        verifier_suite = NativeDomainVerifierSuite()
-        verifier = DomainVerificationEngine(verifier_suite.registry)
-        observations = []
-        for index, value in enumerate(observation_values):
-            payload = {
-                "mathematics": {
-                    "variables": ["x"],
-                    "left": {
-                        "op": "add", "left": {"op": "var", "name": "x"},
-                        "right": {"op": "lit", "value": 1},
-                    },
-                    "right": {
-                        "op": "add", "left": {"op": "lit", "value": 1},
-                        "right": {"op": "var", "name": "x"},
-                    },
-                    "samples": [{"variables": {"x": str(value)}}],
-                }
-            }
-            envelope = {"schema_version": 1, "domain": target_domain, "payload": payload}
-            output = UOL().execute(transfer.program, {"x": value})
-            step = StepExecutionResult(
-                f"phase9-step-{index}", f"phase9-task-{index}",
-                transfer.capability.capability_id, True,
-                {"x": value, "__mirror_verification__": envelope},
-                {"result": output},
-            )
-            execution = PlanExecutionReport(
-                f"phase9-plan-{index}", f"phase9-task-{index}",
-                ExecutionStatus.SUCCEEDED, (step,),
-            )
-            verification = verifier.verify_candidate(
-                execution,
-                transfer.capability,
-                requirements={transfer.capability.capability_id: verifier_suite.requirement(target_domain)},
-                required_checks={transfer.capability.capability_id: verifier_suite.required_checks(target_domain)},
-            )
-            observations.append(VerifiedProgramObservation(
-                f"phase9-task-{index}", transfer.capability, execution, verification,
-            ))
-        return tuple(observations)
+    for target_domain, offset in zip(target_domains, (201, 301, 401)):
+        training_values = (offset, offset + 2, offset + 4)
+        held_values = (offset + 6, offset + 8)
+        observation_values = (offset + 20, offset + 24, offset + 28)
 
-    target = TransferTargetBenchmark(
-        target_domain,
-        tuple(Example({"x": value}, value + 1) for value in training_values),
-        tuple(Example({"x": value}, value + 1) for value in held_values),
-        suite.postconditions(target_domain),
-        observe,
-    )
+        def observe(transfer, domain=target_domain, values=observation_values):
+            verifier_suite = NativeDomainVerifierSuite()
+            verifier = DomainVerificationEngine(verifier_suite.registry)
+            observations = []
+            for index, value in enumerate(values):
+                if domain == "mathematics":
+                    payload = {
+                        "mathematics": {
+                            "variables": ["x"],
+                            "left": {
+                                "op": "add", "left": {"op": "var", "name": "x"},
+                                "right": {"op": "lit", "value": 1},
+                            },
+                            "right": {
+                                "op": "add", "left": {"op": "lit", "value": 1},
+                                "right": {"op": "var", "name": "x"},
+                            },
+                            "samples": [{"variables": {"x": str(value)}}],
+                        }
+                    }
+                elif domain == "physics":
+                    output = value + 1
+                    payload = {
+                        "physics": {
+                            "terms": [
+                                {"dimensions": {"length": 1}},
+                                {"dimensions": {"length": 1}},
+                            ],
+                            "before": [value, 1],
+                            "after": [output],
+                            "tolerance": 0,
+                        }
+                    }
+                else:
+                    raise AssertionError(domain)
+
+                envelope = {"schema_version": 1, "domain": domain, "payload": payload}
+                output = UOL().execute(transfer.program, {"x": value})
+                step = StepExecutionResult(
+                    f"{domain}-step-{index}", f"{domain}-task-{index}",
+                    transfer.capability.capability_id, True,
+                    {"x": value, "__mirror_verification__": envelope},
+                    {"result": output},
+                )
+                execution = PlanExecutionReport(
+                    f"{domain}-plan-{index}", f"{domain}-task-{index}",
+                    ExecutionStatus.SUCCEEDED, (step,),
+                )
+                verification = verifier.verify_candidate(
+                    execution,
+                    transfer.capability,
+                    requirements={transfer.capability.capability_id: verifier_suite.requirement(domain)},
+                    required_checks={transfer.capability.capability_id: verifier_suite.required_checks(domain)},
+                )
+                observations.append(VerifiedProgramObservation(
+                    f"{domain}-task-{index}", transfer.capability, execution, verification,
+                ))
+            return tuple(observations)
+
+        targets.append(TransferTargetBenchmark(
+            target_domain,
+            tuple(Example({"x": value}, value + 1) for value in training_values),
+            tuple(Example({"x": value}, value + 1) for value in held_values),
+            suite.postconditions(target_domain),
+            observe,
+        ))
+
     return CrossDomainTransferBenchmarkEngine().evaluate(
-        "phase9-transfer-benchmark-v1", source, UOL(), (target,),
-        minimum_target_domains=1,
+        "phase9-transfer-benchmark-v1", source, UOL(), tuple(targets),
+        minimum_target_domains=2,
     )
-
 
 def regression_cases():
     return (
@@ -166,7 +178,7 @@ def test_phase9_accepts_novel_epoch_after_all_frozen_regressions_and_requires_ex
     assert result.accepted
     assert result.decision is ExpansionDecision.ACCEPTED
     assert result.checked_regressions == 2
-    assert len(result.proposals) == 1
+    assert len(result.proposals) == 2
     assert ledger.verify_chain()
     assert result.ledger_entry.sequence == 1
     assert result.ledger_entry.previous_digest == ledger.GENESIS
