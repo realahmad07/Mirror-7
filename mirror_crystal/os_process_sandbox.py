@@ -26,16 +26,15 @@ class SandboxExecutionResult:
 _CHILD_RUNNER = r'''
 import ast, bisect, builtins, cmath, collections, copy, csv, dataclasses, decimal
 import enum, fractions, functools, heapq, itertools, json, math, operator, queue
-import random, re, statistics, string, sys, io, contextlib, os, types
+import random, re, statistics, string, sys, io, contextlib, os, subprocess, time
 payload = json.loads(sys.stdin.read())
 source = payload.get("source")
 candidate_source = payload.get("candidate_source")
-test_source = payload.get("test_source")
-stage19_mode = candidate_source is not None or test_source is not None
+stage19_mode = candidate_source is not None
 if stage19_mode:
-    if not isinstance(candidate_source, str) or not isinstance(test_source, str):
-        raise RuntimeError("Stage 19 candidate and test sources must both be text")
-    sources_to_check = (candidate_source, test_source)
+    if not isinstance(candidate_source, str):
+        raise RuntimeError("Stage 19 candidate source must be text")
+    sources_to_check = (candidate_source,)
 else:
     if not isinstance(source, str):
         raise RuntimeError("source must be text")
@@ -92,22 +91,6 @@ def safe_import(name, *args, **kwargs):
     if root not in modules:
         raise ImportError("blocked import: " + name)
     return modules[root]
-def build_namespace_builtins():
-    # Each namespace gets distinct module objects so candidate monkey-patching
-    # cannot mutate the regression harness's module attributes.
-    namespace_modules = {}
-    for module_name, module in modules.items():
-        cloned = types.ModuleType(module.__name__)
-        cloned.__dict__.update(module.__dict__)
-        namespace_modules[module_name] = cloned
-    def namespace_import(name, *args, **kwargs):
-        root = name.split(".")[0]
-        if root not in namespace_modules:
-            raise ImportError("blocked import: " + name)
-        return namespace_modules[root]
-    values = dict(safe_builtins)
-    values["__import__"] = namespace_import
-    return values
 safe_builtins = {
     "abs":abs,"all":all,"any":any,"bool":bool,"callable":callable,"complex":complex,"dict":dict,"divmod":divmod,
     "enumerate":enumerate,"filter":filter,"float":float,"int":int,"isinstance":isinstance,
@@ -118,6 +101,98 @@ safe_builtins = {
     "KeyError":KeyError,"RuntimeError":RuntimeError,"AssertionError":AssertionError,
     "object":object,"__build_class__":builtins.__build_class__,"__import__":safe_import,
 }
+_CANDIDATE_CHILD = r"""
+import ast, bisect, builtins, cmath, collections, copy, csv, dataclasses, decimal
+import enum, fractions, functools, heapq, itertools, json, math, operator, queue
+import random, re, statistics, string, sys, types
+try:
+    data = json.loads(sys.stdin.read())
+    candidate_source = data["candidate_source"]
+    inputs = data["inputs"]
+    step_cap = max(100, int(data.get("max_loop_steps", 50000)))
+    modules = {
+        "math": math, "cmath": cmath, "decimal": decimal, "operator": operator,
+        "queue": queue, "enum": enum, "heapq": heapq, "collections": collections,
+        "bisect": bisect, "itertools": itertools, "functools": functools,
+        "typing": __import__("typing"), "fractions": fractions, "statistics": statistics,
+        "re": re, "json": json, "csv": csv, "string": string, "random": random,
+        "copy": copy, "dataclasses": dataclasses,
+    }
+    allowed = set(modules)
+    for node in ast.walk(ast.parse(candidate_source)):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name.split(".")[0] not in allowed:
+                    raise RuntimeError("blocked import: " + alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            if (node.module or "").split(".")[0] not in allowed:
+                raise RuntimeError("blocked from-import: " + str(node.module))
+        elif isinstance(node, ast.Attribute) and node.attr.startswith("__") and node.attr.endswith("__"):
+            raise RuntimeError("blocked dunder attribute: " + node.attr)
+        elif isinstance(node, ast.Name):
+            if node.id in {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit","_mc_step_tick"}:
+                raise RuntimeError("blocked name: " + node.id)
+    steps = [0]
+    def tick():
+        steps[0] += 1
+        if steps[0] > step_cap:
+            raise RuntimeError("LoopStepLimitExceeded (%d steps)" % step_cap)
+    def safe_range(*args):
+        value = range(*args)
+        if len(value) > step_cap:
+            raise RuntimeError("RangeSpanLimitExceeded (%d > %d)" % (len(value), step_cap))
+        return value
+    class Guard(ast.NodeTransformer):
+        def inject(self, body, doc=False):
+            stmt = ast.Expr(value=ast.Call(func=ast.Name(id="_mc_step_tick", ctx=ast.Load()), args=[], keywords=[]))
+            if doc and body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) and isinstance(body[0].value.value, str):
+                return [body[0], stmt] + body[1:]
+            return [stmt] + body
+        def visit_While(self, node):
+            self.generic_visit(node); node.body = self.inject(node.body); return node
+        def visit_For(self, node):
+            self.generic_visit(node); node.body = self.inject(node.body); return node
+        def visit_FunctionDef(self, node):
+            self.generic_visit(node); node.body = self.inject(node.body, True); return node
+    def build_builtins():
+        cloned_modules = {}
+        for module_name, module in modules.items():
+            cloned = types.ModuleType(module.__name__)
+            cloned.__dict__.update(module.__dict__)
+            cloned_modules[module_name] = cloned
+        def namespace_import(name, *args, **kwargs):
+            root = name.split(".")[0]
+            if root not in cloned_modules:
+                raise ImportError("blocked import: " + name)
+            return cloned_modules[root]
+        return {
+            "abs":abs,"all":all,"any":any,"bool":bool,"callable":callable,"complex":complex,"dict":dict,"divmod":divmod,
+            "enumerate":enumerate,"filter":filter,"float":float,"int":int,"isinstance":isinstance,
+            "len":len,"list":list,"map":map,"max":max,"min":min,"pow":pow,"print":print,
+            "range":safe_range,"reversed":reversed,"round":round,"set":set,"sorted":sorted,"str":str,
+            "sum":sum,"tuple":tuple,"zip":zip,"Exception":Exception,"ValueError":ValueError,
+            "TypeError":TypeError,"ZeroDivisionError":ZeroDivisionError,"IndexError":IndexError,
+            "KeyError":KeyError,"RuntimeError":RuntimeError,"AssertionError":AssertionError,
+            "object":object,"__build_class__":builtins.__build_class__,"__import__":namespace_import,
+        }
+    tree = Guard().visit(ast.parse(candidate_source))
+    ast.fix_missing_locations(tree)
+    compiled = compile(tree, "<mirror-stage19-candidate>", "exec")
+    namespace = {
+        "__builtins__": build_builtins(),
+        "__name__": "mirror_candidate",
+        "_mc_step_tick": tick,
+    }
+    exec(compiled, namespace)
+    entrypoint = namespace.get("run")
+    if not callable(entrypoint):
+        raise TypeError("candidate must expose callable run(inputs)")
+    actual = entrypoint(inputs)
+    encoded = json.dumps({"ok": True, "actual": actual}, allow_nan=False, sort_keys=True, separators=(",", ":"))
+except BaseException as exc:
+    encoded = json.dumps({"ok": False, "error": type(exc).__name__ + ": " + str(exc)[:1000]})
+sys.stdout.write(encoded + "\n")
+"""
 def execute_checked(source_text, namespace, filename):
     tree = Guard().visit(ast.parse(source_text))
     ast.fix_missing_locations(tree)
@@ -128,21 +203,59 @@ try:
     captured = io.StringIO()
     with contextlib.redirect_stdout(captured):
         if stage19_mode:
-            candidate_namespace = {
-                "__builtins__": build_namespace_builtins(),
-                "__name__": "mirror_candidate",
-                "_mc_step_tick": tick,
-            }
-            execute_checked(candidate_source, candidate_namespace, "<mirror-stage19-candidate>")
-            harness_namespace = {
-                "__builtins__": build_namespace_builtins(),
-                "__name__": "mirror_regression_harness",
-                "_mc_step_tick": tick,
-                "candidate_namespace": candidate_namespace,
-                "regression_cases": payload.get("regression_cases", []),
-                "expected_key": payload.get("expected_key", "candidate_expected"),
-            }
-            execute_checked(test_source, harness_namespace, "<mirror-stage19-harness>")
+            regression_cases = payload.get("regression_cases", [])
+            expected_key = payload.get("expected_key", "candidate_expected")
+            if not isinstance(regression_cases, list) or not regression_cases or len(regression_cases) > 250:
+                raise RuntimeError("Stage 19 requires between 1 and 250 regression cases")
+            if expected_key not in {"baseline_expected", "candidate_expected"}:
+                raise RuntimeError("invalid Stage 19 expected-output key")
+            deadline = time.monotonic() + float(payload.get("candidate_timeout_seconds", 8.0))
+            results = []
+            for case in regression_cases:
+                case_id = str(case.get("case_id") or "")
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    results.append({"case_id": case_id, "passed": False, "actual_json": "", "error": "suite execution deadline exceeded"})
+                    continue
+                child_payload = json.dumps({
+                    "candidate_source": candidate_source,
+                    "inputs": case["inputs"],
+                    "max_loop_steps": step_cap,
+                }, allow_nan=False, separators=(",", ":"))
+                try:
+                    completed = subprocess.run(
+                        [sys.executable, "-I", "-S", "-c", _CANDIDATE_CHILD],
+                        input=child_payload,
+                        text=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        timeout=max(0.05, remaining),
+                        check=False,
+                        close_fds=True,
+                        env={"PATH": os.environ.get("PATH", ""), "PYTHONHASHSEED": "0"},
+                    )
+                    data = json.loads(completed.stdout.strip().splitlines()[-1])
+                    if completed.returncode != 0 or not data.get("ok"):
+                        results.append({
+                            "case_id": case_id, "passed": False, "actual_json": "",
+                            "error": str(data.get("error") or completed.stderr.strip() or "candidate child failed")[:1000],
+                        })
+                        continue
+                    actual_json = json.dumps(data["actual"], allow_nan=False, sort_keys=True, separators=(",", ":"))
+                    expected_json = json.dumps(case[expected_key], allow_nan=False, sort_keys=True, separators=(",", ":"))
+                    results.append({
+                        "case_id": case_id,
+                        "passed": actual_json == expected_json,
+                        "actual_json": actual_json[:2000],
+                        "error": "",
+                    })
+                except subprocess.TimeoutExpired:
+                    results.append({"case_id": case_id, "passed": False, "actual_json": "", "error": "candidate case timeout"})
+                except (ValueError, KeyError, TypeError) as exc:
+                    results.append({"case_id": case_id, "passed": False, "actual_json": "", "error": str(exc)[:1000]})
+            print("__MIRROR_STAGE19_RESULTS__" + json.dumps(
+                {"results": results}, allow_nan=False, sort_keys=True, separators=(",", ":")
+            ))
         else:
             namespace = {
                 "__builtins__":dict(safe_builtins),
