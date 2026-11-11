@@ -400,6 +400,15 @@ def test_resource_limits_duplicate_ids_and_license_validation_fail_closed():
         engine.ingest_document("bad-uri", "x.txt", b"content", source_uri="file:///tmp/data.txt")
 
 
+def test_embedded_numeric_unit_cannot_contradict_explicit_unit_column():
+    engine = RealWorldGroundingEngine()
+    with pytest.raises(GroundingError, match="conflicts with its explicit unit"):
+        engine.ingest_document(
+            "bad-unit-dupe", "measurement.csv",
+            b"entity_key,attribute,value,unit\nsensor-a,temperature,23 C,F\n",
+        )
+
+
 def test_document_extractor_output_is_bounded_and_type_checked():
     engine = RealWorldGroundingEngine()
     with pytest.raises(GroundingError, match="ExtractedSegment"):
