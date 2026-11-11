@@ -351,7 +351,7 @@ class IndependentAnswerChecker:
                 return False, 0.0, "Non-finite numeric outputs cannot be certified"
             agreed = abs(left - right) <= float(tolerance)
             return agreed, 0.50 if agreed else 0.0, (
-                "Supplied approximate numeric outputs fall within tolerance; not a proof of independent derivation."
+                "Supplied approximate numeric outputs fall within tolerance; not proof of independent derivation."
                 if agreed else f"Supplied numeric outputs diverged: {left} vs {right}"
             )
 
