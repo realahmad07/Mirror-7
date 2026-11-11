@@ -149,7 +149,6 @@ class MalformedInputSanitizer:
         if len(json_str) > cls.MAX_JSON_CHARS:
             return False, "JSON input exceeds size limit"
 
-        # Count structural nesting before json.loads; ignore braces inside strings.
         depth = 0
         in_string = False
         escaped = False
@@ -190,7 +189,6 @@ class ToolMisuseGuard:
     def validate_file_path(cls, path_str: str, allowed_base_dir: str = ".") -> Tuple[bool, Optional[str]]:
         if not isinstance(path_str, str) or not path_str or "\x00" in path_str:
             return False, "Invalid empty or malformed path"
-        # Reject Windows drive/UNC paths even when running on POSIX.
         win_path = PureWindowsPath(path_str)
         if win_path.drive or path_str.startswith(("\\\\", "//")):
             return False, "Absolute or network paths are not allowed"
@@ -201,7 +199,7 @@ class ToolMisuseGuard:
                 candidate = base / candidate
             resolved = candidate.resolve()
             if not resolved.is_relative_to(base):
-                return False, f"Path escapes allowed workspace: '{path_str}'"
+                return False, f"Path traversal or workspace escape: '{path_str}'"
         except (OSError, RuntimeError, ValueError) as err:
             return False, f"Path could not be safely resolved: {err}"
         return True, None
