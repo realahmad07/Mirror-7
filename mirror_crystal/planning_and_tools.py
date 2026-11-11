@@ -279,8 +279,10 @@ class ToolDefinition:
             name=f"mirror-tool-{self.name}",
         )
         process.daemon = True
+        started = False
         try:
             process.start()
+            started = True
             send_conn.close()
             if not recv_conn.poll(self.timeout_seconds):
                 self._terminate_process_tree(process)
@@ -302,17 +304,17 @@ class ToolDefinition:
                     f"{response.get('error', 'unspecified error')}"
                 )
             return response.get("result")
-        except (OSError, TypeError, ValueError) as exc:
-            if isinstance(exc, PlanningError):
-                raise
-            raise PlanningError(f"Tool '{self.name}' could not start isolated execution: {exc}") from exc
+        except PlanningError:
+            raise
+        except Exception as exc:
+            raise PlanningError(f"Tool '{self.name}' could not complete isolated execution: {exc}") from exc
         finally:
             try:
                 recv_conn.close()
                 send_conn.close()
             except OSError:
                 pass
-            if process.is_alive():
+            if started and process.is_alive():
                 self._terminate_process_tree(process)
 
     @staticmethod
@@ -324,8 +326,11 @@ class ToolDefinition:
             try:
                 os.killpg(process.pid, signal.SIGTERM)
                 process.join(timeout=0.2)
-                if process.is_alive():
+                # Kill the entire session even if the direct child exited but left descendants.
+                try:
                     os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
             except (ProcessLookupError, PermissionError, OSError):
                 process.terminate()
         else:
@@ -390,6 +395,20 @@ class TaskNode:
     max_retries: int = 2
     execution_duration_ms: float = 0.0
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.task_id, str) or not self.task_id.strip():
+            raise PlanningError("task_id must be a non-empty string")
+        if not isinstance(self.description, str):
+            raise PlanningError("task description must be a string")
+        if not isinstance(self.tool_parameters, dict):
+            raise PlanningError("tool_parameters must be an object")
+        if not isinstance(self.dependencies, list) or any(not isinstance(dep, str) or not dep for dep in self.dependencies):
+            raise PlanningError("dependencies must be a list of non-empty task IDs")
+        if len(set(self.dependencies)) != len(self.dependencies):
+            raise PlanningError(f"Task '{self.task_id}' contains duplicate dependencies")
+        if isinstance(self.max_retries, bool) or not isinstance(self.max_retries, int) or self.max_retries < 0:
+            raise PlanningError("max_retries must be a non-negative integer")
+
     def to_dict(self) -> Dict[str, Any]:
         res = asdict(self)
         res["status"] = self.status.value
@@ -448,11 +467,19 @@ class TaskDecomposer:
         plan_id: Optional[str] = None,
     ) -> ExecutionPlan:
         """Constructs an ExecutionPlan from subtask dictionaries."""
+        if not isinstance(goal, str) or not goal.strip():
+            raise PlanningError("Plan goal must be a non-empty string")
+        if not isinstance(subtasks_data, list) or not subtasks_data:
+            raise PlanningError("subtasks_data must be a non-empty list")
         pid = plan_id or f"plan_{hashlib.sha256(goal.encode()).hexdigest()[:10]}"
         task_nodes: Dict[str, TaskNode] = {}
 
         for item in subtasks_data:
+            if not isinstance(item, dict) or "task_id" not in item:
+                raise PlanningError("Each subtask must be an object containing task_id")
             tid = item["task_id"]
+            if tid in task_nodes:
+                raise PlanningError(f"Duplicate task_id '{tid}' is not allowed")
             node = TaskNode(
                 task_id=tid,
                 description=item.get("description", ""),
