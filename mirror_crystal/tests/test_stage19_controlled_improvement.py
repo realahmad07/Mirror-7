@@ -366,8 +366,12 @@ def run(inputs):
     result = engine.evaluate(proposal(current_suite, candidate=malicious), current_suite)
 
     assert result.status is EvaluationStatus.REJECTED
-    assert result.candidate_evidence is None
-    assert "blocked private or mutating attribute" in result.explanation
+    assert result.candidate_evidence is not None
+    assert result.candidate_evidence.passed is False
+    assert result.candidate_evidence.results
+    assert all(not item.passed for item in result.candidate_evidence.results)
+    assert all("blocked private or mutating attribute" in item.error
+               for item in result.candidate_evidence.results)
 
 
 def test_stage19_real_container_candidate_output_cannot_spoof_supervisor_manifest():
