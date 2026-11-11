@@ -19,6 +19,7 @@ from typing import Any, Callable, Iterable, Mapping
 
 from .capability_model import CapabilityRegistry
 from .execution import NativeOperationRegistry
+from .operational_language import UOL
 from .phase8_cross_domain_acceptance import (
     CrossDomainTransferBenchmarkReport,
     TransferBenchmarkStatus,
@@ -449,10 +450,17 @@ class ContinuousExpansionEngine:
         if not expected_fingerprints or actual_fingerprints != expected_fingerprints:
             raise ContinuousExpansionError("epoch proposals do not match their recorded fingerprints")
         for proposal in result.proposals:
+            try:
+                UOL(proposal.handler.rules).validate(proposal.program)
+            except Exception as exc:
+                raise ContinuousExpansionError(
+                    "epoch proposal has an invalid or mismatched UOL rule catalog"
+                ) from exc
             if (
                 proposal.handler.program != proposal.program
                 or proposal.capability.provenance.source != "mirror_verified_uol_program_learning"
                 or proposal.capability.provenance.source_ref != proposal.program.fingerprint
+                or proposal.capability.domains != (proposal.program.domain,)
                 or not proposal.capability.executable
                 or not proposal.capability.verification.checks_passed
             ):
