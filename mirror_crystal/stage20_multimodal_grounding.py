@@ -734,10 +734,16 @@ class RealWorldGroundingEngine:
                 xml = archive.read("word/document.xml")
             except KeyError as exc:
                 raise GroundingError("DOCX is missing word/document.xml") from exc
-        if b"<!DOCTYPE" in xml.upper() or b"<!ENTITY" in xml.upper():
+        # Parse only UTF-8 XML. A byte-level DTD scan can be bypassed by
+        # UTF-16 encodings, so decode first and inspect the actual XML text.
+        try:
+            xml_text = xml.decode("utf-8-sig", errors="strict")
+        except UnicodeDecodeError as exc:
+            raise GroundingError("DOCX document XML must use UTF-8 encoding") from exc
+        if re.search(r"<!\\s*(?:DOCTYPE|ENTITY)\\b", xml_text, flags=re.IGNORECASE):
             raise GroundingError("DOCX XML declarations/entities are forbidden")
         try:
-            root = ET.fromstring(xml)
+            root = ET.fromstring(xml_text)
         except ET.ParseError as exc:
             raise GroundingError("DOCX document XML is malformed") from exc
         ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}

@@ -197,6 +197,20 @@ def test_docx_table_rows_with_measurement_headers_become_grounded_observations()
     assert item.locator == "document:record:1"
 
 
+def test_docx_rejects_non_utf8_xml_before_xml_parser_can_expand_entities():
+    engine = RealWorldGroundingEngine()
+    out = io.BytesIO()
+    xml = (
+        '<!DOCTYPE x [<!ENTITY y "expanded">]>'
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        '<w:body><w:p><w:r><w:t>&y;</w:t></w:r></w:p></w:body></w:document>'
+    )
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("word/document.xml", xml.encode("utf-16"))
+    with pytest.raises(GroundingError, match="must use UTF-8 encoding"):
+        engine.ingest_document("docx-utf16-dtd", "hostile.docx", out.getvalue())
+
+
 def test_docx_rejects_path_traversal_and_xml_entity_payloads():
     engine = RealWorldGroundingEngine()
     out = io.BytesIO()
