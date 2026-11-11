@@ -159,7 +159,7 @@ def test_stage19_rejects_suite_without_minimum_regressions_and_improvement_case(
                 RegressionCase("i2", {}, "old2", "new2", RegressionCaseKind.IMPROVEMENT),
             ),
         )
-    with pytest.raises(SelfImprovementError, match="improvement cases"):
+    with pytest.raises(SelfImprovementError, match="improvement case"):
         FrozenRegressionSuite(
             "no-improvement", BASELINE_REVISION, ENVIRONMENT,
             (
@@ -366,9 +366,8 @@ def run(inputs):
     result = engine.evaluate(proposal(current_suite, candidate=malicious), current_suite)
 
     assert result.status is EvaluationStatus.REJECTED
-    assert result.candidate_evidence is not None
-    assert result.failed_case_ids
-    assert any("mutating attribute" in case.error for case in result.candidate_evidence.results)
+    assert result.candidate_evidence is None
+    assert "blocked private or mutating attribute" in result.explanation
 
 
 def test_stage19_real_container_candidate_output_cannot_spoof_supervisor_manifest():
