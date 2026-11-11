@@ -491,3 +491,100 @@ def test_stage14_http_server_endpoints():
         server.shutdown()
         server.server_close()
         thread.join(timeout=2.0)
+
+
+def test_stage14_provenance_rejects_file_uri_and_unknown_spdx():
+    base = dict(
+        source_id="strict_src",
+        title="Verified source",
+        publisher="Institution",
+        retrieved_at="2026-11-11T10:00:00Z",
+        sha256_hash=_hash("source body"),
+        content="source body",
+    )
+    with pytest.raises(EvidenceError, match="HTTPS or URN"):
+        SourceProvenance(url="file:///etc/passwd", license_spdx="MIT", **base)
+    with pytest.raises(EvidenceError, match="SPDX"):
+        SourceProvenance(url="https://example.org/source", license_spdx="NOT-A-REAL-LICENSE", **base)
+
+
+def test_stage14_provenance_requires_timezone_aware_iso_timestamp():
+    base = dict(
+        source_id="time_src",
+        title="Timestamp source",
+        url="https://example.org/source",
+        publisher="Institution",
+        license_spdx="MIT",
+        sha256_hash=_hash("source body"),
+        content="source body",
+    )
+    for bad_timestamp in ("2026-11-11", "not-a-date", "2026-11-11T10:00:00"):
+        with pytest.raises(EvidenceError, match="ISO-8601"):
+            SourceProvenance(retrieved_at=bad_timestamp, **base)
+
+
+def test_stage14_source_digest_requires_the_actual_source_content():
+    with pytest.raises(EvidenceError, match="source content is required"):
+        SourceProvenance(
+            source_id="digest_without_content",
+            title="Digest only",
+            url="urn:example:source:1",
+            publisher="Institution",
+            license_spdx="Apache-2.0",
+            retrieved_at="2026-11-11T10:00:00+00:00",
+            sha256_hash=_hash("not supplied"),
+            content="",
+        )
+
+
+def test_stage14_provenance_graph_rejects_passage_not_in_source_and_duplicate_ids():
+    source_text = "The original verified source contains this passage."
+    source = SourceProvenance(
+        source_id="containment_source",
+        title="Source",
+        url="https://example.org/verified",
+        publisher="Institution",
+        license_spdx="MIT",
+        retrieved_at="2026-11-11T10:00:00+00:00",
+        sha256_hash=_hash(source_text),
+        content=source_text,
+    )
+    graph = EvidenceProvenanceGraph()
+    graph.add_source(source)
+    with pytest.raises(EvidenceError, match="not contained"):
+        graph.add_passage(EvidencePassage(
+            passage_id="foreign_passage",
+            source_id=source.source_id,
+            locator="Section 1",
+            text="This text is not in the source.",
+            sha256_hash=_hash("This text is not in the source."),
+        ))
+    with pytest.raises(EvidenceError, match="Duplicate source_id"):
+        graph.add_source(source)
+
+    valid_passage_text = "The original verified source contains this passage."
+    passage = EvidencePassage(
+        passage_id="valid_passage",
+        source_id=source.source_id,
+        locator="Section 1",
+        text=valid_passage_text,
+        sha256_hash=_hash(valid_passage_text),
+    )
+    graph.add_passage(passage)
+    with pytest.raises(EvidenceError, match="Duplicate passage_id"):
+        graph.add_passage(passage)
+
+
+def test_stage14_source_provenance_accepts_valid_urn_and_z_timestamp():
+    source_text = "Verified content from an archived authority."
+    source = SourceProvenance(
+        source_id="urn_source",
+        title="URN source",
+        url="urn:example:authority:document-7",
+        publisher="Example Authority",
+        license_spdx="CC-BY-4.0",
+        retrieved_at="2026-11-11T10:00:00Z",
+        sha256_hash=_hash(source_text),
+        content=source_text,
+    )
+    assert source.sha256_hash == _hash(source_text)
