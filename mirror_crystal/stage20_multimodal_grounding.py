@@ -353,6 +353,7 @@ class RealWorldGroundingEngine:
     MAX_OBSERVATIONS = 10_000
     MAX_SEGMENTS = 10_000
     MAX_EXTRACTED_TEXT_BYTES = 4 * 1024 * 1024
+    MAX_TOTAL_EXTRACTED_TEXT_BYTES = 16 * 1024 * 1024
     MAX_DOCX_ENTRIES = 128
 
     def __init__(self, trust_registry: SourceTrustRegistry | None = None) -> None:
@@ -362,6 +363,7 @@ class RealWorldGroundingEngine:
         self._observations: dict[str, GroundedObservation] = {}
         self._telemetry_samples: set[tuple[str, str]] = set()
         self._source_bytes_total = 0
+        self._extracted_text_bytes = 0
 
     @property
     def assets(self) -> tuple[AssetProvenance, ...]:
@@ -595,7 +597,9 @@ class RealWorldGroundingEngine:
             retrieved_at=retrieved_at, publisher=publisher, license_spdx=license_spdx,
             signer_id=signer_id, signature_b64=signature_b64,
         )
-        entity = entity_key or f"image:{source_id}"
+        entity = _required_text(entity_key or f"image:{source_id}", "entity_key", 256).casefold()
+        if len(self._observations) + 7 > self.MAX_OBSERVATIONS:
+            raise GroundingError("observation count limit exceeded")
         features = (
             ("width_px", width, "px"),
             ("height_px", height, "px"),
@@ -783,6 +787,9 @@ class RealWorldGroundingEngine:
         extractor: Callable[[bytes], Iterable[ExtractedSegment]] | None = None,
         extractor_id: str | None = None,
     ) -> tuple[AssetProvenance, tuple[ExtractedSegment, ...]]:
+        source_id = _required_text(source_id, "source_id", 128)
+        if not _IDENTITY.fullmatch(source_id):
+            raise GroundingError("source_id contains unsupported characters")
         filename = _required_text(filename, "filename", 512)
         suffix = filename.rsplit(".", 1)[-1].casefold() if "." in filename else ""
         if not isinstance(raw, bytes):
@@ -858,6 +865,8 @@ class RealWorldGroundingEngine:
                         for index in range(min(len(headers), len(row)))
                     })
         else:
+            if suffix == "pdf" and not raw.startswith(b"%PDF-"):
+                raise GroundingError("PDF magic signature is invalid")
             if extractor is None or not callable(extractor):
                 raise GroundingError(
                     "unsupported document type; PDF and other formats require an explicit host extractor adapter"
@@ -881,32 +890,49 @@ class RealWorldGroundingEngine:
         text_size = sum(len(item.text.encode("utf-8")) for item in segments)
         if text_size > self.MAX_EXTRACTED_TEXT_BYTES:
             raise GroundingError("extracted document text exceeds the 4 MB limit")
+        if self._extracted_text_bytes + text_size > self.MAX_TOTAL_EXTRACTED_TEXT_BYTES:
+            raise GroundingError("total extracted document text limit exceeded")
         media_type = {
             "txt": "text/plain", "md": "text/markdown", "csv": "text/csv",
             "json": "application/json", "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         }.get(suffix, "application/octet-stream")
-        asset = self._register_asset(
-            source_id, Modality.DOCUMENT, media_type, raw, source_uri=source_uri,
-            retrieved_at=retrieved_at, publisher=publisher, license_spdx=license_spdx,
-            signer_id=signer_id, signature_b64=signature_b64,
-        )
-        selected_extractor = extractor_id or f"mirror-native-{suffix}"
-        for segment in segments:
-            text_hash = _digest(segment.text.encode("utf-8"))
-            identity_payload = {
-                "source_id": asset.source_id, "source_sha256": asset.sha256,
-                "locator": segment.locator, "text_sha256": text_hash,
-                "segment_kind": segment.segment_kind, "extractor_id": selected_extractor,
-            }
-            segment_id = _digest(_canonical(identity_payload).encode("utf-8"))
-            self._segments[segment_id] = DocumentEvidenceSegment(
-                segment_id=segment_id, source_id=asset.source_id, source_sha256=asset.sha256,
-                locator=segment.locator, text=segment.text, text_sha256=text_hash,
-                segment_kind=segment.segment_kind, extractor_id=selected_extractor,
+        bytes_before = self._source_bytes_total
+        segments_before = set(self._segments)
+        observations_before = set(self._observations)
+        asset_existed = source_id in self._assets
+        try:
+            asset = self._register_asset(
+                source_id, Modality.DOCUMENT, media_type, raw, source_uri=source_uri,
+                retrieved_at=retrieved_at, publisher=publisher, license_spdx=license_spdx,
+                signer_id=signer_id, signature_b64=signature_b64,
             )
-        if structured:
-            self._structured_rows(source_id, asset, structured, entity_default, "document")
-        return asset, tuple(segments)
+            selected_extractor = extractor_id or f"mirror-native-{suffix}"
+            for segment in segments:
+                text_hash = _digest(segment.text.encode("utf-8"))
+                identity_payload = {
+                    "source_id": asset.source_id, "source_sha256": asset.sha256,
+                    "locator": segment.locator, "text_sha256": text_hash,
+                    "segment_kind": segment.segment_kind, "extractor_id": selected_extractor,
+                }
+                segment_id = _digest(_canonical(identity_payload).encode("utf-8"))
+                self._segments[segment_id] = DocumentEvidenceSegment(
+                    segment_id=segment_id, source_id=asset.source_id, source_sha256=asset.sha256,
+                    locator=segment.locator, text=segment.text, text_sha256=text_hash,
+                    segment_kind=segment.segment_kind, extractor_id=selected_extractor,
+                )
+            if structured:
+                self._structured_rows(source_id, asset, structured, entity_default, "document")
+            self._extracted_text_bytes += text_size
+            return asset, tuple(segments)
+        except Exception:
+            if not asset_existed:
+                self._assets.pop(source_id, None)
+            for key in set(self._segments) - segments_before:
+                self._segments.pop(key, None)
+            for key in set(self._observations) - observations_before:
+                self._observations.pop(key, None)
+            self._source_bytes_total = bytes_before
+            raise
 
     @staticmethod
     def telemetry_signing_bytes(sample: Mapping[str, Any]) -> bytes:
@@ -931,6 +957,7 @@ class RealWorldGroundingEngine:
         *,
         device_id: str,
         signature_b64: str | None = None,
+        received_at: str | None = None,
         source_uri: str | None = None,
         publisher: str = "host-supplied-device-gateway",
     ) -> tuple[AssetProvenance, GroundedObservation]:
@@ -957,10 +984,12 @@ class RealWorldGroundingEngine:
         verified = self.trust_registry.verify(
             device_id if signature_b64 is not None else None, signature_b64, signing_payload,
         )
+        if len(self._observations) >= self.MAX_OBSERVATIONS:
+            raise GroundingError("observation count limit exceeded")
         raw = signing_payload
         asset = self._register_asset(
             source_id, Modality.TELEMETRY, "application/vnd.mirror.telemetry+json", raw,
-            source_uri=source_uri, retrieved_at=clean["observed_at"], publisher=publisher,
+            source_uri=source_uri, retrieved_at=received_at, publisher=publisher,
             license_spdx="LicenseRef-TelemetryRecord", signer_id=None, signature_b64=None,
         )
         # The signature authenticates the canonical record, not the raw asset digest.
