@@ -17,6 +17,7 @@ from enum import Enum
 import hashlib
 import math
 import os
+import re
 from pathlib import Path
 import sqlite3
 import threading
@@ -263,33 +264,38 @@ class LongTermMemoryManager:
             created_at=now,
             last_accessed_at=now,
             half_life_seconds=half_life_seconds,
-            metadata=metadata or {},
+            metadata=metadata if metadata is not None else {},
         )
 
         with self._lock:
-            with sqlite3.connect(self.db_path) as conn:
-                conn.execute("""
-                    INSERT INTO memories (
-                        memory_id, content, tier, importance_score, access_count,
-                        created_at, last_accessed_at, half_life_seconds, metadata,
-                        feedback_history, superseded_by, is_active, sha256_hash
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    node.memory_id,
-                    node.content,
-                    node.tier.value,
-                    node.importance_score,
-                    node.access_count,
-                    node.created_at,
-                    node.last_accessed_at,
-                    node.half_life_seconds,
-                    json.dumps(node.metadata, sort_keys=True, separators=(",", ":"), allow_nan=False),
-                    json.dumps(node.feedback_history, sort_keys=True, separators=(",", ":"), allow_nan=False),
-                    node.superseded_by,
-                    1 if node.is_active else 0,
-                    node.sha256_hash,
-                ))
-                conn.commit()
+            try:
+                with sqlite3.connect(self.db_path) as conn:
+                    conn.execute("""
+                        INSERT INTO memories (
+                            memory_id, content, tier, importance_score, access_count,
+                            created_at, last_accessed_at, half_life_seconds, metadata,
+                            feedback_history, superseded_by, is_active, sha256_hash
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        node.memory_id,
+                        node.content,
+                        node.tier.value,
+                        node.importance_score,
+                        node.access_count,
+                        node.created_at,
+                        node.last_accessed_at,
+                        node.half_life_seconds,
+                        json.dumps(node.metadata, sort_keys=True, separators=(",", ":"), allow_nan=False),
+                        json.dumps(node.feedback_history, sort_keys=True, separators=(",", ":"), allow_nan=False),
+                        node.superseded_by,
+                        1 if node.is_active else 0,
+                        node.sha256_hash,
+                    ))
+                    conn.commit()
+            except sqlite3.IntegrityError as exc:
+                raise MemoryProtectionError(
+                    f"Cannot insert memory '{mem_id}': IDs are immutable and duplicate IDs cannot replace existing records."
+                ) from exc
 
         return node
 
