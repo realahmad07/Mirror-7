@@ -539,3 +539,40 @@ __all__ += [
     "ResearchStatus",
     "evaluate_experiment",
 ]
+
+
+from .stage19_controlled_improvement import (
+    ApprovalDecision,
+    CaseExecutionResult,
+    ChangeKind,
+    ContainerRegressionExecutor,
+    ControlledSelfImprovementEngine,
+    EvaluationStatus,
+    ExecutionEvidence,
+    FrozenRegressionSuite,
+    HumanApprovalRecord,
+    ImprovementProposal,
+    PromotionAuthorization,
+    RegressionCase,
+    RegressionCaseKind,
+    SelfImprovementError,
+    SelfImprovementEvaluation,
+)
+
+__all__ += [
+    "ApprovalDecision",
+    "CaseExecutionResult",
+    "ChangeKind",
+    "ContainerRegressionExecutor",
+    "ControlledSelfImprovementEngine",
+    "EvaluationStatus",
+    "ExecutionEvidence",
+    "FrozenRegressionSuite",
+    "HumanApprovalRecord",
+    "ImprovementProposal",
+    "PromotionAuthorization",
+    "RegressionCase",
+    "RegressionCaseKind",
+    "SelfImprovementError",
+    "SelfImprovementEvaluation",
+]

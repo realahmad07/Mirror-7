@@ -1287,7 +1287,13 @@ Detailed Stage 17 correction report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.
 
 **Implementation status: PASS within the bounded adapter-backed scope.** Mirror can normalize a research request into deterministic subquestions and falsifiable hypotheses, ingest source records through a host-supplied discovery adapter, verify source and passage provenance with Stage 14, synthesize grounded claims and contradictions, and produce a structured report. Experiment designs are reproducible and paired observations are evaluated against predeclared multi-seed effect thresholds.
 
-The source-discovery adapter is caller-supplied; this module does not silently crawl the network. Experiment observations are caller-supplied records; the evaluator does not execute experiment code or attest that runs occurred. Stage 19 will add controlled sandbox execution and code-change evaluation. See [Stage 18 design and limits](docs/33-stage18-autonomous-research.md) and [Stage 18 report](artifacts/STAGE18_AUTONOMOUS_RESEARCH_REPORT.md).
+The source-discovery adapter is caller-supplied; this module does not silently crawl the network. Experiment observations are caller-supplied records; the evaluator does not execute experiment code or attest that runs occurred. See [Stage 18 design and limits](docs/33-stage18-autonomous-research.md) and [Stage 18 report](artifacts/STAGE18_AUTONOMOUS_RESEARCH_REPORT.md).
+
+### Stage 19 — Controlled Self-Improvement
+
+**Implementation status: PASS within the controlled artifact-evaluation scope.** Mirror accepts immutable code/rule improvement proposals bound to the baseline revision and source digests. A frozen suite contains at least three regression-preservation cases and one explicit improvement case. Baseline and candidate artifacts execute separately in fresh Docker/Podman containers using the pinned image, no network, read-only root, non-root UID, dropped capabilities, no-new-privileges, and fixed CPU/memory/PID/time limits. The same suite is checked against both artifacts; baseline failure or any candidate regression blocks review.
+
+A passing evaluation produces **READY FOR HUMAN REVIEW**, not deployment. An independent reviewer must explicitly approve the exact candidate digest, evaluation, suite, and environment before a scoped promotion authorization is returned. Stage 19 does not auto-apply source changes, mutate production registries, merge PRs, or deploy. Reviewer identity must be authenticated by the host application, and approval records must be persisted by that host. See [Stage 19 design and limits](docs/34-stage19-controlled-self-improvement.md) and [Stage 19 acceptance report](artifacts/STAGE19_CONTROLLED_SELF_IMPROVEMENT_REPORT.md).
 
 ### Current verification status
 

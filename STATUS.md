@@ -233,3 +233,18 @@ See [Phase 9 design and boundaries](docs/32-phase9-continuous-expansion.md).
 **Explicit limits:** No built-in web crawler or source provider is included; discovery adapters are host-supplied and must be trusted. Experiment outcomes are input records, not independently attested execution; Stage 17 sandbox integration and actual run attestation remain Stage 19 work. Stage 14 grounding metrics remain lexical/heuristic and do not prove semantic entailment.
 
 See [Stage 18 design](docs/33-stage18-autonomous-research.md) and [acceptance report](artifacts/STAGE18_AUTONOMOUS_RESEARCH_REPORT.md).
+
+
+## Stage 19 — Controlled Self-Improvement
+
+**Status: PASS within the controlled container-evaluation and human-approval scope.**
+
+- Immutable code/rule proposals bind exact baseline and candidate source digests, a Git baseline revision, and a frozen suite fingerprint.
+- The frozen suite binds its runtime, pinned image, timeout, memory, PID limits and environment fingerprint. It requires at least three unchanged regression cases plus one explicit improvement case.
+- Baseline and candidate execute in separate fresh Docker/Podman containers with network disabled, read-only root, non-root identity, dropped capabilities, no-new-privileges, and bounded resources. A trusted PID-1 supervisor runs each candidate case in a separate child process; candidate stdout cannot spoof the supervisor manifest. PID 1 is verified in returned evidence. Missing container runtime is a hard failure; there is no process-mode downgrade.
+- Candidate evaluation is rejected if the baseline is not fully passing, any candidate case fails, artifact/suite/environment evidence is misbound, candidate attempts to mutate imported modules/runner internals, result output is spoofed, or sandbox execution is incomplete.
+- Passing returns READY_FOR_HUMAN_REVIEW only. An independent reviewer decision issues a scoped authorization for the exact candidate SHA, suite and evaluation. No production registry or repository mutation is performed by this stage.
+
+**Explicit limits:** candidate artifacts use a bounded `run(inputs) -> JSON` entrypoint. Reviewer identity authentication and durable approval/audit storage belong to the host application. Promotion, deployment, rollback and automatic PR application are not performed. The injected fake executor is for unit tests only; production uses `ContainerRegressionExecutor`.
+
+See [Stage 19 design](docs/34-stage19-controlled-self-improvement.md) and [acceptance report](artifacts/STAGE19_CONTROLLED_SELF_IMPROVEMENT_REPORT.md).

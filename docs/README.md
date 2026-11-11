@@ -37,6 +37,7 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [31 — Phase 8 sealed cross-domain intelligence](31-phase8-cross-domain-intelligence.md) | Frozen multi-domain transfer matrix, adversarial negative controls, target-domain independent verification and repeated learning. |
 | [32 — Phase 9 evidence-gated continuous expansion](32-phase9-continuous-expansion.md) | Three-cycle expansion admission gate with distinct benchmarks/tasks, fixed baseline, negative controls and independent review. |
 | [33 — Stage 18 autonomous research](33-stage18-autonomous-research.md) | Bounded research planning, provenance-checked source ingestion, claim synthesis, contradiction reporting and reproducible experiment evaluation. |
+| [34 — Stage 19 controlled self-improvement](34-stage19-controlled-self-improvement.md) | Immutable improvement proposals, dual-container baseline/candidate evaluation, frozen regression and improvement gates, fail-closed rejection and explicit human approval. |
 | [Core pipeline acceptance and roadmap alignment](../PHASE1_9_ACCEPTANCE.md) | Nine engineering-layer test results plus honest status of the original strategic nine-phase roadmap. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 
