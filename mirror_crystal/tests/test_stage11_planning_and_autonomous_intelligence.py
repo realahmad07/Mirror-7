@@ -629,3 +629,16 @@ def test_stage11_6_mutable_session_values_are_detached():
     retrieved["items"].append("retrieval-mutation")
     assert sessions.get_session_variable("A", "payload") == {"items": ["private"]}
     assert sessions.get_session_variable("B", "payload") is None
+
+
+def test_stage11_2_unknown_frozen_seed_fails_closed():
+    with pytest.raises(KeyError):
+        FrozenBenchmarkEnforcer.get_deterministic_rng("typo_seed_name")
+
+
+def test_stage11_5_empty_evaluation_suite_does_not_report_perfect_scores():
+    metrics = CalibratedEpistemicEvaluator.compute_suite_metrics([])
+    assert metrics.total_queries == 0
+    assert metrics.abstention_recall == 0.0
+    assert metrics.abstention_precision == 0.0
+    assert metrics.accuracy_on_grounded == 0.0
