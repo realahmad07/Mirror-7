@@ -1301,6 +1301,14 @@ A passing evaluation produces **READY FOR HUMAN REVIEW**, not deployment. An ind
 
 The cross-modal engine compares observations tied to the same entity and attribute, normalizes supported units, and reports verified agreement, unsigned corroboration, conflict, incomparable evidence or insufficient evidence. It does not average away disagreement or infer authenticity from file integrity alone. Built-in vision is pixel-statistical, not general object recognition; semantic image labels require a host-trusted perception adapter. Host key enrollment, PDF/OCR adapters and durable audit storage remain integration responsibilities. See [Stage 20 design and limits](docs/35-stage20-multimodal-grounding.md) and [Stage 20 acceptance report](artifacts/STAGE20_MULTIMODAL_GROUNDING_REPORT.md).
 
+### Stage 21 — Grounded Autonomous Action & Feedback
+
+**Implementation status: bounded action proposal, independent-check and sandbox-feedback scope.** Host-registered actions are immutable, typed JSON contracts that bind exact action source, inputs, verified Stage 20 evidence and explicit expected postconditions. Two distinct checker identities independently validate evidence provenance and action policy before execution. Action code runs through the Stage 19 hardened per-case container supervisor with network disabled, read-only root, non-root identity, dropped capabilities, resource caps and a trusted result manifest.
+
+Mirror compares returned sandbox observations with predicted postconditions, records matches, mismatches and execution failures in an append-only in-memory history, and never silently changes trusted knowledge. Consequential actions require a separate, single-use human approval from someone other than the proposal author. Read-only and reversible classifications remain bound to the registered host allow-list and exact definition digest.
+
+**Explicit limits:** Stage 21 executes bounded computations inside the isolated container; it does not directly operate hardware, external services, the host filesystem or production systems. A separate trusted host adapter must authenticate reviewers, persist the audit ledger, and enforce the approval token before any consequential real-world side effect. The current implementation is not a general-purpose autonomous actuator. See [Stage 21 design and boundaries](docs/36-stage21-grounded-autonomous-action.md) and [Stage 21 acceptance report](artifacts/STAGE21_GROUNDED_ACTION_REPORT.md).
+
 ### Current verification status
 
 The CLI/runtime repair implementation is at commit **[`143647a`](https://github.com/realahmad07/Mirror-7/commit/143647a4e1cd7bc3e1e81f31d5ffa87642f0fe58)**.

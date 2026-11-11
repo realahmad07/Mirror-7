@@ -261,4 +261,19 @@ See [Stage 18 design](docs/33-stage18-autonomous-research.md) and [acceptance re
 
 See [Stage 20 design](docs/35-stage20-multimodal-grounding.md) and [acceptance report](artifacts/STAGE20_MULTIMODAL_GROUNDING_REPORT.md).
 
+## Stage 21 — Grounded Autonomous Action & Feedback
+
+**Status: bounded implementation; full acceptance pending CI.**
+
+- Immutable action proposals bind a registered code definition, strict JSON inputs, Stage 20 report fingerprint, selected observation IDs and expected postconditions.
+- Two distinct verifier identities check cross-modal verified agreement/source provenance and the registered action contract before execution. Evidence that is unsigned, incomplete, altered or not part of one verified agreement is blocked.
+- Actions execute only through the Stage 19 hardened per-case container supervisor. Container PID, runtime, exit code and trusted result-manifest identity are checked; the sandbox has no network or host mounts.
+- Predicted postconditions are compared with actual sandbox outputs. Success, mismatch and fail-closed execution errors are recorded with evidence-bound feedback and a single-use proposal history.
+- Consequential actions require a separately recorded human approval. The proposal author cannot approve, and approval is bound to the exact proposal and verification record.
+
+**Explicit limits:** no direct device, hardware, external service, filesystem or production actuation is performed. The host must authenticate reviewer identities, persist the audit ledger and enforce the approval token before any real-world side effect. Trusted knowledge is never silently updated from execution feedback.
+
+See [Stage 21 design](docs/36-stage21-grounded-autonomous-action.md) and [acceptance report](artifacts/STAGE21_GROUNDED_ACTION_REPORT.md).
+
+
 See [Stage 19 design](docs/34-stage19-controlled-self-improvement.md) and [acceptance report](artifacts/STAGE19_CONTROLLED_SELF_IMPROVEMENT_REPORT.md).
