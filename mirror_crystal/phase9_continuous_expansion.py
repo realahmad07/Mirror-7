@@ -296,14 +296,26 @@ class ContinuousExpansionEngine:
         if any(item.epoch_id == epoch_id.strip() for item in self.ledger.entries()):
             raise ContinuousExpansionError("epoch_id already exists in the ledger")
 
-        regression_items = tuple(regression_cases)
-        if not 1 <= len(regression_items) <= self.MAX_REGRESSION_CASES:
+        supplied_cases = tuple(regression_cases)
+        if not 1 <= len(supplied_cases) <= self.MAX_REGRESSION_CASES:
             raise ContinuousExpansionError("each epoch requires 1..10000 frozen regression cases")
-        if any(not isinstance(item, FrozenRegressionCase) for item in regression_items):
+        if any(not isinstance(item, FrozenRegressionCase) for item in supplied_cases):
             raise TypeError("regression_cases must contain FrozenRegressionCase values")
-        case_ids = tuple(item.case_id for item in regression_items)
+        case_ids = tuple(item.case_id for item in supplied_cases)
         if len(set(case_ids)) != len(case_ids):
             raise ContinuousExpansionError("regression case identifiers must be unique")
+        # Snapshot the complete JSON-compatible regression payload before executing
+        # any callback. Each baseline call receives a fresh deep copy, so mutable
+        # nested inputs cannot drift after the manifest is frozen.
+        regression_snapshots = tuple(
+            json.loads(_canonical_json({
+                "case_id": item.case_id,
+                "capability_id": item.capability_id,
+                "inputs": dict(item.inputs),
+                "expected": item.expected,
+            }))
+            for item in supplied_cases
+        )
 
         proposals = benchmark.learning_proposals
         target_ids = tuple(
@@ -333,39 +345,32 @@ class ContinuousExpansionEngine:
             blockers.append("target capability was already accepted in an earlier epoch")
 
         regression_results = []
-        for case in regression_items:
+        for case in regression_snapshots:
             try:
-                actual = baseline_runner(case.capability_id, dict(case.inputs))
-                passed = _same_value(actual, case.expected)
+                actual = baseline_runner(
+                    case["capability_id"],
+                    json.loads(_canonical_json(case["inputs"])),
+                )
+                passed = _same_value(actual, case["expected"])
                 regression_results.append({
-                    "case_id": case.case_id,
-                    "capability_id": case.capability_id,
+                    "case_id": case["case_id"],
+                    "capability_id": case["capability_id"],
                     "passed": passed,
                 })
                 checked += 1
                 if not passed:
-                    blockers.append(f"frozen regression failed: {case.case_id}")
+                    blockers.append(f"frozen regression failed: {case['case_id']}")
             except Exception as exc:
                 regression_results.append({
-                    "case_id": case.case_id,
-                    "capability_id": case.capability_id,
+                    "case_id": case["case_id"],
+                    "capability_id": case["capability_id"],
                     "passed": False,
                     "error": f"{type(exc).__name__}: {str(exc)[:300]}",
                 })
                 checked += 1
-                blockers.append(f"frozen regression could not run: {case.case_id}")
+                blockers.append(f"frozen regression could not run: {case['case_id']}")
 
-        regression_manifest_payload = {
-            "cases": [
-                {
-                    "case_id": case.case_id,
-                    "capability_id": case.capability_id,
-                    "inputs": dict(case.inputs),
-                    "expected": case.expected,
-                }
-                for case in regression_items
-            ],
-        }
+        regression_manifest_payload = {"cases": list(regression_snapshots)}
         regression_manifest_sha256 = hashlib.sha256(
             _canonical_json(regression_manifest_payload).encode("utf-8")
         ).hexdigest()
