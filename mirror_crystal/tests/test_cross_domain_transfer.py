@@ -323,12 +323,12 @@ def make_programming_observations(proposal, prefix="target-program", offset=0):
         observations.append(VerifiedProgramObservation(task_id, proposal.capability, execution, verification))
     return tuple(observations)
 
-def run_phase8_manifest(name, offset=0, with_verifiers=True):
+def run_phase8_manifest(name, offset=0, with_verifiers=True, observation_prefix=None):
     manifest = phase8_manifest(name, offset)
     verifiers = {}
     if with_verifiers:
         for index, case in enumerate(manifest.cases):
-            prefix = f"{name}-case-{index}"
+            prefix = f"{observation_prefix or name}-case-{index}"
             if case.expect_transfer and case.target_domain == "mathematics":
                 verifiers[case.case_id] = (
                     lambda proposal, p=prefix, o=offset:
@@ -340,6 +340,10 @@ def run_phase8_manifest(name, offset=0, with_verifiers=True):
                         make_programming_observations(proposal, prefix=p, offset=o)
                 )
     return CrossDomainBenchmarkRunner().run(manifest, target_verifiers=verifiers)
+
+def report_observation_tasks(report):
+    return tuple(sorted({task for proposal in report.learned_proposals for task in proposal.observation_task_ids}))
+
 
 def test_phase8_benchmark_requires_target_verification_and_passes_negative_control():
     report = run_phase8_manifest("phase8-accepted")
@@ -364,7 +368,7 @@ def test_phase9_requires_three_distinct_benchmark_cycles_and_unseen_tasks():
     cycles = tuple(
         ExpansionCycleEvidence(
             f"cycle-{index}", report,
-            tuple(f"task-{index}-{part}" for part in range(3)),
+            report_observation_tasks(report),
             (f"unseen-{index}-a", f"unseen-{index}-b"),
             ("reviewer-a", "reviewer-b"), True, "f" * 64,
         )
@@ -381,12 +385,15 @@ def test_phase9_requires_three_distinct_benchmark_cycles_and_unseen_tasks():
 def test_phase9_rejects_reused_tasks_and_baseline_drift():
     import pytest
     reports = tuple(
-        run_phase8_manifest(f"phase9-invalid-{index}", offset=index * 70)
+        run_phase8_manifest(
+            f"phase9-invalid-{index}", offset=index * 70,
+            observation_prefix=("phase9-invalid-0" if index == 1 else None),
+        )
         for index in range(3)
     )
     duplicate_tasks = tuple(
         ExpansionCycleEvidence(
-            f"duplicate-{index}", report, ("same", "task-b", "task-c"),
+            f"duplicate-{index}", report, report_observation_tasks(report),
             (f"unseen-{index}",), ("reviewer-a", "reviewer-b"), True, "f" * 64,
         )
         for index, report in enumerate(reports)
@@ -395,9 +402,9 @@ def test_phase9_rejects_reused_tasks_and_baseline_drift():
         ContinuousExpansionEngine().propose(duplicate_tasks)
 
     drifted = (
-        ExpansionCycleEvidence("baseline-a", reports[0], ("a1", "a2", "a3"), ("ua",), ("reviewer-a", "reviewer-b"), True, "a" * 64),
-        ExpansionCycleEvidence("baseline-b", reports[1], ("b1", "b2", "b3"), ("ub",), ("reviewer-a", "reviewer-b"), True, "b" * 64),
-        ExpansionCycleEvidence("baseline-c", reports[2], ("c1", "c2", "c3"), ("uc",), ("reviewer-a", "reviewer-b"), True, "a" * 64),
+        ExpansionCycleEvidence("baseline-a", reports[0], report_observation_tasks(reports[0]), ("ua",), ("reviewer-a", "reviewer-b"), True, "a" * 64),
+        ExpansionCycleEvidence("baseline-b", reports[1], report_observation_tasks(reports[1]), ("ub",), ("reviewer-a", "reviewer-b"), True, "b" * 64),
+        ExpansionCycleEvidence("baseline-c", reports[2], report_observation_tasks(reports[2]), ("uc",), ("reviewer-a", "reviewer-b"), True, "a" * 64),
     )
     with pytest.raises(ValueError, match="same frozen baseline"):
         ContinuousExpansionEngine().propose(drifted)
