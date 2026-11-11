@@ -157,12 +157,11 @@ def test_stage18_discovery_exception_fails_closed_with_abstention():
 
 def test_stage18_rejects_malformed_source_and_duplicate_passage_identifiers():
     valid = source_candidate(content="tampered", claim="tampered")
-    invalid_provenance = replace(
-        valid.provenance,
-        sha256_hash=digest("different content"),
-    )
     with pytest.raises(EvidenceError, match="digest mismatch"):
-        ResearchSourceCandidate(invalid_provenance, valid.passages, valid.claims)
+        replace(
+            valid.provenance,
+            sha256_hash=digest("different content"),
+        )
     first = source_candidate("source-1")
     second = source_candidate("source-2")
     reused_passage = EvidencePassage(
@@ -204,8 +203,9 @@ def test_stage18_experiment_evaluation_rejects_missing_seed_duplicate_run_and_wr
     items = observations(current)
     with pytest.raises(ResearchError, match="every declared seed"):
         evaluate_experiment(current, items[:-1])
+    repeated_run_id = replace(items[-1], run_id=items[0].run_id)
     with pytest.raises(ResearchError, match="run identifiers"):
-        evaluate_experiment(current, items[:-1] + (items[0],))
+        evaluate_experiment(current, items[:-1] + (repeated_run_id,))
     wrong_environment = (
         *items[:-1],
         ExperimentObservation(
