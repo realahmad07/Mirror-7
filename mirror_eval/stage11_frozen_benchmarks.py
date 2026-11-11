@@ -192,8 +192,10 @@ class FrozenBenchmarkEnforcer:
     @classmethod
     def get_deterministic_rng(cls, generator_key: str) -> random.Random:
         """Returns an isolated, deterministic random generator seeded by frozen specification."""
-        seed = FROZEN_BENCHMARK_SPEC["deterministic_generators"].get(generator_key, 42)
-        return random.Random(seed)
+        generators = FROZEN_BENCHMARK_SPEC["deterministic_generators"]
+        if generator_key not in generators:
+            raise KeyError(f"Unknown frozen generator key: {generator_key!r}")
+        return random.Random(generators[generator_key])
 
     @classmethod
     def verify_vault_invariants(cls) -> Tuple[bool, int, str]:
