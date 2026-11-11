@@ -58,10 +58,12 @@ for checked_source in sources_to_check:
         elif isinstance(node, ast.ImportFrom):
             if (node.module or "").split(".")[0] not in allowed:
                 raise RuntimeError("blocked from-import: " + str(node.module))
-        elif isinstance(node, ast.Attribute) and node.attr.startswith("__") and node.attr.endswith("__"):
-            raise RuntimeError("blocked dunder attribute: " + node.attr)
+        elif isinstance(node, ast.Attribute) and (
+            node.attr.startswith("_") or isinstance(node.ctx, (ast.Store, ast.Del))
+        ):
+            raise RuntimeError("blocked private or mutating attribute: " + node.attr)
         elif isinstance(node, ast.Name):
-            if node.id in {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit","_mc_step_tick"}:
+            if node.id.startswith("_") or node.id in {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit"}:
                 raise RuntimeError("blocked name: " + node.id)
 
 steps = [0]
@@ -114,9 +116,9 @@ try:
         "math": math, "cmath": cmath, "decimal": decimal, "operator": operator,
         "queue": queue, "enum": enum, "heapq": heapq, "collections": collections,
         "bisect": bisect, "itertools": itertools, "functools": functools,
-        "typing": __import__("typing"), "fractions": fractions, "statistics": statistics,
+        "fractions": fractions, "statistics": statistics,
         "re": re, "json": json, "csv": csv, "string": string, "random": random,
-        "copy": copy, "dataclasses": dataclasses,
+        "copy": copy,
     }
     allowed = set(modules)
     for node in ast.walk(ast.parse(candidate_source)):
@@ -127,10 +129,12 @@ try:
         elif isinstance(node, ast.ImportFrom):
             if (node.module or "").split(".")[0] not in allowed:
                 raise RuntimeError("blocked from-import: " + str(node.module))
-        elif isinstance(node, ast.Attribute) and node.attr.startswith("__") and node.attr.endswith("__"):
-            raise RuntimeError("blocked dunder attribute: " + node.attr)
+        elif isinstance(node, ast.Attribute) and (
+                node.attr.startswith("_") or isinstance(node.ctx, (ast.Store, ast.Del))
+            ):
+            raise RuntimeError("blocked private or mutating attribute: " + node.attr)
         elif isinstance(node, ast.Name):
-            if node.id in {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit","_mc_step_tick"}:
+            if node.id.startswith("_") or node.id in {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit"}:
                 raise RuntimeError("blocked name: " + node.id)
     steps = [0]
     def tick():
