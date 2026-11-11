@@ -146,6 +146,15 @@ from .verified_program_learning import (
 from .cross_domain_transfer import (
     CrossDomainTransferEngine, CrossDomainTransferError, CrossDomainTransferProposal,
 )
+from .phase8_cross_domain_acceptance import (
+    CrossDomainTransferBenchmarkEngine, CrossDomainTransferBenchmarkReport,
+    TransferBenchmarkError, TransferBenchmarkStatus, TransferTargetBenchmark,
+    TransferTargetResult,
+)
+from .phase9_continuous_expansion import (
+    ContinuousExpansionEngine, ContinuousExpansionError, ExpansionDecision,
+    ExpansionEpochResult, ExpansionLedger, ExpansionLedgerEntry, FrozenRegressionCase,
+)
 from .failure_repair import (
     FailureDiagnosis, FailureKind, FailureRepairEngine, FailureRepairError,
     RepairProposal, RepairStatus,
@@ -312,6 +321,11 @@ __all__ += [
     "ProgramLearningError", "UOLProgramHandler", "UOLProgramLearningProposal",
     "VerifiedProgramLearningEngine", "VerifiedProgramObservation",
     "CrossDomainTransferEngine", "CrossDomainTransferError", "CrossDomainTransferProposal",
+    "CrossDomainTransferBenchmarkEngine", "CrossDomainTransferBenchmarkReport",
+    "TransferBenchmarkError", "TransferBenchmarkStatus", "TransferTargetBenchmark",
+    "TransferTargetResult", "ContinuousExpansionEngine", "ContinuousExpansionError",
+    "ExpansionDecision", "ExpansionEpochResult", "ExpansionLedger",
+    "ExpansionLedgerEntry", "FrozenRegressionCase",
 ]
 
 __all__ += [
