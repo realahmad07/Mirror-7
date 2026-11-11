@@ -36,6 +36,39 @@ def _probability(value: int | Fraction, name: str) -> Fraction:
     return result
 
 
+def _polynomial(coefficients: Dict[int, int | Fraction], name: str = "coefficients") -> Dict[int, Fraction]:
+    if not isinstance(coefficients, dict):
+        raise TypeError(f"{name} must be a mapping of non-negative integer powers to exact coefficients")
+    result: Dict[int, Fraction] = {}
+    for power, coefficient in coefficients.items():
+        _integer(power, f"{name} power")
+        result[power] = _exact_fraction(coefficient, f"{name}[{power}]")
+    return result
+
+
+def _matrix(matrix: List[List[int | Fraction]], name: str, rows: Optional[int] = None,
+            cols: Optional[int] = None) -> List[List[Fraction]]:
+    if not isinstance(matrix, (list, tuple)) or not matrix:
+        raise ValueError(f"{name} must be a non-empty matrix")
+    if not all(isinstance(row, (list, tuple)) for row in matrix):
+        raise TypeError(f"{name} rows must be sequences")
+    width = len(matrix[0])
+    if width == 0 or any(len(row) != width for row in matrix):
+        raise ValueError(f"{name} must be rectangular and non-empty")
+    if rows is not None and len(matrix) != rows:
+        raise ValueError(f"{name} must have {rows} rows")
+    if cols is not None and width != cols:
+        raise ValueError(f"{name} must have {cols} columns")
+    return [[_exact_fraction(cell, f"{name}[{i}][{j}]") for j, cell in enumerate(row)]
+            for i, row in enumerate(matrix)]
+
+
+def _vector(vector: List[int | Fraction], name: str, length: int) -> List[Fraction]:
+    if not isinstance(vector, (list, tuple)) or len(vector) != length:
+        raise ValueError(f"{name} must contain exactly {length} values")
+    return [_exact_fraction(value, f"{name}[{i}]") for i, value in enumerate(vector)]
+
+
 # ============================================================================
 # 1. Exact Algebra Oracle
 # ============================================================================
@@ -98,11 +131,11 @@ class ExactAlgebraOracle:
         vector_b: List[int | Fraction],
     ) -> Optional[List[Fraction]]:
         """Solves Ax = b for a 3x3 system via exact rational Gauss-Jordan elimination."""
-        if len(matrix_a) != 3 or any(len(row) != 3 for row in matrix_a) or len(vector_b) != 3:
-            raise ValueError("Expected 3x3 matrix and 3-element vector")
+        matrix_a = _matrix(matrix_a, "matrix_a", rows=3, cols=3)
+        vector_b = _vector(vector_b, "vector_b", 3)
 
         # Augmented matrix [A | b]
-        aug = [[Fraction(matrix_a[i][j]) for j in range(3)] + [Fraction(vector_b[i])] for i in range(3)]
+        aug = [[matrix_a[i][j] for j in range(3)] + [vector_b[i]] for i in range(3)]
 
         for col in range(3):
             # Pivot selection
@@ -146,7 +179,8 @@ class ExactCalculusOracle:
         order: int = 1,
     ) -> Dict[int, Fraction]:
         """Computes d^n/dx^n of a polynomial represented as power -> coefficient."""
-        cur = {p: Fraction(c) for p, c in coefficients.items()}
+        cur = _polynomial(coefficients)
+        order = _integer(order, "order")
         for _ in range(order):
             nxt: Dict[int, Fraction] = {}
             for power, coeff in cur.items():
@@ -158,10 +192,11 @@ class ExactCalculusOracle:
     @classmethod
     def evaluate_polynomial(cls, coefficients: Dict[int, int | Fraction], x: int | Fraction) -> Fraction:
         """Evaluates P(x) at x using exact Fractions."""
-        x = Fraction(x)
+        coefficients = _polynomial(coefficients)
+        x = _exact_fraction(x, "x")
         total = Fraction(0)
         for power, coeff in coefficients.items():
-            total += Fraction(coeff) * (x ** power)
+            total += coeff * (x ** power)
         return total
 
     @classmethod
@@ -172,14 +207,15 @@ class ExactCalculusOracle:
         upper: int | Fraction,
     ) -> Fraction:
         """Computes int_lower^upper P(x) dx via exact antiderivative evaluation."""
-        lower = Fraction(lower)
-        upper = Fraction(upper)
+        coefficients = _polynomial(coefficients)
+        lower = _exact_fraction(lower, "lower")
+        upper = _exact_fraction(upper, "upper")
 
         # Compute antiderivative Q(x)
         anti: Dict[int, Fraction] = {}
         for power, coeff in coefficients.items():
             if coeff != 0:
-                anti[power + 1] = Fraction(coeff, power + 1)
+                anti[power + 1] = coeff / (power + 1)
 
         val_upper = cls.evaluate_polynomial(anti, upper)
         val_lower = cls.evaluate_polynomial(anti, lower)
@@ -249,12 +285,10 @@ class ExactLinearAlgebraOracle:
         b: List[List[int | Fraction]],
     ) -> List[List[Fraction]]:
         """Multiplies matrices A (m x p) and B (p x n) over Fraction."""
-        if not a or not b or not a[0] or not b[0]:
-            raise ValueError("Matrices must be non-empty")
+        a = _matrix(a, "a")
+        b = _matrix(b, "b")
         cols_a = len(a[0])
         cols_b = len(b[0])
-        if any(len(row) != cols_a for row in a) or any(len(row) != cols_b for row in b):
-            raise ValueError("Matrices must be rectangular")
         rows_a = len(a)
         rows_b = len(b)
         if cols_a != rows_b:
@@ -263,15 +297,13 @@ class ExactLinearAlgebraOracle:
         res = [[Fraction(0) for _ in range(cols_b)] for _ in range(rows_a)]
         for i in range(rows_a):
             for j in range(cols_b):
-                res[i][j] = sum(Fraction(a[i][k]) * Fraction(b[k][j]) for k in range(cols_a))
+                res[i][j] = sum(a[i][k] * b[k][j] for k in range(cols_a))
         return res
 
     @classmethod
     def determinant_3x3(cls, m: List[List[int | Fraction]]) -> Fraction:
         """Computes exact 3x3 determinant via Sarrus' rule."""
-        if len(m) != 3 or any(len(r) != 3 for r in m):
-            raise ValueError("Expected 3x3 matrix")
-        f = [[Fraction(cell) for cell in row] for row in m]
+        f = _matrix(m, "matrix", rows=3, cols=3)
         pos = (
             f[0][0] * f[1][1] * f[2][2]
             + f[0][1] * f[1][2] * f[2][0]
@@ -287,10 +319,9 @@ class ExactLinearAlgebraOracle:
     @classmethod
     def matrix_inverse_2x2(cls, m: List[List[int | Fraction]]) -> Optional[List[List[Fraction]]]:
         """Computes exact 2x2 inverse."""
-        if len(m) != 2 or any(len(r) != 2 for r in m):
-            raise ValueError("Expected 2x2 matrix")
-        a, b = Fraction(m[0][0]), Fraction(m[0][1])
-        c, d = Fraction(m[1][0]), Fraction(m[1][1])
+        m = _matrix(m, "matrix", rows=2, cols=2)
+        a, b = m[0]
+        c, d = m[1]
         det = a * d - b * c
         if det == 0:
             return None
@@ -303,10 +334,11 @@ class ExactLinearAlgebraOracle:
     @classmethod
     def trace(cls, m: List[List[int | Fraction]]) -> Fraction:
         """Computes matrix trace (sum of diagonal elements)."""
-        if not m or any(len(row) != len(m) for row in m):
+        m = _matrix(m, "matrix")
+        if any(len(row) != len(m) for row in m):
             raise ValueError("Expected a non-empty square matrix")
         dim = len(m)
-        return sum(Fraction(m[i][i]) for i in range(dim))
+        return sum(m[i][i] for i in range(dim))
 
 
 # ============================================================================
