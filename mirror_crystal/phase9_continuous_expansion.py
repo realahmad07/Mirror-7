@@ -105,6 +105,8 @@ class ContinuousExpansionEngine:
                 cycle_tasks.update(proposal.observation_task_ids)
                 cycle_executions.update(proposal.execution_fingerprints)
                 cycle_evidence.update(proposal.evidence_fingerprints)
+            if not cycle_tasks.issubset(set(cycle.task_ids)):
+                raise ContinuousExpansionError("cycle task IDs must include every verified observation task")
             if cycle_tasks & observed_tasks:
                 raise ContinuousExpansionError("verified observation task IDs must be fresh across cycles")
             if cycle_executions & observed_executions:
