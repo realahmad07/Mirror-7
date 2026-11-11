@@ -13,7 +13,8 @@ The default gate requires at least three cycles. Every cycle must contain:
 - at least three distinct task IDs and one or more distinct unseen-case IDs;
 - at least two distinct reviewer IDs;
 - a SHA-256 fingerprint for the frozen baseline;
-- no overlap in task IDs or unseen-case IDs with other cycles.
+- no overlap in task IDs or unseen-case IDs with other cycles;
+- fresh verified observation-task IDs, execution fingerprints and evidence fingerprints across cycles, all bound to the learned proposals.
 
 Across the cycle set, the engine requires:
 - distinct frozen benchmark fingerprints;
