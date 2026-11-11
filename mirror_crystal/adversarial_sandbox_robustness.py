@@ -104,7 +104,7 @@ class ResourceExhaustionGuard:
         if not isinstance(pattern_str, str) or len(pattern_str) > 10_000:
             return False, "Regex must be text within the inspection size limit"
         if cls.REDOS_PATTERN.search(pattern_str):
-            return False, "Possible ReDoS: nested quantifier heuristic matched"
+            return False, "Possible ReDoS risk: nested quantifier heuristic matched"
         try:
             re.compile(pattern_str)
         except re.error as err:
