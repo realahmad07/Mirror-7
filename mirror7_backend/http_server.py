@@ -370,6 +370,101 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 })
                 return
 
+            if parts in (["api", "evidence", "verify"], ["api", "v1", "evidence", "verify"]):
+                query = str(payload.get("query", ""))
+                raw_claims = payload.get("claims", [])
+                raw_sources = payload.get("sources", [])
+                raw_passages = payload.get("passages", [])
+                threshold = float(payload.get("confidence_threshold", 0.55))
+
+                from mirror_crystal.evidence_intelligence import (
+                    EvidenceBasedIntelligenceEngine,
+                    SourceProvenance,
+                    EvidencePassage,
+                    AtomicClaim,
+                )
+
+                claims_obj = []
+                if isinstance(raw_claims, str):
+                    claims_obj = EvidenceBasedIntelligenceEngine.decompose_statements(raw_claims)
+                elif isinstance(raw_claims, list):
+                    for idx, c in enumerate(raw_claims, 1):
+                        if isinstance(c, str):
+                            claims_obj.append(AtomicClaim(claim_id=f"c_{idx:03d}", statement=c))
+                        elif isinstance(c, dict):
+                            claims_obj.append(AtomicClaim(
+                                claim_id=c.get("claim_id", f"c_{idx:03d}"),
+                                statement=c.get("statement", ""),
+                                subject=c.get("subject", ""),
+                                predicate=c.get("predicate", ""),
+                                object_val=c.get("object_val", ""),
+                                is_assumption=bool(c.get("is_assumption", False)),
+                            ))
+
+                sources_obj = []
+                for s in raw_sources:
+                    if isinstance(s, dict):
+                        sources_obj.append(SourceProvenance(
+                            source_id=s.get("source_id", ""),
+                            title=s.get("title", ""),
+                            url=s.get("url", ""),
+                            publisher=s.get("publisher", ""),
+                            license_spdx=s.get("license_spdx", ""),
+                            retrieved_at=s.get("retrieved_at", "2026-01-01T00:00:00+00:00"),
+                            sha256_hash=s.get("sha256_hash", ""),
+                            content=s.get("content", ""),
+                        ))
+
+                passages_obj = []
+                for p in raw_passages:
+                    if isinstance(p, dict):
+                        passages_obj.append(EvidencePassage(
+                            passage_id=p.get("passage_id", ""),
+                            source_id=p.get("source_id", ""),
+                            locator=p.get("locator", ""),
+                            text=p.get("text", ""),
+                            sha256_hash=p.get("sha256_hash", ""),
+                            authoritativeness_weight=float(p.get("authoritativeness_weight", 1.0)),
+                        ))
+
+                engine = EvidenceBasedIntelligenceEngine()
+                report = engine.process_and_synthesize(
+                    query=query,
+                    claims=claims_obj,
+                    sources=sources_obj,
+                    passages=passages_obj,
+                    confidence_threshold=threshold,
+                )
+                self._send(200, {
+                    "ok": True,
+                    "report": report.to_dict(),
+                })
+                return
+
+            if parts in (["api", "evidence", "contradictions"], ["api", "v1", "evidence", "contradictions"]):
+                raw_claims = payload.get("claims", [])
+                from mirror_crystal.evidence_intelligence import ContradictionDetector, AtomicClaim
+
+                claims_obj = []
+                for idx, c in enumerate(raw_claims, 1):
+                    if isinstance(c, str):
+                        claims_obj.append(AtomicClaim(claim_id=f"c_{idx:03d}", statement=c))
+                    elif isinstance(c, dict):
+                        claims_obj.append(AtomicClaim(
+                            claim_id=c.get("claim_id", f"c_{idx:03d}"),
+                            statement=c.get("statement", ""),
+                            subject=c.get("subject", ""),
+                            predicate=c.get("predicate", ""),
+                        ))
+
+                conflicts = ContradictionDetector.detect_conflicts(claims_obj)
+                self._send(200, {
+                    "ok": True,
+                    "conflicts": [c.to_dict() for c in conflicts],
+                    "total_conflicts": len(conflicts),
+                })
+                return
+
             if parts in (["api", "crystal", "feedback"], ["api", "crystal", "downvote"]):
                 rid = int(payload.get("rule_id", 0))
                 pos = bool(payload.get("is_positive", False if parts == ["api", "crystal", "downvote"] else True))

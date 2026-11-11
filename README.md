@@ -16,7 +16,7 @@
 [![Retention: 0.9999 Cosine](https://img.shields.io/badge/Continual_Retention-0.9999_Cosine-0B192C.svg?style=flat-square)](#3-multi-domain-cognitive-taxonomy-7-pillars--186-categories)
 
 **Founder & Principal Architect:** **Ahmad Hassan** &nbsp;•&nbsp; **Official Repository:** [github.com/realahmad07/Mirror-7](https://github.com/realahmad07/Mirror-7)  
-📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 📊 **[Phase 2 Audit](artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Phase 3 Purification](artifacts/PHASE3_KNOWLEDGE_PURIFICATION_REPORT.md)** &nbsp;|&nbsp; 🧠 **[Phase 4 Reasoning](artifacts/PHASE4_REASONING_RETRIEVAL_REPORT.md)** &nbsp;|&nbsp; 🚀 **[Phase 5 Evaluation](artifacts/PHASE5_PRODUCTION_EVALUATION_REPORT.md)** &nbsp;|&nbsp; 🏁 **[Stage 5 & 6](artifacts/STAGE5_STAGE6_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🏆 **[Stage 7-9](artifacts/STAGE7_8_9_RELEASE_REPORT.md)** &nbsp;|&nbsp; 🔬 **[Stage 10-10.5 Trust](artifacts/STAGE10_5_INDEPENDENT_TRUST_VALIDATION_REPORT.md)** &nbsp;|&nbsp; 🧩 **[Stage 11 Intelligence](artifacts/STAGE11_AUTONOMOUS_INTELLIGENCE_REPORT.md)** &nbsp;|&nbsp; ⚙️ **[Stage 12 Readiness](artifacts/STAGE12_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Stage 13 Safety](artifacts/STAGE13_SAFETY_ALIGNMENT_REPORT.md)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
+📄 **[Master Project Overview & Roadmap](./PROJECT_OVERVIEW_AND_ROADMAP.md)** &nbsp;|&nbsp; 📘 **[Executive Color Roadmap (PDF)](docs/Ahmad%20Hassan%20Mirror%20OPEN%20SOURCE%20detailed%20road%20map.pdf)** &nbsp;|&nbsp; 📊 **[Phase 2 Audit](artifacts/PHASE2_KNOWLEDGE_QUALITY_AUDIT_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Phase 3 Purification](artifacts/PHASE3_KNOWLEDGE_PURIFICATION_REPORT.md)** &nbsp;|&nbsp; 🧠 **[Phase 4 Reasoning](artifacts/PHASE4_REASONING_RETRIEVAL_REPORT.md)** &nbsp;|&nbsp; 🚀 **[Phase 5 Evaluation](artifacts/PHASE5_PRODUCTION_EVALUATION_REPORT.md)** &nbsp;|&nbsp; 🏁 **[Stage 5 & 6](artifacts/STAGE5_STAGE6_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🏆 **[Stage 7-9](artifacts/STAGE7_8_9_RELEASE_REPORT.md)** &nbsp;|&nbsp; 🔬 **[Stage 10-10.5 Trust](artifacts/STAGE10_5_INDEPENDENT_TRUST_VALIDATION_REPORT.md)** &nbsp;|&nbsp; 🧩 **[Stage 11 Intelligence](artifacts/STAGE11_AUTONOMOUS_INTELLIGENCE_REPORT.md)** &nbsp;|&nbsp; ⚙️ **[Stage 12 Readiness](artifacts/STAGE12_PRODUCTION_READINESS_REPORT.md)** &nbsp;|&nbsp; 🛡️ **[Stage 13 Safety](artifacts/STAGE13_SAFETY_ALIGNMENT_REPORT.md)** &nbsp;|&nbsp; 🔍 **[Stage 14 Evidence](artifacts/STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md)** &nbsp;|&nbsp; 🧪 **[NVIDIA A100 Logs](artifacts/V6_COLAB_A100_VERIFICATION_LOGS.md)** &nbsp;|&nbsp; 🔐 **[Drive Registry](artifacts/google_drive_checkpoints_and_datasets_manifest.json)** &nbsp;|&nbsp; 🖥️ **[Live Studio UI](http://127.0.0.1:8787/)**
 
 </div>
 
@@ -1226,10 +1226,28 @@ Phase 13 establishes defense-in-depth safety, privacy protection, and constructi
 
 Detailed Stage 13 operational verification report: [STAGE13_SAFETY_ALIGNMENT_REPORT.md](artifacts/STAGE13_SAFETY_ALIGNMENT_REPORT.md).
 
-### Following Phase 13
+### Phase 14 — Evidence-Based Intelligence (Complete)
 
-- **Phase 14 — Human Preference & Response Optimization:** evaluate pedagogical clarity, trade-off explanations, and response utility without compromising verification invariants.
-- **Phase 15 — Continuous Invariant Learning:** self-play algebraic ring invariants and regression-proof learning.
+Phase 14 eliminates uncalibrated hallucinations and distinguishes verified empirical facts from speculative assumptions:
+- **Atomic Claim Extraction & Epistemic Decomposition:** Decomposes prose and reasoning chains into structured propositions ($Subject, Predicate, Object$) and categorizes statements into five distinct tiers (`VERIFIED_FACT`, `PLAUSIBLE_INFERENCE`, `EXPLICIT_ASSUMPTION`, `UNVERIFIED_CONJECTURE`, `CONTRADICTION`).
+- **Cryptographic Source Provenance & Granular Passages:** Binds every verified fact to an auditable DAG containing canonical HTTPS/URN URIs, publisher metadata, SPDX licenses (`CC-BY-4.0`, `Apache-2.0`, `MIT`), retrieval timestamps, and SHA-256 digest validation.
+- **Multi-Dimensional Contradiction Detection:** Algorithmic detection across direct negation polarity reversals, numerical measurement discrepancies (with unit/context alignment), antonym polarity shifts, and attribute collisions.
+- **Confidence Calibration & Calibrated Honest Abstention:** Automatically penalizes ungrounded assertions and caps explicit assumptions at $\le 0.40$ confidence. Triggers explicit, fail-closed abstention notices whenever unresolved contradictions emerge or overall calibrated confidence drops below threshold ($< 0.55$).
+- **REST API Endpoints:** Dedicated `/api/evidence/verify` and `/api/evidence/contradictions` endpoints with `X-Request-ID` tracing.
+
+Detailed Stage 14 operational verification report: [STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md](artifacts/STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md).
+
+### Stages 15–21 Master Roadmap
+
+| Stage | Subsystem / Focus | Core Objectives & Invariants |
+| :--- | :--- | :--- |
+| **Stage 15** | **Long-Term Memory & Learning** | Persistent cross-session graph memory, experience consolidation, decay/forgetting schedules, memory conflict resolution, and feedback assimilation without corrupting trusted knowledge. |
+| **Stage 16** | **Advanced Reasoning** | Multi-step reasoning trees, formal mathematical proof verification, causal graph inference, hypothesis generation, and dual-brain answer verification. |
+| **Stage 17** | **Planning & Tool Intelligence** | Hierarchical task decomposition, autonomous tool selection, execution planning, real-time progress tracking, error recovery, and result verification contracts. |
+| **Stage 18** | **Autonomous Research** | Research question synthesis, literature and source discovery, evidence comparison, reproducible experiment design, and structured empirical reports. |
+| **Stage 19** | **Controlled Self-Improvement** | Proposal of code/rule changes, isolated sandbox testing, baseline regression comparisons, automatic regression rejection, and human-in-the-loop deployment gating. |
+| **Stage 20** | **Multimodal & Real-World Grounding** | Cross-modal processing for images, documents, and real-world telemetry; grounding latent conclusions into verified observable sensory evidence. |
+| **Stage 21** | **Integration & Independent Evaluation** | End-to-end subsystem orchestration, adversarial stress-testing, unseen task suites, long-horizon stability benchmarks, and independent trust verification. |
 
 ### Current verification status
 

@@ -377,4 +377,36 @@ __all__ += [
     "SafetyAlignmentManager",
 ]
 
+from .evidence_intelligence import (
+    EpistemicCategory,
+    ContradictionType,
+    EvidenceError,
+    SourceProvenance,
+    EvidencePassage,
+    AtomicClaim,
+    ContradictionConflict,
+    ContradictionDetector,
+    ClaimGroundingVerifier,
+    ConfidenceCalibrator,
+    EvidenceProvenanceGraph,
+    GroundedSynthesisReport,
+    EvidenceBasedIntelligenceEngine,
+)
+
+__all__ += [
+    "EpistemicCategory",
+    "ContradictionType",
+    "EvidenceError",
+    "SourceProvenance",
+    "EvidencePassage",
+    "AtomicClaim",
+    "ContradictionConflict",
+    "ContradictionDetector",
+    "ClaimGroundingVerifier",
+    "ConfidenceCalibrator",
+    "EvidenceProvenanceGraph",
+    "GroundedSynthesisReport",
+    "EvidenceBasedIntelligenceEngine",
+]
+
 
