@@ -7,4 +7,16 @@ services:
       MIRROR7_HOST: "0.0.0.0"
       MIRROR7_PORT: "8787"
       MIRROR7_CORS_ORIGIN: "${MIRROR7_CORS_ORIGIN:-*}"
+      MIRROR_LOG_LEVEL: "INFO"
+      MIRROR_LOG_FORMAT: "json"
+      MIRROR_MAX_WORKERS: "32"
     restart: unless-stopped
+    stop_grace_period: 15s
+    stop_signal: SIGTERM
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:'+os.getenv('MIRROR7_PORT','8787')+'/api/healthz',timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+

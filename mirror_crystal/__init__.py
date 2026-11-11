@@ -324,3 +324,34 @@ __all__ += [
     "AutonomousLearningEngine", "AutonomousLearningReport", "BenchmarkTaskResult",
     "LearnedCandidate", "ProductionEvaluationReport",
 ]
+
+from .production_readiness import (
+    ProductionConfig,
+    StructuredLogger,
+    MetricsCollector,
+    CircuitBreakerState,
+    CircuitBreakerOpenError,
+    CircuitBreaker,
+    TokenBucketRateLimiter,
+    InferenceCapacityExceededError,
+    InferenceResult,
+    InferenceStabilizer,
+    VaultSelfHealingManager,
+    GracefulShutdownManager,
+)
+
+__all__ += [
+    "ProductionConfig",
+    "StructuredLogger",
+    "MetricsCollector",
+    "CircuitBreakerState",
+    "CircuitBreakerOpenError",
+    "CircuitBreaker",
+    "TokenBucketRateLimiter",
+    "InferenceCapacityExceededError",
+    "InferenceResult",
+    "InferenceStabilizer",
+    "VaultSelfHealingManager",
+    "GracefulShutdownManager",
+]
+

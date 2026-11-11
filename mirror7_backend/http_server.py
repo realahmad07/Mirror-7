@@ -9,8 +9,10 @@ from http import HTTPStatus
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 import threading
+import time
 from typing import Any
 from urllib.parse import parse_qs, unquote, urlparse
+import uuid
 
 from .actions import ActionDenied
 from .persistence import CheckpointError
@@ -24,9 +26,20 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
     cors_origin = "*"
     api_token: str | None = None
 
+    def _get_request_id(self) -> str:
+        if not hasattr(self, "_cached_request_id"):
+            self._cached_request_id = (
+                self.headers.get("X-Request-ID")
+                or self.headers.get("X-Trace-ID")
+                or str(uuid.uuid4())
+            )
+        return self._cached_request_id
+
     def _authorize_request(self, path: str) -> bool:
-        # Liveness is deliberately the only unauthenticated API route.
-        if self.command == "GET" and path == "/api/health":
+        # Liveness, readiness, healthz, and metrics probes are unauthenticated
+        if self.command == "GET" and path in {
+            "/api/health", "/api/livez", "/api/readyz", "/api/healthz", "/metrics", "/api/metrics"
+        }:
             return True
         if not path.startswith("/api/") or self.api_token is None:
             return True
@@ -54,10 +67,11 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Access-Control-Allow-Origin", self.cors_origin)
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Request-ID, X-Trace-ID")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header("Cache-Control", "no-cache")
         self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Request-ID", self._get_request_id())
         self.end_headers()
         self.wfile.write(data)
 
@@ -70,13 +84,14 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Access-Control-Allow-Origin", self.cors_origin)
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Request-ID, X-Trace-ID")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header("Access-Control-Max-Age", "600")
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Request-ID", self._get_request_id())
         self.end_headers()
         if body:
             self.wfile.write(body)
@@ -204,6 +219,35 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
             parsed_qs = parse_qs(urlparse(self.path).query)
             t = parsed_qs.get("topic", [None])[0]
             self._send(200, {"ok": True, "prompt": service.crystal_gap_prompt(topic=t)})
+            return
+        if path == "/api/livez":
+            self._send(200, {"ok": True, "status": "alive", "service": "mirror7"})
+            return
+        if path == "/api/readyz":
+            ready = getattr(service, "is_ready", True)
+            self._send(200 if ready else 503, {
+                "ok": ready,
+                "status": "ready" if ready else "not_ready",
+                "service": "mirror7",
+            })
+            return
+        if path == "/api/healthz":
+            active_sessions = len(service.list_sessions()) if hasattr(service, "list_sessions") else 0
+            st = dict(service.status()) if hasattr(service, "status") else {}
+            srv_start = getattr(self.server, "start_time", time.time())
+            self._send(200, {
+                "ok": True,
+                "service": "mirror7",
+                "ready": getattr(service, "is_ready", True),
+                "uptime_seconds": round(time.time() - srv_start, 2),
+                "sessions": active_sessions,
+                "crystal": st.get("crystal", {}),
+            })
+            return
+        if path in {"/metrics", "/api/metrics"}:
+            from mirror_crystal.production_readiness import MetricsCollector
+            metrics = getattr(self.server, "metrics", None) or MetricsCollector()
+            self._send_bytes(200, metrics.render_prometheus_text().encode("utf-8"), "text/plain; version=0.0.4; charset=utf-8")
             return
         if path == "/api/health":
             active_sessions = len(service.list_sessions()) if hasattr(service, "list_sessions") else 0
@@ -563,6 +607,9 @@ class BoundedThreadPoolServer(HTTPServer):
         )
         self._request_semaphore = threading.Semaphore(self.max_workers + self.request_queue_size)
         self._is_shutting_down = False
+        self.start_time = time.time()
+        from mirror_crystal.production_readiness import MetricsCollector
+        self.metrics = MetricsCollector()
 
     def process_request(self, request: Any, client_address: Any) -> None:
         if self._is_shutting_down:
