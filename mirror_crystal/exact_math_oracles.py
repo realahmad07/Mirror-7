@@ -14,6 +14,28 @@ import math
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 
+def _exact_fraction(value: int | Fraction, name: str) -> Fraction:
+    """Accept integers/rationals only; reject bool and float coercion."""
+    if isinstance(value, bool) or isinstance(value, float) or not isinstance(value, (int, Fraction)):
+        raise TypeError(f"{name} must be an int or Fraction; floats are not exact inputs")
+    return Fraction(value)
+
+
+def _integer(value: int, name: str, minimum: int = 0) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise TypeError(f"{name} must be an integer")
+    if value < minimum:
+        raise ValueError(f"{name} must be >= {minimum}")
+    return value
+
+
+def _probability(value: int | Fraction, name: str) -> Fraction:
+    result = _exact_fraction(value, name)
+    if result < 0 or result > 1:
+        raise ValueError(f"{name} must be between 0 and 1 inclusive")
+    return result
+
+
 # ============================================================================
 # 1. Exact Algebra Oracle
 # ============================================================================
@@ -24,9 +46,9 @@ class ExactAlgebraOracle:
     @classmethod
     def solve_quadratic(cls, a: int | Fraction, b: int | Fraction, c: int | Fraction) -> Dict[str, Any]:
         """Solves ax^2 + bx + c = 0 exactly over rationals or exact radical strings."""
-        a = Fraction(a)
-        b = Fraction(b)
-        c = Fraction(c)
+        a = _exact_fraction(a, "a")
+        b = _exact_fraction(b, "b")
+        c = _exact_fraction(c, "c")
         if a == 0:
             if b == 0:
                 return {"solvable": False, "roots": [], "nature": "degenerate"}
@@ -179,10 +201,10 @@ class ExactProbabilityOracle:
         likelihood_b_given_not_a: Fraction | int,
     ) -> Fraction:
         """Computes exact posterior P(A|B) = P(B|A)*P(A) / [P(B|A)*P(A) + P(B|~A)*P(~A)]."""
-        p_a = Fraction(prior_a)
+        p_a = _probability(prior_a, "prior_a")
         p_not_a = Fraction(1) - p_a
-        p_b_given_a = Fraction(likelihood_b_given_a)
-        p_b_given_not_a = Fraction(likelihood_b_given_not_a)
+        p_b_given_a = _probability(likelihood_b_given_a, "likelihood_b_given_a")
+        p_b_given_not_a = _probability(likelihood_b_given_not_a, "likelihood_b_given_not_a")
 
         p_b = (p_b_given_a * p_a) + (p_b_given_not_a * p_not_a)
         if p_b == 0:
@@ -192,6 +214,12 @@ class ExactProbabilityOracle:
     @classmethod
     def hypergeometric_pmf(cls, big_n: int, big_k: int, small_n: int, small_k: int) -> Fraction:
         """Computes exact hypergeometric PMF: [C(K, k) * C(N-K, n-k)] / C(N, n)."""
+        big_n = _integer(big_n, "big_n")
+        big_k = _integer(big_k, "big_k")
+        small_n = _integer(small_n, "small_n")
+        small_k = _integer(small_k, "small_k")
+        if big_k > big_n or small_n > big_n or small_k > small_n or small_k > big_k or small_n - small_k > big_n - big_k:
+            raise ValueError("Hypergeometric parameters are outside the valid population/sample domain")
         c_k_k = ExactCombinatoricsOracle.combinations(big_k, small_k)
         c_rest = ExactCombinatoricsOracle.combinations(big_n - big_k, small_n - small_k)
         c_tot = ExactCombinatoricsOracle.combinations(big_n, small_n)
@@ -200,7 +228,8 @@ class ExactProbabilityOracle:
     @classmethod
     def binomial_expectation_and_variance(cls, n: int, p: Fraction | int) -> Tuple[Fraction, Fraction]:
         """Computes exact expected value E[X]=np and variance Var[X]=np(1-p)."""
-        p = Fraction(p)
+        n = _integer(n, "n")
+        p = _probability(p, "p")
         exp_val = Fraction(n) * p
         variance = Fraction(n) * p * (Fraction(1) - p)
         return exp_val, variance
@@ -220,10 +249,14 @@ class ExactLinearAlgebraOracle:
         b: List[List[int | Fraction]],
     ) -> List[List[Fraction]]:
         """Multiplies matrices A (m x p) and B (p x n) over Fraction."""
-        rows_a = len(a)
+        if not a or not b or not a[0] or not b[0]:
+            raise ValueError("Matrices must be non-empty")
         cols_a = len(a[0])
-        rows_b = len(b)
         cols_b = len(b[0])
+        if any(len(row) != cols_a for row in a) or any(len(row) != cols_b for row in b):
+            raise ValueError("Matrices must be rectangular")
+        rows_a = len(a)
+        rows_b = len(b)
         if cols_a != rows_b:
             raise ValueError(f"Incompatible dimensions: ({rows_a}x{cols_a}) and ({rows_b}x{cols_b})")
 
@@ -270,6 +303,8 @@ class ExactLinearAlgebraOracle:
     @classmethod
     def trace(cls, m: List[List[int | Fraction]]) -> Fraction:
         """Computes matrix trace (sum of diagonal elements)."""
+        if not m or any(len(row) != len(m) for row in m):
+            raise ValueError("Expected a non-empty square matrix")
         dim = len(m)
         return sum(Fraction(m[i][i]) for i in range(dim))
 
@@ -284,7 +319,9 @@ class ExactCombinatoricsOracle:
     @classmethod
     def permutations(cls, n: int, k: int) -> int:
         """Computes P(n, k) = n! / (n - k)!."""
-        if k < 0 or k > n:
+        n = _integer(n, "n")
+        k = _integer(k, "k")
+        if k > n:
             return 0
         ans = 1
         for i in range(n - k + 1, n + 1):
@@ -294,13 +331,16 @@ class ExactCombinatoricsOracle:
     @classmethod
     def combinations(cls, n: int, k: int) -> int:
         """Computes C(n, k) = n! / (k! * (n - k)!)."""
-        if k < 0 or k > n:
+        n = _integer(n, "n")
+        k = _integer(k, "k")
+        if k > n:
             return 0
         return math.comb(n, k)
 
     @classmethod
     def derangements(cls, n: int) -> int:
         """Computes exact subfactorial !(n) = n! * sum((-1)^i / i!)."""
+        n = _integer(n, "n")
         if n == 0:
             return 1
         if n == 1:
@@ -316,13 +356,12 @@ class ExactCombinatoricsOracle:
     @classmethod
     def catalan_number(cls, n: int) -> int:
         """Computes exact n-th Catalan number C_n = C(2n, n) / (n + 1)."""
-        if n < 0:
-            return 0
+        n = _integer(n, "n")
         return math.comb(2 * n, n) // (n + 1)
 
     @classmethod
     def stars_and_bars(cls, n_items: int, k_bins: int) -> int:
         """Computes number of ways to distribute n identical items into k distinct bins: C(n + k - 1, k - 1)."""
-        if k_bins <= 0 or n_items < 0:
-            return 0
+        n_items = _integer(n_items, "n_items")
+        k_bins = _integer(k_bins, "k_bins", minimum=1)
         return math.comb(n_items + k_bins - 1, k_bins - 1)
