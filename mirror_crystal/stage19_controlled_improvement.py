@@ -147,7 +147,7 @@ class FrozenRegressionSuite:
         _require_sha256(self.environment_sha256, "environment_sha256")
         if self.container_runtime not in {"docker", "podman"}:
             raise SelfImprovementError("container_runtime must be docker or podman")
-        if not isinstance(self.container_image, str) or not re.search(r"@sha256:[0-9a-f]{64}\\Z", self.container_image):
+        if not isinstance(self.container_image, str) or not re.search(r"@sha256:[0-9a-f]{64}\Z", self.container_image):
             raise SelfImprovementError("container_image must use an immutable SHA-256 image digest")
         if isinstance(self.timeout_seconds, bool) or not isinstance(self.timeout_seconds, (int, float)) or not math.isfinite(float(self.timeout_seconds)) or not 1 <= self.timeout_seconds <= 60:
             raise SelfImprovementError("suite timeout_seconds must be between 1 and 60")
