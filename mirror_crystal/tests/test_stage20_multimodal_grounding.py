@@ -116,6 +116,10 @@ def test_text_document_preserves_exact_line_locators_and_hash():
     assert asset.sha256 == hashlib.sha256(raw).hexdigest()
     assert [item.locator for item in segments] == ["line:1", "line:2", "line:3"]
     assert segments[1].text == "Temperature was recorded."
+    report = engine.analyze()
+    assert len(report.segments) == 3
+    assert report.segments[1].locator == "line:2"
+    assert report.segments[1].text_sha256 == hashlib.sha256(segments[1].text.encode()).hexdigest()
 
 
 def test_csv_extracts_structured_measurement_records_and_units():
@@ -169,6 +173,28 @@ def test_docx_extracts_paragraphs_and_table_rows_without_extracting_to_disk():
     _, segments = engine.ingest_document("docx-a", "field.docx", out.getvalue())
     assert any(item.text == "Field report" and item.locator == "paragraph:1" for item in segments)
     assert any(item.text == "Sensor | Value" and item.locator == "table:1:row:1" for item in segments)
+
+
+def test_docx_table_rows_with_measurement_headers_become_grounded_observations():
+    out = io.BytesIO()
+    xml = (
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'
+        '<w:tbl>'
+        '<w:tr>' + ''.join('<w:tc><w:p><w:r><w:t>' + value + '</w:t></w:r></w:p></w:tc>'
+                          for value in ("entity_key", "attribute", "value", "unit")) + '</w:tr>'
+        '<w:tr>' + ''.join('<w:tc><w:p><w:r><w:t>' + value + '</w:t></w:r></w:p></w:tc>'
+                          for value in ("sensor-docx", "humidity", "51", "%")) + '</w:tr>'
+        '</w:tbl></w:body></w:document>'
+    )
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("word/document.xml", xml)
+    engine = RealWorldGroundingEngine()
+    engine.ingest_document("docx-table", "measurements.docx", out.getvalue())
+    item = next(item for item in engine.observations if item.attribute == "humidity")
+    assert item.entity_key == "sensor-docx"
+    assert item.value == 51.0
+    assert item.canonical_unit == "%"
+    assert item.locator == "document:record:1"
 
 
 def test_docx_rejects_path_traversal_and_xml_entity_payloads():
@@ -288,6 +314,21 @@ def test_bad_device_signature_and_unknown_device_fail_closed():
                                 signature_b64=_signature(private, engine.telemetry_signing_bytes(sample)))
 
 
+def test_telemetry_replay_is_rejected_even_when_repackaged_under_another_source_id():
+    private, public = _keypair()
+    trust = SourceTrustRegistry()
+    trust.register("device-a", public)
+    engine = RealWorldGroundingEngine(trust)
+    sample = {
+        "sample_id": "non-replayable-17", "entity_key": "sensor-a", "attribute": "temperature",
+        "value": 20.0, "unit": "C", "observed_at": "2026-11-11T10:00:00Z",
+    }
+    signature = _signature(private, engine.telemetry_signing_bytes(sample))
+    engine.ingest_telemetry("first-envelope", sample, device_id="device-a", signature_b64=signature)
+    with pytest.raises(GroundingError, match="replay detected"):
+        engine.ingest_telemetry("second-envelope", sample, device_id="device-a", signature_b64=signature)
+
+
 def test_missing_fields_naive_timestamp_nonfinite_value_and_unknown_unit_are_rejected():
     engine = RealWorldGroundingEngine()
     with pytest.raises(GroundingError, match="missing fields"):
@@ -329,6 +370,8 @@ def test_signed_image_annotation_binds_exact_asset_and_verified_adapter_identity
         signature_b64=sig, observed_at="2026-11-11T10:00:00Z",
     )
     assert observation.origin_verified is True
+    assert observation.signer_id == "vision-adapter-v1"
+    assert observation.signature_sha256 == hashlib.sha256(base64.b64decode(sig)).hexdigest()
     with pytest.raises(GroundingError, match="signature verification failed"):
         engine.add_signed_image_annotation(
             "scene", entity_key="scene-1", attribute="object_label", value="green light",
