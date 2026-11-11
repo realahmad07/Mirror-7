@@ -505,3 +505,37 @@ __all__ += [
     "ContinuousExpansionEngine", "ContinuousExpansionError",
     "ContinuousExpansionProposal", "ExpansionCycleEvidence",
 ]
+
+from .autonomous_research import (
+    AutonomousResearchEngine,
+    ExperimentDirection,
+    ExperimentEvaluation,
+    ExperimentObservation,
+    ExperimentOutcomeStatus,
+    ResearchError,
+    ResearchExperimentDesign,
+    ResearchHypothesis,
+    ResearchQuestionPlan,
+    ResearchQuestionSynthesizer,
+    ResearchReport,
+    ResearchSourceCandidate,
+    ResearchStatus,
+    evaluate_experiment,
+)
+
+__all__ += [
+    "AutonomousResearchEngine",
+    "ExperimentDirection",
+    "ExperimentEvaluation",
+    "ExperimentObservation",
+    "ExperimentOutcomeStatus",
+    "ResearchError",
+    "ResearchExperimentDesign",
+    "ResearchHypothesis",
+    "ResearchQuestionPlan",
+    "ResearchQuestionSynthesizer",
+    "ResearchReport",
+    "ResearchSourceCandidate",
+    "ResearchStatus",
+    "evaluate_experiment",
+]

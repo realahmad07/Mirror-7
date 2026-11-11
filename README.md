@@ -1283,6 +1283,12 @@ Detailed Stage 17 correction report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.
 | **Stage 20** | **Multimodal & Real-World Grounding** | Cross-modal processing for images, documents, and real-world telemetry; grounding latent conclusions into verified observable sensory evidence. |
 | **Stage 21** | **Integration & Independent Evaluation** | End-to-end subsystem orchestration, adversarial stress-testing, unseen task suites, long-horizon stability benchmarks, and independent trust verification. |
 
+### Stage 18 — Autonomous Research
+
+**Implementation status: PASS within the bounded adapter-backed scope.** Mirror can normalize a research request into deterministic subquestions and falsifiable hypotheses, ingest source records through a host-supplied discovery adapter, verify source and passage provenance with Stage 14, synthesize grounded claims and contradictions, and produce a structured report. Experiment designs are reproducible and paired observations are evaluated against predeclared multi-seed effect thresholds.
+
+The source-discovery adapter is caller-supplied; this module does not silently crawl the network. Experiment observations are caller-supplied records; the evaluator does not execute experiment code or attest that runs occurred. Stage 19 will add controlled sandbox execution and code-change evaluation. See [Stage 18 design and limits](docs/33-stage18-autonomous-research.md) and [Stage 18 report](artifacts/STAGE18_AUTONOMOUS_RESEARCH_REPORT.md).
+
 ### Current verification status
 
 The CLI/runtime repair implementation is at commit **[`143647a`](https://github.com/realahmad07/Mirror-7/commit/143647a4e1cd7bc3e1e81f31d5ffa87642f0fe58)**.
