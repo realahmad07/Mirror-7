@@ -147,7 +147,7 @@ def make_report(target_domains=("mathematics", "physics")):
 
     return CrossDomainTransferBenchmarkEngine().evaluate(
         "phase9-transfer-benchmark-v1", source, UOL(), tuple(targets),
-        minimum_target_domains=2,
+        minimum_target_domains=min(2, len(targets)),
     )
 
 def regression_cases():
