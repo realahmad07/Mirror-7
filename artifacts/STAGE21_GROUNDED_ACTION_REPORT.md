@@ -1,9 +1,9 @@
 # Stage 21 — Grounded Autonomous Action & Feedback Acceptance Report
 
 **Status:** Implementation committed; final acceptance pending branch CI and Security Guard  
-**Implementation:** \`mirror_crystal/stage21_grounded_action.py\`  
-**Tests:** \`mirror_crystal/tests/test_stage21_grounded_action.py\`  
-**Focused test cases:** 25
+**Implementation:** `mirror_crystal/stage21_grounded_action.py`  
+**Tests:** `mirror_crystal/tests/test_stage21_grounded_action.py`  
+**Focused test cases:** 26
 
 ## Delivered
 
@@ -19,9 +19,9 @@
 
 ## Verification coverage
 
-25 focused tests cover schema and input limits, immutable exact proposal binding, signed and unsigned provenance, tampered report fingerprints, insufficient modality evidence, unknown/replaced action definitions, distinct checker identities, engine-bound verification, successful and mismatched postconditions, failed sandbox execution, replay prevention, consequential human approval, author/reviewer separation, approval reuse, and execution history immutability.
+26 focused tests cover schema and input limits, immutable exact proposal binding, signed and unsigned provenance, tampered report fingerprints, insufficient modality evidence, unknown/replaced action definitions, distinct checker identities, engine-bound verification, successful and mismatched postconditions, failed sandbox execution, replay prevention, consequential human approval, author/reviewer separation, approval reuse, and execution history immutability.
 
-Two additional integration tests use a real Docker/Podman container where CI requires the runtime. They check the Stage 19 supervisor integration, PID 1, candidate stdout manifest spoofing and candidate module-mutation rejection.
+Two of the 26 tests use a real Docker/Podman container where CI requires the runtime. They check the Stage 19 supervisor integration, PID 1, candidate stdout manifest spoofing and candidate module-mutation rejection.
 
 ## Safety boundaries
 
@@ -33,9 +33,9 @@ Consequential approval is a binding in-engine record, not identity authenticatio
 
 Stage 21 is accepted only when:
 1. The focused test suite passes.
-2. Full \`mirror_crystal\` and \`mirror_eval\` regression passes.
+2. Full `mirror_crystal` and `mirror_eval` regression passes.
 3. Fast CI, backend tests, smoke/release checks, training checks and package build pass.
 4. Security Guard passes on the exact final PR head.
-5. The PR is merged and \`main\` is confirmed at the resulting merge commit.
+5. The PR is merged and `main` is confirmed at the resulting merge commit.
 
 No production actuator or automatic real-world execution is claimed by this stage.

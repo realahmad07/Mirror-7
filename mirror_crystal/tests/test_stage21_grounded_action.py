@@ -142,14 +142,14 @@ def test_stage21_action_schema_rejects_missing_extra_and_out_of_range_inputs():
         GroundedActionProposal.create(
             action, inputs={"temperature_k": 23, "shell": "forbidden"},
             evidence_report_fingerprint=report.report_fingerprint,
-            evidence_observation_ids=ids, expected_postconditions={"status": "prepared"},
+            evidence_observation_ids=ids, input_evidence_bindings={}, expected_postconditions={"status": "prepared"},
             created_by="planner-a",
         )
     with pytest.raises(GroundedActionError, match="maximum"):
         GroundedActionProposal.create(
             action, inputs={"temperature_k": 501},
             evidence_report_fingerprint=report.report_fingerprint,
-            evidence_observation_ids=ids, expected_postconditions={"status": "prepared"},
+            evidence_observation_ids=ids, input_evidence_bindings={}, expected_postconditions={"status": "prepared"},
             created_by="planner-a",
         )
 
@@ -268,7 +268,7 @@ def test_stage21_successful_execution_compares_postconditions_and_records_feedba
     verified = engine.verify(item, report)
     result = engine.execute(item, verified)
     assert result.status is ActionExecutionStatus.SUCCEEDED
-    assert result.matched_conditions == ("status",)
+    assert result.matched_conditions == ("status", "target")
     assert not result.failed_conditions
     assert result.observed_outcome["target"] == 296.15
     assert result.feedback.status is ActionExecutionStatus.SUCCEEDED
@@ -429,7 +429,7 @@ def run(inputs):
         proposal_for(action, report, ids), engine.verify(proposal_for(action, report, ids), report),
     )
     assert result.status is ActionExecutionStatus.SUCCEEDED
-    assert result.observed_outcome == {"status": "prepared", "target": 23}
+    assert result.observed_outcome == {"status": "prepared", "target": 296.15}
 
 
 def test_stage21_candidate_module_mutation_is_rejected_by_stage19_child_guard():
