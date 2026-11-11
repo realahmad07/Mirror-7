@@ -257,3 +257,105 @@ def test_downstream_skip_propagation_on_fatal_failure():
     assert executed.overall_status == StepStatus.FAILED
     assert executed.tasks["root_task"].status == StepStatus.FAILED
     assert executed.tasks["child_task"].status == StepStatus.SKIPPED
+
+
+def test_stage17_execution_runs_in_child_process_and_enforces_timeout():
+    parent_pid = os.getpid()
+    pid_tool = ToolDefinition(name="pid", description="Returns worker pid", handler=_test_current_pid)
+    worker_pid = pid_tool.execute()
+    assert worker_pid != parent_pid
+
+    slow_tool = ToolDefinition(
+        name="slow",
+        description="Sleeps past its deadline",
+        handler=_test_slow_handler,
+        timeout_seconds=0.15,
+    )
+    started = time.monotonic()
+    with pytest.raises(PlanningError, match="execution timeout"):
+        slow_tool.execute()
+    assert time.monotonic() - started < 2.0
+
+
+def test_stage17_tool_output_is_bounded_and_json_serializable():
+    oversized = ToolDefinition(
+        name="large", description="Returns too much", handler=_test_large_output, max_output_bytes=128
+    )
+    with pytest.raises(PlanningError, match="OutputLimitExceeded"):
+        oversized.execute()
+
+
+def test_stage17_json_schema_and_safe_mutation_policy_are_enforced():
+    schema = {
+        "type": "object",
+        "properties": {
+            "resource": {"type": "string", "minLength": 1},
+            "approved": {"type": "boolean"},
+        },
+        "required": ["resource"],
+        "additionalProperties": False,
+    }
+    tool = ToolDefinition(
+        name="safe-update",
+        description="Updates a safe resource",
+        risk_profile=ToolRiskProfile.MUTATING_SAFE,
+        handler=_test_mutating_value,
+        parameter_schema=schema,
+    )
+    locked_registry = ToolRegistry()
+    locked_registry.register(tool)
+    with pytest.raises(PlanningError, match="disabled by execution policy"):
+        locked_registry.execute("safe-update", resource="cache")
+    with pytest.raises(PlanningError, match="JSON Schema type"):
+        locked_registry.execute("safe-update", resource=42)
+    with pytest.raises(PlanningError, match="not allowed"):
+        locked_registry.execute("safe-update", resource="cache", unknown=True)
+
+    enabled_registry = ToolRegistry(allow_safe_mutations=True)
+    enabled_registry.register(tool)
+    assert enabled_registry.execute("safe-update", resource="cache") == {
+        "updated": "cache", "approved": False
+    }
+
+
+def test_stage17_privileged_tools_require_application_authorizer():
+    schema = {
+        "type": "object",
+        "properties": {"resource": {"type": "string"}},
+        "required": ["resource"],
+        "additionalProperties": False,
+    }
+    tool = ToolDefinition(
+        name="privileged",
+        description="Privileged update",
+        risk_profile=ToolRiskProfile.MUTATING_PRIVILEGED,
+        handler=_test_mutating_value,
+        parameter_schema=schema,
+    )
+    denied = ToolRegistry()
+    denied.register(tool)
+    with pytest.raises(PlanningError, match="explicit application authorization"):
+        denied.execute("privileged", resource="production-config")
+
+    authorized = ToolRegistry(
+        privileged_authorizer=lambda registered_tool, params: registered_tool.name == "privileged"
+    )
+    authorized.register(tool)
+    result = authorized.execute("privileged", resource="production-config")
+    assert result["updated"] == "production-config"
+
+
+def test_stage17_fallback_cannot_escalate_risk_profile():
+    registry = ToolRegistry()
+    registry.register(ToolDefinition(name="readonly", description="read", handler=_test_adder))
+    privileged = ToolDefinition(
+        name="privileged-fallback",
+        description="privileged",
+        risk_profile=ToolRiskProfile.MUTATING_PRIVILEGED,
+        parameter_schema={"type": "object"},
+        handler=_test_mutating_value,
+    )
+    registry.register(privileged)
+    engine = PlanningAndToolEngine(registry=registry)
+    with pytest.raises(PlanningError, match="higher risk profile"):
+        engine.register_fallback_tool("readonly", "privileged-fallback")
