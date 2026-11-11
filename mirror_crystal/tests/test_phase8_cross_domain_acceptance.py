@@ -234,15 +234,12 @@ def test_phase8_rejects_reused_verifier_probe_from_transfer_training_set():
     good = target("mathematics", offset=1000)
 
     def leaking_observations(transfer):
-        observations = list(good.observations(transfer))
-        first = observations[0]
-        first_step = first.execution.steps[0]
-        leaked_inputs = dict(first_step.inputs)
-        leaked_inputs["x"] = 1000  # exact input already present in target training
-        leaked_step = replace(first_step, inputs=leaked_inputs)
-        leaked_execution = replace(first.execution, steps=(leaked_step,))
-        observations[0] = replace(first, execution=leaked_execution)
-        return tuple(observations)
+        # Generate valid, execution-bound verification evidence for a probe
+        # deliberately reused from the target training set.
+        return build_observations(
+            transfer.program, transfer.capability, "mathematics",
+            (1000, 1024, 1028),
+        )
 
     leaking = replace(good, observations=leaking_observations)
     report = CrossDomainTransferBenchmarkEngine().evaluate(
