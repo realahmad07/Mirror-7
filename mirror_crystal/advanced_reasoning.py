@@ -337,7 +337,7 @@ class IndependentAnswerChecker:
             agreed = Fraction(path_a_solution) == Fraction(path_b_solution)
             return agreed, 0.50 if agreed else 0.0, (
                 "Supplied exact outputs match; this is a consistency check, not proof of independent derivation."
-                if agreed else f"Supplied exact outputs differ: {path_a_solution} vs {path_b_solution}"
+                if agreed else f"Supplied exact outputs diverged (differ): {path_a_solution} vs {path_b_solution}"
             )
 
         numeric_types = (int, float, Fraction)

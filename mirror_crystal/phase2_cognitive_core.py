@@ -1284,18 +1284,9 @@ class SandboxMCTSPlanner:
         if "LoopStepLimitExceeded" in msg or "RangeSpanLimitExceeded" in msg or "SyntaxError" in msg or "Blocked" in msg:
             return False, 0.0, msg
 
-        # Smooth partial assertion score for UCB1 guidance!
-        if len(assert_lines) >= 2:
-            passed = 0
-            for aln in assert_lines:
-                ok_sub, _ = ZeroTrustSandboxJudge.verify_code_and_test(
-                    code, test_code=aln, max_loop_steps=self.max_loop_steps
-                )
-                if ok_sub:
-                    passed += 1
-            if passed > 0:
-                return False, 0.35 + 0.55 * (passed / len(assert_lines)), msg
-
+        # Keep one isolated child execution per candidate. Re-running every
+        # assertion in a fresh process multiplies startup cost and can consume
+        # the planner's entire wall-clock budget before AST repair is attempted.
         if "AssertionError" in msg:
             return False, 0.45, msg
         if "ZeroDivisionError" in msg or "IndexError" in msg:

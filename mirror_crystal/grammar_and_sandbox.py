@@ -225,6 +225,131 @@ class ZeroTrustSandboxJudge:
             return cleaned
         return ""
 
+    @staticmethod
+    def _static_loop_limit_violation(code_str: str, max_loop_steps: int) -> str | None:
+        """Reject statically provable oversized or non-terminating loops before spawning a child."""
+        try:
+            tree = ast.parse(code_str)
+        except (SyntaxError, RecursionError, MemoryError):
+            return None  # The ordinary AST safety check reports malformed input.
+
+        def const_int(node: ast.AST) -> int | None:
+            if isinstance(node, ast.Constant) and isinstance(node.value, int) and not isinstance(node.value, bool):
+                return node.value
+            if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+                value = const_int(node.operand)
+                if value is not None:
+                    return value if isinstance(node.op, ast.UAdd) else -value
+            if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Sub, ast.Mult, ast.Pow)):
+                left, right = const_int(node.left), const_int(node.right)
+                if left is None or right is None:
+                    return None
+                if isinstance(node.op, ast.Add):
+                    value = left + right
+                elif isinstance(node.op, ast.Sub):
+                    value = left - right
+                elif isinstance(node.op, ast.Mult):
+                    value = left * right
+                else:
+                    if right < 0 or right > 32:
+                        return None
+                    value = left ** right
+                return value if value.bit_length() <= 256 else None
+            return None
+
+        def has_exit_from_loop(body: list[ast.stmt]) -> bool:
+            pending: list[ast.AST] = list(body)
+            while pending:
+                current = pending.pop()
+                if isinstance(current, (ast.Break, ast.Return, ast.Raise)):
+                    return True
+                if isinstance(current, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef)):
+                    continue
+                pending.extend(ast.iter_child_nodes(current))
+            return False
+
+        def scan_block(body: list[ast.stmt]) -> str | None:
+            for index, statement in enumerate(body):
+                if isinstance(statement, ast.For) and isinstance(statement.iter, ast.Call):
+                    call = statement.iter
+                    if isinstance(call.func, ast.Name) and call.func.id == "range":
+                        values = [const_int(arg) for arg in call.args]
+                        if values and all(value is not None for value in values):
+                            try:
+                                span = len(range(*values))
+                            except (OverflowError, ValueError):
+                                span = max_loop_steps + 1
+                            if span > max_loop_steps:
+                                return f"RangeSpanLimitExceeded ({span} > {max_loop_steps})"
+
+                if isinstance(statement, ast.While) and not has_exit_from_loop(statement.body):
+                    test = statement.test
+                    if isinstance(test, ast.Constant) and test.value is True:
+                        return "LoopStepLimitExceeded (statically proven while True loop)"
+
+                    # Prove the common monotonic integer loop case, e.g.
+                    # x = 1; while x > 0: x += 1. Python integers do not overflow.
+                    if (isinstance(test, ast.Compare) and isinstance(test.left, ast.Name)
+                            and len(test.ops) == 1 and len(test.comparators) == 1):
+                        variable = test.left.id
+                        bound = const_int(test.comparators[0])
+                        op = test.ops[0]
+                        initial = None
+                        for prior in reversed(body[:index]):
+                            targets: list[ast.expr] = []
+                            value_node: ast.expr | None = None
+                            if isinstance(prior, ast.Assign):
+                                targets = list(prior.targets)
+                                value_node = prior.value
+                            elif isinstance(prior, ast.AnnAssign):
+                                targets = [prior.target]
+                                value_node = prior.value
+                            if value_node is not None and any(
+                                isinstance(target, ast.Name) and target.id == variable for target in targets
+                            ):
+                                initial = const_int(value_node)
+                                break
+
+                        delta = None
+                        for item in statement.body:
+                            if (isinstance(item, ast.AugAssign) and isinstance(item.target, ast.Name)
+                                    and item.target.id == variable):
+                                amount = const_int(item.value)
+                                if amount is not None and isinstance(item.op, (ast.Add, ast.Sub)):
+                                    delta = amount if isinstance(item.op, ast.Add) else -amount
+                                    break
+                        if initial is not None and bound is not None and delta is not None:
+                            increasing_forever = (
+                                delta > 0 and (
+                                    (isinstance(op, ast.Gt) and initial > bound) or
+                                    (isinstance(op, ast.GtE) and initial >= bound)
+                                )
+                            )
+                            decreasing_forever = (
+                                delta < 0 and (
+                                    (isinstance(op, ast.Lt) and initial < bound) or
+                                    (isinstance(op, ast.LtE) and initial <= bound)
+                                )
+                            )
+                            if increasing_forever or decreasing_forever:
+                                return "LoopStepLimitExceeded (statically proven monotonic non-terminating loop)"
+
+                # Recurse into nested statement suites (function bodies, branches, etc.).
+                for _, value in ast.iter_fields(statement):
+                    if isinstance(value, list):
+                        nested = [item for item in value if isinstance(item, ast.stmt)]
+                        if nested:
+                            issue = scan_block(nested)
+                            if issue:
+                                return issue
+                    elif isinstance(value, ast.stmt):
+                        issue = scan_block([value])
+                        if issue:
+                            return issue
+            return None
+
+        return scan_block(tree.body)
+
     @classmethod
     def verify_code_and_test(
         cls,
@@ -244,6 +369,9 @@ class ZeroTrustSandboxJudge:
         safe, reason = cls.is_ast_safe(full_snippet)
         if not safe:
             return False, reason
+        loop_violation = cls._static_loop_limit_violation(full_snippet, max_loop_steps)
+        if loop_violation:
+            return False, loop_violation
 
         mode = os.environ.get("MIRROR_SANDBOX_MODE", "container").strip().lower()
         if mode == "container":
