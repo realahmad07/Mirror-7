@@ -26,7 +26,7 @@ class SandboxExecutionResult:
 _CHILD_RUNNER = r'''
 import ast, bisect, builtins, cmath, collections, copy, csv, dataclasses, decimal
 import enum, fractions, functools, heapq, itertools, json, math, operator, queue
-import random, re, statistics, string, sys, io, contextlib, os
+import random, re, statistics, string, sys, io, contextlib, os, types
 payload = json.loads(sys.stdin.read())
 source = payload.get("source")
 candidate_source = payload.get("candidate_source")
@@ -92,6 +92,22 @@ def safe_import(name, *args, **kwargs):
     if root not in modules:
         raise ImportError("blocked import: " + name)
     return modules[root]
+def build_namespace_builtins():
+    # Each namespace gets distinct module objects so candidate monkey-patching
+    # cannot mutate the regression harness's module attributes.
+    namespace_modules = {}
+    for module_name, module in modules.items():
+        cloned = types.ModuleType(module.__name__)
+        cloned.__dict__.update(module.__dict__)
+        namespace_modules[module_name] = cloned
+    def namespace_import(name, *args, **kwargs):
+        root = name.split(".")[0]
+        if root not in namespace_modules:
+            raise ImportError("blocked import: " + name)
+        return namespace_modules[root]
+    values = dict(safe_builtins)
+    values["__import__"] = namespace_import
+    return values
 safe_builtins = {
     "abs":abs,"all":all,"any":any,"bool":bool,"callable":callable,"complex":complex,"dict":dict,"divmod":divmod,
     "enumerate":enumerate,"filter":filter,"float":float,"int":int,"isinstance":isinstance,
@@ -113,13 +129,13 @@ try:
     with contextlib.redirect_stdout(captured):
         if stage19_mode:
             candidate_namespace = {
-                "__builtins__": dict(safe_builtins),
+                "__builtins__": build_namespace_builtins(),
                 "__name__": "mirror_candidate",
                 "_mc_step_tick": tick,
             }
             execute_checked(candidate_source, candidate_namespace, "<mirror-stage19-candidate>")
             harness_namespace = {
-                "__builtins__": dict(safe_builtins),
+                "__builtins__": build_namespace_builtins(),
                 "__name__": "mirror_regression_harness",
                 "_mc_step_tick": tick,
                 "candidate_namespace": candidate_namespace,
