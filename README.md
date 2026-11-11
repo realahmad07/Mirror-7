@@ -1295,6 +1295,12 @@ The source-discovery adapter is caller-supplied; this module does not silently c
 
 A passing evaluation produces **READY FOR HUMAN REVIEW**, not deployment. An independent reviewer must explicitly approve the exact candidate digest, evaluation, suite, and environment before a scoped promotion authorization is returned. Stage 19 does not auto-apply source changes, mutate production registries, merge PRs, or deploy. Reviewer identity must be authenticated by the host application, and approval records must be persisted by that host. See [Stage 19 design and limits](docs/34-stage19-controlled-self-improvement.md) and [Stage 19 acceptance report](artifacts/STAGE19_CONTROLLED_SELF_IMPROVEMENT_REPORT.md).
 
+### Stage 20 — Multimodal & Real-World Grounding
+
+**Implementation status: PASS within the bounded multimodal evidence scope.** Mirror validates PNG chunk CRCs and decompression bounds, extracts reproducible pixel statistics, and can accept host-vision annotations only when signed over the exact image hash and evidence locator. It extracts UTF-8 text/Markdown, CSV, JSON and DOCX content with source hashes and retained line/page/row/table locators; PDF/OCR uses an explicit host adapter. Telemetry records preserve device identity, sample IDs, timezone-aware timestamps, units and Ed25519 signatures, with replay protection.
+
+The cross-modal engine compares observations tied to the same entity and attribute, normalizes supported units, and reports verified agreement, unsigned corroboration, conflict, incomparable evidence or insufficient evidence. It does not average away disagreement or infer authenticity from file integrity alone. Built-in vision is pixel-statistical, not general object recognition; semantic image labels require a host-trusted perception adapter. Host key enrollment, PDF/OCR adapters and durable audit storage remain integration responsibilities. See [Stage 20 design and limits](docs/35-stage20-multimodal-grounding.md) and [Stage 20 acceptance report](artifacts/STAGE20_MULTIMODAL_GROUNDING_REPORT.md).
+
 ### Current verification status
 
 The CLI/runtime repair implementation is at commit **[`143647a`](https://github.com/realahmad07/Mirror-7/commit/143647a4e1cd7bc3e1e81f31d5ffa87642f0fe58)**.

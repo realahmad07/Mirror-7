@@ -576,3 +576,31 @@ __all__ += [
     "SelfImprovementError",
     "SelfImprovementEvaluation",
 ]
+
+from .stage20_multimodal_grounding import (
+    AssetProvenance,
+    DocumentEvidenceSegment,
+    ExtractedSegment,
+    GroundedObservation,
+    GroundingError,
+    GroundingReport,
+    GroundingStatus,
+    Modality,
+    ModalConclusion,
+    RealWorldGroundingEngine,
+    SourceTrustRegistry,
+)
+
+__all__ += [
+    "AssetProvenance",
+    "DocumentEvidenceSegment",
+    "ExtractedSegment",
+    "GroundedObservation",
+    "GroundingError",
+    "GroundingReport",
+    "GroundingStatus",
+    "Modality",
+    "ModalConclusion",
+    "RealWorldGroundingEngine",
+    "SourceTrustRegistry",
+]
