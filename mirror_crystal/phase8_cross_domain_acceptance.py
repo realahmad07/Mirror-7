@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+import hashlib
 import re
 from typing import Callable, Iterable
 
@@ -19,7 +20,7 @@ from .cross_domain_transfer import (
     CrossDomainTransferProposal,
 )
 from .operational_language import UOL, _OPS, _walk
-from .universal_representation import stable_representation_id
+from .universal_representation import canonical_json, stable_representation_id
 from .verified_program_learning import (
     UOLProgramLearningProposal,
     VerifiedProgramLearningEngine,
@@ -232,16 +233,16 @@ class CrossDomainTransferBenchmarkEngine:
                 ],
                 "postconditions": list(target.postconditions),
             })
-        manifest_sha256 = stable_representation_id(
-            "phase8-transfer-manifest",
-            {
-                "version": self.VERSION,
-                "benchmark_id": benchmark_id.strip(),
-                "source_program": source.program.fingerprint,
-                "source_domain": source.program.domain,
-                "targets": manifest_targets,
-            },
-        )
+        manifest_payload = {
+            "version": self.VERSION,
+            "benchmark_id": benchmark_id.strip(),
+            "source_program": source.program.fingerprint,
+            "source_domain": source.program.domain,
+            "targets": manifest_targets,
+        }
+        manifest_sha256 = hashlib.sha256(
+            canonical_json(manifest_payload).encode("utf-8")
+        ).hexdigest()
 
         results: list[TransferTargetResult] = []
         all_task_ids: set[str] = set()
