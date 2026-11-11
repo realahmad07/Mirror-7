@@ -228,3 +228,30 @@ def test_phase8_rejects_transfer_that_fails_fresh_target_heldout_examples():
     )
     assert report.status is TransferBenchmarkStatus.BLOCKED
     assert "held-out" in report.targets[0].blocker
+
+
+
+def test_phase8_rejects_reused_verifier_probe_from_transfer_training_set():
+    good = target("mathematics", offset=1000)
+
+    def leaking_observations(transfer):
+        observations = list(good.observations(transfer))
+        first = observations[0]
+        first_step = first.execution.steps[0]
+        leaked_inputs = dict(first_step.inputs)
+        leaked_inputs["x"] = 1000  # exact input already present in target training
+        leaked_step = replace(first_step, inputs=leaked_inputs)
+        leaked_execution = replace(first.execution, steps=(leaked_step,))
+        observations[0] = replace(first, execution=leaked_execution)
+        return tuple(observations)
+
+    leaking = replace(good, observations=leaking_observations)
+    report = CrossDomainTransferBenchmarkEngine().evaluate(
+        "verifier-probe-leakage",
+        make_source_proposal(),
+        UOL(),
+        (leaking,),
+        minimum_target_domains=1,
+    )
+    assert report.status is TransferBenchmarkStatus.BLOCKED
+    assert "disjoint from transfer train/held-out" in report.targets[0].blocker
