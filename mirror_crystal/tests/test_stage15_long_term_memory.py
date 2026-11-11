@@ -282,3 +282,101 @@ def test_memory_search_and_tier_prioritization(tmp_path: Path):
     top_node, score = results[0]
     assert top_node.tier == MemoryTier.IMMUTABLE_TRUSTED_VAULT
     assert "coroutine execution" in top_node.content
+
+
+def test_trusted_vault_duplicate_id_cannot_replace_existing_record(tmp_path: Path):
+    mgr = LongTermMemoryManager(db_path=tmp_path / "immutable_duplicate.sqlite")
+    original = mgr.store_memory(
+        content="Canonical invariant: c = 299792458 m/s",
+        tier=MemoryTier.IMMUTABLE_TRUSTED_VAULT,
+        importance_score=1.0,
+        memory_id="trusted-fixed-id",
+    )
+    with pytest.raises(MemoryProtectionError, match="duplicate IDs cannot replace"):
+        mgr.store_memory(
+            content="Tampered replacement content",
+            tier=MemoryTier.WORKING_EPISODIC,
+            importance_score=0.1,
+            memory_id="trusted-fixed-id",
+        )
+    stored = mgr.get_memory("trusted-fixed-id", touch=False)
+    assert stored.content == original.content
+    assert stored.tier == MemoryTier.IMMUTABLE_TRUSTED_VAULT
+    assert stored.sha256_hash == original.sha256_hash
+
+
+def test_sqlite_triggers_protect_trusted_record_from_direct_update_and_delete(tmp_path: Path):
+    import sqlite3
+
+    mgr = LongTermMemoryManager(db_path=tmp_path / "trusted_sqlite_guards.sqlite")
+    mgr.store_memory(
+        content="Immutable canonical record",
+        tier=MemoryTier.IMMUTABLE_TRUSTED_VAULT,
+        importance_score=1.0,
+        memory_id="vault-db-guard",
+    )
+    with sqlite3.connect(mgr.db_path) as conn:
+        with pytest.raises(sqlite3.IntegrityError, match="immutable trusted"):
+            conn.execute("UPDATE memories SET content = ? WHERE memory_id = ?",
+                         ("raw SQL tampering", "vault-db-guard"))
+        with pytest.raises(sqlite3.IntegrityError, match="immutable trusted"):
+            conn.execute("DELETE FROM memories WHERE memory_id = ?", ("vault-db-guard",))
+        # Operational access bookkeeping remains mutable and does not alter trusted knowledge.
+        conn.execute("UPDATE memories SET access_count = access_count + 1 WHERE memory_id = ?",
+                     ("vault-db-guard",))
+        conn.commit()
+    assert mgr.get_memory("vault-db-guard", touch=False).content == "Immutable canonical record"
+
+
+def test_memory_loader_uses_safe_literal_migration_not_code_execution(tmp_path: Path):
+    import sqlite3
+
+    mgr = LongTermMemoryManager(db_path=tmp_path / "safe_legacy_decode.sqlite")
+    mgr.store_memory(
+        content="Legacy compatibility record",
+        tier=MemoryTier.WORKING_EPISODIC,
+        memory_id="legacy-safe",
+    )
+    sentinel = tmp_path / "eval_was_executed"
+    payload = "{__import__('pathlib').Path(" + repr(str(sentinel)) + ").write_text('bad'): 1}"
+    with sqlite3.connect(mgr.db_path) as conn:
+        conn.execute("UPDATE memories SET metadata = ? WHERE memory_id = ?", (payload, "legacy-safe"))
+        conn.commit()
+    with pytest.raises(MemoryError, match="malformed"):
+        mgr.get_memory("legacy-safe", touch=False)
+    assert not sentinel.exists()
+
+
+def test_legacy_python_literal_metadata_migrates_safely(tmp_path: Path):
+    import sqlite3
+
+    mgr = LongTermMemoryManager(db_path=tmp_path / "safe_legacy_literal.sqlite")
+    mgr.store_memory(
+        content="Legacy literal metadata record",
+        tier=MemoryTier.WORKING_EPISODIC,
+        memory_id="legacy-literal",
+    )
+    with sqlite3.connect(mgr.db_path) as conn:
+        conn.execute("UPDATE memories SET metadata = ?, feedback_history = ? WHERE memory_id = ?",
+                     ("{'origin': 'legacy', 'count': 2}", "[{'score': 1}]", "legacy-literal"))
+        conn.commit()
+    restored = mgr.get_memory("legacy-literal", touch=False)
+    assert restored.metadata == {"origin": "legacy", "count": 2}
+    assert restored.feedback_history == [{"score": 1}]
+
+
+def test_memory_loader_detects_content_hash_tampering(tmp_path: Path):
+    import sqlite3
+
+    mgr = LongTermMemoryManager(db_path=tmp_path / "memory_hash_tamper.sqlite")
+    mgr.store_memory(
+        content="Original stored content",
+        tier=MemoryTier.WORKING_EPISODIC,
+        memory_id="hash-check",
+    )
+    with sqlite3.connect(mgr.db_path) as conn:
+        conn.execute("UPDATE memories SET content = ? WHERE memory_id = ?",
+                     ("Modified without updating digest", "hash-check"))
+        conn.commit()
+    with pytest.raises(MemoryError, match="SHA-256 hash mismatch"):
+        mgr.get_memory("hash-check", touch=False)
