@@ -2,7 +2,7 @@
 
 **System:** Mirror-7 Crystalline Autonomous Intelligence Engine  
 **Stage:** 11 (Sections 11.2 – 11.7)  
-**Status:** COMPLETE & INDEPENDENTLY VERIFIED  
+**Status:** Initial implementation delivered; follow-up security audit corrections committed on `audit/stage11-security-hardening`; CI verification pending  
 **Date:** November 11, 2026  
 **Environment:** Remote Linux Sandbox (`x86_64`), Python 3.11, Zero Private Keys  
 
@@ -183,3 +183,25 @@ Hardens the system against adversarial threats across five distinct attack surfa
 **Grand Total Regression:** 573 passed, 0 failures, 1 skipped.  
 **Production Vault Rule Count:** Exactly 368,270 rules strictly preserved.  
 **Git Object Database:** 0 private keys exposed.
+
+
+---
+
+## 8. Follow-up Security Audit — November 11, 2026
+
+A source-level review found that several original descriptions overstated the guarantees of the initial implementation. The following corrections were committed on the review branch; they are not yet merged into `main`, and no new CI pass is claimed here.
+
+- **AST policy checker is not an execution sandbox.** The API now explicitly describes static inspection only, rejects additional dangerous names/calls, and states that untrusted code must run behind an OS/container isolation boundary. AST approval must never authorize in-process execution.
+- **Workspace path containment:** `allowed_base_dir` is now enforced using resolved paths, including symlink resolution; Windows drive and UNC paths are rejected.
+- **JSON depth and size:** structural nesting is checked before parsing, quoted/escaped braces are handled, input size is capped, and parser recursion/resource exceptions fail closed.
+- **Prompt-injection detection:** documented as heuristic detection rather than complete prevention; prompt size and decoded Base64 size are bounded.
+- **Continual memory integrity:** duplicate rule IDs are rejected instead of overwriting existing records; returned vault records and session values are deep-copied to prevent caller-side mutation of stored state.
+- **Resource limits:** the bounded-loop helper is explicitly documented as a demonstration, not a CPU/memory quota for arbitrary programs. Regex detection remains heuristic.
+
+### Verification accounting correction
+
+The original commit message for `b38981c` records **560 passed, 1 skipped**. The README and this report were subsequently updated to **573 passed, 1 skipped**. These are conflicting historical figures; until the exact run logs are attached and reconciled, neither figure should be presented as independently confirmed by the commit itself. The follow-up branch adds five focused regression tests (11 Stage 11 test functions total), but their execution result is pending CI.
+
+**Review branch:** `audit/stage11-security-hardening`  
+**Current review head:** `b898f27561e68be47ff38f0fa4cc4df71f42fd63`  
+**Merge status:** Not merged to `main`.
