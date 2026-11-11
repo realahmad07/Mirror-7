@@ -227,7 +227,8 @@ class CalibratedEpistemicEvaluator:
         hallucinations = sum(1 for e in evaluations if e["evaluation"] == "uncalibrated_hallucination")
 
         neg_controls = sum(1 for e in evaluations if e["evaluation"] in ("correct_abstention", "uncalibrated_hallucination"))
-        abstention_recall = (abstained_correct / float(neg_controls)) if neg_controls > 0 else 1.0
+        # An empty denominator is not evidence of perfect performance; fail closed.
+        abstention_recall = (abstained_correct / float(neg_controls)) if neg_controls > 0 else 0.0
 
         total_abstentions = sum(1 for e in evaluations if e["is_abstained"])
         abstention_prec = (abstained_correct / float(total_abstentions)) if total_abstentions > 0 else 1.0
