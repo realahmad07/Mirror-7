@@ -134,6 +134,7 @@ class CrossDomainBenchmarkRunner:
     def run(self, manifest: CrossDomainBenchmarkManifest, *, target_verifiers: Mapping[str, Callable[[CrossDomainTransferProposal], Iterable[VerifiedProgramObservation]]]):
         if not isinstance(manifest, CrossDomainBenchmarkManifest) or not isinstance(target_verifiers, Mapping):
             raise TypeError("manifest and target_verifiers have invalid types")
+        frozen_fingerprint = manifest.fingerprint
         results, learned = [], []
         for case in manifest.cases:
             try:
@@ -164,8 +165,13 @@ class CrossDomainBenchmarkRunner:
                 results.append(CrossDomainCaseResult(case.case_id, True, True, case.source_domain, case.target_domain, proposal))
             except Exception as exc:
                 results.append(CrossDomainCaseResult(case.case_id, False, True, case.source_domain, case.target_domain, error=f"{type(exc).__name__}: {exc}"))
+        if manifest.fingerprint != frozen_fingerprint:
+            results.append(CrossDomainCaseResult(
+                "__manifest_mutated__", False, False, "", "",
+                error="benchmark manifest or UOL rule catalog changed during evaluation",
+            ))
         return CrossDomainBenchmarkReport(
-            manifest.benchmark_id, manifest.fingerprint, bool(results) and all(x.passed for x in results),
+            manifest.benchmark_id, frozen_fingerprint, bool(results) and all(x.passed for x in results),
             tuple(results), tuple(sorted({x.source_domain for x in manifest.cases})),
             tuple(sorted({x.target_domain for x in manifest.cases})), tuple(learned),
         )
