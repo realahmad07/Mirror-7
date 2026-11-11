@@ -740,7 +740,7 @@ class RealWorldGroundingEngine:
             xml_text = xml.decode("utf-8-sig", errors="strict")
         except UnicodeDecodeError as exc:
             raise GroundingError("DOCX document XML must use UTF-8 encoding") from exc
-        if re.search(r"<!\\s*(?:DOCTYPE|ENTITY)\\b", xml_text, flags=re.IGNORECASE):
+        if re.search(r"<!\s*(?:DOCTYPE|ENTITY)\b", xml_text, flags=re.IGNORECASE):
             raise GroundingError("DOCX XML declarations/entities are forbidden")
         try:
             root = ET.fromstring(xml_text)

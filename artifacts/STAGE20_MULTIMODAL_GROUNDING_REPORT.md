@@ -17,7 +17,7 @@
 
 ## Acceptance coverage
 
-The focused Stage 20 suite contains 25 deterministic tests covering PNG integrity and malformed input, source authenticity, text/CSV/JSON/DOCX extraction, document locators, PDF adapter behavior, structured tables, signed multi-modal agreement, unsigned corroboration, unit conversion, conflict detection, insufficient evidence, incompatible dimensions, telemetry spoofing/replay, missing metadata, resource/URI/license checks and report reproducibility.
+The focused Stage 20 suite contains 26 deterministic tests covering PNG integrity and malformed input, source authenticity, text/CSV/JSON/DOCX extraction, document locators, PDF adapter behavior, structured tables, signed multi-modal agreement, unsigned corroboration, unit conversion, conflict detection, insufficient evidence, incompatible dimensions, telemetry spoofing/replay, missing metadata, resource/URI/license checks and report reproducibility.
 
 ## Honest boundaries
 
