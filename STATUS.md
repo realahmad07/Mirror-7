@@ -218,3 +218,18 @@ See [Phase 8 design and boundaries](docs/31-phase8-cross-domain-intelligence.md)
 Autonomous open-world task generation, a persistent append-only expansion ledger, authenticated external reviewers, and automatic rollback remain unimplemented and are not claimed.
 
 See [Phase 9 design and boundaries](docs/32-phase9-continuous-expansion.md).
+
+
+## Stage 18 — Autonomous Research
+
+**Status: PASS within the bounded adapter-backed scope.**
+
+- Deterministic research question synthesis with objectives, subquestions and optional falsifiable hypotheses.
+- Host-supplied discovery adapters with bounded, streaming consumption. Source content and evidence are capped; malformed provenance, duplicate IDs and resource-limit violations fail closed.
+- Stage 14 source/passsage verification, atomic claim synthesis, contradiction reporting and epistemic abstention.
+- Structured reports with deterministic report fingerprints and immutable source manifests.
+- Reproducible experiment-design contracts and paired multi-seed evaluation with held-out dataset and environment identity checks.
+
+**Explicit limits:** No built-in web crawler or source provider is included; discovery adapters are host-supplied and must be trusted. Experiment outcomes are input records, not independently attested execution; Stage 17 sandbox integration and actual run attestation remain Stage 19 work. Stage 14 grounding metrics remain lexical/heuristic and do not prove semantic entailment.
+
+See [Stage 18 design](docs/33-stage18-autonomous-research.md) and [acceptance report](artifacts/STAGE18_AUTONOMOUS_RESEARCH_REPORT.md).
