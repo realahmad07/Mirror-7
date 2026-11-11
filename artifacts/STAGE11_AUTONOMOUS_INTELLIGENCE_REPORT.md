@@ -200,8 +200,20 @@ A source-level review found that several original descriptions overstated the gu
 
 ### Verification accounting correction
 
-The original commit message for `b38981c` records **560 passed, 1 skipped**. The README and this report were subsequently updated to **573 passed, 1 skipped**. These are conflicting historical figures; until the exact run logs are attached and reconciled, neither figure should be presented as independently confirmed by the commit itself. The follow-up branch adds five focused regression tests (11 Stage 11 test functions total), but their execution result is pending CI.
+The original commit message for `b38981c` records **560 passed, 1 skipped**. The README and this report were subsequently updated to **573 passed, 1 skipped**. These are conflicting historical figures; until the exact run logs are attached and reconciled, neither figure should be presented as independently confirmed by the commit itself. The follow-up branch adds seven focused regression tests. The first PR CI attempt exposed a ReDoS diagnostic assertion mismatch; the diagnostic was corrected. A later CI run is in progress, but it began before the final seed/empty-metric tests were pushed, so those latest tests still require a run.
 
 **Review branch:** `audit/stage11-security-hardening`  
-**Current review head:** `b898f27561e68be47ff38f0fa4cc4df71f42fd63`  
+**Current review head at report update:** `9320bc4f00fb683b5730a53fbe07aa90988bb152`  
 **Merge status:** Not merged to `main`.
+
+
+## 9. Additional source-level audit findings — 11.2–11.5
+
+These findings do not imply that every feature is unusable; they narrow what the current code and tests actually establish.
+
+- **11.2 benchmark security scope:** the original private-key check scans only selected Python files under `mirror_eval` and explicitly skips Stage 10/11 scanner files. It does not establish that the entire repository or Git object database contains zero private keys. The review branch now rejects unknown deterministic-generator keys rather than silently substituting seed 42. Canonical manifest path containment and broader secret scanning remain open.
+- **11.3 exact-oracle input contracts:** exact `Fraction` arithmetic avoids floating-point operations after conversion, but the public methods do not consistently validate probability ranges, combinatoric domains, or malformed/ragged matrix inputs. Passing a Python float to `Fraction` preserves its binary floating representation; callers should supply integers or rational values. Expand domain and boundary tests before describing these APIs as complete general-purpose exact oracles.
+- **11.4 reasoning scope:** the reasoner is a string-pattern demonstrator, not a formal theorem prover. Its current test's successful Socrates conclusion is supplied by an explicit instance-level `if Socrates ... then Socrates ...` premise; the `all humans are primates` statements are not universally instantiated by a first-order logic engine. Cross-domain thermal calculations assume a one-second dissipation interval, which should be an explicit input for general use.
+- **11.5 grounding scope:** token recall and one matching trigram measure lexical overlap, not semantic entailment or contradiction. They can over-score a negated or contextually contradicted claim. The 1.0 negative-control abstention result comes from two synthetic examples, not a broad model evaluation. The review branch also changes empty-suite metric defaults from vacuous 1.0 to fail-closed 0.0 and adds a regression test.
+
+These limitations must remain visible in documentation and release claims until independently tested and corrected.
