@@ -1264,7 +1264,7 @@ Detailed Stage 16 correction report: [STAGE16_ADVANCED_REASONING_REPORT.md](arti
 Phase 17 provides dependency planning and allow-listed tool dispatch with explicit execution boundaries:
 - **Hierarchical Task Decomposition:** Validates task dependency DAGs, duplicate task IDs, and dependency contracts.
 - **Tool Schemas & Risk Policy:** Validates a supported JSON Schema subset; safe mutations are disabled by default; privileged tools require an application authorization callback; fallbacks cannot increase risk level.
-- **Bounded Child-Process Execution:** Callable handlers run in a killable child process with deadlines, bounded JSON input/output, and POSIX resource limits where supported.
+- **Bounded Child-Process Execution:** Callable handlers run in a killable child process with deadlines, bounded JSON input/output, and POSIX resource limits; POSIX worker sessions are terminated as process groups, including leftover descendants.
 - **Container Execution for Untrusted Code:** Explicit Docker/Podman mode uses the existing no-network, read-only-root, non-root, dropped-capability, resource-limited container runner.
 - **Important Boundary:** Process mode does not remove host filesystem, environment, or network access; it is for trusted allow-listed handlers, not arbitrary untrusted code. The HTTP planning endpoint exposes only the built-in read-only echo tool.
 - **REST API Endpoint:** `/api/planning/execute`.

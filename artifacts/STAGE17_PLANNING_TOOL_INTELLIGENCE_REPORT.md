@@ -79,7 +79,7 @@ All 7 unit and integration tests passed:
 The audit found that the initial `timeout_seconds` field was not enforced, tool handlers ran directly in the orchestrator process, and risk profiles were descriptive rather than enforced.
 
 The implementation on `main` now:
-- Routes callable handlers through a killable child process by default; enforces wall-clock deadlines, bounded JSON inputs/outputs, and POSIX CPU/file/open-file/address-space limits where supported.
+- Routes callable handlers through a killable child process by default; enforces wall-clock deadlines, bounded JSON inputs/outputs, and POSIX CPU/file/open-file/address-space limits where supported. POSIX workers must establish a dedicated session, and cleanup terminates the whole process group even when a handler has already returned.
 - Offers an explicit Docker/Podman container execution mode using the existing no-network, read-only-root, dropped-capability, non-root, resource-limited runner for untrusted code supplied as a container program.
 - Validates a documented JSON Schema subset and required parameters before dispatch.
 - Restricts direct `ToolDefinition.execute()` to `READ_ONLY`; mutating calls must pass through `ToolRegistry.execute()`.
@@ -93,4 +93,4 @@ The child-process mode is **not a complete security sandbox**: a registered Pyth
 
 ### Added regression coverage
 
-Eight additional tests cover child-process execution, timeout enforcement, output bounds, schema validation, safe/privileged authorization, fallback risk escalation, duplicate tool/task IDs, and invalid timeout/schema definitions. The original seven-test result predates these changes; latest CI must pass before the updated suite is called verified.
+Nine additional tests cover child-process execution, timeout enforcement, descendant cleanup after normal handler return, output bounds, schema validation, safe/privileged authorization, fallback risk escalation, duplicate tool/task IDs, and invalid timeout/schema definitions. The original seven-test result predates these changes; latest CI must pass before the updated suite is called verified.

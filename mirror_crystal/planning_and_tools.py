@@ -63,14 +63,16 @@ def _echo_tool(text: str = "") -> str:
 
 
 def _tool_process_worker(send_conn: Any, handler: Callable[..., Any], parameters: Dict[str, Any],
-                         timeout_seconds: float, memory_limit_mb: int, max_output_bytes: int) -> None:
+                         timeout_seconds: float, memory_limit_mb: int, max_output_bytes: int,
+                         session_ready: Any = None) -> None:
     """Execute an allow-listed handler in a killable child process and return JSON only."""
     try:
         if os.name == "posix":
-            try:
-                os.setsid()
-            except OSError:
-                pass
+            # A unique session/process group is required so the parent can also
+            # terminate descendants spawned by a handler after it returns.
+            os.setsid()
+            if session_ready is not None:
+                session_ready.set()
             try:
                 import resource
                 cpu = max(1, int(math.ceil(timeout_seconds)))
@@ -273,9 +275,11 @@ class ToolDefinition:
 
         context = multiprocessing.get_context("fork" if "fork" in multiprocessing.get_all_start_methods() else "spawn")
         recv_conn, send_conn = context.Pipe(duplex=False)
+        session_ready = context.Event()
         process = context.Process(
             target=_tool_process_worker,
-            args=(send_conn, self.handler, kwargs, self.timeout_seconds, self.memory_limit_mb, self.max_output_bytes),
+            args=(send_conn, self.handler, kwargs, self.timeout_seconds, self.memory_limit_mb,
+                  self.max_output_bytes, session_ready),
             name=f"mirror-tool-{self.name}",
         )
         process.daemon = True
@@ -285,15 +289,15 @@ class ToolDefinition:
             started = True
             send_conn.close()
             if not recv_conn.poll(self.timeout_seconds):
-                self._terminate_process_tree(process)
+                self._terminate_process_tree(process, session_started=session_ready.is_set())
                 raise PlanningError(f"Tool '{self.name}' exceeded {self.timeout_seconds:.3f}s execution timeout")
             try:
                 raw_bytes = recv_conn.recv_bytes(maxlength=self.max_output_bytes + 16_384)
             except (EOFError, OSError) as exc:
                 raise PlanningError(f"Tool '{self.name}' worker exited without a valid result") from exc
             process.join(timeout=0.5)
-            if process.is_alive():
-                self._terminate_process_tree(process)
+            # Final cleanup runs in finally for both normal returns and failures,
+            # including the case where the worker exited but left subprocesses.
             try:
                 response = json.loads(raw_bytes.decode("utf-8"))
             except (UnicodeDecodeError, ValueError) as exc:
@@ -314,27 +318,33 @@ class ToolDefinition:
                 send_conn.close()
             except OSError:
                 pass
-            if started and process.is_alive():
-                self._terminate_process_tree(process)
+            if started:
+                self._terminate_process_tree(process, session_started=session_ready.is_set())
 
     @staticmethod
-    def _terminate_process_tree(process: Any) -> None:
-        if not process.is_alive():
-            process.join(timeout=0.1)
-            return
-        if os.name == "posix" and process.pid:
+    def _terminate_process_tree(process: Any, *, session_started: bool = False) -> None:
+        """Reap the worker and terminate its dedicated POSIX process group, even after worker exit."""
+        if os.name == "posix" and process.pid and session_started:
+            # The worker's setsid() makes this process group unique to this tool call.
+            # It may outlive the worker if a handler spawned a background subprocess.
             try:
                 os.killpg(process.pid, signal.SIGTERM)
-                process.join(timeout=0.2)
-                # Kill the entire session even if the direct child exited but left descendants.
-                try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-            except (ProcessLookupError, PermissionError, OSError):
-                process.terminate()
-        else:
+            except ProcessLookupError:
+                pass
+            except (PermissionError, OSError):
+                if process.is_alive():
+                    process.terminate()
+            process.join(timeout=0.2)
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            except (PermissionError, OSError):
+                if process.is_alive() and hasattr(process, "kill"):
+                    process.kill()
+        elif process.is_alive():
             process.terminate()
+
         process.join(timeout=1.0)
         if process.is_alive() and hasattr(process, "kill"):
             process.kill()

@@ -14,6 +14,8 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import subprocess
+import sys
 import time
 from pathlib import Path
 import pytest
@@ -96,6 +98,21 @@ def _test_current_pid() -> int:
 
 def _test_large_output() -> str:
     return "x" * 10000
+
+
+def _test_spawn_background_child(marker_path: str) -> int:
+    """Spawn a delayed child in the worker session, then return before the child exits."""
+    child_code = (
+        "import pathlib, sys, time; "
+        "time.sleep(1.5); pathlib.Path(sys.argv[1]).write_text('orphan survived', encoding='utf-8')"
+    )
+    child = subprocess.Popen(
+        [sys.executable, "-c", child_code, marker_path],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        close_fds=True,
+    )
+    return child.pid
 
 
 def _test_mutating_value(resource: str, approved: bool = False) -> dict:
@@ -275,6 +292,24 @@ def test_stage17_execution_runs_in_child_process_and_enforces_timeout():
     with pytest.raises(PlanningError, match="execution timeout"):
         slow_tool.execute()
     assert time.monotonic() - started < 2.0
+
+
+@pytest.mark.skipif(os.name != "posix", reason="process-group descendant cleanup is POSIX-specific")
+def test_stage17_process_group_cleanup_kills_descendants_after_handler_returns(tmp_path: Path):
+    marker = tmp_path / "orphan-survived.txt"
+    tool = ToolDefinition(
+        name="spawn-child",
+        description="Spawns a background child and returns",
+        handler=_test_spawn_background_child,
+        timeout_seconds=2.0,
+    )
+    child_pid = tool.execute(marker_path=str(marker))
+    assert isinstance(child_pid, int) and child_pid > 0
+
+    # If process-group cleanup only ran while the direct worker was alive,
+    # this child would write the marker after the handler had already returned.
+    time.sleep(1.7)
+    assert not marker.exists(), "background descendant survived tool execution cleanup"
 
 
 def test_stage17_tool_output_is_bounded_and_json_serializable():
