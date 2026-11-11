@@ -2,7 +2,7 @@
 
 **System:** Mirror-7 Crystalline Autonomous Intelligence Engine  
 **Stage:** 11 (Sections 11.2 – 11.7)  
-**Status:** COMPLETE & INDEPENDENTLY VERIFIED  
+**Status:** Initial implementation delivered; follow-up security audit corrections and exact-input boundary hardening committed on `audit/stage11-security-hardening`; full fast CI passed on an earlier branch head, while the newest exact-math tests still require CI  
 **Date:** November 11, 2026  
 **Environment:** Remote Linux Sandbox (`x86_64`), Python 3.11, Zero Private Keys  
 
@@ -183,3 +183,98 @@ Hardens the system against adversarial threats across five distinct attack surfa
 **Grand Total Regression:** 573 passed, 0 failures, 1 skipped.  
 **Production Vault Rule Count:** Exactly 368,270 rules strictly preserved.  
 **Git Object Database:** 0 private keys exposed.
+
+
+---
+
+## 8. Follow-up Security Audit — November 11, 2026
+
+A source-level review found that several original descriptions overstated the guarantees of the initial implementation. The following corrections were committed on the review branch; they are not yet merged into `main`. CI evidence and remaining validation gaps are recorded below.
+
+- **AST policy checker is not an execution sandbox.** The API now explicitly describes static inspection only, rejects additional dangerous names/calls, and states that untrusted code must run behind an OS/container isolation boundary. AST approval must never authorize in-process execution.
+- **Workspace path containment:** `allowed_base_dir` is now enforced using resolved paths, including symlink resolution; Windows drive and UNC paths are rejected.
+- **JSON depth and size:** structural nesting is checked before parsing, quoted/escaped braces are handled, input size is capped, and parser recursion/resource exceptions fail closed.
+- **Prompt-injection detection:** documented as heuristic detection rather than complete prevention; prompt size and decoded Base64 size are bounded.
+- **Continual memory integrity:** duplicate rule IDs are rejected instead of overwriting existing records; returned vault records and session values are deep-copied to prevent caller-side mutation of stored state.
+- **Resource limits:** the bounded-loop helper is explicitly documented as a demonstration, not a CPU/memory quota for arbitrary programs. Regex detection remains heuristic.
+
+### Verification accounting correction
+
+The original commit message for `b38981c` records **560 passed, 1 skipped**. The README and this report were subsequently updated to **573 passed, 1 skipped**. These are conflicting historical figures; until the exact run logs are attached and reconciled, neither figure should be presented as independently confirmed by the commit itself. The follow-up branch adds seven focused regression tests. The first PR CI attempt exposed a ReDoS diagnostic assertion mismatch; the diagnostic was corrected. A later CI run is in progress, but it began before the final seed/empty-metric tests were pushed, so those latest tests still require a run.
+
+**Review branch:** `audit/stage11-security-hardening`  
+**Current review head at report update:** `9320bc4f00fb683b5730a53fbe07aa90988bb152`  
+**Merge status:** Not merged to `main`.
+
+
+## 9. Additional source-level audit findings — 11.2–11.5
+
+These findings do not imply that every feature is unusable; they narrow what the current code and tests actually establish.
+
+- **11.2 benchmark security scope:** the original private-key check scans only selected Python files under `mirror_eval` and explicitly skips Stage 10/11 scanner files. It does not establish that the entire repository or Git object database contains zero private keys. The review branch now rejects unknown deterministic-generator keys rather than silently substituting seed 42. Canonical manifest path containment and broader secret scanning remain open.
+- **11.3 exact-oracle input contracts:** exact `Fraction` arithmetic avoids floating-point operations after conversion, but the public methods do not consistently validate probability ranges, combinatoric domains, or malformed/ragged matrix inputs. Passing a Python float to `Fraction` preserves its binary floating representation; callers should supply integers or rational values. Expand domain and boundary tests before describing these APIs as complete general-purpose exact oracles.
+- **11.4 reasoning scope:** the reasoner is a string-pattern demonstrator, not a formal theorem prover. Its current test's successful Socrates conclusion is supplied by an explicit instance-level `if Socrates ... then Socrates ...` premise; the `all humans are primates` statements are not universally instantiated by a first-order logic engine. Cross-domain thermal calculations assume a one-second dissipation interval, which should be an explicit input for general use.
+- **11.5 grounding scope:** token recall and one matching trigram measure lexical overlap, not semantic entailment or contradiction. They can over-score a negated or contextually contradicted claim. The 1.0 negative-control abstention result comes from two synthetic examples, not a broad model evaluation. The review branch also changes empty-suite metric defaults from vacuous 1.0 to fail-closed 0.0 and adds a regression test.
+
+These limitations must remain visible in documentation and release claims until independently tested and corrected.
+
+
+## 10. Stage 11.8–11.13 closure work — November 11, 2026
+
+The follow-up branch now includes a formal acceptance plan at
+`artifacts/STAGE11_8_TO_13_RELEASE_CLOSURE_PLAN.md`, linked from the README.
+The plan distinguishes implementation from verified completion and defines stop-on-failure
+promotion rules for integration, security, reasoning, grounding/memory, benchmark
+reconciliation, and release packaging.
+
+### Work performed in this continuation
+
+- Corrected the workspace escape diagnostic to retain the existing `Path traversal`
+  contract while still enforcing resolved-path containment. This fixes the mismatch
+  exposed by the prior CI run; it does not weaken the containment check.
+- Added exact-input helpers for mathematical oracles. Float and boolean coercion are
+  rejected across public exact algebra, calculus, probability, and linear-algebra inputs;
+  polynomial powers must be non-negative integers; probability and distribution domains
+  are validated; invalid combinatoric population values and malformed matrices are rejected.
+- Added dedicated Stage 11.10 boundary tests for invalid probabilities, float/bool
+  coercion, polynomial domains, invalid distribution domains, combinatorics, malformed
+  matrices, and non-square trace inputs.
+- Updated the README to link the new 11.8–11.13 acceptance plan.
+
+### Current verification status
+
+- Full fast CI run `42998750114` and Security Guard run `42998750127` both passed on
+  `d7bbcb6c0b0bf1813ee48eec3b62aaae315b2653`.
+- The newest exact-math hardening and expanded tests are on
+  `7a81c1dc25f512a7b9dc36106238c06ee53dd33c`; a green run on this exact head is still
+  required before the new changes can be considered verified.
+- A previous CI run found one failure in the path-escape diagnostic assertion
+  (`414 passed, 1 failed, 1 skipped)); the diagnostic was corrected in commit
+  `688632d2658f8fa31067731ca2843d45212769da`.
+- Full fast CI run `42998750114` and Security Guard run `42998750127` passed on
+  `d7bbcb6c0b0bf1813ee48eec3b62aaae315b2653`. The fast CI job completed all listed
+  compile, Crystal/evaluation, frozen-manifest, backend, release-boundary, training,
+  evaluator, smoke-dataset, and package-build steps.
+- Additional exact-input validation for polynomial powers/coefficients, matrix entries,
+  linear-system inputs, and evaluation bounds plus adversarial tests were committed at
+  `7a81c1dc25f512a7b9dc36106238c06ee53dd33c`. That newer head still requires CI; the
+  earlier green run must not be attributed to it.
+- Full historical regression and clean-machine release packaging remain unverified.
+- Stage 11.9 is not complete. A Docker/Podman backend is already the default execution
+  path and configures no network, read-only root, dropped capabilities, non-root UID,
+  no-new-privileges, resource limits, and a restricted tmpfs. The CI runtime smoke test
+  can skip when no container runtime is installed; host-side output bounding, reliable
+  daemon-container cleanup on timeout, and adversarial runtime tests remain unproven.
+  The POSIX child-process mode is a lower-isolation development override. AST inspection
+  remains a static policy check, not an execution sandbox.
+- Stage 11.11 remains open because lexical overlap is not semantic entailment, and
+  broad contradiction, provenance, persistence, and forgetting tests are still needed.
+- Stage 11.12 remains open until the historical 560-versus-573 test-count discrepancy
+  is reconciled from exact CI artifacts.
+- Stage 11.13 remains open until clean Linux/Windows installation and built-package
+  CLI/API smoke tests pass.
+
+**Promotion decision:** keep PR #32 open and do not merge to `main` until the final
+branch head passes CI and the remaining required security/release gates are either
+closed with evidence or explicitly scoped out of the release. The user's request to
+push to `main` does not justify marking an unverified phase complete.
