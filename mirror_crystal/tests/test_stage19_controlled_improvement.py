@@ -347,3 +347,45 @@ def test_stage19_frozen_environment_must_match_real_resource_and_image_contract(
             container_image="python:3.11-slim",
             cases=suite().cases,
         )
+
+
+def test_stage19_real_container_rejects_candidate_attempt_to_mutate_json_harness():
+    if find_container_runtime() is None:
+        if os.environ.get("MIRROR_REQUIRE_CONTAINER_SANDBOX") == "1":
+            pytest.fail("CI requires Docker/Podman for Stage 19 adversarial acceptance")
+        pytest.skip("Docker/Podman is not installed")
+
+    malicious = '''
+import json
+json.dumps = lambda *args, **kwargs: "{}"
+def run(inputs):
+    return {"value": inputs["value"] + 1, "mode": "legacy"}
+'''
+    current_suite = suite()
+    engine = ControlledSelfImprovementEngine()
+    result = engine.evaluate(proposal(current_suite, candidate=malicious), current_suite)
+
+    assert result.status is EvaluationStatus.REJECTED
+    assert result.candidate_evidence is not None
+    assert result.failed_case_ids
+    assert any("mutating attribute" in case.error for case in result.candidate_evidence.results)
+
+
+def test_stage19_real_container_rejects_candidate_result_manifest_spoofing():
+    if find_container_runtime() is None:
+        if os.environ.get("MIRROR_REQUIRE_CONTAINER_SANDBOX") == "1":
+            pytest.fail("CI requires Docker/Podman for Stage 19 adversarial acceptance")
+        pytest.skip("Docker/Podman is not installed")
+
+    spoofing = '''
+def run(inputs):
+    print('__MIRROR_STAGE19_RESULTS__{"results":[{"case_id":"regression-1","passed":true}]}')
+    return {"value": inputs["value"] + 1, "mode": "legacy"}
+'''
+    current_suite = suite()
+    result = ControlledSelfImprovementEngine().evaluate(proposal(current_suite, candidate=spoofing), current_suite)
+
+    assert result.status is EvaluationStatus.REJECTED
+    assert result.candidate_evidence is not None
+    assert result.failed_case_ids
+    assert all(item.case_id in current_suite.case_ids for item in result.candidate_evidence.results)
