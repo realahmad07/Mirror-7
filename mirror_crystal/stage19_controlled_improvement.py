@@ -147,8 +147,8 @@ class FrozenRegressionSuite:
         _require_sha256(self.environment_sha256, "environment_sha256")
         if self.container_runtime not in {"docker", "podman"}:
             raise SelfImprovementError("container_runtime must be docker or podman")
-        if not isinstance(self.container_image, str) or not self.container_image.strip():
-            raise SelfImprovementError("container_image must be non-empty")
+        if not isinstance(self.container_image, str) or not re.search(r"@sha256:[0-9a-f]{64}\\Z", self.container_image):
+            raise SelfImprovementError("container_image must use an immutable SHA-256 image digest")
         if isinstance(self.timeout_seconds, bool) or not isinstance(self.timeout_seconds, (int, float)) or not math.isfinite(float(self.timeout_seconds)) or not 1 <= self.timeout_seconds <= 60:
             raise SelfImprovementError("suite timeout_seconds must be between 1 and 60")
         if isinstance(self.memory_limit_mb, bool) or not isinstance(self.memory_limit_mb, int) or not 64 <= self.memory_limit_mb <= 8192:
@@ -164,7 +164,12 @@ class FrozenRegressionSuite:
         )
         if self.environment_sha256 != expected_environment:
             raise SelfImprovementError("environment fingerprint does not match the pinned runtime, image and resource limits")
-        cases = tuple(self.cases)
+        bounded_cases = []
+        for item in self.cases:
+            if len(bounded_cases) >= 250:
+                raise SelfImprovementError("frozen regression suite exceeds 250 cases")
+            bounded_cases.append(item)
+        cases = tuple(bounded_cases)
         if len(cases) < 4 or any(not isinstance(item, RegressionCase) for item in cases):
             raise SelfImprovementError("suite requires at least four typed cases")
         ids = tuple(item.case_id for item in cases)
@@ -429,7 +434,7 @@ class ContainerRegressionExecutor:
         if expected_key not in {"baseline_expected", "candidate_expected"}:
             raise SelfImprovementError("expected_key is invalid")
         selected_runtime = self.runtime or suite.container_runtime
-        selected_image = self.image or DEFAULT_IMAGE
+        selected_image = self.image or suite.container_image
         if (
             selected_runtime != suite.container_runtime
             or selected_image != suite.container_image
