@@ -1243,7 +1243,7 @@ Phase 15 provides cross-session memory, consolidation, correction lineage, and t
 - **Multi-Tier Memory Architecture:** Segregates `WORKING_EPISODIC`, `CONSOLIDATED_SEMANTIC`, and `IMMUTABLE_TRUSTED_VAULT` records.
 - **Forgetting & Consolidation:** Uses the configured Ebbinghaus-style retention function to schedule semantic promotion and pruning of eligible mutable memories.
 - **Safe Persistence:** Stores metadata/history as JSON; legacy rows are parsed with `ast.literal_eval` only; loaded content hashes are checked.
-- **Trusted-Record Guards:** Insert-only IDs, duplicate/replacement rejection, and SQLite triggers block trusted-row updates/deletes and mutable-to-trusted promotion. These are application/database safeguards, not cryptographic protection against a database owner who can rewrite the file or drop triggers.
+- **Trusted-Record Guards:** Insert-only IDs, duplicate/replacement rejection, and SQLite triggers block trusted-row identity (`memory_id`), content, metadata, lineage and tier mutation/deletion, plus mutable-to-trusted promotion. These are application/database safeguards, not cryptographic protection against a database owner who can rewrite the file or drop triggers.
 - **REST API Endpoints:** `/api/memory/search` and `/api/memory/feedback`.
 
 Detailed Stage 15 correction report: [STAGE15_LONG_TERM_MEMORY_REPORT.md](artifacts/STAGE15_LONG_TERM_MEMORY_REPORT.md).
