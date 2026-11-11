@@ -13,7 +13,7 @@
 
 Stateless architectures suffer from rapid conversational forgetting, unbounded context bloat, or catastrophic forgetting during fine-tuning. **Stage 15: Long-Term Memory & Learning** establishes a structured multi-tier memory architecture for Mirror 7, coupling Ebbinghaus forgetting curve decay dynamics with automated experience consolidation and database-enforced trusted-record mutation guards and content-integrity checks.
 
-The manager now rejects duplicate IDs, validates loaded content hashes, uses JSON for newly persisted metadata/history, and reads legacy Python-literal rows with `ast.literal_eval` (never `eval`). SQLite triggers block updates/deletes to trusted rows and reject attempts to change mutable rows into the trusted tier.
+The manager now rejects duplicate IDs, validates loaded content hashes, uses JSON for newly persisted metadata/history, and reads legacy Python-literal rows with `ast.literal_eval` (never `eval`). SQLite triggers block updates to trusted content, identity (`memory_id`), tier, metadata, lineage and integrity fields; they also block deletes, reject mutable-to-trusted promotion, and prevent ID replacement.
 
 ---
 
