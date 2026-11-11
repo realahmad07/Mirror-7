@@ -267,7 +267,7 @@ See [Stage 20 design](docs/35-stage20-multimodal-grounding.md) and [acceptance r
 
 - Immutable action proposals bind a registered code definition, strict JSON inputs, field-to-observation bindings, Stage 20 report fingerprint, selected observation IDs and expected postconditions; each input must match observations from at least two authenticated modalities/sources.
 - Two distinct verifier identities check cross-modal verified agreement/source provenance and the registered action contract before execution. Evidence that is unsigned, incomplete, altered or not part of one verified agreement is blocked.
-- Actions execute only through the Stage 19 hardened per-case container supervisor. Container PID, runtime, exit code and trusted result-manifest identity are checked; the sandbox has no network or host mounts.
+- Actions execute only through the Stage 19 hardened per-case container supervisor. Container PID, runtime, exit code, trusted result-manifest identity and per-case JSON-object result-contract pass are checked; the sandbox has no network or host mounts.
 - Predicted postconditions are compared with actual sandbox outputs. Success, mismatch and fail-closed execution errors are recorded with evidence-bound feedback and a single-use proposal history.
 - Consequential actions require a separately recorded human approval. The proposal author cannot approve, and approval is bound to the exact proposal and verification record.
 

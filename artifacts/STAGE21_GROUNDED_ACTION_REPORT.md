@@ -3,7 +3,7 @@
 **Status:** Implementation committed; final acceptance pending branch CI and Security Guard  
 **Implementation:** `mirror_crystal/stage21_grounded_action.py`  
 **Tests:** `mirror_crystal/tests/test_stage21_grounded_action.py`  
-**Focused test cases:** 28
+**Focused test cases:** 30
 
 ## Delivered
 
@@ -11,7 +11,7 @@
 - Proposals bound to exact inputs, selected Stage 20 observation IDs, a recomputed Stage 20 report fingerprint and explicit predicted postconditions.
 - Two distinct internal checker identities: evidence provenance and action-contract policy.
 - Evidence checks require authenticated observation origin, source/observation digest binding, and selection from one verified cross-modal agreement spanning distinct modalities and sources.
-- Stage 19 isolated container supervisor and child runner reused for single action executions, with bounded output and PID-1 supervisor evidence.
+- Stage 19 isolated container supervisor and child runner reused for single action executions, with a trusted JSON-object result contract, per-case pass enforcement, bounded output and PID-1 supervisor evidence.
 - Predicted-versus-observed postcondition matching and failure/mismatch feedback.
 - Single-use proposal executions and engine-bound verification and approval records.
 - Separate human approval gate for consequential action risk; proposer self-approval is rejected.
@@ -19,7 +19,7 @@
 
 ## Verification coverage
 
-28 focused tests cover schema and input limits, immutable exact proposal binding, signed and unsigned provenance, tampered report fingerprints, insufficient modality evidence, unknown/replaced action definitions, distinct checker identities, engine-bound verification, successful and mismatched postconditions, failed sandbox execution, replay prevention, consequential human approval, author/reviewer separation, approval reuse, and execution history immutability.
+30 focused tests cover schema and input limits, immutable exact proposal binding, signed and unsigned provenance, tampered report fingerprints, insufficient modality evidence, unknown/replaced action definitions, distinct checker identities, engine-bound verification, successful and mismatched postconditions, failed sandbox execution, replay prevention, consequential human approval, author/reviewer separation, approval reuse, and execution history immutability.
 
 Two of the 26 tests use a real Docker/Podman container where CI requires the runtime. They check the Stage 19 supervisor integration, PID 1, candidate stdout manifest spoofing and candidate module-mutation rejection.
 
