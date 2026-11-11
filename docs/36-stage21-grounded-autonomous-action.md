@@ -45,6 +45,8 @@ Failure to start the container, invalid PID evidence, malformed output, candidat
 
 ## Predicted-versus-observed feedback
 
+Every action input field must also declare which selected Stage 20 observation IDs supplied its value. Each input binding is checked for at least two distinct modalities and sources, matching normalized value, canonical unit and dimension. Unbound, altered or merely adjacent evidence does not ground an action input.
+
 The proposal declares one or more expected postconditions. After sandbox execution, Mirror compares each declared key/value against the returned JSON object and records:
 
 - Conditions that matched.
@@ -70,7 +72,7 @@ Run:
 - \`python -m pytest -q mirror_crystal mirror_eval\`
 - \`python -m compileall -q mirror_crystal\`
 
-The focused suite contains 25 deterministic cases covering schema rejection, proposal immutability, report fingerprint tampering, signed and unsigned evidence, modality floors, distinct pre-execution checks, registry replacement, engine-bound verification, postcondition success/mismatch, sandbox failure, replay prevention, consequential approval, proposer self-approval, approval replay, result-manifest spoofing, hostile module mutation and real container execution. CI sets the container-required mode, so the two real-container adversarial tests must not silently skip there.
+The focused suite contains 26 deterministic cases covering schema rejection, proposal immutability, report fingerprint tampering, signed and unsigned evidence, modality floors, distinct pre-execution checks, registry replacement, engine-bound verification, postcondition success/mismatch, sandbox failure, replay prevention, consequential approval, proposer self-approval, approval replay, result-manifest spoofing, hostile module mutation and real container execution. CI sets the container-required mode, so the two real-container adversarial tests must not silently skip there.
 
 ## Explicit limitations
 

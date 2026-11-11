@@ -135,7 +135,7 @@ def test_stage21_action_schema_rejects_missing_extra_and_out_of_range_inputs():
     with pytest.raises(GroundedActionError, match="missing required"):
         GroundedActionProposal.create(
             action, inputs={}, evidence_report_fingerprint=report.report_fingerprint,
-            evidence_observation_ids=ids, expected_postconditions={"status": "prepared"},
+            evidence_observation_ids=ids, input_evidence_bindings={}, expected_postconditions={"status": "prepared"},
             created_by="planner-a",
         )
     with pytest.raises(GroundedActionError, match="unexpected field"):
@@ -179,6 +179,25 @@ def test_stage21_requires_two_distinct_independent_checks_before_execution():
         "mirror.evidence_provenance", "mirror.action_contract",
     }
     assert all(item.decision is ActionCheckDecision.PASS for item in verified.checks)
+
+
+def test_stage21_rejects_action_input_that_does_not_match_its_cited_evidence():
+    report, ids = grounded_report()
+    action = definition()
+    engine, _ = make_engine(action)
+    item = GroundedActionProposal.create(
+        action,
+        inputs={"temperature_k": 300.0},
+        input_evidence_bindings={"temperature_k": ids},
+        evidence_report_fingerprint=report.report_fingerprint,
+        evidence_observation_ids=ids,
+        expected_postconditions={"status": "prepared"},
+        created_by="planner-a",
+        created_at="2026-11-11T11:00:00Z",
+    )
+    verified = engine.verify(item, report)
+    assert not verified.passed
+    assert "does not exactly match" in verified.checks[0].detail
 
 
 def test_stage21_unsigned_source_cannot_drive_grounded_action():
