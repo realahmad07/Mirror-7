@@ -497,12 +497,12 @@ class ActionSandboxResult:
         if len(_canonical(_thaw(frozen)).encode("utf-8")) > 16_384:
             raise GroundedActionError("sandbox action outcome exceeds 16 KB")
         object.__setattr__(self, "outcome", frozen)
-        if self.runtime not in {"docker", "podman"}:
+        if not isinstance(self.runtime, str) or self.runtime not in {"docker", "podman"}:
             raise GroundedActionError("sandbox action runtime must be docker or podman")
-        if isinstance(self.pid, bool) or self.pid != 1:
-            raise GroundedActionError("sandbox action evidence must prove container PID 1")
-        if isinstance(self.returncode, bool) or self.returncode != 0:
-            raise GroundedActionError("sandbox action must return a zero exit code")
+        if isinstance(self.pid, bool) or not isinstance(self.pid, int) or self.pid != 1:
+            raise GroundedActionError("sandbox action evidence must prove integer container PID 1")
+        if isinstance(self.returncode, bool) or not isinstance(self.returncode, int) or self.returncode != 0:
+            raise GroundedActionError("sandbox action must return an integer zero exit code")
 
 
 class ContainerActionExecutor:
@@ -763,11 +763,11 @@ class GroundedActionEngine:
         registered = self._verifications.get(verification.fingerprint)
         if registered != verification or verification.proposal_id != proposal.proposal_id or not verification.passed:
             raise GroundedActionError("approval requires this engine's passing verification for the exact proposal")
-        if reviewer_id == proposal.created_by:
+        reviewer = _text(reviewer_id, "reviewer_id", 128)
+        if reviewer == proposal.created_by:
             raise GroundedActionError("proposal author cannot approve a consequential action")
         if proposal.proposal_id in self._approvals:
             raise GroundedActionError("proposal already has a human approval decision")
-        reviewer = _text(reviewer_id, "reviewer_id", 128)
         rationale = _text(reason, "reason", 2000)
         stamp = datetime.now(timezone.utc).isoformat()
         body = {

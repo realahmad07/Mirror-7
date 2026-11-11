@@ -333,6 +333,23 @@ def test_stage21_consequential_action_author_cannot_approve_own_proposal():
         engine.approve(item, verified, reviewer_id="operator-a", reason="self approval")
 
 
+def test_stage21_self_approval_cannot_be_bypassed_with_whitespace():
+    report, ids = grounded_report()
+    action = definition(ActionRisk.CONSEQUENTIAL)
+    engine, _ = make_engine(action)
+    item = proposal_for(action, report, ids, author="operator-a")
+    verified = engine.verify(item, report)
+    with pytest.raises(GroundedActionError, match="cannot approve"):
+        engine.approve(item, verified, reviewer_id=" operator-a ", reason="whitespace bypass")
+
+
+def test_stage21_sandbox_result_requires_strict_integer_pid_and_exit_code():
+    with pytest.raises(GroundedActionError, match="integer container PID 1"):
+        ActionSandboxResult({"ok": True}, "docker", 1.0, 0)
+    with pytest.raises(GroundedActionError, match="integer zero exit code"):
+        ActionSandboxResult({"ok": True}, "docker", 1, 0.0)
+
+
 def test_stage21_consequential_action_requires_engine_recorded_approval_token():
     report, ids = grounded_report()
     action = definition(ActionRisk.CONSEQUENTIAL)
