@@ -335,6 +335,8 @@ class ContinuousExpansionEngine:
             blockers.append("task identifiers were already consumed by an earlier epoch")
         if benchmark.status is not TransferBenchmarkStatus.PASS:
             blockers.append("Phase 8 transfer benchmark did not pass")
+        if benchmark.minimum_target_domains < 2 or len(benchmark.passed_domains) < 2:
+            blockers.append("Phase 9 requires a passing Phase 8 benchmark across at least two target domains")
         if not proposals or not target_ids:
             blockers.append("benchmark contains no independently learned target capabilities")
         if len(set(capability_ids)) != len(capability_ids):
