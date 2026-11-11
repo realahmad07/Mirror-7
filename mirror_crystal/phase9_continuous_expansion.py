@@ -23,7 +23,6 @@ from .phase8_cross_domain_acceptance import (
     CrossDomainTransferBenchmarkReport,
     TransferBenchmarkStatus,
 )
-from .universal_representation import stable_representation_id
 from .verified_program_learning import (
     UOLProgramLearningProposal,
     VerifiedProgramLearningEngine,
@@ -356,20 +355,20 @@ class ContinuousExpansionEngine:
                 checked += 1
                 blockers.append(f"frozen regression could not run: {case.case_id}")
 
-        regression_manifest_sha256 = stable_representation_id(
-            "phase9-frozen-regression-manifest",
-            {
-                "cases": [
-                    {
-                        "case_id": case.case_id,
-                        "capability_id": case.capability_id,
-                        "inputs": dict(case.inputs),
-                        "expected": case.expected,
-                    }
-                    for case in regression_items
-                ],
-            },
-        )
+        regression_manifest_payload = {
+            "cases": [
+                {
+                    "case_id": case.case_id,
+                    "capability_id": case.capability_id,
+                    "inputs": dict(case.inputs),
+                    "expected": case.expected,
+                }
+                for case in regression_items
+            ],
+        }
+        regression_manifest_sha256 = hashlib.sha256(
+            _canonical_json(regression_manifest_payload).encode("utf-8")
+        ).hexdigest()
         decision = ExpansionDecision.ACCEPTED if not blockers else ExpansionDecision.REJECTED
         payload = {
             "version": self.VERSION,
