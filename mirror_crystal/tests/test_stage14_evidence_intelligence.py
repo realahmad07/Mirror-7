@@ -305,7 +305,7 @@ def test_evidence_provenance_graph_integrity_and_export():
     """Verify DAG structural validation catches dangling references and content tampering."""
     graph = EvidenceProvenanceGraph()
 
-    src_content = "Canonical source text."
+    src_content = "Canonical source text. Passage excerpt."
     src = SourceProvenance(
         source_id="src_1",
         title="Title",
