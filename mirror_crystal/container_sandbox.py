@@ -52,7 +52,7 @@ for case in regression_cases:
             "case_id": case_id,
             "passed": False,
             "actual_json": "",
-            "error": (type(exc).__name__ + ": " + str(exc))[:1_000],
+            "error": str(exc)[:1_000],
         })
 
 print("__MIRROR_STAGE19_RESULTS__" + json.dumps(
