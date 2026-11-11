@@ -23,6 +23,7 @@ from .phase8_cross_domain_acceptance import (
     CrossDomainTransferBenchmarkReport,
     TransferBenchmarkStatus,
 )
+from .universal_representation import stable_representation_id
 from .verified_program_learning import (
     UOLProgramLearningProposal,
     VerifiedProgramLearningEngine,
@@ -254,6 +255,7 @@ class ExpansionEpochResult:
     decision: ExpansionDecision
     benchmark_id: str
     manifest_sha256: str
+    regression_manifest_sha256: str
     checked_regressions: int
     task_ids: tuple[str, ...]
     capability_ids: tuple[str, ...]
@@ -354,6 +356,20 @@ class ContinuousExpansionEngine:
                 checked += 1
                 blockers.append(f"frozen regression could not run: {case.case_id}")
 
+        regression_manifest_sha256 = stable_representation_id(
+            "phase9-frozen-regression-manifest",
+            {
+                "cases": [
+                    {
+                        "case_id": case.case_id,
+                        "capability_id": case.capability_id,
+                        "inputs": dict(case.inputs),
+                        "expected": case.expected,
+                    }
+                    for case in regression_items
+                ],
+            },
+        )
         decision = ExpansionDecision.ACCEPTED if not blockers else ExpansionDecision.REJECTED
         payload = {
             "version": self.VERSION,
@@ -365,6 +381,7 @@ class ContinuousExpansionEngine:
             "task_ids": list(target_ids),
             "capability_ids": list(capability_ids),
             "capability_fingerprints": [item.capability.fingerprint for item in proposals],
+            "regression_manifest_sha256": regression_manifest_sha256,
             "regression_results": regression_results,
             "checked_regressions": checked,
             "blockers": list(blockers),
@@ -374,25 +391,58 @@ class ContinuousExpansionEngine:
         )
         return ExpansionEpochResult(
             epoch_id.strip(), decision, benchmark.benchmark_id,
-            benchmark.manifest_sha256, checked, target_ids, capability_ids,
+            benchmark.manifest_sha256, regression_manifest_sha256,
+            checked, target_ids, capability_ids,
             proposals if decision is ExpansionDecision.ACCEPTED else (),
             tuple(blockers), entry,
         )
 
-    @staticmethod
     def promote(
+        self,
         result: ExpansionEpochResult,
         target_domain: str,
         capability_registry: CapabilityRegistry,
         operation_registry: NativeOperationRegistry,
     ) -> str:
-        """Explicitly promote one learned capability from an accepted epoch."""
+        """Promote only a capability bound to an accepted, intact ledger entry."""
         if not isinstance(result, ExpansionEpochResult):
             raise TypeError("result must be ExpansionEpochResult")
         if not result.accepted:
             raise ContinuousExpansionError("a rejected expansion epoch cannot be promoted")
+        if not self.ledger.verify_chain():
+            raise ContinuousExpansionError("expansion ledger hash chain is invalid")
         if not _is_digest(result.ledger_entry.digest):
             raise ContinuousExpansionError("epoch has no valid ledger entry")
+        ledger_entry = next(
+            (
+                item for item in self.ledger.entries()
+                if item.epoch_id == result.epoch_id
+            ),
+            None,
+        )
+        if (
+            ledger_entry is None
+            or ledger_entry.digest != result.ledger_entry.digest
+            or ledger_entry.decision is not ExpansionDecision.ACCEPTED
+        ):
+            raise ContinuousExpansionError("epoch is not an accepted entry in this ledger")
+        if (
+            ledger_entry.manifest_sha256 != result.manifest_sha256
+            or ledger_entry.payload.get("regression_manifest_sha256")
+                != result.regression_manifest_sha256
+            or tuple(ledger_entry.payload.get("task_ids", ())) != result.task_ids
+            or tuple(ledger_entry.payload.get("capability_ids", ())) != result.capability_ids
+        ):
+            raise ContinuousExpansionError("epoch result does not match its immutable ledger record")
+        expected_fingerprints = tuple(
+            ledger_entry.payload.get("capability_fingerprints", ())
+        )
+        actual_fingerprints = tuple(
+            proposal.capability.fingerprint for proposal in result.proposals
+        )
+        if not expected_fingerprints or actual_fingerprints != expected_fingerprints:
+            raise ContinuousExpansionError("epoch proposals do not match their recorded fingerprints")
+
         domain = str(target_domain).strip().casefold()
         matches = [
             item for item in result.proposals
