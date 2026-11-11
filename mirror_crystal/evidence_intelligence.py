@@ -76,24 +76,59 @@ class SourceProvenance:
     sha256_hash: str
     content: str = ""
 
+    SPDX_LICENSE_IDS = {
+        "0BSD", "AFL-3.0", "AGPL-3.0-only", "AGPL-3.0-or-later", "Apache-2.0",
+        "Artistic-2.0", "BSD-2-Clause", "BSD-3-Clause", "BSL-1.0", "CC-BY-3.0",
+        "CC-BY-3.0-IGO", "CC-BY-4.0", "CC0-1.0", "CDDL-1.0", "EPL-2.0",
+        "EUPL-1.2", "GPL-2.0-only", "GPL-2.0-or-later", "GPL-3.0-only",
+        "GPL-3.0-or-later", "ISC", "LGPL-2.1-only", "LGPL-2.1-or-later",
+        "LGPL-3.0-only", "MIT", "MPL-2.0", "MS-PL", "NCSA", "OFL-1.1",
+        "OpenSSL", "PostgreSQL", "PSF-2.0", "Unlicense", "WTFPL", "Zlib",
+    }
+
     def __post_init__(self) -> None:
-        if not self.source_id.strip():
+        if not isinstance(self.source_id, str) or not self.source_id.strip():
             raise EvidenceError("source_id must not be empty")
-        if not self.title.strip():
+        if not isinstance(self.title, str) or not self.title.strip():
             raise EvidenceError("title must not be empty")
-        parsed = urlparse(self.url)
-        if parsed.scheme not in {"https", "urn", "file"} or not (parsed.netloc or parsed.path):
-            raise EvidenceError("url must be a valid HTTPS, URN, or file URI")
-        if not self.publisher.strip():
+        if not isinstance(self.url, str) or any(ord(ch) < 32 for ch in self.url):
+            raise EvidenceError("url must be valid HTTPS or URN URI")
+        try:
+            parsed = urlparse(self.url)
+            scheme = parsed.scheme.lower()
+            if scheme == "https":
+                # Accessing hostname/port also validates malformed authority/port syntax.
+                if not parsed.hostname or parsed.username is not None or parsed.password is not None:
+                    raise EvidenceError("url must be valid HTTPS or URN URI")
+                _ = parsed.port
+            elif scheme == "urn":
+                if not re.fullmatch(r"urn:[A-Za-z0-9][A-Za-z0-9-]{0,31}:.+", self.url, re.IGNORECASE):
+                    raise EvidenceError("url must be valid HTTPS or URN URI")
+            else:
+                raise EvidenceError("url must be valid HTTPS or URN URI")
+        except ValueError as exc:
+            raise EvidenceError("url must be valid HTTPS or URN URI") from exc
+        if not isinstance(self.publisher, str) or not self.publisher.strip():
             raise EvidenceError("publisher must not be empty")
-        if not self.license_spdx.strip():
-            raise EvidenceError("license_spdx must not be empty")
-        if not re.fullmatch(r"[0-9a-f]{64}", self.sha256_hash):
+        if not isinstance(self.license_spdx, str) or self.license_spdx not in self.SPDX_LICENSE_IDS:
+            if not (isinstance(self.license_spdx, str) and
+                    re.fullmatch(r"LicenseRef-[A-Za-z0-9.-]+", self.license_spdx)):
+                raise EvidenceError("license_spdx must be a recognized SPDX license identifier or LicenseRef")
+        if not isinstance(self.retrieved_at, str):
+            raise EvidenceError("retrieved_at must be an ISO-8601 timestamp with an explicit timezone")
+        try:
+            timestamp = datetime.fromisoformat(self.retrieved_at.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise EvidenceError("retrieved_at must be an ISO-8601 timestamp with an explicit timezone") from exc
+        if timestamp.tzinfo is None or timestamp.utcoffset() is None:
+            raise EvidenceError("retrieved_at must include an explicit timezone")
+        if not re.fullmatch(r"[0-9a-f]{64}", self.sha256_hash or ""):
             raise EvidenceError("sha256_hash must be a 64-character lowercase hex digest")
-        if self.content:
-            actual = _compute_sha256(self.content)
-            if actual != self.sha256_hash:
-                raise EvidenceError(f"source content SHA-256 digest mismatch: expected {self.sha256_hash}, got {actual}")
+        if not isinstance(self.content, str) or not self.content.strip():
+            raise EvidenceError("source content is required so its SHA-256 digest can be verified")
+        actual = _compute_sha256(self.content)
+        if actual != self.sha256_hash:
+            raise EvidenceError(f"source content SHA-256 digest mismatch: expected {self.sha256_hash}, got {actual}")
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -536,14 +571,25 @@ class EvidenceProvenanceGraph:
         self.claims: Dict[str, AtomicClaim] = {}
 
     def add_source(self, source: SourceProvenance) -> None:
+        if source.source_id in self.sources:
+            raise EvidenceError(f"Duplicate source_id '{source.source_id}' is not allowed")
         self.sources[source.source_id] = source
 
     def add_passage(self, passage: EvidencePassage) -> None:
-        if passage.source_id not in self.sources:
+        if passage.passage_id in self.passages:
+            raise EvidenceError(f"Duplicate passage_id '{passage.passage_id}' is not allowed")
+        source = self.sources.get(passage.source_id)
+        if source is None:
             raise EvidenceError(f"Cannot add passage: referenced source_id '{passage.source_id}' does not exist")
+        if _normalize_text(passage.text) not in _normalize_text(source.content):
+            raise EvidenceError(
+                f"Passage '{passage.passage_id}' is not contained in the verified content of source '{source.source_id}'"
+            )
         self.passages[passage.passage_id] = passage
 
     def add_claim(self, claim: AtomicClaim) -> None:
+        if claim.claim_id in self.claims:
+            raise EvidenceError(f"Duplicate claim_id '{claim.claim_id}' is not allowed")
         self.claims[claim.claim_id] = claim
 
     def get_provenance_trail(self, claim_id: str) -> Dict[str, Any]:
@@ -594,21 +640,31 @@ class EvidenceProvenanceGraph:
 
         # 1. Verify sources
         for s_id, source in self.sources.items():
-            if source.content:
+            if not source.content:
+                issues.append(f"Source '{s_id}' has no verifiable source content")
+            else:
                 digest = _compute_sha256(source.content)
                 if digest != source.sha256_hash:
                     issues.append(f"Source '{s_id}' content hash mismatch")
+            if s_id != source.source_id:
+                issues.append(f"Source key '{s_id}' does not match record ID '{source.source_id}'")
 
         # 2. Verify passages
         for p_id, passage in self.passages.items():
             if passage.source_id not in self.sources:
                 issues.append(f"Passage '{p_id}' has dangling source_id '{passage.source_id}'")
+            elif _normalize_text(passage.text) not in _normalize_text(self.sources[passage.source_id].content):
+                issues.append(f"Passage '{p_id}' is not contained in its source content")
+            if p_id != passage.passage_id:
+                issues.append(f"Passage key '{p_id}' does not match record ID '{passage.passage_id}'")
             digest = _compute_sha256(passage.text)
             if digest != passage.sha256_hash:
                 issues.append(f"Passage '{p_id}' text hash mismatch")
 
         # 3. Verify claims
         for c_id, claim in self.claims.items():
+            if c_id != claim.claim_id:
+                issues.append(f"Claim key '{c_id}' does not match record ID '{claim.claim_id}'")
             for pid in claim.grounding_passage_ids:
                 if pid not in self.passages:
                     issues.append(f"Claim '{c_id}' references unknown passage '{pid}'")
