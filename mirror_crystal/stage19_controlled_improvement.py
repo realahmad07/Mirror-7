@@ -352,8 +352,8 @@ class ExecutionEvidence:
             raise SelfImprovementError("execution runtime must be docker or podman")
         if isinstance(self.returncode, bool) or not isinstance(self.returncode, int):
             raise SelfImprovementError("execution returncode must be an integer")
-        if isinstance(self.pid, bool) or not isinstance(self.pid, int) or self.pid < 1:
-            raise SelfImprovementError("execution PID must be a positive integer")
+        if isinstance(self.pid, bool) or not isinstance(self.pid, int) or self.pid != 1:
+            raise SelfImprovementError("execution must prove the expected container PID namespace (PID 1)")
         results = tuple(self.results)
         if any(not isinstance(item, CaseExecutionResult) for item in results):
             raise TypeError("results must contain CaseExecutionResult values")
@@ -455,6 +455,10 @@ class ContainerRegressionExecutor:
         )
         if not raw.ok:
             raise SelfImprovementError(f"container execution failed closed: {raw.error}")
+        if raw.pid != 1:
+            raise SelfImprovementError("container did not report PID 1; refusing unverified isolation evidence")
+        if raw.returncode != 0:
+            raise SelfImprovementError("container returned a non-zero exit code")
         prefix = "__MIRROR_STAGE19_RESULTS__"
         matching = [line[len(prefix):] for line in raw.output.splitlines() if line.startswith(prefix)]
         if len(matching) != 1:
@@ -480,7 +484,7 @@ class ContainerRegressionExecutor:
             expected_key=expected_key,
             runtime=raw.runtime,
             returncode=raw.returncode if raw.returncode is not None else -1,
-            pid=raw.pid if raw.pid is not None else 1,
+            pid=raw.pid,
             results=results,
         )
 
