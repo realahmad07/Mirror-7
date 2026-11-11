@@ -359,3 +359,56 @@ def test_stage17_fallback_cannot_escalate_risk_profile():
     engine = PlanningAndToolEngine(registry=registry)
     with pytest.raises(PlanningError, match="higher risk profile"):
         engine.register_fallback_tool("readonly", "privileged-fallback")
+
+
+def test_stage17_mutating_tool_cannot_bypass_registry_authorization():
+    schema = {
+        "type": "object",
+        "properties": {"resource": {"type": "string"}},
+        "required": ["resource"],
+        "additionalProperties": False,
+    }
+    tool = ToolDefinition(
+        name="mutating-direct",
+        description="Must be called through registry",
+        risk_profile=ToolRiskProfile.MUTATING_SAFE,
+        handler=_test_mutating_value,
+        parameter_schema=schema,
+    )
+    with pytest.raises(PlanningError, match="through ToolRegistry"):
+        tool.execute(resource="cache")
+
+
+def test_stage17_registry_rejects_duplicate_tools_and_duplicate_task_ids():
+    registry = ToolRegistry()
+    tool = ToolDefinition(name="unique", description="Unique name", handler=_test_adder)
+    registry.register(tool)
+    with pytest.raises(PlanningError, match="already registered"):
+        registry.register(tool)
+
+    with pytest.raises(PlanningError, match="Duplicate task_id"):
+        TaskDecomposer.create_plan_from_subtasks(
+            "Duplicate task IDs",
+            [
+                {"task_id": "same", "description": "first"},
+                {"task_id": "same", "description": "second"},
+            ],
+        )
+
+
+def test_stage17_rejects_invalid_tool_timeout_and_schema_root():
+    with pytest.raises(PlanningError, match="timeout_seconds"):
+        ToolDefinition(
+            name="invalid-timeout",
+            description="Invalid deadline",
+            handler=_test_adder,
+            timeout_seconds=float("nan"),
+        )
+    tool = ToolDefinition(
+        name="invalid-schema",
+        description="Schema validation",
+        handler=_test_adder,
+        parameter_schema={"type": "array"},
+    )
+    with pytest.raises(PlanningError, match="root type"):
+        tool.execute(a=1, b=2)
