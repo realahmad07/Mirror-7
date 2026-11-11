@@ -241,6 +241,12 @@ class LongTermMemoryManager:
                     WHEN NEW.tier = 'immutable_trusted' AND OLD.tier <> 'immutable_trusted'
                     BEGIN SELECT RAISE(ABORT, 'trusted tier requires a new canonical insert'); END
                 """)
+                conn.execute("""
+                    CREATE TRIGGER IF NOT EXISTS prevent_memory_id_replacement
+                    BEFORE INSERT ON memories
+                    WHEN EXISTS (SELECT 1 FROM memories WHERE memory_id = NEW.memory_id)
+                    BEGIN SELECT RAISE(ABORT, 'memory IDs are immutable and cannot be replaced'); END
+                """)
                 conn.commit()
 
     def store_memory(
