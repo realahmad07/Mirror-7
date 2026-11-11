@@ -320,6 +320,9 @@ def test_sqlite_triggers_protect_trusted_record_from_direct_update_and_delete(tm
             conn.execute("UPDATE memories SET content = ? WHERE memory_id = ?",
                          ("raw SQL tampering", "vault-db-guard"))
         with pytest.raises(sqlite3.IntegrityError, match="immutable trusted"):
+            conn.execute("UPDATE memories SET memory_id = ? WHERE memory_id = ?",
+                         ("renamed-trusted-id", "vault-db-guard"))
+        with pytest.raises(sqlite3.IntegrityError, match="immutable trusted"):
             conn.execute("DELETE FROM memories WHERE memory_id = ?", ("vault-db-guard",))
         # Operational access bookkeeping remains mutable and does not alter trusted knowledge.
         conn.execute("UPDATE memories SET access_count = access_count + 1 WHERE memory_id = ?",
