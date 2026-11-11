@@ -3,7 +3,7 @@
 **Status:** Implementation committed; final acceptance pending branch CI and Security Guard  
 **Implementation:** `mirror_crystal/stage21_grounded_action.py`  
 **Tests:** `mirror_crystal/tests/test_stage21_grounded_action.py`  
-**Focused test cases:** 26
+**Focused test cases:** 28
 
 ## Delivered
 
@@ -19,7 +19,7 @@
 
 ## Verification coverage
 
-26 focused tests cover schema and input limits, immutable exact proposal binding, signed and unsigned provenance, tampered report fingerprints, insufficient modality evidence, unknown/replaced action definitions, distinct checker identities, engine-bound verification, successful and mismatched postconditions, failed sandbox execution, replay prevention, consequential human approval, author/reviewer separation, approval reuse, and execution history immutability.
+28 focused tests cover schema and input limits, immutable exact proposal binding, signed and unsigned provenance, tampered report fingerprints, insufficient modality evidence, unknown/replaced action definitions, distinct checker identities, engine-bound verification, successful and mismatched postconditions, failed sandbox execution, replay prevention, consequential human approval, author/reviewer separation, approval reuse, and execution history immutability.
 
 Two of the 26 tests use a real Docker/Podman container where CI requires the runtime. They check the Stage 19 supervisor integration, PID 1, candidate stdout manifest spoofing and candidate module-mutation rejection.
 
