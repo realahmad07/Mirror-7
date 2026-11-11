@@ -254,27 +254,77 @@ from mirror_crystal.phase9_continuous_expansion import (
 
 
 def phase8_manifest(name, offset=0):
-    source = source_proposal()
+    programming_source = source_proposal()
+    mathematics_source = source_proposal()
+    math_program = replace(
+        mathematics_source.program, program_id="program:increment:mathematics",
+        domain="mathematics",
+    )
+    math_capability = replace(
+        mathematics_source.capability,
+        capability_id="learned:increment:mathematics", domains=("mathematics",),
+        provenance=RepresentationProvenance(
+            source="mirror_verified_uol_program_learning", source_ref=math_program.fingerprint,
+        ),
+    )
+    mathematics_source = replace(
+        mathematics_source, program=math_program, capability=math_capability,
+        handler=UOLProgramHandler(math_program, ()),
+    )
     cases = []
-    for index, start in enumerate((2, 5, 9)):
+    for index, start_value in enumerate((2, 5)):
         train = tuple(Example({"x": x + offset + index}, x + offset + index + 1)
-                      for x in (start, start + 2, start + 4))
+                      for x in (start_value, start_value + 2, start_value + 4))
         heldout = tuple(Example({"x": x + offset + index}, x + offset + index + 1)
-                        for x in (start + 20, start + 30))
+                        for x in (start_value + 20, start_value + 30))
         cases.append(CrossDomainBenchmarkCase(
-            f"{name}-positive-{index}", source, UOL(), "mathematics",
+            f"{name}-positive-math-{index}", programming_source, UOL(), "mathematics",
             train, heldout, target_math_postconditions(),
         ))
+    train = tuple(Example({"x": x + offset}, x + offset + 1) for x in (3, 6, 10))
+    heldout = tuple(Example({"x": x + offset}, x + offset + 1) for x in (24, 28))
     cases.append(CrossDomainBenchmarkCase(
-        f"{name}-negative-same-domain", source, UOL(), "programming",
+        f"{name}-positive-programming", mathematics_source, UOL(), "programming",
+        train, heldout, NativeDomainVerifierSuite.postconditions("programming"),
+    ))
+    cases.append(CrossDomainBenchmarkCase(
+        f"{name}-negative-same-domain", programming_source, UOL(), "programming",
         (Example({"x": 1}, 2), Example({"x": 2}, 3), Example({"x": 3}, 4)),
         (Example({"x": 5}, 6), Example({"x": 6}, 7)),
         (), expect_transfer=False, expected_rejection="must differ",
     ))
-    return CrossDomainBenchmarkManifest(
-        name, tuple(cases), minimum_source_domains=1,
-        minimum_target_domains=1, minimum_domain_pairs=1,
-    )
+    return CrossDomainBenchmarkManifest(name, tuple(cases))
+
+
+def make_programming_observations(proposal):
+    suite = NativeDomainVerifierSuite()
+    engine = DomainVerificationEngine(suite.registry)
+    observations = []
+    for index, value in enumerate((3, 6, 10)):
+        envelope = {
+            "schema_version": 1, "domain": "programming",
+            "payload": {"programming": {
+                "program": program_dict(proposal.program), "output_name": "result",
+            }},
+        }
+        task_id = f"target-program-task-{index}"
+        step = StepExecutionResult(
+            f"target-program-step-{index}", task_id, proposal.capability.capability_id, True,
+            {"x": value, "__mirror_verification__": envelope},
+            {"result": UOL().execute(proposal.program, {"x": value})},
+        )
+        execution = PlanExecutionReport(
+            f"target-program-plan-{index}", task_id, ExecutionStatus.SUCCEEDED, (step,),
+        )
+        verification = engine.verify_candidate(
+            execution, proposal.capability,
+            requirements={proposal.capability.capability_id: suite.requirement("programming")},
+            required_checks={proposal.capability.capability_id: suite.required_checks("programming")},
+        )
+        observations.append(VerifiedProgramObservation(
+            task_id, proposal.capability, execution, verification,
+        ))
+    return tuple(observations)
 
 
 def run_phase8_manifest(name, offset=0, with_verifiers=True):
@@ -282,12 +332,13 @@ def run_phase8_manifest(name, offset=0, with_verifiers=True):
     verifiers = {}
     if with_verifiers:
         for case in manifest.cases:
-            if case.expect_transfer:
+            if case.expect_transfer and case.target_domain == "mathematics":
                 verifiers[case.case_id] = lambda proposal: make_math_observations(
                     proposal.program, proposal.capability,
                 )
+            elif case.expect_transfer:
+                verifiers[case.case_id] = make_programming_observations
     return CrossDomainBenchmarkRunner().run(manifest, target_verifiers=verifiers)
-
 
 def test_phase8_benchmark_requires_target_verification_and_passes_negative_control():
     report = run_phase8_manifest("phase8-accepted")
