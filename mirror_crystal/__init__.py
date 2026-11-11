@@ -482,3 +482,26 @@ __all__ += [
 ]
 
 
+
+from .phase8_cross_domain_intelligence import (
+    CrossDomainBenchmarkCase,
+    CrossDomainBenchmarkError,
+    CrossDomainBenchmarkManifest,
+    CrossDomainBenchmarkReport,
+    CrossDomainBenchmarkRunner,
+    CrossDomainCaseResult,
+)
+from .phase9_continuous_expansion import (
+    ContinuousExpansionEngine,
+    ContinuousExpansionError,
+    ContinuousExpansionProposal,
+    ExpansionCycleEvidence,
+)
+
+__all__ += [
+    "CrossDomainBenchmarkCase", "CrossDomainBenchmarkError",
+    "CrossDomainBenchmarkManifest", "CrossDomainBenchmarkReport",
+    "CrossDomainBenchmarkRunner", "CrossDomainCaseResult",
+    "ContinuousExpansionEngine", "ContinuousExpansionError",
+    "ContinuousExpansionProposal", "ExpansionCycleEvidence",
+]

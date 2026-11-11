@@ -1,7 +1,7 @@
 # Mirror 7 — Core Pipeline Acceptance and Strategic Roadmap Alignment
 
 **Core implementation layers:** PASS  
-**Original strategic roadmap:** Phases 1–5 PASS (bounded where stated), Phases 6–7 PARTIAL, Phases 8–9 NOT YET ACCEPTED.  
+**Original strategic roadmap:** Phases 1–5 PASS (bounded where stated), Phase 6 PARTIAL, Phase 7 PASS (bounded UOL repair), Phase 8 PASS (bounded transfer matrix), Phase 9 PARTIAL (multi-cycle admission gate).  
 **Accepted code commit:** `906f912b44db5fede143d8df141fd7280a2762df`  
 **Documentation/status commit:** `06d199f9670cab95da35c3c7c4f3f814d8c2fdf0`  
 **Branch:** `main`  
@@ -36,10 +36,10 @@ These nine engineering layers divide the implementation into testable components
 | 3. Task understanding | Accurate connected subtasks. | **PASS (bounded)** — deterministic TaskSpec, constraints/context and dependency DAG are tested; unrestricted language understanding is not claimed. |
 | 4. Capability system | Verified reusable operations with typed contracts. | **PASS** — capability contracts, persistence and evidence eligibility are tested. |
 | 5. Composition engine | Construct a solution from capabilities rather than retrieving a complete stored blueprint. | **PASS (bounded)** — the integration test composes a two-step solution from two distinct procedures. |
-| 6. Universal verification | Domain-appropriate execution, proof, simulation and evidence. | **PARTIAL** — a typed evidence-carrying domain-verification contract and policy tests across five domains are added. Production proof, code-analysis, simulation and scientific evidence engines are not yet implemented/independently accepted. |
-| 7. Self-improvement | Failure diagnosis, targeted repair, abstraction and reusable capability learning. | **PARTIAL** — repeated verified composition learning is tested. A complete diagnosis → targeted repair → regression → abstraction loop is not integrated end to end. |
-| 8. Cross-domain intelligence | Transfer verified methods between different domains. | **NOT YET ACCEPTED** — no sealed cross-domain transfer benchmark has passed. |
-| 9. Continuous expansion | Improve on genuinely unseen problems through continual verified expansion. | **NOT YET ACCEPTED** — no open-world continuous-expansion benchmark has passed. |
+| 6. Universal verification | Domain-appropriate execution, proof, simulation and evidence. | **PARTIAL** — typed evidence-carrying verification and bounded native invariant checks exist; production proof, code-analysis, simulation and scientific evidence engines are not yet independently accepted. |
+| 7. Self-improvement | Failure diagnosis, targeted repair, abstraction and reusable capability learning. | **PASS (bounded)** — typed failure diagnosis, oracle-backed UOL repair, replay and the existing independent verification/repeated-learning gates are integrated. Arbitrary native-code repair and unrestricted self-modification remain out of scope. |
+| 8. Cross-domain intelligence | Transfer verified methods between different domains. | **PASS (bounded)** — a sealed multi-domain benchmark requires fresh target examples, negative controls, target-domain verification and repeated multi-verifier learning. It does not establish unrestricted semantic analogy. |
+| 9. Continuous expansion | Improve on genuinely unseen problems through continual verified expansion. | **PARTIAL** — a three-cycle admission gate requires distinct frozen benchmarks, disjoint task/unseen IDs, a fixed baseline, negative controls, multiple domains and reviewers. Autonomous task generation and a persistent expansion ledger remain open. |
 
 ## Full combined CI results
 
@@ -136,3 +136,16 @@ verification-contract gap; it does not prove that every domain has a functioning
 proof/simulation/experimental verification backend. Strategic Phase 6 therefore
 remains **PARTIAL** pending real domain adapters and frozen held-out/adversarial
 acceptance benchmarks.
+
+
+## Strategic Phase 8 — sealed cross-domain intelligence
+
+The Phase 8 benchmark runner is implemented in `mirror_crystal/phase8_cross_domain_intelligence.py`. The default manifest gate requires at least three positive transfer cases, one adversarial negative control, two source domains, two target domains and two distinct domain pairs. Positive cases must pass the existing target train/held-out transfer checks, execution-bound target verification, and Phase 5 repeated-learning requirements with distinct tasks/executions and multiple verifier identities. Negative controls must fail for the expected reason.
+
+Focused acceptance tests are in `mirror_crystal/tests/test_cross_domain_transfer.py`. See [Phase 8 report](docs/31-phase8-cross-domain-intelligence.md).
+
+## Strategic Phase 9 — evidence-gated continuous expansion
+
+The Phase 9 engine is implemented in `mirror_crystal/phase9_continuous_expansion.py`. It requires at least three distinct Phase 8 benchmark fingerprints, one frozen baseline across all cycles, disjoint task and unseen-case identifiers, passed negative controls in every cycle, at least two target domains, independent reviewer identities and learned target capabilities. It returns a deterministic proposal and does not mutate registries.
+
+This is a bounded evidence-admission gate, not autonomous open-world discovery. The caller still supplies task/case identities, reviewers and baseline evidence; persistent ledger, external reviewer authentication, automatic rollback and autonomous task generation remain unaccepted. See [Phase 9 report](docs/32-phase9-continuous-expansion.md).

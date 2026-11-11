@@ -34,6 +34,8 @@ This is the human-facing documentation layer for the repository. Long subjects a
 | [28 — Phase 3 advanced synthesis and Phase 4 native verification](28-phase3-advanced-synthesis-and-phase4-native-verification.md) | Conditional/map/fold synthesis and native math, programming, physics, biology and engineering checks with execution-bound evidence. |
 | [29 — Phase 5 verified program learning and Phase 6 cross-domain transfer](29-phase5-verified-program-learning-and-phase6-cross-domain-transfer.md) | Repeated evidence-gated UOL program learning, explicit native-handler promotion, and target-tested transfer with provenance and unit/dimension preservation. |
 | [30 — Phase 7 failure diagnosis and targeted repair](30-phase7-failure-diagnosis-and-targeted-repair.md) | Typed diagnosis of blocked plans, synthesis failures, failed execution steps and rejected evidence; bounded oracle-backed UOL CEGIS repair proposals that remain UNVERIFIED. |
+| [31 — Phase 8 sealed cross-domain intelligence](31-phase8-cross-domain-intelligence.md) | Frozen multi-domain transfer matrix, adversarial negative controls, target-domain independent verification and repeated learning. |
+| [32 — Phase 9 evidence-gated continuous expansion](32-phase9-continuous-expansion.md) | Three-cycle expansion admission gate with distinct benchmarks/tasks, fixed baseline, negative controls and independent review. |
 | [Core pipeline acceptance and roadmap alignment](../PHASE1_9_ACCEPTANCE.md) | Nine engineering-layer test results plus honest status of the original strategic nine-phase roadmap. |
 | [Mirror Crystal Live Studio UI](../mirror7_backend/studio.html) | Interactive dark-mode web application and API endpoints on port `8787` (`run_studio.bat`). |
 

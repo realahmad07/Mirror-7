@@ -13,7 +13,7 @@ from mirror_crystal.execution import (
 )
 from mirror_crystal.native_verifiers import NativeDomainVerifierSuite
 from mirror_crystal.operational_language import (
-    Call, Lit, OperationalRule, Program, RuleStatus, UOL, Var, VariableSpec,
+    Call, Lit, OperationalRule, Program, RuleStatus, UOL, Var, VariableSpec, program_dict,
 )
 from mirror_crystal.universal_representation import RepresentationProvenance
 from mirror_crystal.verified_program_learning import (
@@ -77,11 +77,12 @@ def target_math_postconditions():
     return NativeDomainVerifierSuite.postconditions("mathematics")
 
 
-def make_math_observations(program, candidate):
+def make_math_observations(program, candidate, prefix="target", offset=0):
     suite = NativeDomainVerifierSuite()
     engine = DomainVerificationEngine(suite.registry)
     observations = []
-    for index, value in enumerate((2, 5, 9)):
+    for index, base in enumerate((2, 5, 9)):
+        value = base + offset
         payload = {
             "mathematics": {
                 "variables": ["x"],
@@ -91,25 +92,22 @@ def make_math_observations(program, candidate):
             }
         }
         envelope = {"schema_version": 1, "domain": "mathematics", "payload": payload}
+        task_id = f"{prefix}-task-{index}"
         step = StepExecutionResult(
-            f"target-step-{index}", f"target-task-{index}", candidate.capability_id, True,
+            f"{prefix}-step-{index}", task_id, candidate.capability_id, True,
             {"x": value, "__mirror_verification__": envelope},
             {"result": UOL().execute(program, {"x": value})},
         )
         execution = PlanExecutionReport(
-            f"target-plan-{index}", f"target-task-{index}",
-            ExecutionStatus.SUCCEEDED, (step,),
+            f"{prefix}-plan-{index}", task_id, ExecutionStatus.SUCCEEDED, (step,),
         )
         report = engine.verify_candidate(
             execution, candidate,
             requirements={candidate.capability_id: suite.requirement("mathematics")},
             required_checks={candidate.capability_id: suite.required_checks("mathematics")},
         )
-        observations.append(VerifiedProgramObservation(
-            f"target-task-{index}", candidate, execution, report,
-        ))
+        observations.append(VerifiedProgramObservation(task_id, candidate, execution, report))
     return tuple(observations)
-
 
 def test_verified_domain_neutral_program_transfers_and_is_reverified_in_target_domain():
     source = source_proposal()
@@ -242,3 +240,171 @@ def test_transfer_accepts_only_verified_global_rule_dependencies():
     assert transferred.capability.provenance.parent_ids == (
         source.capability.capability_id, "general-increment",
     )
+
+
+# Strategic Phase 8/9 acceptance: sealed transfer evaluation and multi-cycle expansion.
+from mirror_crystal.phase8_cross_domain_intelligence import (
+    CrossDomainBenchmarkCase, CrossDomainBenchmarkManifest, CrossDomainBenchmarkRunner,
+)
+from mirror_crystal.phase9_continuous_expansion import (
+    ContinuousExpansionEngine, ExpansionCycleEvidence,
+)
+
+
+def phase8_manifest(name, offset=0):
+    programming_source = source_proposal()
+    mathematics_source = source_proposal()
+    math_program = replace(
+        mathematics_source.program, program_id="program:increment:mathematics",
+        domain="mathematics",
+    )
+    math_capability = replace(
+        mathematics_source.capability,
+        capability_id="learned:increment:mathematics", domains=("mathematics",),
+        provenance=RepresentationProvenance(
+            source="mirror_verified_uol_program_learning", source_ref=math_program.fingerprint,
+        ),
+    )
+    mathematics_source = replace(
+        mathematics_source, program=math_program, capability=math_capability,
+        handler=UOLProgramHandler(math_program, ()),
+    )
+    cases = []
+    for index, start_value in enumerate((2, 5)):
+        train = tuple(Example({"x": x + offset + index}, x + offset + index + 1)
+                      for x in (start_value, start_value + 2, start_value + 4))
+        heldout = tuple(Example({"x": x + offset + index}, x + offset + index + 1)
+                        for x in (start_value + 20, start_value + 30))
+        cases.append(CrossDomainBenchmarkCase(
+            f"{name}-positive-math-{index}", programming_source, UOL(), "mathematics",
+            train, heldout, target_math_postconditions(),
+        ))
+    train = tuple(Example({"x": x + offset}, x + offset + 1) for x in (3, 6, 10))
+    heldout = tuple(Example({"x": x + offset}, x + offset + 1) for x in (24, 28))
+    cases.append(CrossDomainBenchmarkCase(
+        f"{name}-positive-programming", mathematics_source, UOL(), "programming",
+        train, heldout, NativeDomainVerifierSuite.postconditions("programming"),
+    ))
+    cases.append(CrossDomainBenchmarkCase(
+        f"{name}-negative-same-domain", programming_source, UOL(), "programming",
+        (Example({"x": 1}, 2), Example({"x": 2}, 3), Example({"x": 3}, 4)),
+        (Example({"x": 5}, 6), Example({"x": 6}, 7)),
+        (), expect_transfer=False, expected_rejection="must differ",
+    ))
+    return CrossDomainBenchmarkManifest(name, tuple(cases))
+
+
+def make_programming_observations(proposal, prefix="target-program", offset=0):
+    suite = NativeDomainVerifierSuite()
+    engine = DomainVerificationEngine(suite.registry)
+    observations = []
+    for index, base in enumerate((3, 6, 10)):
+        value = base + offset
+        envelope = {
+            "schema_version": 1, "domain": "programming",
+            "payload": {"programming": {
+                "program": program_dict(proposal.program), "output_name": "result",
+            }},
+        }
+        task_id = f"{prefix}-task-{index}"
+        step = StepExecutionResult(
+            f"{prefix}-step-{index}", task_id, proposal.capability.capability_id, True,
+            {"x": value, "__mirror_verification__": envelope},
+            {"result": UOL().execute(proposal.program, {"x": value})},
+        )
+        execution = PlanExecutionReport(
+            f"{prefix}-plan-{index}", task_id, ExecutionStatus.SUCCEEDED, (step,),
+        )
+        verification = engine.verify_candidate(
+            execution, proposal.capability,
+            requirements={proposal.capability.capability_id: suite.requirement("programming")},
+            required_checks={proposal.capability.capability_id: suite.required_checks("programming")},
+        )
+        observations.append(VerifiedProgramObservation(task_id, proposal.capability, execution, verification))
+    return tuple(observations)
+
+def run_phase8_manifest(name, offset=0, with_verifiers=True, observation_prefix=None):
+    manifest = phase8_manifest(name, offset)
+    verifiers = {}
+    if with_verifiers:
+        for index, case in enumerate(manifest.cases):
+            prefix = f"{observation_prefix or name}-case-{index}"
+            if case.expect_transfer and case.target_domain == "mathematics":
+                verifiers[case.case_id] = (
+                    lambda proposal, p=prefix, o=offset:
+                        make_math_observations(proposal.program, proposal.capability, prefix=p, offset=o)
+                )
+            elif case.expect_transfer:
+                verifiers[case.case_id] = (
+                    lambda proposal, p=prefix, o=offset:
+                        make_programming_observations(proposal, prefix=p, offset=o)
+                )
+    return CrossDomainBenchmarkRunner().run(manifest, target_verifiers=verifiers)
+
+def report_observation_tasks(report):
+    return tuple(sorted({task for proposal in report.learned_proposals for task in proposal.observation_task_ids}))
+
+
+def test_phase8_benchmark_requires_target_verification_and_passes_negative_control():
+    report = run_phase8_manifest("phase8-accepted")
+    assert report.passed
+    assert len(report.learned_proposals) == 3
+    assert sum(item.passed and not item.transferred for item in report.results) == 1
+    assert all(item.capability.executable for item in report.learned_proposals)
+
+
+def test_phase8_benchmark_fails_closed_without_target_verifier():
+    report = run_phase8_manifest("phase8-no-verifier", with_verifiers=False)
+    assert not report.passed
+    assert all(not item.passed for item in report.results if item.transferred)
+
+
+def test_phase9_requires_three_distinct_benchmark_cycles_and_unseen_tasks():
+    reports = tuple(
+        run_phase8_manifest(f"phase9-cycle-{index}", offset=index * 50)
+        for index in range(3)
+    )
+    assert all(item.passed for item in reports)
+    cycles = tuple(
+        ExpansionCycleEvidence(
+            f"cycle-{index}", report,
+            report_observation_tasks(report),
+            (f"unseen-{index}-a", f"unseen-{index}-b"),
+            ("reviewer-a", "reviewer-b"), True, "f" * 64,
+        )
+        for index, report in enumerate(reports)
+    )
+    proposal = ContinuousExpansionEngine().propose(cycles)
+    assert proposal.requires_explicit_promotion
+    assert len(proposal.cycle_ids) == 3
+    assert len(set(proposal.benchmark_fingerprints)) == 3
+    assert proposal.target_domains == ("mathematics", "programming")
+    assert len(proposal.learned_proposals) >= 3
+
+
+def test_phase9_rejects_reused_tasks_and_baseline_drift():
+    import pytest
+    reports = tuple(
+        run_phase8_manifest(
+            f"phase9-invalid-{index}", offset=index * 70,
+            observation_prefix=("phase9-invalid-0" if index == 1 else None),
+        )
+        for index in range(3)
+    )
+    duplicate_tasks = tuple(
+        ExpansionCycleEvidence(
+            f"duplicate-{index}", report, report_observation_tasks(report),
+            (f"unseen-{index}",), ("reviewer-a", "reviewer-b"), True, "f" * 64,
+        )
+        for index, report in enumerate(reports)
+    )
+    with pytest.raises(ValueError, match="disjoint"):
+        ContinuousExpansionEngine().propose(duplicate_tasks)
+
+    drifted = (
+        ExpansionCycleEvidence("baseline-a", reports[0], report_observation_tasks(reports[0]), ("ua",), ("reviewer-a", "reviewer-b"), True, "a" * 64),
+        ExpansionCycleEvidence("baseline-b", reports[1], report_observation_tasks(reports[1]), ("ub",), ("reviewer-a", "reviewer-b"), True, "b" * 64),
+        ExpansionCycleEvidence("baseline-c", reports[2], report_observation_tasks(reports[2]), ("uc",), ("reviewer-a", "reviewer-b"), True, "a" * 64),
+    )
+    with pytest.raises(ValueError, match="same frozen baseline"):
+        ContinuousExpansionEngine().propose(drifted)
