@@ -298,7 +298,7 @@ def test_stage21_sandbox_failure_is_recorded_and_fails_closed():
     result = engine.execute(item, verified)
     assert result.status is ActionExecutionStatus.FAILED
     assert "container missing" in result.error
-    assert result.failed_conditions == ("status",)
+    assert result.failed_conditions == ("status", "target")
     assert result.feedback.status is ActionExecutionStatus.FAILED
 
 
