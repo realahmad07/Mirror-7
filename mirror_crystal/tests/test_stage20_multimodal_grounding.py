@@ -367,17 +367,12 @@ def test_signed_image_annotation_binds_exact_asset_and_verified_adapter_identity
     trust.register("vision-adapter-v1", public)
     engine = RealWorldGroundingEngine(trust)
     asset = engine.ingest_png("scene", _png())
-    envelope = {
-        "source_id": asset.source_id,
-        "source_sha256": asset.sha256,
-        "entity_key": "scene-1",
-        "attribute": "object_label",
-        "value": "red warning light",
-        "unit": "",
-        "locator": "box:12,8,40,40",
-        "observed_at": "2026-11-11T10:00:00Z",
-    }
-    sig = _signature(private, json.dumps(envelope, ensure_ascii=False, allow_nan=False, sort_keys=True, separators=(",", ":")).encode())
+    signing_payload = engine.image_annotation_signing_bytes(
+        asset.source_id, asset.sha256, entity_key="scene-1", attribute="object_label",
+        value="red warning light", locator="box:12,8,40,40",
+        observed_at="2026-11-11T10:00:00Z",
+    )
+    sig = _signature(private, signing_payload)
     observation = engine.add_signed_image_annotation(
         "scene", entity_key="scene-1", attribute="object_label", value="red warning light",
         locator="box:12,8,40,40", annotator_id="vision-adapter-v1",
@@ -426,4 +421,4 @@ def test_embedded_numeric_unit_cannot_contradict_explicit_unit_column():
 def test_document_extractor_output_is_bounded_and_type_checked():
     engine = RealWorldGroundingEngine()
     with pytest.raises(GroundingError, match="ExtractedSegment"):
-        engine.ingest_document("bad-adapter", "report.pdf", b"%PDF", extractor=lambda _: ["not-a-segment"], extractor_id="bad-pdf")
+        engine.ingest_document("bad-adapter", "report.pdf", b"%PDF-1.4", extractor=lambda _: ["not-a-segment"], extractor_id="bad-pdf")
