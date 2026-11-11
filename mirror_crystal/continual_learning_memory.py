@@ -135,6 +135,10 @@ class AtomicVaultTransaction:
         """Stages a new candidate rule within the active transaction with conflict resolution."""
         if not self._active_tx or self._active_tx.committed or self._active_tx.rolled_back:
             raise RuntimeError("No active transaction")
+        # Rule identifiers are immutable keys: never overwrite an existing vault
+        # record or another record already staged in this transaction.
+        if rule_id in self._rules or rule_id in self._active_tx.staged_rules:
+            return False, f"Teaching rejected: duplicate immutable rule_id '{rule_id}'"
 
         # 1. Structural and AST validation
         valid_struct, reason_struct = VerifiedTeachingOrgan.validate_candidate(prompt, response, domain)
@@ -190,7 +194,9 @@ class AtomicVaultTransaction:
         self._active_tx.rolled_back = True
 
     def get_rule(self, rule_id: str) -> Optional[KnowledgeRecord]:
-        return self._rules.get(rule_id)
+        # Return a detached copy so callers cannot mutate persistent vault state.
+        record = self._rules.get(rule_id)
+        return copy.deepcopy(record) if record is not None else None
 
     def total_rules(self) -> int:
         return len(self._rules)
@@ -203,12 +209,17 @@ class SessionIsolationManager:
         self._sessions: Dict[str, Dict[str, Any]] = {}
 
     def set_session_variable(self, session_id: str, key: str, value: Any) -> None:
+        if not isinstance(session_id, str) or not session_id or not isinstance(key, str) or not key:
+            raise ValueError("session_id and key must be non-empty strings")
         if session_id not in self._sessions:
             self._sessions[session_id] = {}
-        self._sessions[session_id][key] = value
+        # Detach caller-owned mutable objects from session storage.
+        self._sessions[session_id][key] = copy.deepcopy(value)
 
     def get_session_variable(self, session_id: str, key: str) -> Optional[Any]:
-        return self._sessions.get(session_id, {}).get(key)
+        # Never expose a mutable reference to another caller/session.
+        value = self._sessions.get(session_id, {}).get(key)
+        return copy.deepcopy(value)
 
     def verify_isolation(self, session_a: str, session_b: str, secret_key: str) -> bool:
         """Guarantees session_b cannot access session_a's secret."""
