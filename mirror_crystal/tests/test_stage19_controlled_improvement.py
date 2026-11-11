@@ -28,7 +28,9 @@ def digest(value: str) -> str:
 
 
 BASELINE_REVISION = "a" * 40
-ENVIRONMENT = digest("python311-stage19-container-pinned-image")
+_FOUND_RUNTIME = find_container_runtime()
+RUNTIME = _FOUND_RUNTIME[0] if _FOUND_RUNTIME is not None else "docker"
+ENVIRONMENT = ContainerRegressionExecutor.environment_fingerprint(runtime=RUNTIME)
 
 
 def suite() -> FrozenRegressionSuite:
@@ -36,6 +38,7 @@ def suite() -> FrozenRegressionSuite:
         suite_id="stage19-acceptance-v1",
         baseline_revision=BASELINE_REVISION,
         environment_sha256=ENVIRONMENT,
+        container_runtime=RUNTIME,
         cases=(
             RegressionCase("regression-1", {"value": 1}, {"value": 2, "mode": "legacy"},
                            {"value": 2, "mode": "legacy"}),
@@ -112,7 +115,7 @@ class FakeExecutor:
             suite_fingerprint=(digest("wrong-suite") if self.wrong_binding else frozen_suite.fingerprint),
             environment_sha256=frozen_suite.environment_sha256,
             expected_key=expected_key,
-            runtime="docker",
+            runtime=RUNTIME,
             returncode=0,
             pid=1,
             results=tuple(results),
@@ -288,3 +291,24 @@ def test_stage19_real_container_evaluates_baseline_and_candidate_in_separate_run
     assert result.baseline_evidence.pid == 1
     assert result.candidate_evidence.pid == 1
     assert result.baseline_evidence.runtime == result.candidate_evidence.runtime
+
+
+def test_stage19_decisions_require_engine_recorded_evaluation_and_are_single_use():
+    current_suite = suite()
+    item = proposal(current_suite)
+    first_engine = ControlledSelfImprovementEngine(FakeExecutor())
+    evaluation = first_engine.evaluate(item, current_suite)
+    second_engine = ControlledSelfImprovementEngine(FakeExecutor())
+
+    with pytest.raises(SelfImprovementError, match="not a verified result"):
+        second_engine.record_human_decision(
+            item, evaluation, reviewer_id="reviewer-d", approved=True, reason="forged cross-engine review",
+        )
+
+    first_engine.record_human_decision(
+        item, evaluation, reviewer_id="reviewer-d", approved=True, reason="approved once",
+    )
+    with pytest.raises(SelfImprovementError, match="already been recorded"):
+        first_engine.record_human_decision(
+            item, evaluation, reviewer_id="reviewer-e", approved=True, reason="attempted second approval",
+        )
