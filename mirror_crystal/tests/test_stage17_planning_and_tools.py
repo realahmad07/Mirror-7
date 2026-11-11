@@ -11,6 +11,11 @@ Tests:
 """
 from __future__ import annotations
 
+import json
+import os
+import sqlite3
+import time
+from pathlib import Path
 import pytest
 
 from mirror_crystal.planning_and_tools import (
@@ -25,7 +30,76 @@ from mirror_crystal.planning_and_tools import (
     ToolDefinition,
     ToolRegistry,
     ToolRiskProfile,
+    ToolExecutionMode,
 )
+
+
+
+def _test_adder(a: int, b: int) -> int:
+    return a + b
+
+
+def _append_order(log_path: str, step: str) -> None:
+    path = Path(log_path)
+    values = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    values.append(step)
+    path.write_text(json.dumps(values), encoding="utf-8")
+
+
+def _test_step_one(log_path: str, msg: str) -> str:
+    _append_order(log_path, "step1")
+    return f"Step 1 Done: {msg}"
+
+
+def _test_step_two(log_path: str, prev: str) -> str:
+    _append_order(log_path, "step2")
+    return f"Step 2 Done with {prev}"
+
+
+def _test_flaky_tool(state_path: str) -> str:
+    with sqlite3.connect(state_path) as conn:
+        conn.execute("CREATE TABLE IF NOT EXISTS attempts (n INTEGER NOT NULL)")
+        row = conn.execute("SELECT n FROM attempts LIMIT 1").fetchone()
+        count = 1 if row is None else int(row[0]) + 1
+        conn.execute("DELETE FROM attempts")
+        conn.execute("INSERT INTO attempts(n) VALUES (?)", (count,))
+        conn.commit()
+    if count < 2:
+        raise ConnectionError("Transient network timeout")
+    return "Success on retry"
+
+
+def _test_primary_failure() -> str:
+    raise RuntimeError("Primary service unavailable")
+
+
+def _test_fallback_success() -> str:
+    return "Output from fallback service"
+
+
+def _test_fatal_failure() -> str:
+    raise PermissionError("Fatal authentication error")
+
+
+def _test_downstream() -> str:
+    return "Should not run"
+
+
+def _test_slow_handler() -> str:
+    time.sleep(3.0)
+    return "late result"
+
+
+def _test_current_pid() -> int:
+    return os.getpid()
+
+
+def _test_large_output() -> str:
+    return "x" * 10000
+
+
+def _test_mutating_value(resource: str, approved: bool = False) -> dict:
+    return {"updated": resource, "approved": approved}
 
 
 def test_tool_definition_and_parameter_validation():
