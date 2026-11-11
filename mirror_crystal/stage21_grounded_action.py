@@ -284,6 +284,7 @@ class GroundedActionProposal:
     action_id: str
     definition_fingerprint: str
     inputs: Mapping[str, Any]
+    input_evidence_bindings: Mapping[str, tuple[str, ...]]
     evidence_report_fingerprint: str
     evidence_observation_ids: tuple[str, ...]
     expected_postconditions: Mapping[str, Any]
@@ -305,6 +306,17 @@ class GroundedActionProposal:
         if not ids or len(ids) > 32 or len(set(ids)) != len(ids):
             raise GroundedActionError("proposal requires 1-32 unique evidence observation IDs")
         object.__setattr__(self, "evidence_observation_ids", ids)
+        if not isinstance(self.input_evidence_bindings, Mapping) or set(self.input_evidence_bindings) != set(frozen_inputs):
+            raise GroundedActionError("every action input field must have an explicit evidence binding")
+        bindings: dict[str, tuple[str, ...]] = {}
+        for field, bound_ids in self.input_evidence_bindings.items():
+            if not isinstance(bound_ids, (list, tuple)) or not bound_ids or len(bound_ids) > 32:
+                raise GroundedActionError(f"input evidence binding for {field} must contain 1-32 observation IDs")
+            normalized_ids = tuple(_text(value, "input evidence observation ID", 128) for value in bound_ids)
+            if len(set(normalized_ids)) != len(normalized_ids) or not set(normalized_ids).issubset(set(ids)):
+                raise GroundedActionError(f"input evidence binding for {field} must use unique selected observation IDs")
+            bindings[field] = normalized_ids
+        object.__setattr__(self, "input_evidence_bindings", MappingProxyType(bindings))
         if not isinstance(self.expected_postconditions, Mapping) or not self.expected_postconditions:
             raise GroundedActionError("expected_postconditions must be a non-empty JSON object")
         frozen_expected = _freeze(dict(self.expected_postconditions))
@@ -321,6 +333,7 @@ class GroundedActionProposal:
             "action_id": self.action_id,
             "definition_fingerprint": self.definition_fingerprint,
             "inputs": _thaw(self.inputs),
+            "input_evidence_bindings": {key: list(value) for key, value in self.input_evidence_bindings.items()},
             "evidence_report_fingerprint": self.evidence_report_fingerprint,
             "evidence_observation_ids": list(self.evidence_observation_ids),
             "expected_postconditions": _thaw(self.expected_postconditions),
@@ -335,19 +348,27 @@ class GroundedActionProposal:
     def create(
         cls, definition: GroundedActionDefinition, *, inputs: Mapping[str, Any],
         evidence_report_fingerprint: str, evidence_observation_ids: tuple[str, ...] | list[str],
+        input_evidence_bindings: Mapping[str, tuple[str, ...] | list[str]],
         expected_postconditions: Mapping[str, Any], created_by: str,
         created_at: str | None = None,
     ) -> "GroundedActionProposal":
         if not isinstance(definition, GroundedActionDefinition):
             raise TypeError("definition must be GroundedActionDefinition")
-        if not isinstance(inputs, Mapping) or not isinstance(expected_postconditions, Mapping):
-            raise GroundedActionError("inputs and expected_postconditions must be objects")
+        if not isinstance(inputs, Mapping) or not isinstance(expected_postconditions, Mapping) or not isinstance(input_evidence_bindings, Mapping):
+            raise GroundedActionError("inputs, input_evidence_bindings and expected_postconditions must be objects")
         _validate_schema_value(dict(inputs), definition.input_schema, definition.action_id)
+        if set(input_evidence_bindings) != set(inputs):
+            raise GroundedActionError("every action input field must have an explicit evidence binding")
+        normalized_bindings = {
+            key: list(value) if isinstance(value, (tuple, list)) else value
+            for key, value in input_evidence_bindings.items()
+        }
         stamp = _utc(created_at, "created_at")
         payload = {
             "action_id": definition.action_id,
             "definition_fingerprint": definition.fingerprint,
             "inputs": dict(inputs),
+            "input_evidence_bindings": normalized_bindings,
             "evidence_report_fingerprint": _sha(evidence_report_fingerprint, "evidence_report_fingerprint"),
             "evidence_observation_ids": list(evidence_observation_ids),
             "expected_postconditions": dict(expected_postconditions),
@@ -356,7 +377,7 @@ class GroundedActionProposal:
         }
         return cls(
             _digest(_canonical(payload)), definition.action_id, definition.fingerprint,
-            dict(inputs), evidence_report_fingerprint, tuple(evidence_observation_ids),
+            dict(inputs), normalized_bindings, evidence_report_fingerprint, tuple(evidence_observation_ids),
             dict(expected_postconditions), created_by, stamp,
         )
 
@@ -667,7 +688,15 @@ class GroundedActionEngine:
             raise GroundedActionError("selected evidence must span at least two independent modalities")
         if len({item.source_id for item in selected}) < 2:
             raise GroundedActionError("selected evidence must reference at least two distinct sources")
-        return "selected observations are hash-bound, origin-authenticated and part of verified cross-modal agreement"
+        for input_field, observation_ids in proposal.input_evidence_bindings.items():
+            bound = [observations[item_id] for item_id in observation_ids]
+            if len({item.modality.value for item in bound}) < 2 or len({item.source_id for item in bound}) < 2:
+                raise GroundedActionError(f"input {input_field} requires at least two independent modality/source observations")
+            if any(item.value != proposal.inputs[input_field] for item in bound):
+                raise GroundedActionError(f"input {input_field} does not exactly match its cited grounded observation values")
+            if len({(item.dimension, item.canonical_unit) for item in bound}) != 1:
+                raise GroundedActionError(f"input {input_field} is bound to incompatible units or value dimensions")
+        return "each action input is exactly bound to authenticated observations from distinct modalities and sources"
 
     @staticmethod
     def _check_action_policy(proposal: GroundedActionProposal, definition: GroundedActionDefinition) -> str:
