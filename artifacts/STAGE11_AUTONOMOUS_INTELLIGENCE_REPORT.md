@@ -260,9 +260,12 @@ reconciliation, and release packaging.
   `7a81c1dc25f512a7b9dc36106238c06ee53dd33c`. That newer head still requires CI; the
   earlier green run must not be attributed to it.
 - Full historical regression and clean-machine release packaging remain unverified.
-- Stage 11.9 is not complete: the existing POSIX child-process runner has CPU/address
-  space/file-size/open-file limits and a subprocess timeout, but it is not equivalent
-  to a hardened container/VM and does not provide a network namespace. AST inspection
+- Stage 11.9 is not complete. A Docker/Podman backend is already the default execution
+  path and configures no network, read-only root, dropped capabilities, non-root UID,
+  no-new-privileges, resource limits, and a restricted tmpfs. The CI runtime smoke test
+  can skip when no container runtime is installed; host-side output bounding, reliable
+  daemon-container cleanup on timeout, and adversarial runtime tests remain unproven.
+  The POSIX child-process mode is a lower-isolation development override. AST inspection
   remains a static policy check, not an execution sandbox.
 - Stage 11.11 remains open because lexical overlap is not semantic entailment, and
   broad contradiction, provenance, persistence, and forgetting tests are still needed.
