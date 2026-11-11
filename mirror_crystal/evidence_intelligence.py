@@ -121,7 +121,7 @@ class SourceProvenance:
         except ValueError as exc:
             raise EvidenceError("retrieved_at must be an ISO-8601 timestamp with an explicit timezone") from exc
         if timestamp.tzinfo is None or timestamp.utcoffset() is None:
-            raise EvidenceError("retrieved_at must include an explicit timezone")
+            raise EvidenceError("retrieved_at must be an ISO-8601 timestamp with an explicit timezone")
         if not re.fullmatch(r"[0-9a-f]{64}", self.sha256_hash or ""):
             raise EvidenceError("sha256_hash must be a 64-character lowercase hex digest")
         if not isinstance(self.content, str) or not self.content.strip():
