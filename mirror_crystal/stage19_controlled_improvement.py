@@ -534,8 +534,19 @@ class SelfImprovementEvaluation:
 class ControlledSelfImprovementEngine:
     """Fail-closed candidate evaluator and explicit human approval gate."""
 
-    def __init__(self, executor: ContainerRegressionExecutor | Any | None = None) -> None:
-        self.executor = executor or ContainerRegressionExecutor()
+    def __init__(
+        self,
+        executor: ContainerRegressionExecutor | Any | None = None,
+        *,
+        allow_test_executor: bool = False,
+    ) -> None:
+        if executor is not None and type(executor) is not ContainerRegressionExecutor and not allow_test_executor:
+            raise SelfImprovementError(
+                "custom executors are test-only; production evaluation requires ContainerRegressionExecutor"
+            )
+        if allow_test_executor and executor is None:
+            raise SelfImprovementError("allow_test_executor requires an injected test executor")
+        self.executor = executor if executor is not None else ContainerRegressionExecutor()
         self._verified_evaluations: dict[str, SelfImprovementEvaluation] = {}
         self._decisions_by_evaluation: dict[str, HumanApprovalRecord] = {}
 
