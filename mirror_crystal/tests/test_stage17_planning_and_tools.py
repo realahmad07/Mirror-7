@@ -104,15 +104,12 @@ def _test_mutating_value(resource: str, approved: bool = False) -> dict:
 
 def test_tool_definition_and_parameter_validation():
     """Verify tool parameter contracts enforce required keys."""
-    def sample_adder(a: int, b: int) -> int:
-        return a + b
-
     tool = ToolDefinition(
         name="adder",
         description="Adds two integers",
         risk_profile=ToolRiskProfile.READ_ONLY,
         required_parameters=["a", "b"],
-        handler=sample_adder,
+        handler=_test_adder,
     )
     assert tool.execute(a=10, b=25) == 35
 
@@ -144,24 +141,15 @@ def test_dag_acyclicity_and_cycle_rejection():
 def test_dependency_ordered_plan_execution():
     """Verify tasks execute strictly in dependency order."""
     registry = ToolRegistry()
-    execution_order = []
-
-    def tool_step1(msg: str) -> str:
-        execution_order.append("step1")
-        return f"Step 1 Done: {msg}"
-
-    def tool_step2(prev: str) -> str:
-        execution_order.append("step2")
-        return f"Step 2 Done with {prev}"
-
-    registry.register(ToolDefinition(name="s1", description="s1", handler=tool_step1))
-    registry.register(ToolDefinition(name="s2", description="s2", handler=tool_step2))
+    log_path = str(tmp_path / "execution-order.json")
+    registry.register(ToolDefinition(name="s1", description="s1", handler=_test_step_one))
+    registry.register(ToolDefinition(name="s2", description="s2", handler=_test_step_two))
 
     plan = TaskDecomposer.create_plan_from_subtasks(
         goal="Order test",
         subtasks_data=[
-            {"task_id": "task_b", "assigned_tool": "s2", "tool_parameters": {"prev": "data"}, "dependencies": ["task_a"]},
-            {"task_id": "task_a", "assigned_tool": "s1", "tool_parameters": {"msg": "hello"}, "dependencies": []},
+            {"task_id": "task_b", "assigned_tool": "s2", "tool_parameters": {"log_path": log_path, "prev": "data"}, "dependencies": ["task_a"]},
+            {"task_id": "task_a", "assigned_tool": "s1", "tool_parameters": {"log_path": log_path, "msg": "hello"}, "dependencies": []},
         ],
     )
 
@@ -169,7 +157,7 @@ def test_dependency_ordered_plan_execution():
     executed_plan = engine.execute_plan(plan)
 
     assert executed_plan.overall_status == StepStatus.COMPLETED
-    assert execution_order == ["step1", "step2"]
+    assert json.loads(Path(log_path).read_text(encoding="utf-8")) == ["step1", "step2"]
     assert executed_plan.tasks["task_a"].status == StepStatus.COMPLETED
     assert executed_plan.tasks["task_b"].status == StepStatus.COMPLETED
 
@@ -177,21 +165,15 @@ def test_dependency_ordered_plan_execution():
 def test_automated_failure_recovery_via_retries():
     """Verify transient tool failures are retried and recovered."""
     registry = ToolRegistry()
-    attempts = 0
-
-    def flaky_tool() -> str:
-        nonlocal attempts
-        attempts += 1
-        if attempts < 2:
-            raise ConnectionError("Transient network timeout")
-        return "Success on retry"
-
-    registry.register(ToolDefinition(name="flaky", description="flaky tool", handler=flaky_tool))
+    state_path = str(tmp_path / "attempts.sqlite")
+    registry.register(ToolDefinition(
+        name="flaky", description="flaky tool", required_parameters=["state_path"], handler=_test_flaky_tool
+    ))
 
     plan = TaskDecomposer.create_plan_from_subtasks(
         goal="Retry Goal",
         subtasks_data=[
-            {"task_id": "t_flaky", "assigned_tool": "flaky", "max_retries": 2},
+            {"task_id": "t_flaky", "assigned_tool": "flaky", "tool_parameters": {"state_path": state_path}, "max_retries": 2},
         ],
     )
 
@@ -202,21 +184,16 @@ def test_automated_failure_recovery_via_retries():
     task = executed.tasks["t_flaky"]
     assert task.status == StepStatus.COMPLETED
     assert task.output == "Success on retry"
-    assert attempts == 2
+    with sqlite3.connect(state_path) as conn:
+        assert conn.execute("SELECT n FROM attempts").fetchone()[0] == 2
 
 
 def test_tool_fallback_routing_on_exhausted_primary():
     """Verify execution engine falls back to secondary tool when primary tool is exhausted."""
     registry = ToolRegistry()
 
-    def primary_failing() -> str:
-        raise RuntimeError("Primary service unavailable")
-
-    def fallback_working() -> str:
-        return "Output from fallback service"
-
-    registry.register(ToolDefinition(name="primary_calc", description="primary", handler=primary_failing))
-    registry.register(ToolDefinition(name="fallback_calc", description="fallback", handler=fallback_working))
+    registry.register(ToolDefinition(name="primary_calc", description="primary", handler=_test_primary_failure))
+    registry.register(ToolDefinition(name="fallback_calc", description="fallback", handler=_test_fallback_success))
 
     plan = TaskDecomposer.create_plan_from_subtasks(
         goal="Fallback Goal",
@@ -263,14 +240,8 @@ def test_downstream_skip_propagation_on_fatal_failure():
     """Verify that if an upstream task fails completely, downstream tasks are safely SKIPPED."""
     registry = ToolRegistry()
 
-    def fatal_tool() -> None:
-        raise PermissionError("Fatal authentication error")
-
-    def downstream_tool() -> str:
-        return "Should not run"
-
-    registry.register(ToolDefinition(name="fatal", description="fatal", handler=fatal_tool))
-    registry.register(ToolDefinition(name="downstream", description="downstream", handler=downstream_tool))
+    registry.register(ToolDefinition(name="fatal", description="fatal", handler=_test_fatal_failure))
+    registry.register(ToolDefinition(name="downstream", description="downstream", handler=_test_downstream))
 
     plan = TaskDecomposer.create_plan_from_subtasks(
         goal="Failure skip goal",
