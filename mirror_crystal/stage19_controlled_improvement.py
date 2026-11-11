@@ -12,11 +12,12 @@ from datetime import datetime, timezone
 from enum import Enum
 import hashlib
 import json
+import math
 import re
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping
 
-from .container_sandbox import run_python_regression_in_container
+from .container_sandbox import DEFAULT_IMAGE, run_python_regression_in_container
 
 
 class SelfImprovementError(ValueError):
@@ -132,6 +133,11 @@ class FrozenRegressionSuite:
     baseline_revision: str
     environment_sha256: str
     cases: tuple[RegressionCase, ...]
+    container_runtime: str = "docker"
+    container_image: str = DEFAULT_IMAGE
+    timeout_seconds: float = 8.0
+    memory_limit_mb: int = 256
+    max_pids: int = 32
     version: str = "stage19-regression-suite-v1"
 
     def __post_init__(self) -> None:
@@ -139,6 +145,25 @@ class FrozenRegressionSuite:
         if not isinstance(self.baseline_revision, str) or not _REVISION.fullmatch(self.baseline_revision):
             raise SelfImprovementError("baseline_revision must be a 40- or 64-character lowercase Git revision")
         _require_sha256(self.environment_sha256, "environment_sha256")
+        if self.container_runtime not in {"docker", "podman"}:
+            raise SelfImprovementError("container_runtime must be docker or podman")
+        if not isinstance(self.container_image, str) or not self.container_image.strip():
+            raise SelfImprovementError("container_image must be non-empty")
+        if isinstance(self.timeout_seconds, bool) or not isinstance(self.timeout_seconds, (int, float)) or not math.isfinite(float(self.timeout_seconds)) or not 1 <= self.timeout_seconds <= 60:
+            raise SelfImprovementError("suite timeout_seconds must be between 1 and 60")
+        if isinstance(self.memory_limit_mb, bool) or not isinstance(self.memory_limit_mb, int) or not 64 <= self.memory_limit_mb <= 8192:
+            raise SelfImprovementError("suite memory_limit_mb must be between 64 and 8192")
+        if isinstance(self.max_pids, bool) or not isinstance(self.max_pids, int) or not 8 <= self.max_pids <= 256:
+            raise SelfImprovementError("suite max_pids must be between 8 and 256")
+        expected_environment = ContainerRegressionExecutor.environment_fingerprint(
+            runtime=self.container_runtime,
+            image=self.container_image,
+            timeout_seconds=float(self.timeout_seconds),
+            memory_limit_mb=self.memory_limit_mb,
+            max_pids=self.max_pids,
+        )
+        if self.environment_sha256 != expected_environment:
+            raise SelfImprovementError("environment fingerprint does not match the pinned runtime, image and resource limits")
         cases = tuple(self.cases)
         if len(cases) < 4 or any(not isinstance(item, RegressionCase) for item in cases):
             raise SelfImprovementError("suite requires at least four typed cases")
@@ -158,6 +183,11 @@ class FrozenRegressionSuite:
             "suite_id": self.suite_id,
             "baseline_revision": self.baseline_revision,
             "environment_sha256": self.environment_sha256,
+            "container_runtime": self.container_runtime,
+            "container_image": self.container_image,
+            "timeout_seconds": float(self.timeout_seconds),
+            "memory_limit_mb": self.memory_limit_mb,
+            "max_pids": self.max_pids,
             "cases": [item.to_dict() for item in self.cases],
             "version": self.version,
         }
@@ -342,6 +372,28 @@ class ExecutionEvidence:
 class ContainerRegressionExecutor:
     """Runs a candidate in a fresh Docker/Podman sandbox; never downgrades to a process runner."""
 
+    @staticmethod
+    def environment_fingerprint(
+        *,
+        runtime: str = "docker",
+        image: str = DEFAULT_IMAGE,
+        timeout_seconds: float = 8.0,
+        memory_limit_mb: int = 256,
+        max_pids: int = 32,
+    ) -> str:
+        if runtime not in {"docker", "podman"}:
+            raise SelfImprovementError("runtime must be docker or podman")
+        return _digest_text(_canonical({
+            "runtime": runtime,
+            "image": image,
+            "timeout_seconds": float(timeout_seconds),
+            "memory_limit_mb": memory_limit_mb,
+            "max_pids": max_pids,
+            "container_policy": "network-none-readonly-root-nonroot-drop-all-caps-no-new-privileges-v1",
+            "stage19_runner": "frozen-regression-harness-v1",
+            "python": "3.11",
+        }))
+
     def __init__(
         self,
         *,
@@ -349,6 +401,7 @@ class ContainerRegressionExecutor:
         memory_limit_mb: int = 256,
         max_pids: int = 32,
         image: str | None = None,
+        runtime: str | None = None,
     ) -> None:
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)) or not 1 <= timeout_seconds <= 60:
             raise SelfImprovementError("timeout_seconds must be between 1 and 60")
@@ -356,10 +409,13 @@ class ContainerRegressionExecutor:
             raise SelfImprovementError("memory_limit_mb must be between 64 and 8192")
         if isinstance(max_pids, bool) or not isinstance(max_pids, int) or not 8 <= max_pids <= 256:
             raise SelfImprovementError("max_pids must be between 8 and 256")
+        if runtime is not None and runtime not in {"docker", "podman"}:
+            raise SelfImprovementError("runtime must be docker or podman")
         self.timeout_seconds = float(timeout_seconds)
         self.memory_limit_mb = memory_limit_mb
         self.max_pids = max_pids
         self.image = image
+        self.runtime = runtime
 
     def execute(
         self,
@@ -372,6 +428,16 @@ class ContainerRegressionExecutor:
             raise TypeError("suite must be FrozenRegressionSuite")
         if expected_key not in {"baseline_expected", "candidate_expected"}:
             raise SelfImprovementError("expected_key is invalid")
+        selected_runtime = self.runtime or suite.container_runtime
+        selected_image = self.image or DEFAULT_IMAGE
+        if (
+            selected_runtime != suite.container_runtime
+            or selected_image != suite.container_image
+            or self.timeout_seconds != float(suite.timeout_seconds)
+            or self.memory_limit_mb != suite.memory_limit_mb
+            or self.max_pids != suite.max_pids
+        ):
+            raise SelfImprovementError("executor settings differ from the frozen suite environment")
         raw = run_python_regression_in_container(
             source,
             [item.to_dict() for item in suite.cases],
@@ -379,7 +445,8 @@ class ContainerRegressionExecutor:
             timeout_seconds=self.timeout_seconds,
             memory_limit_mb=self.memory_limit_mb,
             max_pids=self.max_pids,
-            image=self.image,
+            image=selected_image,
+            runtime=selected_runtime,
         )
         if not raw.ok:
             raise SelfImprovementError(f"container execution failed closed: {raw.error}")
