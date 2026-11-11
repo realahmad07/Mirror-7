@@ -156,7 +156,7 @@ Implementation and test coverage:
 - `mirror_crystal/tests/test_phase9_continuous_expansion.py`
 - [Phase 9 design and limitations](docs/32-strategic-phase9-continuous-open-world-expansion.md)
 
-A Phase 9 epoch accepts only a passing Phase 8 report, novel task IDs and previously unaccepted target capability IDs. It snapshots regression cases as canonical JSON, hashes the exact frozen inputs/expected outputs, and rejects any baseline regression or baseline-runner failure. Every accepted or rejected epoch is persisted in a sequenced SHA-256 hash chain. Explicit promotion requires an intact ledger record and exact proposal/program binding.
+A Phase 9 epoch accepts only a passing Phase 8 report spanning at least two target domains, novel task IDs and previously unaccepted target capability IDs. It snapshots regression cases as canonical JSON, hashes the exact frozen inputs/expected outputs, and rejects any baseline regression or baseline-runner failure. Every accepted or rejected epoch is persisted in a sequenced SHA-256 hash chain. Explicit promotion requires an intact ledger record and exact proposal/program binding.
 
 Focused tests exercise success/promotion, regression rejection, reused task evidence, duplicate epochs, append-only SQL triggers, out-of-band ledger tampering, unavailable baseline execution, forged result rejection and regression-manifest changes. Full CI/Security Guard acceptance is pending.
 
