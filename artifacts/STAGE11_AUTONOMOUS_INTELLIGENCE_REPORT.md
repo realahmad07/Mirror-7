@@ -2,7 +2,7 @@
 
 **System:** Mirror-7 Crystalline Autonomous Intelligence Engine  
 **Stage:** 11 (Sections 11.2 – 11.7)  
-**Status:** Initial implementation delivered; follow-up security audit corrections committed on `audit/stage11-security-hardening`; CI verification pending  
+**Status:** Initial implementation delivered; follow-up security audit corrections and exact-input boundary hardening committed on `audit/stage11-security-hardening`; full fast CI passed on an earlier branch head, while the newest exact-math tests still require CI  
 **Date:** November 11, 2026  
 **Environment:** Remote Linux Sandbox (`x86_64`), Python 3.11, Zero Private Keys  
 
@@ -189,7 +189,7 @@ Hardens the system against adversarial threats across five distinct attack surfa
 
 ## 8. Follow-up Security Audit — November 11, 2026
 
-A source-level review found that several original descriptions overstated the guarantees of the initial implementation. The following corrections were committed on the review branch; they are not yet merged into `main`, and no new CI pass is claimed here.
+A source-level review found that several original descriptions overstated the guarantees of the initial implementation. The following corrections were committed on the review branch; they are not yet merged into `main`. CI evidence and remaining validation gaps are recorded below.
 
 - **AST policy checker is not an execution sandbox.** The API now explicitly describes static inspection only, rejects additional dangerous names/calls, and states that untrusted code must run behind an OS/container isolation boundary. AST approval must never authorize in-process execution.
 - **Workspace path containment:** `allowed_base_dir` is now enforced using resolved paths, including symlink resolution; Windows drive and UNC paths are rejected.
@@ -233,26 +233,32 @@ reconciliation, and release packaging.
   contract while still enforcing resolved-path containment. This fixes the mismatch
   exposed by the prior CI run; it does not weaken the containment check.
 - Added exact-input helpers for mathematical oracles. Float and boolean coercion are
-  rejected, probability inputs are bounded to [0, 1], binomial/hypergeometric domains
-  are validated, invalid combinatoric population values are rejected, and empty/ragged
-  matrix inputs are rejected.
-- Added dedicated Stage 11.10 boundary tests for invalid probabilities, float coercion,
-  invalid distribution domains, combinatorics, ragged/empty matrices, and non-square
-  trace inputs.
+  rejected across public exact algebra, calculus, probability, and linear-algebra inputs;
+  polynomial powers must be non-negative integers; probability and distribution domains
+  are validated; invalid combinatoric population values and malformed matrices are rejected.
+- Added dedicated Stage 11.10 boundary tests for invalid probabilities, float/bool
+  coercion, polynomial domains, invalid distribution domains, combinatorics, malformed
+  matrices, and non-square trace inputs.
 - Updated the README to link the new 11.8–11.13 acceptance plan.
 
 ### Current verification status
 
-- Latest code/test commit before the documentation-only commits:
-  `0f985a607dd37555bb0dbd510d4f4585d00a4022`.
-- CI run `42998564568` was still in progress at the time of this report update;
-  the full test step had not yet started. No pass is claimed.
-- Security Guard run `42998564839` completed successfully on that code/test commit.
+- Full fast CI run `42998750114` and Security Guard run `42998750127` both passed on
+  `d7bbcb6c0b0bf1813ee48eec3b62aaae315b2653`.
+- The newest exact-math hardening and expanded tests are on
+  `7a81c1dc25f512a7b9dc36106238c06ee53dd33c`; a green run on this exact head is still
+  required before the new changes can be considered verified.
 - A previous CI run found one failure in the path-escape diagnostic assertion
   (`414 passed, 1 failed, 1 skipped)); the diagnostic was corrected in commit
   `688632d2658f8fa31067731ca2843d45212769da`.
-- The newly added exact-oracle tests and the final README/report updates require CI on
-  the final branch head.
+- Full fast CI run `42998750114` and Security Guard run `42998750127` passed on
+  `d7bbcb6c0b0bf1813ee48eec3b62aaae315b2653`. The fast CI job completed all listed
+  compile, Crystal/evaluation, frozen-manifest, backend, release-boundary, training,
+  evaluator, smoke-dataset, and package-build steps.
+- Additional exact-input validation for polynomial powers/coefficients, matrix entries,
+  linear-system inputs, and evaluation bounds plus adversarial tests were committed at
+  `7a81c1dc25f512a7b9dc36106238c06ee53dd33c`. That newer head still requires CI; the
+  earlier green run must not be attributed to it.
 - Full historical regression and clean-machine release packaging remain unverified.
 - Stage 11.9 is not complete: the existing POSIX child-process runner has CPU/address
   space/file-size/open-file limits and a subprocess timeout, but it is not equivalent
