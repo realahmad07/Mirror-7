@@ -207,13 +207,12 @@ def test_phase8_rejects_a_counterfeit_source_handler_binding():
     other = increment_program("programming")
     other = replace(other, program_id="different-source-program")
     counterfeit = replace(source, handler=replace(source.handler, program=other))
-    report = CrossDomainTransferBenchmarkEngine().evaluate(
-        "counterfeit-source", counterfeit, UOL(),
-        (target("mathematics", offset=800),),
-        minimum_target_domains=1,
-    )
-    assert report.status is TransferBenchmarkStatus.BLOCKED
-    assert "handler is not bound" in report.blockers[0]
+    with pytest.raises(TransferBenchmarkError, match="handler is not bound"):
+        CrossDomainTransferBenchmarkEngine().evaluate(
+            "counterfeit-source", counterfeit, UOL(),
+            (target("mathematics", offset=800),),
+            minimum_target_domains=1,
+        )
 
 
 def test_phase8_rejects_transfer_that_fails_fresh_target_heldout_examples():
