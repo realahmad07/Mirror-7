@@ -77,11 +77,12 @@ def target_math_postconditions():
     return NativeDomainVerifierSuite.postconditions("mathematics")
 
 
-def make_math_observations(program, candidate):
+def make_math_observations(program, candidate, prefix="target", offset=0):
     suite = NativeDomainVerifierSuite()
     engine = DomainVerificationEngine(suite.registry)
     observations = []
-    for index, value in enumerate((2, 5, 9)):
+    for index, base in enumerate((2, 5, 9)):
+        value = base + offset
         payload = {
             "mathematics": {
                 "variables": ["x"],
@@ -91,25 +92,22 @@ def make_math_observations(program, candidate):
             }
         }
         envelope = {"schema_version": 1, "domain": "mathematics", "payload": payload}
+        task_id = f"{prefix}-task-{index}"
         step = StepExecutionResult(
-            f"target-step-{index}", f"target-task-{index}", candidate.capability_id, True,
+            f"{prefix}-step-{index}", task_id, candidate.capability_id, True,
             {"x": value, "__mirror_verification__": envelope},
             {"result": UOL().execute(program, {"x": value})},
         )
         execution = PlanExecutionReport(
-            f"target-plan-{index}", f"target-task-{index}",
-            ExecutionStatus.SUCCEEDED, (step,),
+            f"{prefix}-plan-{index}", task_id, ExecutionStatus.SUCCEEDED, (step,),
         )
         report = engine.verify_candidate(
             execution, candidate,
             requirements={candidate.capability_id: suite.requirement("mathematics")},
             required_checks={candidate.capability_id: suite.required_checks("mathematics")},
         )
-        observations.append(VerifiedProgramObservation(
-            f"target-task-{index}", candidate, execution, report,
-        ))
+        observations.append(VerifiedProgramObservation(task_id, candidate, execution, report))
     return tuple(observations)
-
 
 def test_verified_domain_neutral_program_transfers_and_is_reverified_in_target_domain():
     source = source_proposal()
@@ -296,48 +294,51 @@ def phase8_manifest(name, offset=0):
     return CrossDomainBenchmarkManifest(name, tuple(cases))
 
 
-def make_programming_observations(proposal):
+def make_programming_observations(proposal, prefix="target-program", offset=0):
     suite = NativeDomainVerifierSuite()
     engine = DomainVerificationEngine(suite.registry)
     observations = []
-    for index, value in enumerate((3, 6, 10)):
+    for index, base in enumerate((3, 6, 10)):
+        value = base + offset
         envelope = {
             "schema_version": 1, "domain": "programming",
             "payload": {"programming": {
                 "program": program_dict(proposal.program), "output_name": "result",
             }},
         }
-        task_id = f"target-program-task-{index}"
+        task_id = f"{prefix}-task-{index}"
         step = StepExecutionResult(
-            f"target-program-step-{index}", task_id, proposal.capability.capability_id, True,
+            f"{prefix}-step-{index}", task_id, proposal.capability.capability_id, True,
             {"x": value, "__mirror_verification__": envelope},
             {"result": UOL().execute(proposal.program, {"x": value})},
         )
         execution = PlanExecutionReport(
-            f"target-program-plan-{index}", task_id, ExecutionStatus.SUCCEEDED, (step,),
+            f"{prefix}-plan-{index}", task_id, ExecutionStatus.SUCCEEDED, (step,),
         )
         verification = engine.verify_candidate(
             execution, proposal.capability,
             requirements={proposal.capability.capability_id: suite.requirement("programming")},
             required_checks={proposal.capability.capability_id: suite.required_checks("programming")},
         )
-        observations.append(VerifiedProgramObservation(
-            task_id, proposal.capability, execution, verification,
-        ))
+        observations.append(VerifiedProgramObservation(task_id, proposal.capability, execution, verification))
     return tuple(observations)
-
 
 def run_phase8_manifest(name, offset=0, with_verifiers=True):
     manifest = phase8_manifest(name, offset)
     verifiers = {}
     if with_verifiers:
-        for case in manifest.cases:
+        for index, case in enumerate(manifest.cases):
+            prefix = f"{name}-case-{index}"
             if case.expect_transfer and case.target_domain == "mathematics":
-                verifiers[case.case_id] = lambda proposal: make_math_observations(
-                    proposal.program, proposal.capability,
+                verifiers[case.case_id] = (
+                    lambda proposal, p=prefix, o=offset:
+                        make_math_observations(proposal.program, proposal.capability, prefix=p, offset=o)
                 )
             elif case.expect_transfer:
-                verifiers[case.case_id] = make_programming_observations
+                verifiers[case.case_id] = (
+                    lambda proposal, p=prefix, o=offset:
+                        make_programming_observations(proposal, prefix=p, offset=o)
+                )
     return CrossDomainBenchmarkRunner().run(manifest, target_verifiers=verifiers)
 
 def test_phase8_benchmark_requires_target_verification_and_passes_negative_control():
