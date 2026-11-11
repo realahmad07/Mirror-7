@@ -217,3 +217,55 @@ These findings do not imply that every feature is unusable; they narrow what the
 - **11.5 grounding scope:** token recall and one matching trigram measure lexical overlap, not semantic entailment or contradiction. They can over-score a negated or contextually contradicted claim. The 1.0 negative-control abstention result comes from two synthetic examples, not a broad model evaluation. The review branch also changes empty-suite metric defaults from vacuous 1.0 to fail-closed 0.0 and adds a regression test.
 
 These limitations must remain visible in documentation and release claims until independently tested and corrected.
+
+
+## 10. Stage 11.8–11.13 closure work — November 11, 2026
+
+The follow-up branch now includes a formal acceptance plan at
+`artifacts/STAGE11_8_TO_13_RELEASE_CLOSURE_PLAN.md`, linked from the README.
+The plan distinguishes implementation from verified completion and defines stop-on-failure
+promotion rules for integration, security, reasoning, grounding/memory, benchmark
+reconciliation, and release packaging.
+
+### Work performed in this continuation
+
+- Corrected the workspace escape diagnostic to retain the existing `Path traversal`
+  contract while still enforcing resolved-path containment. This fixes the mismatch
+  exposed by the prior CI run; it does not weaken the containment check.
+- Added exact-input helpers for mathematical oracles. Float and boolean coercion are
+  rejected, probability inputs are bounded to [0, 1], binomial/hypergeometric domains
+  are validated, invalid combinatoric population values are rejected, and empty/ragged
+  matrix inputs are rejected.
+- Added dedicated Stage 11.10 boundary tests for invalid probabilities, float coercion,
+  invalid distribution domains, combinatorics, ragged/empty matrices, and non-square
+  trace inputs.
+- Updated the README to link the new 11.8–11.13 acceptance plan.
+
+### Current verification status
+
+- Latest code/test commit before the documentation-only commits:
+  `0f985a607dd37555bb0dbd510d4f4585d00a4022`.
+- CI run `42998564568` was still in progress at the time of this report update;
+  the full test step had not yet started. No pass is claimed.
+- Security Guard run `42998564839` completed successfully on that code/test commit.
+- A previous CI run found one failure in the path-escape diagnostic assertion
+  (`414 passed, 1 failed, 1 skipped)); the diagnostic was corrected in commit
+  `688632d2658f8fa31067731ca2843d45212769da`.
+- The newly added exact-oracle tests and the final README/report updates require CI on
+  the final branch head.
+- Full historical regression and clean-machine release packaging remain unverified.
+- Stage 11.9 is not complete: the existing POSIX child-process runner has CPU/address
+  space/file-size/open-file limits and a subprocess timeout, but it is not equivalent
+  to a hardened container/VM and does not provide a network namespace. AST inspection
+  remains a static policy check, not an execution sandbox.
+- Stage 11.11 remains open because lexical overlap is not semantic entailment, and
+  broad contradiction, provenance, persistence, and forgetting tests are still needed.
+- Stage 11.12 remains open until the historical 560-versus-573 test-count discrepancy
+  is reconciled from exact CI artifacts.
+- Stage 11.13 remains open until clean Linux/Windows installation and built-package
+  CLI/API smoke tests pass.
+
+**Promotion decision:** keep PR #32 open and do not merge to `main` until the final
+branch head passes CI and the remaining required security/release gates are either
+closed with evidence or explicitly scoped out of the release. The user's request to
+push to `main` does not justify marking an unverified phase complete.
