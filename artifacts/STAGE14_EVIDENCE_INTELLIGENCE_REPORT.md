@@ -1,6 +1,6 @@
 # Stage 14 — Evidence-Based Intelligence Subsystem Report
 
-**Executive Status:** Verified & Complete  
+**Executive Status:** Implementation delivered; provenance hardening applied; semantic entailment remains a heuristic limitation  
 **Architecture:** Mirror 7 Byte-First Stateful Architecture  
 **Author / Principal Architect:** Ahmad Hassan  
 **Repository:** `realahmad07/Mirror-7`  
@@ -108,3 +108,23 @@ mirror_crystal/tests/test_stage14_evidence_intelligence.py::test_stage14_http_se
 - **Zero Stored Secrets:** No credentials, private keys, or API tokens stored in code or test fixtures.
 - **Production Vault Invariant:** SQLite database `restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal` maintained at exactly 368,270 rules.
 - **Zero-Dependency Core:** Implemented using pure Python standard library for maximum deterministic reliability.
+
+
+---
+
+## 9. Provenance Hardening Correction — November 11, 2026
+
+A follow-up audit found that the earlier validator accepted `file:` URIs, non-empty but unrecognized license strings, timezone-naive/non-ISO retrieval timestamps, and source records with a digest but no verifiable content. These conditions overstated the provenance guarantees.
+
+The implementation on `main` now:
+- Accepts only HTTPS URLs with a valid host and no embedded user credentials, or syntactically valid URNs. Local `file:` URIs are rejected.
+- Validates the SPDX license identifier against the module's explicit supported identifier set (including identifiers exercised by this repository's tests), or a syntactically valid `LicenseRef-` identifier. This is a bounded supported set, not a claim to bundle the complete SPDX License List.
+- Requires an ISO-8601 retrieval timestamp with an explicit timezone.
+- Requires non-empty source content and recomputes SHA-256 against that content; a digest without the corresponding content cannot be accepted as locally verified.
+- Rejects duplicate source, passage and claim IDs; requires each passage's normalized text to be contained in the verified source content; checks key/record identity and containment during graph integrity scans.
+
+Additional tests cover rejected file URIs, invalid SPDX IDs, invalid or timezone-naive timestamps, missing source content, URN handling, passage/source binding, and duplicate IDs.
+
+**Important limitation:** token recall and trigram overlap remain heuristic grounding signals. They do not establish semantic entailment, detect every negation/context error, or prove that a claim is true in the world. The `VERIFIED_FACT` label means it passed this implementation's configured evidence checks, not that it has been independently proven by a formal semantic verifier.
+
+The original Stage 14 test result (12 passed) predates these correction tests. CI must pass on the latest commit before the corrected suite is described as verified.
