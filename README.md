@@ -1132,6 +1132,9 @@ See [Backend Q&A Execution and Native Code Generation](./docs/32-backend-qna-exe
 
 ## Stage 11 — Generalization & Intelligence Evaluation (Initiated)
 
+**Stage 11.8–11.13 closure gates:** [Integration, security, reasoning, grounding, benchmark and release acceptance plan](artifacts/STAGE11_8_TO_13_RELEASE_CLOSURE_PLAN.md). These phases remain open until their evidence gates pass.
+
+
 - Evaluation-first phase; no new architecture is promoted on self-authored tests alone.
 - Frozen unseen mathematical, cross-domain, grounded factual, memory/learning, adversarial, and operational task families.
 - Three difficulty levels, at least three seeds, held-out templates, negative controls, and independent verification.
