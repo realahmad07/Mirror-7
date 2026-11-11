@@ -373,7 +373,7 @@ def test_phase9_requires_three_distinct_benchmark_cycles_and_unseen_tasks():
     assert proposal.requires_explicit_promotion
     assert len(proposal.cycle_ids) == 3
     assert len(set(proposal.benchmark_fingerprints)) == 3
-    assert proposal.target_domains == ("mathematics",)
+    assert proposal.target_domains == ("mathematics", "programming")
     assert len(proposal.learned_proposals) >= 3
 
 
