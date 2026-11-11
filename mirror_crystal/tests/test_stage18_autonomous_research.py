@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from dataclasses import replace
 
 import pytest
 
@@ -16,7 +17,8 @@ from mirror_crystal.autonomous_research import (
     ResearchStatus,
     evaluate_experiment,
 )
-from mirror_crystal.evidence_intelligence import EvidencePassage, SourceProvenance
+from mirror_crystal.evidence_intelligence import EvidenceError, EvidencePassage, SourceProvenance
+from mirror_crystal.universal_representation import canonical_json
 
 
 def digest(value: str) -> str:
@@ -126,7 +128,7 @@ def test_stage18_research_synthesis_preserves_provenance_and_reports_grounded_cl
         lambda plan: (candidate,),
     )
     assert report.status is ResearchStatus.EVIDENCE_GATHERED
-    assert report.report_id == digest(__import__("mirror_crystal.universal_representation", fromlist=["canonical_json"]).canonical_json({
+    assert report.report_id == digest(canonical_json({
         "question_plan": report.question_plan.to_dict(),
         "status": report.status.value,
         "source_manifest": list(report.source_manifest),
@@ -154,8 +156,13 @@ def test_stage18_discovery_exception_fails_closed_with_abstention():
 
 
 def test_stage18_rejects_malformed_source_and_duplicate_passage_identifiers():
-    with pytest.raises(Exception, match="digest mismatch"):
-        source_candidate(content="tampered", claim="tampered")
+    valid = source_candidate(content="tampered", claim="tampered")
+    invalid_provenance = replace(
+        valid.provenance,
+        sha256_hash=digest("different content"),
+    )
+    with pytest.raises(EvidenceError, match="digest mismatch"):
+        ResearchSourceCandidate(invalid_provenance, valid.passages, valid.claims)
     first = source_candidate("source-1")
     second = source_candidate("source-2")
     reused_passage = EvidencePassage(
