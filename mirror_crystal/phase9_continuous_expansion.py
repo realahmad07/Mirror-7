@@ -30,6 +30,8 @@ class ExpansionCycleEvidence:
             raise ContinuousExpansionError("cycle ID and Phase-8 report are required")
         if not self.benchmark.passed:
             raise ContinuousExpansionError("a failed Phase-8 benchmark blocks expansion")
+        if not any(result.passed and not result.transferred for result in self.benchmark.results):
+            raise ContinuousExpansionError("each cycle must contain a passed adversarial negative control")
         tasks, unseen, reviewers = tuple(self.task_ids), tuple(self.unseen_case_ids), tuple(self.reviewer_ids)
         if len(tasks) < 3 or any(not x for x in tasks) or len(set(tasks)) != len(tasks):
             raise ContinuousExpansionError("each cycle needs at least three distinct task IDs")
