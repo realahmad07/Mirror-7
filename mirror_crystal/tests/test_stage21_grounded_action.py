@@ -427,6 +427,58 @@ def test_stage21_real_container_execution_uses_stage19_supervisor_and_pid1():
     assert result.pid == 1
 
 
+def test_stage21_requires_supervisor_pass_even_when_candidate_json_is_present(monkeypatch):
+    import json
+    from types import SimpleNamespace
+    import mirror_crystal.stage21_grounded_action as stage21
+
+    report, ids = grounded_report()
+    action = definition()
+    item = proposal_for(action, report, ids)
+    manifest = {
+        "results": [{
+            "case_id": "stage21-action",
+            "passed": False,
+            "actual_json": '{"status":"prepared","target":296.15}',
+            "error": "candidate output did not satisfy the trusted result contract",
+        }]
+    }
+    monkeypatch.setattr(
+        stage21, "run_python_regression_in_container",
+        lambda *args, **kwargs: SimpleNamespace(
+            ok=True, error="", pid=1, returncode=0, runtime="docker",
+            output="__MIRROR_STAGE19_RESULTS__" + json.dumps(manifest),
+        ),
+    )
+    with pytest.raises(GroundedActionError, match="trusted supervisor rejected"):
+        ContainerActionExecutor().execute(action, {"temperature_k": 296.15})
+
+
+def test_stage21_uses_supervisor_json_object_result_contract(monkeypatch):
+    import json
+    from types import SimpleNamespace
+    import mirror_crystal.stage21_grounded_action as stage21
+
+    calls = {}
+    def fake_runner(*args, **kwargs):
+        calls.update(kwargs)
+        manifest = {"results": [{
+            "case_id": "stage21-action",
+            "passed": True,
+            "actual_json": '{"status":"prepared","target":296.15}',
+            "error": "",
+        }]}
+        return SimpleNamespace(
+            ok=True, error="", pid=1, returncode=0, runtime="docker",
+            output="__MIRROR_STAGE19_RESULTS__" + json.dumps(manifest),
+        )
+
+    monkeypatch.setattr(stage21, "run_python_regression_in_container", fake_runner)
+    result = ContainerActionExecutor().execute(definition(), {"temperature_k": 296.15})
+    assert result.outcome == {"status": "prepared", "target": 296.15}
+    assert calls["result_contracts"] == {"stage21-action": "json_object"}
+
+
 def test_stage21_candidate_stdout_cannot_forge_supervisor_manifest():
     if find_container_runtime() is None:
         if __import__("os").environ.get("MIRROR_REQUIRE_CONTAINER_SANDBOX") == "1":

@@ -520,6 +520,7 @@ class ContainerActionExecutor:
         }]
         raw = run_python_regression_in_container(
             definition.source, cases, expected_key="candidate_expected",
+            result_contracts={"stage21-action": "json_object"},
             timeout_seconds=float(definition.timeout_seconds),
             memory_limit_mb=definition.memory_limit_mb,
             max_pids=definition.max_pids,
@@ -540,6 +541,8 @@ class ContainerActionExecutor:
             if not isinstance(rows, list) or len(rows) != 1 or rows[0].get("case_id") != "stage21-action":
                 raise GroundedActionError("sandbox action manifest has unexpected case identity")
             row = rows[0]
+            if row.get("passed") is not True:
+                raise GroundedActionError(f"trusted supervisor rejected action result: {str(row.get('error', 'case not passed'))[:1000]}")
             if not isinstance(row.get("actual_json"), str) or not row["actual_json"]:
                 raise GroundedActionError(f"action candidate failed: {str(row.get('error', 'no result'))[:1000]}")
             outcome = json.loads(row["actual_json"])

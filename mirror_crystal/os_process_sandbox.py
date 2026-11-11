@@ -272,12 +272,26 @@ try:
                             "error": "candidate child returned no canonical JSON result",
                         })
                         continue
-                    expected_json = json.dumps(case[expected_key], allow_nan=False, sort_keys=True, separators=(",", ":"))
+                    result_contracts = payload.get("result_contracts", {})
+                    if not isinstance(result_contracts, dict):
+                        raise RuntimeError("trusted result_contracts payload must be an object")
+                    contract = result_contracts.get(case_id)
+                    if contract is None:
+                        expected_json = json.dumps(case[expected_key], allow_nan=False, sort_keys=True, separators=(",", ":"))
+                        passed = actual_json == expected_json
+                    elif contract == "json_object":
+                        try:
+                            parsed_actual = json.loads(actual_json)
+                        except (TypeError, ValueError):
+                            parsed_actual = None
+                        passed = isinstance(parsed_actual, dict)
+                    else:
+                        raise RuntimeError("unsupported trusted result contract: " + str(contract))
                     results.append({
                         "case_id": case_id,
-                        "passed": actual_json == expected_json,
+                        "passed": passed,
                         "actual_json": actual_json[:2000],
-                        "error": "",
+                        "error": "" if passed else "candidate output did not satisfy the trusted result contract",
                     })
                 except subprocess.TimeoutExpired:
                     results.append({"case_id": case_id, "passed": False, "actual_json": "", "error": "candidate case timeout"})
