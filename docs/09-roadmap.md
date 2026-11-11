@@ -98,3 +98,24 @@ The remaining broader research goal is not unrestricted transfer: it is to estab
 - [Phase 7 implementation and acceptance boundaries](30-phase7-failure-diagnosis-and-targeted-repair.md).
 
 This closes a bounded failure-feedback loop; it does not establish unrestricted self-modifying software, arbitrary code repair, general scientific discovery or AGI.
+
+
+## Strategic Phase 8 — bounded cross-domain transfer
+
+- The acceptance harness evaluates a verified UOL source against multiple distinct target domains.
+- Each target requires separate train/held-out data, fresh non-overlapping verifier probes, target-domain evidence, and repeated target learning.
+- Source trust is not copied to the target; transferred candidates remain UNVERIFIED until target verification and learning pass.
+- [Phase 8 design, acceptance gates and limitations](31-strategic-phase8-cross-domain-transfer.md).
+
+The implementation is bounded to the current UOL grammar and registered domain checks. It does not prove arbitrary semantic analogy or general cross-domain intelligence. Full repository CI and Security Guard are the acceptance gate.
+
+## Strategic Phase 9 — bounded continuous expansion
+
+- Each expansion epoch consumes a passing Phase 8 transfer report and rejects reused task/capability evidence.
+- A canonical SHA-256 manifest freezes all regression inputs and expected outputs before evaluation.
+- Every frozen regression must pass through a host-supplied baseline runner; a mismatch or execution error records a rejected epoch.
+- Accepted and rejected decisions are appended to a hash-chained SQLite ledger.
+- Learned capabilities are returned as proposals and require explicit promotion from a matching accepted ledger entry.
+- [Phase 9 design, ledger model and limitations](32-strategic-phase9-continuous-open-world-expansion.md).
+
+This is a controlled, repeatable admission loop—not a continuously running agent that discovers arbitrary open-world knowledge. Candidate generation, ground-truth oracles, domain evidence callbacks and baseline execution remain explicit host/operator responsibilities. Full repository CI and Security Guard are the acceptance gate.
