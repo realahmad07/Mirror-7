@@ -267,3 +267,39 @@ def test_phase9_baseline_runner_exception_fails_closed_and_is_recorded():
     assert result.checked_regressions == 2
     assert any("could not run" in item for item in result.blockers)
     assert ledger.entries()[0].decision is ExpansionDecision.REJECTED
+
+
+
+def test_phase9_promotion_requires_the_exact_accepted_ledger_entry():
+    first_ledger = ExpansionLedger()
+    first_engine = ContinuousExpansionEngine(first_ledger)
+    first = first_engine.run_epoch(
+        "epoch-bound-to-first-ledger", make_report(), regression_cases(), baseline_runner,
+    )
+    assert first.accepted
+    assert first.regression_manifest_sha256
+    assert first.ledger_entry.payload["regression_manifest_sha256"] == first.regression_manifest_sha256
+
+    second_ledger = ExpansionLedger()
+    second_engine = ContinuousExpansionEngine(second_ledger)
+    counterfeit = replace(first, epoch_id="forged-epoch-id")
+    with pytest.raises(ContinuousExpansionError, match="not an accepted entry"):
+        second_engine.promote(
+            counterfeit, "mathematics", CapabilityRegistry(), NativeOperationRegistry(),
+        )
+
+
+def test_phase9_regression_manifest_changes_when_expected_values_change():
+    engine = ContinuousExpansionEngine(ExpansionLedger())
+    first = engine.run_epoch(
+        "epoch-manifest-a", make_report(), regression_cases(), baseline_runner,
+    )
+    alternate = (
+        FrozenRegressionCase("legacy-increment-case-1", "legacy:increment", {"x": 10}, 12),
+        FrozenRegressionCase("legacy-increment-case-2", "legacy:increment", {"x": 49}, 50),
+    )
+    second = engine.run_epoch(
+        "epoch-manifest-b", make_report(), alternate, baseline_runner,
+    )
+    assert first.regression_manifest_sha256 != second.regression_manifest_sha256
+    assert not second.accepted
