@@ -231,7 +231,7 @@ Implementation: `mirror_crystal/phase9_continuous_expansion.py`; tests:
 `mirror_crystal/tests/test_phase9_continuous_expansion.py`; design:
 [Phase 9 report](docs/32-strategic-phase9-continuous-open-world-expansion.md).
 
-The new engine consumes a passing Phase 8 report, rejects reused task evidence
+The new engine consumes a passing Phase 8 report spanning at least two target domains, rejects reused task evidence
 and previously accepted capability identifiers, snapshots and SHA-256 hashes a
 frozen regression manifest, tests every declared baseline behavior, and appends
 accepted or rejected decisions to an append-only SQLite hash chain. Promotion
