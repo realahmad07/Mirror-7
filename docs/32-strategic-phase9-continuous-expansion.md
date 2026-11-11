@@ -11,7 +11,7 @@ Create a repeatable admission loop that can add newly learned target-domain capa
 ## Epoch gates
 
 1. **Integrity preflight:** verify the existing ledger chain and reject reused epoch IDs.
-2. **Novel evidence:** require a passing Phase 8 report, at least one learned target capability, distinct task IDs within the epoch, and no reuse of task IDs or previously accepted capability IDs from prior epochs.
+2. **Novel evidence:** require a passing Phase 8 report spanning at least two distinct target domains, at least one learned target capability, distinct task IDs within the epoch, and no reuse of task IDs or previously accepted capability IDs from prior epochs.
 3. **Regression freeze:** snapshot all regression case IDs, capability IDs, inputs and expected outputs as canonical JSON before executing any baseline callback. Store the SHA-256 digest of that exact regression manifest in the ledger.
 4. **Preservation check:** invoke the host-supplied baseline runner for every frozen regression. A mismatch or exception rejects the epoch; no existing capability is silently modified.
 5. **Durable decision:** append the decision, Phase 8 manifest digest, new task/capability identities, capability fingerprints, regression results and blocker reasons to the SQLite chain.
