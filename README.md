@@ -1226,16 +1226,16 @@ Phase 13 establishes defense-in-depth safety, privacy protection, and constructi
 
 Detailed Stage 13 operational verification report: [STAGE13_SAFETY_ALIGNMENT_REPORT.md](artifacts/STAGE13_SAFETY_ALIGNMENT_REPORT.md).
 
-### Phase 14 — Evidence-Based Intelligence (Complete)
+### Phase 14 — Evidence-Based Intelligence (Provenance Hardened; Semantic Grounding Limited)
 
-Phase 14 eliminates uncalibrated hallucinations and distinguishes verified empirical facts from speculative assumptions:
-- **Atomic Claim Extraction & Epistemic Decomposition:** Decomposes prose and reasoning chains into structured propositions ($Subject, Predicate, Object$) and categorizes statements into five distinct tiers (`VERIFIED_FACT`, `PLAUSIBLE_INFERENCE`, `EXPLICIT_ASSUMPTION`, `UNVERIFIED_CONJECTURE`, `CONTRADICTION`).
-- **Cryptographic Source Provenance & Granular Passages:** Binds every verified fact to an auditable DAG containing canonical HTTPS/URN URIs, publisher metadata, SPDX licenses (`CC-BY-4.0`, `Apache-2.0`, `MIT`), retrieval timestamps, and SHA-256 digest validation.
-- **Multi-Dimensional Contradiction Detection:** Algorithmic detection across direct negation polarity reversals, numerical measurement discrepancies (with unit/context alignment), antonym polarity shifts, and attribute collisions.
-- **Confidence Calibration & Calibrated Honest Abstention:** Automatically penalizes ungrounded assertions and caps explicit assumptions at $\le 0.40$ confidence. Triggers explicit, fail-closed abstention notices whenever unresolved contradictions emerge or overall calibrated confidence drops below threshold ($< 0.55$).
+Phase 14 organizes claims by evidence status and applies explicit abstention rules; the grounding signal is lexical/heuristic and must not be interpreted as proof of semantic entailment:
+- **Atomic Claim Extraction & Epistemic Decomposition:** Decomposes prose into structured proposition fields ($Subject, Predicate, Object$) and assigns epistemic categories (`VERIFIED_FACT`, `PLAUSIBLE_INFERENCE`, `EXPLICIT_ASSUMPTION`, `UNVERIFIED_CONJECTURE`, `CONTRADICTION`).
+- **Cryptographic Source Provenance & Granular Passages:** Validates HTTPS/URN source references, supported SPDX identifiers, timezone-aware ISO-8601 retrieval timestamps, and SHA-256 against required source content. Passages must be contained in their referenced source. The supported SPDX identifier set is intentionally bounded rather than claiming complete SPDX-list coverage.
+- **Multi-Dimensional Contradiction Heuristics:** Checks direct-negation polarity, numerical differences, antonym pairs, and attribute collisions; these are pattern-based checks and may miss contextual contradictions.
+- **Confidence Calibration & Honest Abstention:** Applies configured confidence thresholds, caps explicit assumptions at $\le 0.40$, and abstains on detected severe conflicts or insufficient configured evidence. Lexical overlap is not semantic truth verification.
 - **REST API Endpoints:** Dedicated `/api/evidence/verify` and `/api/evidence/contradictions` endpoints with `X-Request-ID` tracing.
 
-Detailed Stage 14 operational verification report: [STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md](artifacts/STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md).
+Detailed Stage 14 verification and limitations: [STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md](artifacts/STAGE14_EVIDENCE_INTELLIGENCE_REPORT.md).
 
 ### Phase 15 — Long-Term Memory & Learning (Complete)
 
