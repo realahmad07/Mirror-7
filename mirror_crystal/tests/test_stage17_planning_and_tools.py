@@ -138,7 +138,7 @@ def test_dag_acyclicity_and_cycle_rejection():
         TaskDecomposer.create_plan_from_subtasks("Cyclic Goal", cyclic_subtasks)
 
 
-def test_dependency_ordered_plan_execution():
+def test_dependency_ordered_plan_execution(tmp_path):
     """Verify tasks execute strictly in dependency order."""
     registry = ToolRegistry()
     log_path = str(tmp_path / "execution-order.json")
@@ -162,7 +162,7 @@ def test_dependency_ordered_plan_execution():
     assert executed_plan.tasks["task_b"].status == StepStatus.COMPLETED
 
 
-def test_automated_failure_recovery_via_retries():
+def test_automated_failure_recovery_via_retries(tmp_path):
     """Verify transient tool failures are retried and recovered."""
     registry = ToolRegistry()
     state_path = str(tmp_path / "attempts.sqlite")
