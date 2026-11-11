@@ -28,7 +28,18 @@ import ast, bisect, builtins, cmath, collections, copy, csv, dataclasses, decima
 import enum, fractions, functools, heapq, itertools, json, math, operator, queue
 import random, re, statistics, string, sys, io, contextlib, os
 payload = json.loads(sys.stdin.read())
-source = payload["source"]
+source = payload.get("source")
+candidate_source = payload.get("candidate_source")
+test_source = payload.get("test_source")
+stage19_mode = candidate_source is not None or test_source is not None
+if stage19_mode:
+    if not isinstance(candidate_source, str) or not isinstance(test_source, str):
+        raise RuntimeError("Stage 19 candidate and test sources must both be text")
+    sources_to_check = (candidate_source, test_source)
+else:
+    if not isinstance(source, str):
+        raise RuntimeError("source must be text")
+    sources_to_check = (source,)
 step_cap = max(100, int(payload.get("max_loop_steps", 50000)))
 modules = {
     "math": math, "cmath": cmath, "decimal": decimal, "operator": operator,
@@ -39,19 +50,20 @@ modules = {
     "copy": copy, "dataclasses": dataclasses,
 }
 allowed = set(modules)
-for node in ast.walk(ast.parse(source)):
-    if isinstance(node, ast.Import):
-        for alias in node.names:
-            if alias.name.split(".")[0] not in allowed:
-                raise RuntimeError("blocked import: " + alias.name)
-    elif isinstance(node, ast.ImportFrom):
-        if (node.module or "").split(".")[0] not in allowed:
-            raise RuntimeError("blocked from-import: " + str(node.module))
-    elif isinstance(node, ast.Attribute) and node.attr.startswith("__") and node.attr.endswith("__"):
-        raise RuntimeError("blocked dunder attribute: " + node.attr)
-    elif isinstance(node, ast.Name):
-        if node.id in {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit","_mc_step_tick"}:
-            raise RuntimeError("blocked name: " + node.id)
+for checked_source in sources_to_check:
+    for node in ast.walk(ast.parse(checked_source)):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name.split(".")[0] not in allowed:
+                    raise RuntimeError("blocked import: " + alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            if (node.module or "").split(".")[0] not in allowed:
+                raise RuntimeError("blocked from-import: " + str(node.module))
+        elif isinstance(node, ast.Attribute) and node.attr.startswith("__") and node.attr.endswith("__"):
+            raise RuntimeError("blocked dunder attribute: " + node.attr)
+        elif isinstance(node, ast.Name):
+            if node.id in {"eval","exec","compile","open","__import__","input","globals","locals","vars","getattr","setattr","delattr","breakpoint","exit","quit","_mc_step_tick"}:
+                raise RuntimeError("blocked name: " + node.id)
 
 steps = [0]
 def tick():
@@ -81,7 +93,7 @@ def safe_import(name, *args, **kwargs):
         raise ImportError("blocked import: " + name)
     return modules[root]
 safe_builtins = {
-    "abs":abs,"all":all,"any":any,"bool":bool,"complex":complex,"dict":dict,"divmod":divmod,
+    "abs":abs,"all":all,"any":any,"bool":bool,"callable":callable,"complex":complex,"dict":dict,"divmod":divmod,
     "enumerate":enumerate,"filter":filter,"float":float,"int":int,"isinstance":isinstance,
     "len":len,"list":list,"map":map,"max":max,"min":min,"pow":pow,"print":print,
     "range":safe_range,"reversed":reversed,"round":round,"set":set,"sorted":sorted,"str":str,
@@ -90,14 +102,38 @@ safe_builtins = {
     "KeyError":KeyError,"RuntimeError":RuntimeError,"AssertionError":AssertionError,
     "object":object,"__build_class__":builtins.__build_class__,"__import__":safe_import,
 }
-try:
-    tree = Guard().visit(ast.parse(source))
+def execute_checked(source_text, namespace, filename):
+    tree = Guard().visit(ast.parse(source_text))
     ast.fix_missing_locations(tree)
-    compiled = compile(tree, "<mirror-isolated-child>", "exec")
-    namespace = {"__builtins__":safe_builtins, "__name__":"__main__", "_mc_step_tick":tick}
+    compiled = compile(tree, filename, "exec")
+    exec(compiled, namespace)
+
+try:
     captured = io.StringIO()
     with contextlib.redirect_stdout(captured):
-        exec(compiled, namespace)
+        if stage19_mode:
+            candidate_namespace = {
+                "__builtins__": dict(safe_builtins),
+                "__name__": "mirror_candidate",
+                "_mc_step_tick": tick,
+            }
+            execute_checked(candidate_source, candidate_namespace, "<mirror-stage19-candidate>")
+            harness_namespace = {
+                "__builtins__": dict(safe_builtins),
+                "__name__": "mirror_regression_harness",
+                "_mc_step_tick": tick,
+                "candidate_namespace": candidate_namespace,
+                "regression_cases": payload.get("regression_cases", []),
+                "expected_key": payload.get("expected_key", "candidate_expected"),
+            }
+            execute_checked(test_source, harness_namespace, "<mirror-stage19-harness>")
+        else:
+            namespace = {
+                "__builtins__":dict(safe_builtins),
+                "__name__":"__main__",
+                "_mc_step_tick":tick,
+            }
+            execute_checked(source, namespace, "<mirror-isolated-child>")
     result = {"ok":True,"output":captured.getvalue().strip(),"pid":os.getpid()}
 except BaseException as exc:
     result = {"ok":False,"error":type(exc).__name__ + ": " + str(exc),"pid":os.getpid()}
