@@ -215,10 +215,10 @@ def run_python_regression_in_container(
     try:
         payload = json.dumps({
             "candidate_source": candidate_source,
-            "test_source": _STAGE19_HARNESS,
             "regression_cases": regression_cases,
             "expected_key": expected_key,
             "max_loop_steps": int(max_loop_steps),
+            "candidate_timeout_seconds": float(timeout_seconds),
         }, allow_nan=False, separators=(",", ":"))
     except (TypeError, ValueError) as exc:
         return ContainerExecutionResult(False, "", f"regression payload is not JSON-safe: {exc}", "", None, None)
