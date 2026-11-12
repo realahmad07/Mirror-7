@@ -14,6 +14,7 @@ from .experiment6_learned_operations import (
     make_world,
     seed_everything,
     train_model,
+    transition_supervision_loss,
     world_fingerprint,
 )
 
@@ -62,6 +63,48 @@ def test_loss_uses_hardest_distinct_negative_candidate():
         prediction, target, candidates, margin=0.30, contrastive_weight=0.10,
     )
     assert downweighted.item() == pytest.approx(0.01, abs=1e-5)
+
+
+def test_world_contains_a_complete_teacher_forced_transition_trace():
+    cfg = Config(
+        state_dim=12,
+        concept_dim=12,
+        concepts=6,
+        operations=6,
+        max_chain=4,
+    )
+    world = make_world(cfg, 17)
+    assert world
+    for row in world:
+        assert len(row.intermediate_states) == len(row.ops)
+        assert torch.allclose(row.intermediate_states[-1], row.target)
+        assert all(torch.isfinite(state).all() for state in row.intermediate_states)
+
+
+def test_intermediate_transition_supervision_produces_finite_gradients():
+    cfg = Config(
+        state_dim=12,
+        concept_dim=12,
+        concepts=6,
+        operations=6,
+        max_chain=4,
+        transition_architecture="linear_operator",
+    )
+    model = LearnedOperationBrain(cfg)
+    rows = [row for row in make_world(cfg, 23) if not row.held_out][:24]
+    loss = transition_supervision_loss(model, rows, "cpu")
+    assert torch.isfinite(loss)
+    loss.backward()
+    assert model.operation_matrices.grad is not None
+    assert torch.isfinite(model.operation_matrices.grad).all()
+    assert model.operation_matrices.grad.abs().sum() > 0
+
+
+def test_transition_supervision_rejects_missing_intermediate_targets():
+    cfg = Config()
+    model = LearnedOperationBrain(cfg)
+    with pytest.raises(ValueError, match="one intermediate target"):
+        transition_supervision_loss(model, [_example(0, (1, 2))], "cpu")
 
 
 def test_linear_operator_architecture_matches_declared_transition_contract():
