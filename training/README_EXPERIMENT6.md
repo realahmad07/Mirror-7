@@ -44,8 +44,11 @@ The default `mlp` transition is the shared MLP baseline. A structural
 ablation matching the synthetic generator's per-operation transition form is
 available as `--transition-architecture linear_operator`. It learns a separate
 matrix per operation and applies `normalize(tanh(state @ matrix.T))`. The target
-matrices are not copied into the model; this is a declared inductive-bias
-comparison, not evidence of natural-language semantics.
+matrices are not copied into the model; the model-initialization RNG is derived
+separately from the world-generation seed. An initial ablation run accidentally
+reused the same stream and is invalidated; it is excluded from all reported
+results. This is a declared inductive-bias comparison, not evidence of
+natural-language semantics.
 
 Use the same device, PyTorch version, data fingerprint, training budget, and
 evaluator when comparing the two architectures. The evaluator reports held-out
