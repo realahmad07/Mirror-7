@@ -37,6 +37,7 @@ class Config:
     margin: float = 0.20
     contrastive_weight: float = 0.10
     transition_supervision_weight: float = 1.0
+    rollout_supervision_weight: float = 0.0
     transition_architecture: str = "mlp"
 
     def __post_init__(self) -> None:
@@ -44,7 +45,11 @@ class Config:
             raise ValueError("transition_architecture must be 'mlp' or 'linear_operator'")
         if self.transition_architecture == "linear_operator" and self.state_dim != self.concept_dim:
             raise ValueError("linear_operator architecture requires state_dim == concept_dim")
-        if self.contrastive_weight < 0 or self.transition_supervision_weight < 0:
+        if (
+            self.contrastive_weight < 0
+            or self.transition_supervision_weight < 0
+            or self.rollout_supervision_weight < 0
+        ):
             raise ValueError("loss weights must be non-negative")
 
 
@@ -316,6 +321,66 @@ def transition_supervision_loss(
     return torch.stack(step_losses).mean()
 
 
+def rollout_supervision_loss(
+    model: LearnedOperationBrain,
+    examples: list[Example],
+    device: str | torch.device,
+) -> torch.Tensor:
+    """Supervise the model's own predicted state after every training operation.
+
+    Unlike :func:`transition_supervision_loss`, which feeds each gold previous
+    state, this objective feeds the model's prior prediction into the next
+    operation. It therefore exposes accumulated rollout error during training.
+    Only training examples may be supplied; held-out traces are never optimized.
+    Variable-length rows become inactive at their -1 padding positions and keep
+    their current state unchanged.
+    """
+    if not examples:
+        raise ValueError("rollout supervision requires training examples")
+    if any(len(row.intermediate_states) != len(row.ops) for row in examples):
+        raise ValueError("each operation must have one intermediate target state")
+
+    concept_ids = torch.tensor(
+        [row.concept for row in examples], dtype=torch.long, device=device,
+    )
+    states = model.encode_concept(concept_ids)
+    max_length = max(len(row.ops) for row in examples)
+    step_losses: list[torch.Tensor] = []
+
+    for position in range(max_length):
+        active_indices = [
+            index for index, row in enumerate(examples)
+            if len(row.ops) > position
+        ]
+        if not active_indices:
+            continue
+        index_tensor = torch.tensor(active_indices, dtype=torch.long, device=device)
+        op_ids = torch.tensor(
+            [examples[index].ops[position] for index in active_indices],
+            dtype=torch.long,
+            device=device,
+        )
+        input_states = states.index_select(0, index_tensor)
+        predicted_states = model.apply(input_states, op_ids)
+        target_states = F.normalize(torch.stack([
+            examples[index].intermediate_states[position]
+            for index in active_indices
+        ]).to(device), dim=-1)
+
+        step_losses.append(
+            (1 - (
+                F.normalize(predicted_states, dim=-1) * target_states
+            ).sum(-1)).mean()
+        )
+        # Out-of-place index_copy preserves the autograd path from a future
+        # step back through every earlier predicted state in the rollout.
+        states = states.index_copy(0, index_tensor, predicted_states)
+
+    if not step_losses:
+        raise ValueError("rollout supervision found no valid operation steps")
+    return torch.stack(step_losses).mean()
+
+
 def evaluate(
     model: LearnedOperationBrain,
     examples: list[Example],
@@ -448,6 +513,7 @@ def train_model(
         shuffle_rng.shuffle(train_rows)
         total_loss = 0.0
         total_transition_loss = 0.0
+        total_rollout_loss = 0.0
         batch_count = 0
         for start in range(0, len(train_rows), cfg.batch_size):
             batch = train_rows[start:start + cfg.batch_size]
@@ -460,13 +526,23 @@ def train_model(
                 contrastive_weight=cfg.contrastive_weight,
             )
             step_loss = transition_supervision_loss(model, batch, device)
-            loss = ranking_loss + cfg.transition_supervision_weight * step_loss
+            rollout_loss = (
+                rollout_supervision_loss(model, batch, device)
+                if cfg.rollout_supervision_weight > 0
+                else ranking_loss.new_zeros(())
+            )
+            loss = (
+                ranking_loss
+                + cfg.transition_supervision_weight * step_loss
+                + cfg.rollout_supervision_weight * rollout_loss
+            )
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
             total_loss += float(loss.detach())
             total_transition_loss += float(step_loss.detach())
+            total_rollout_loss += float(rollout_loss.detach())
             batch_count += 1
 
         if epoch == 1 or epoch % max(1, log_every) == 0 or epoch == cfg.epochs:
@@ -474,6 +550,7 @@ def train_model(
                 "epoch": epoch,
                 "loss": total_loss / max(1, batch_count),
                 "transition_loss": total_transition_loss / max(1, batch_count),
+                "rollout_loss": total_rollout_loss / max(1, batch_count),
                 **evaluate(model, examples, cfg, device),
             })
     return model, examples, history
@@ -484,6 +561,7 @@ def train(args: argparse.Namespace) -> None:
         epochs=args.epochs, lr=args.lr,
         contrastive_weight=args.contrastive_weight,
         transition_supervision_weight=args.transition_supervision_weight,
+        rollout_supervision_weight=args.rollout_supervision_weight,
         transition_architecture=args.transition_architecture,
     )
     device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
@@ -516,6 +594,7 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--contrastive-weight", type=float, default=0.10)
     parser.add_argument("--transition-supervision-weight", type=float, default=1.0)
+    parser.add_argument("--rollout-supervision-weight", type=float, default=0.0)
     parser.add_argument(
         "--transition-architecture",
         choices=("mlp", "linear_operator"),
