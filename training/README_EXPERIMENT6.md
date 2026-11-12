@@ -12,7 +12,10 @@ masks it during composition, and rejects malformed padding. This changes the
 training semantics; checkpoints trained by the earlier implementation must not
 be treated as directly comparable to this corrected run.
 
-Model initialization, minibatch negative sampling, and row shuffling are seeded.
+Model initialization and row shuffling are seeded. Training deduplicates repeated
+`(concept, operation-chain)` tasks and uses a duplicate-aware in-batch hard-negative
+margin objective. Target-equivalent vectors are masked rather than treated as false
+negatives.
 The generated world, including target vectors and train/held-out assignment, has
 a SHA-256 fingerprint recorded in checkpoints and evaluation reports.
 
