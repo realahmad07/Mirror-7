@@ -33,14 +33,17 @@ The corrected Experiment 6 implementation:
 3. Seeds model initialization, data generation, and row order.
 4. Deduplicates repeated `(concept, operation-chain)` training tasks and ranks
    predictions against distinct in-batch target alternatives. Target-equivalent
-   vectors are masked so they cannot become false negatives; the contrastive
-   weight is configurable and recorded in the benchmark config.
-5. Fingerprints the generated semantic world, including target vectors and
-   train/held-out assignment.
-6. Evaluates held-out predictions against held-out candidate targets, not a
+   vectors are masked so they cannot become false negatives.
+5. Stores each training example's intermediate state trace and adds
+   teacher-forced per-transition supervision, while keeping held-out traces out
+   of optimization. The contrastive and transition-supervision weights are
+   explicit benchmark parameters.
+6. Fingerprints the generated semantic world, including final and intermediate
+   target vectors plus train/held-out assignment.
+7. Evaluates held-out predictions against held-out candidate targets, not a
    small arbitrary slice of the full dataset.
-7. Measures swapped-order controls and representation-collapse diagnostics.
-8. Provides a three-seed screening runner with per-seed checks.
+8. Measures swapped-order controls and representation-collapse diagnostics.
+9. Provides a three-seed screening runner with per-seed checks.
 
 Run the focused tests:
 
