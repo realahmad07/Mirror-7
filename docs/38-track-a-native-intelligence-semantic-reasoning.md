@@ -224,9 +224,11 @@ python -m training.compare_free_running_reports \\
 
 **Synthetic Experiment 6:** the 240-epoch, three-seed MLP and linear-operator
 runs show substantial improvement over the 60-epoch results, but all seeds
-still fail the positive held-out candidate-margin gate. The 0.25 operator
-contrastive-weight ablation is predeclared and under evaluation; no gate has
-been relaxed.
+still fail the positive held-out candidate-margin gate. The operator
+contrastive-weight 0.25 ablation also failed all three seeds (34.10% held-out
+top-1, mean candidate margin -0.1024), so the 0.10 configuration remains the
+stronger frozen operator baseline. A distinct free-running rollout-supervision
+ablation (weight 1.0) is now running; the gate is unchanged.
 
 **Track A completion:** not complete. It still requires a passing synthetic
 screen, frozen Experiment 5/7 baseline comparison, a license-approved natural
