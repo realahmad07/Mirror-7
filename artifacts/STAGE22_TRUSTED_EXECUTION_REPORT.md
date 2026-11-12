@@ -1,15 +1,15 @@
 # Stage 22 — Trusted Real-World Execution & Operational Governance Acceptance Report
 
-**Status:** Implementation committed on the Stage 22 branch; final acceptance pending CI, Deep Regression and Security Guard.  
+**Status:** PASS — merged into `main` at `10ef001d0b1ca8bddda62989c7846c909761b0e5`; Fast CI, Deep Regression and Security Guard passed on that exact merge commit. The follow-up identity-nonce replay hardening is undergoing the same final acceptance gates.  
 **Implementation:** `mirror_crystal/stage22_trusted_execution.py`  
 **Tests:** `mirror_crystal/tests/test_stage22_trusted_execution.py`  
-**Focused test cases:** 22
+**Focused test cases:** 24
 
 ## Delivered
 
 - Explicit, immutable host adapter registry mapping Stage 21 action IDs to reviewed adapter implementations and Ed25519 verification keys.
 - Four distinct adapter operations: signed dry-run, execute, external observe and compensate.
-- Host-issued HMAC-signed reviewer assertions with trusted issuer, audience, subject, exact scopes, nonce, issued-at and expiry validation.
+- Host-issued HMAC-signed reviewer assertions with trusted issuer, audience, subject, exact scopes, issued-at and expiry validation; issuer/nonce pairs are transactionally consumed once across approval and feedback-review operations.
 - Short-lived HMAC-signed approval tokens bound to the exact Stage 21 proposal, verification, action and adapter; one-use transactional consumption; proposer self-approval rejection.
 - SQLite WAL event ledger with FULL synchronous writes, immutable event triggers, SHA-256 previous-hash chain, HMAC authentication and optional externally pinned head verification.
 - Transactional operation reservation, one proposal/one execution, unique idempotency keys, replay rejection and per-adapter/action rate limiting.
@@ -24,7 +24,7 @@
 
 The 22 focused test cases cover:
 
-- Identity assertion signature, trusted issuer, scope, audience and expiry; SQLite creation of missing parent directories.
+- Identity assertion signature, trusted issuer, scope, audience and expiry; durable single-use nonce replay rejection across proposals and across approval/feedback purposes; SQLite creation of missing parent directories.
 - Adapter allow-list immutability and required host methods.
 - Dry-run isolation and audit recording; mandatory approval for real execution.
 - Exact approval scopes, self-approval rejection, proposal/verification/adapter binding, token expiry and one-use replay blocking.
@@ -54,10 +54,12 @@ This repository does not include a production device/service adapter or any cred
 
 Stage 22 is accepted only when:
 
-1. All 21 focused tests pass.
+1. All 24 focused tests pass.
 2. The complete `mirror_crystal` / `mirror_eval` and backend suites pass in Fast CI.
 3. Full historical `python -m pytest -q` Deep Regression passes.
 4. Security Guard passes on the exact final PR head.
 5. The PR is merged and `main` is confirmed at the resulting merge commit.
+
+The initial merged Stage 22 PR (#41) passed all three repository checks on merge commit `10ef001d0b1ca8bddda62989c7846c909761b0e5`: [Fast CI](https://github.com/realahmad07/Mirror-7/actions/runs/43205739746), [Deep Regression](https://github.com/realahmad07/Mirror-7/actions/runs/43205739712), [Security Guard](https://github.com/realahmad07/Mirror-7/actions/runs/43205739708). A follow-up hardening commit adds durable, single-use reviewer assertion nonces; its checks supersede these initial results before final Stage 22 closeout.
 
 No unrestricted autonomous execution or universal real-world safety claim is made.

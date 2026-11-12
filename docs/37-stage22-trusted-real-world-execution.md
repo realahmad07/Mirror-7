@@ -34,7 +34,7 @@ The gateway always reuses the exact Stage 21 proposal and passing verification f
 - an explicit list of action scopes;
 - issued-at and expiry timestamps.
 
-The gateway requires the exact `action:approve:<action_id>` scope. The proposer cannot approve their own proposal. Identity assertions are verified for signature, issuer, audience, scope syntax, issue time, expiry and a 15-minute maximum lifetime.
+The gateway requires the exact `action:approve:<action_id>` scope. The proposer cannot approve their own proposal. Identity assertions are verified for signature, issuer, audience, scope syntax, issue time, expiry and a 15-minute maximum lifetime. The issuer/nonce pair is transactionally consumed once in the durable ledger for either approval issuance or feedback review; the same signed assertion cannot authorize a second proposal or be reused across those privileged operations.
 
 After successful authentication, the gateway issues a separate HMAC-signed approval token bound to the exact proposal fingerprint, Stage 21 verification fingerprint, adapter ID, action ID, reviewer subject, action scopes and expiry. The default token lifetime is five minutes and the configured maximum is ten minutes. Approval tokens are stored by a unique token ID and proposal ID; they can be consumed once only. A token for another proposal, checker result, adapter, action, reviewer or audience is rejected.
 
