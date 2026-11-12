@@ -52,10 +52,19 @@ jobs:
           python -m training.evaluate_experiment6
           --device cpu --epochs 60 --seeds 17,29,43
           --output artifacts/exp6_multiseed_screening_ci.json
-      - name: Upload semantic screening report
+      - name: Run three-seed structured-operator ablation
+        continue-on-error: true
+        run: >-
+          python -m training.evaluate_experiment6
+          --device cpu --epochs 60 --seeds 17,29,43
+          --transition-architecture linear_operator
+          --output artifacts/exp6_operator_multiseed_screening_ci.json
+      - name: Upload semantic screening reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: exp6-multiseed-screening
-          path: artifacts/exp6_multiseed_screening_ci.json
+          path: |
+            artifacts/exp6_multiseed_screening_ci.json
+            artifacts/exp6_operator_multiseed_screening_ci.json
           if-no-files-found: ignore
