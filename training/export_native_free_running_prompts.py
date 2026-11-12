@@ -69,12 +69,14 @@ def export_prompt_bundle(
         ],
     }
     resolved_manifest = Path(manifest_path) if manifest_path is not None else Path(str(output_path) + ".manifest.json")
+    if resolved_manifest.resolve() == output_path.resolve():
+        raise ValueError("prompt JSONL and manifest must use different output paths")
+    manifest["manifest_path"] = str(resolved_manifest)
     resolved_manifest.parent.mkdir(parents=True, exist_ok=True)
     resolved_manifest.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    manifest["manifest_path"] = str(resolved_manifest)
     return manifest
 
 
