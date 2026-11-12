@@ -135,13 +135,15 @@ def test_p2_2b_sandbox_mcts_planner_ast_self_repair_off_by_one():
         "```python\ndef sum_up_to(n):\n    return sum(range(1, n))\n```",
     )
 
-    planner = SandboxMCTSPlanner(max_nodes=20, max_wall_ms=300.0)
+    # Include rule retrieval and sandbox startup in the wall budget. A 300 ms
+    # ceiling can expire before the first candidate is evaluated on shared CI.
+    planner = SandboxMCTSPlanner(max_nodes=20, max_wall_ms=3000.0)
     res = planner.solve_and_verify(
         eng,
         prompt="Write sum_up_to(n) summing 1..n inclusive.",
         test_code="assert sum_up_to(10) == 55\nassert sum_up_to(1) == 1",
     )
-    assert res.mode == "mcts_program_synthesis"
+    assert res.mode == "mcts_program_synthesis", res.reasoning_trace
     assert res.sandbox_verified is True
     ok, _ = ZeroTrustSandboxJudge.verify_code_and_test(res.answer, "assert sum_up_to(100) == 5050")
     assert ok is True
