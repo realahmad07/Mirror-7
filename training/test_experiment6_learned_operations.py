@@ -62,6 +62,33 @@ def test_loss_uses_hardest_distinct_negative_candidate():
     )
     assert downweighted.item() == pytest.approx(0.01, abs=1e-5)
 
+
+def test_linear_operator_architecture_matches_declared_transition_contract():
+    cfg = Config(
+        state_dim=16,
+        concept_dim=16,
+        concepts=6,
+        operations=3,
+        max_chain=3,
+        transition_architecture="linear_operator",
+    )
+    model = LearnedOperationBrain(cfg).eval()
+    state = torch.nn.functional.normalize(torch.randn(2, cfg.state_dim), dim=-1)
+    ops = torch.tensor([0, 1], dtype=torch.long)
+    output = model.apply(state, ops)
+    assert output.shape == state.shape
+    assert torch.isfinite(output).all()
+    assert model.operation_matrices.shape == (cfg.operations, cfg.state_dim, cfg.state_dim)
+
+
+def test_linear_operator_architecture_rejects_dimension_mismatch():
+    with pytest.raises(ValueError, match="state_dim == concept_dim"):
+        Config(
+            state_dim=16,
+            concept_dim=12,
+            transition_architecture="linear_operator",
+        )
+
 def test_exp6_forward_and_world():
     cfg = Config()
     model = LearnedOperationBrain(cfg)
