@@ -123,8 +123,23 @@ operation, comparing every predicted rollout state with the corresponding
 training trace. Held-out traces remain excluded from optimization. The next
 matched experiment uses the linear-operator architecture, contrastive weight
 `0.10`, teacher-forced transition weight `1.0`, rollout weight `1.0`, 240
-epochs and the same three seeds. The threshold and four required checks remain
-unchanged. This is a new hypothesis, not an assumed improvement.
+epochs and the same three seeds. The run completed but was worse than the frozen operator baseline: mean held-out top-1 fell to 31.98% and mean candidate margin to -0.1112. The rollout objective is not selected.
+
+## Evaluation correction: equivalent target classes
+
+A post-run audit found that the contrastive training loss masks target-equivalent
+vectors as alternate positives, while the held-out evaluator previously counted
+those same vectors as false negatives. The evaluator now applies the identical
+cosine-equivalence threshold to held-out candidates, reports both unique target
+classes and mean effective candidate count, excludes equivalent pairs from
+candidate margins and collapse diagnostics, and retains the original four
+promotion checks. New regression tests construct distinct tasks with identical
+target vectors and verify that they cannot become false negatives.
+
+All prior Experiment 6 scores are retained as historical results under the
+older evaluator and must not be compared numerically with the corrected
+evaluator. Re-run the matched configurations with the corrected evaluator
+before making any selection or promotion decision.
 
 ## Natural semantic benchmark intake
 
@@ -227,8 +242,7 @@ runs show substantial improvement over the 60-epoch results, but all seeds
 still fail the positive held-out candidate-margin gate. The operator
 contrastive-weight 0.25 ablation also failed all three seeds (34.10% held-out
 top-1, mean candidate margin -0.1024), so the 0.10 configuration remains the
-stronger frozen operator baseline. A distinct free-running rollout-supervision
-ablation (weight 1.0) is now running; the gate is unchanged.
+stronger frozen operator baseline. The free-running rollout-supervision ablation (weight 1.0) completed below the operator baseline (31.98% top-1, mean margin -0.1112) and was rejected. A subsequent evaluator audit fixed inconsistent treatment of equivalent target states; matched experiments must be rerun under the corrected evaluator before any model selection.
 
 **Track A completion:** not complete. It still requires a passing synthetic
 screen, frozen Experiment 5/7 baseline comparison, a license-approved natural
