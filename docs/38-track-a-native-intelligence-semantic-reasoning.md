@@ -30,14 +30,16 @@ The corrected Experiment 6 implementation:
 
 1. Uses `-1` as an explicit right-padding sentinel.
 2. Masks padded columns during composition and rejects non-suffix padding.
-3. Seeds model initialization as well as data generation, row order, and
-   minibatch negative sampling.
-4. Fingerprints the generated semantic world, including target vectors and
+3. Seeds model initialization, data generation, and row order.
+4. Deduplicates repeated `(concept, operation-chain)` training tasks and ranks
+   predictions against distinct in-batch target alternatives. Target-equivalent
+   vectors are masked so they cannot become false negatives.
+5. Fingerprints the generated semantic world, including target vectors and
    train/held-out assignment.
-5. Evaluates held-out predictions against held-out candidate targets, not a
+6. Evaluates held-out predictions against held-out candidate targets, not a
    small arbitrary slice of the full dataset.
-6. Measures swapped-order controls and representation-collapse diagnostics.
-7. Provides a three-seed screening runner with per-seed checks.
+7. Measures swapped-order controls and representation-collapse diagnostics.
+8. Provides a three-seed screening runner with per-seed checks.
 
 Run the focused tests:
 
