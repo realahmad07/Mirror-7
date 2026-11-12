@@ -99,10 +99,32 @@ rank above its hardest distractor with a positive margin. This is a substantial
 synthetic generalization improvement, not a gate pass or evidence of
 natural-language reasoning.
 
-The next predeclared ablation increases the linear operator's contrastive
-weight from `0.10` to `0.25` at the same 240-epoch budget, retaining all
-three seeds and the exact same acceptance criteria. The 0.10 results remain
-frozen for comparison.
+The matched contrastive-weight `0.25` ablation did not improve the
+linear-operator result:
+
+| Operator configuration | Held-out top-1 | Mean positive similarity | Mean candidate margin | Mean order margin | Margin gate |
+|---|---:|---:|---:|---:|---|
+| Contrastive weight 0.10 | 40.72% | 0.3012 | -0.0649 | 0.3005 | **FAIL (0/3)** |
+| Contrastive weight 0.25 | 34.10% | 0.2602 | -0.1024 | 0.2583 | **FAIL (0/3)** |
+
+Both configurations pass candidate-chance, positive-order and no-collapse checks
+on all seeds, but all six runs fail the positive candidate-margin gate. The
+higher contrastive weight worsened all aggregate held-out measures and is not
+selected as the default.
+
+## Next mechanism hypothesis: free-running rollout supervision
+
+The existing intermediate-state objective teacher-forces the gold previous
+state at each transition. That constrains local transitions but does not train
+the error accumulation that occurs when a predicted state becomes the next
+input. A new, zero-default `rollout_supervision_weight` adds a distinct loss:
+the model predicts each transition and feeds its own prediction into the next
+operation, comparing every predicted rollout state with the corresponding
+training trace. Held-out traces remain excluded from optimization. The next
+matched experiment uses the linear-operator architecture, contrastive weight
+`0.10`, teacher-forced transition weight `1.0`, rollout weight `1.0`, 240
+epochs and the same three seeds. The threshold and four required checks remain
+unchanged. This is a new hypothesis, not an assumed improvement.
 
 ## Natural semantic benchmark intake
 
