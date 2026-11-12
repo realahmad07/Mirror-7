@@ -92,6 +92,11 @@ Promotion additionally requires:
 
 ## Remaining native-language work
 
+The native free-running evaluator now emits versioned reports with checkpoint
+SHA-256/size, raw prompt-file SHA-256, and the normalized selected-case
+fingerprint; repeated seed IDs are rejected. These additions make runs
+reproducible but do not add semantic correctness labels.
+
 The natural-language generation track is still open. A new model is not
 accepted on teacher-forced loss or lexical diversity alone. The next experiment
 must freeze prompt and target fingerprints, use held-out prompts not used for
