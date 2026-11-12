@@ -126,15 +126,8 @@ def evaluate_checkpoint(
     top_k: int = 40,
     prompt_file: str | Path | None = None,
 ) -> dict[str, Any]:
-    import torch
-    from training.native_conversation_v5 import load_checkpoint
-
     if max_new_tokens < 1 or top_k < 1 or temperature < 0:
         raise ValueError("decoding limits must be positive and temperature non-negative")
-    resolved_device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-    model, payload = load_checkpoint(checkpoint, device=resolved_device)
-    model.eval()
-    rows: list[dict[str, Any]] = []
     case_list = list(cases)
     seed_list = [int(item) for item in seeds]
     if not seed_list:
@@ -143,10 +136,19 @@ def evaluate_checkpoint(
         raise ValueError("evaluation seeds must be unique")
     if not case_list:
         raise ValueError("at least one prompt case is required")
+
     checkpoint_path = Path(checkpoint)
     checkpoint_sha256 = sha256_file(checkpoint_path)
     selected_cases_sha256 = fingerprint_cases(case_list)
     prompt_file_sha256 = sha256_file(prompt_file) if prompt_file is not None else None
+
+    import torch
+    from training.native_conversation_v5 import load_checkpoint
+
+    resolved_device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    model, payload = load_checkpoint(checkpoint, device=resolved_device)
+    model.eval()
+    rows: list[dict[str, Any]] = []
 
     for seed in seed_list:
         torch.manual_seed(seed)
