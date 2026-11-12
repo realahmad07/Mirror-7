@@ -54,6 +54,17 @@ Run the three-seed screening experiment:
 python -m training.evaluate_experiment6 --device cuda --epochs 60 --seeds 17,29,43 --output artifacts/exp6_multiseed_screening.json
 ```
 
+## Structural transition-model ablation
+
+A second Experiment 6 architecture is available for a controlled structural
+comparison. The `linear_operator` variant gives each operation a learned matrix
+and applies `normalize(tanh(state @ matrix.T))`, matching the *form* (not the
+values) of the synthetic target generator. It is evaluated alongside the
+original MLP with the same generated worlds, seeds, training budget and held-out
+gate. This tests whether a more suitable transition inductive bias recovers
+synthetic latent dynamics; even a pass would not establish natural semantic
+understanding.
+
 ## Acceptance boundaries
 
 A screening report is only an implementation-level research gate. It is not a
