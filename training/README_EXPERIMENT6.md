@@ -101,7 +101,7 @@ python -m training.evaluate_experiment6 \
 
 These are dose-response experiments motivated by the observed degradation on
 long (five-operation) held-out chains and the `4→5` suffix composition. They
-are not assumed to improve results. All six structured-operator configurations
+are not assumed to improve results. All predeclared configurations
 are included in the unchanged all-seed acceptance gate; no threshold is relaxed.
 
 Use the same device, PyTorch version, data fingerprint, training budget, and
