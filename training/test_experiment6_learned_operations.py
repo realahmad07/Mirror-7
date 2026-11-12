@@ -14,6 +14,7 @@ from .experiment6_learned_operations import (
     make_world,
     seed_everything,
     train_model,
+    rollout_supervision_loss,
     transition_supervision_loss,
     world_fingerprint,
 )
@@ -98,6 +99,86 @@ def test_intermediate_transition_supervision_produces_finite_gradients():
     assert model.operation_matrices.grad is not None
     assert torch.isfinite(model.operation_matrices.grad).all()
     assert model.operation_matrices.grad.abs().sum() > 0
+
+
+def test_rollout_supervision_backpropagates_through_predicted_intermediate_states():
+    cfg = Config(
+        state_dim=12,
+        concept_dim=12,
+        concepts=6,
+        operations=6,
+        max_chain=3,
+        transition_architecture="linear_operator",
+    )
+    base_model = LearnedOperationBrain(cfg)
+
+    class RecordingBrain(LearnedOperationBrain):
+        def __init__(self, base):
+            super().__init__(base.cfg)
+            self.load_state_dict(base.state_dict())
+            self.inputs = []
+            self.outputs = []
+
+        def apply(self, state, op_ids):
+            self.inputs.append(state)
+            result = super().apply(state, op_ids)
+            self.outputs.append(result)
+            return result
+
+    model = RecordingBrain(base_model)
+    world = make_world(cfg, 71)
+    rows = [
+        row for row in world
+        if not row.held_out and len(row.ops) == 2
+    ][:4]
+    assert len(rows) >= 2
+
+    loss = rollout_supervision_loss(model, rows, "cpu")
+    assert torch.isfinite(loss)
+    # The second operation receives the model's first prediction, not the
+    # gold intermediate trace used by teacher-forced supervision.
+    assert len(model.inputs) == 2
+    assert torch.allclose(model.inputs[1], model.outputs[0], atol=0.0, rtol=0.0)
+    assert not torch.allclose(
+        model.inputs[1],
+        torch.stack([row.intermediate_states[0] for row in rows]),
+    )
+
+    loss.backward()
+    assert model.operation_matrices.grad is not None
+    assert torch.isfinite(model.operation_matrices.grad).all()
+    assert model.operation_matrices.grad.abs().sum() > 0
+
+
+def test_rollout_supervision_respects_variable_length_padding():
+    cfg = Config(
+        state_dim=12,
+        concept_dim=12,
+        concepts=6,
+        operations=6,
+        max_chain=4,
+        transition_architecture="linear_operator",
+    )
+    model = LearnedOperationBrain(cfg)
+    world = make_world(cfg, 79)
+    short = next(row for row in world if not row.held_out and len(row.ops) == 1)
+    long = next(row for row in world if not row.held_out and len(row.ops) == 3)
+    loss = rollout_supervision_loss(model, [short, long], "cpu")
+    assert torch.isfinite(loss)
+    loss.backward()
+    assert torch.isfinite(model.operation_matrices.grad).all()
+
+
+def test_rollout_supervision_rejects_missing_intermediate_targets():
+    cfg = Config()
+    model = LearnedOperationBrain(cfg)
+    with pytest.raises(ValueError, match="one intermediate target"):
+        rollout_supervision_loss(model, [_example(0, (1, 2))], "cpu")
+
+
+def test_rollout_supervision_weight_must_be_nonnegative():
+    with pytest.raises(ValueError, match="loss weights must be non-negative"):
+        Config(rollout_supervision_weight=-0.1)
 
 
 def test_transition_supervision_rejects_missing_intermediate_targets():
@@ -281,8 +362,10 @@ def test_training_loop_runs_with_masked_variable_length_batches():
         max_chain=4,
         epochs=2,
         batch_size=17,
+        rollout_supervision_weight=0.25,
     )
     model, world, history = train_model(cfg, 31, "cpu", log_every=1)
     assert len(history) == 2
+    assert all("rollout_loss" in row for row in history)
     assert len([row for row in world if row.held_out]) > 1
     assert torch.isfinite(next(model.parameters())).all()
