@@ -58,6 +58,17 @@ training data. Greedy runs are deterministic replay; stochastic seeds measure
 sampling variability only. The report's lexical/format metrics do not certify
 factual or semantic correctness.
 
+Compare a candidate report with a frozen baseline only when the prompt-file
+and selected-case fingerprints, seed list, report version, and decoding settings
+match:
+
+```bash
+python -m training.compare_free_running_reports \\
+  --baseline artifacts/native_free_running_baseline.json \\
+  --candidate artifacts/native_free_running_candidate.json \\
+  --output artifacts/native_free_running_paired_comparison.json
+```
+
 ## 1. Native Conversation V5 Architecture
 
 `native_conversation_v5.py` resolves the context drift bottleneck observed in V3:
