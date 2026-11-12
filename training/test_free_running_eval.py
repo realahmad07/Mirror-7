@@ -1,5 +1,7 @@
 import json
 
+from training.compare_free_running_reports import compare_report_files
+
 from training.free_running_eval import (
     compare_evaluation_reports,
     evaluate_checkpoint,
@@ -185,6 +187,27 @@ def test_paired_comparison_requires_identical_prompts_seeds_and_decoding():
     assert comparison["deltas"]["char_trigram_diversity"]["mean_candidate_minus_baseline"] == 0.2
     assert "do not establish improved" in comparison["interpretation_boundary"]
 
+
+
+def test_compare_report_files_writes_a_paired_diagnostic_report(tmp_path):
+    baseline_path = tmp_path / "baseline.json"
+    candidate_path = tmp_path / "candidate.json"
+    output_path = tmp_path / "comparison" / "paired.json"
+    baseline_path.write_text(
+        json.dumps(_comparison_report("baseline")),
+        encoding="utf-8",
+    )
+    candidate_path.write_text(
+        json.dumps(_comparison_report("candidate", output="candidate")),
+        encoding="utf-8",
+    )
+
+    report = compare_report_files(baseline_path, candidate_path, output_path)
+    saved = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert report["paired_samples"] == 3
+    assert saved["comparison"] == "native_free_running_paired_diagnostics_v1"
+    assert saved["deltas"]["prompt_keyword_coverage"]["mean_candidate_minus_baseline"] == 0.25
 
 def test_paired_comparison_rejects_different_case_fingerprints():
     baseline = _comparison_report("baseline")
