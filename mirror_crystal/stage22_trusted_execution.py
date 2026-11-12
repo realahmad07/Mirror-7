@@ -439,6 +439,23 @@ class DurableAuditLedger:
             BEFORE DELETE ON ledger_events BEGIN
                 SELECT RAISE(ABORT, 'audit ledger events are append-only');
             END;
+            CREATE TABLE IF NOT EXISTS identity_assertions (
+                issuer TEXT NOT NULL,
+                nonce TEXT NOT NULL,
+                subject TEXT NOT NULL,
+                purpose TEXT NOT NULL,
+                aggregate_id TEXT NOT NULL,
+                consumed_at TEXT NOT NULL,
+                PRIMARY KEY (issuer, nonce)
+            );
+            CREATE TRIGGER IF NOT EXISTS identity_assertions_no_update
+            BEFORE UPDATE ON identity_assertions BEGIN
+                SELECT RAISE(ABORT, 'identity assertion nonces are single-use and immutable');
+            END;
+            CREATE TRIGGER IF NOT EXISTS identity_assertions_no_delete
+            BEFORE DELETE ON identity_assertions BEGIN
+                SELECT RAISE(ABORT, 'identity assertion nonces are single-use and immutable');
+            END;
             CREATE TABLE IF NOT EXISTS approvals (
                 jti TEXT PRIMARY KEY,
                 proposal_id TEXT NOT NULL UNIQUE,
@@ -491,6 +508,38 @@ class DurableAuditLedger:
         )
         return sequence
 
+    def _consume_identity_assertion_tx(
+        self,
+        *,
+        issuer: str,
+        nonce: str,
+        subject: str,
+        purpose: str,
+        aggregate_id: str,
+        consumed_at: str,
+    ) -> None:
+        """Persist a trusted identity assertion nonce exactly once inside the caller transaction."""
+        issuer_id = _text(issuer, "identity issuer", 128)
+        nonce_id = _text(nonce, "identity nonce", 128)
+        reviewer_id = _text(subject, "identity subject", 128)
+        intent = _text(purpose, "identity assertion purpose", 32)
+        stamp = _utc(consumed_at, "identity assertion consumed_at")
+        try:
+            self._conn.execute(
+                """INSERT INTO identity_assertions
+                   (issuer, nonce, subject, purpose, aggregate_id, consumed_at)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (issuer_id, nonce_id, reviewer_id, intent, aggregate_id, stamp),
+            )
+        except sqlite3.IntegrityError as exc:
+            raise Stage22Error("reviewer identity assertion nonce has already been consumed") from exc
+        self._append_tx("identity.assertion_consumed", aggregate_id, {
+            "issuer": issuer_id,
+            "subject": reviewer_id,
+            "nonce_sha256": _digest(nonce_id),
+            "purpose": intent,
+        }, stamp)
+
     def append(self, event_type: str, aggregate_id: str, payload: Mapping[str, Any]) -> int:
         event = _text(event_type, "event_type", 96)
         aggregate = _text(aggregate_id, "aggregate_id", 128)
@@ -508,16 +557,22 @@ class DurableAuditLedger:
 
     def issue_approval(
         self, *, jti: str, proposal_id: str, reviewer_id: str,
+        reviewer_issuer: str, reviewer_nonce: str,
         expires_at: float, payload: Mapping[str, Any],
     ) -> None:
         with self._lock:
             self._conn.execute("BEGIN IMMEDIATE")
             try:
+                consumed_at = _utc(None)
+                self._consume_identity_assertion_tx(
+                    issuer=reviewer_issuer, nonce=reviewer_nonce, subject=reviewer_id,
+                    purpose="approval", aggregate_id=proposal_id, consumed_at=consumed_at,
+                )
                 self._conn.execute(
                     "INSERT INTO approvals(jti, proposal_id, reviewer_id, expires_at) VALUES (?, ?, ?, ?)",
                     (jti, proposal_id, reviewer_id, float(expires_at)),
                 )
-                self._append_tx("approval.issued", proposal_id, payload, _utc(None))
+                self._append_tx("approval.issued", proposal_id, payload, consumed_at)
                 self._conn.execute("COMMIT")
             except sqlite3.IntegrityError as exc:
                 self._conn.execute("ROLLBACK")
@@ -622,11 +677,23 @@ class DurableAuditLedger:
             }
 
     def review_feedback(
-        self, proposal_id: str, reviewer_id: str, accepted: bool, reason: str, reviewed_at: str,
+        self,
+        proposal_id: str,
+        reviewer_id: str,
+        reviewer_issuer: str,
+        reviewer_nonce: str,
+        accepted: bool,
+        reason: str,
+        reviewed_at: str,
     ) -> None:
         with self._lock:
             self._conn.execute("BEGIN IMMEDIATE")
             try:
+                consumed_at = _utc(reviewed_at, "reviewed_at")
+                self._consume_identity_assertion_tx(
+                    issuer=reviewer_issuer, nonce=reviewer_nonce, subject=reviewer_id,
+                    purpose="feedback_review", aggregate_id=proposal_id, consumed_at=consumed_at,
+                )
                 operation = self._conn.execute(
                     "SELECT status, approval_reviewer FROM operations WHERE proposal_id=?", (proposal_id,)
                 ).fetchone()
@@ -883,7 +950,11 @@ class TrustedActionGateway:
         }
         token = _token_sign(claims, self._approval_key)
         self.ledger.issue_approval(
-            jti=jti, proposal_id=proposal.proposal_id, reviewer_id=reviewer.subject,
+            jti=jti,
+            proposal_id=proposal.proposal_id,
+            reviewer_id=reviewer.subject,
+            reviewer_issuer=reviewer.issuer,
+            reviewer_nonce=reviewer.nonce,
             expires_at=expires,
             payload={
                 "reviewer_id": reviewer.subject, "adapter_id": adapter_id,
@@ -1209,7 +1280,10 @@ class TrustedActionGateway:
             raise Stage22Error("feedback reviewer must be independent of proposer and execution approver")
         rationale = _text(reason, "feedback review reason", 2000)
         reviewed_at = _now_iso(self.clock)
-        self.ledger.review_feedback(proposal.proposal_id, identity.subject, accepted, rationale, reviewed_at)
+        self.ledger.review_feedback(
+            proposal.proposal_id, identity.subject, identity.issuer, identity.nonce,
+            accepted, rationale, reviewed_at,
+        )
         return FeedbackReviewReport(proposal.proposal_id, identity.subject, accepted, rationale, reviewed_at, False)
 
     def verify_audit_ledger(self, expected_head_hash: str | None = None) -> LedgerVerification:

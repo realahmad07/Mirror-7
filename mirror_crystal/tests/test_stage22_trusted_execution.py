@@ -242,6 +242,66 @@ def test_stage22_identity_assertions_are_signed_scoped_audience_and_expiry_bound
         world["auth"].authenticate(expired, now=world["now"][0] + 11)
 
 
+def test_stage22_identity_nonce_is_single_use_across_distinct_approval_proposals(tmp_path):
+    world = make_world(tmp_path)
+    assertion = identity(world, "reviewer-nonce", ["action:approve:prepare_safe_state"])
+    world["gateway"].issue_approval_token(
+        world["proposal"], world["verification"],
+        reviewer_assertion=assertion, reason="Approve exact first proposal.",
+    )
+
+    world["now"][0] += 1
+    timestamp = datetime.fromtimestamp(world["now"][0], timezone.utc).isoformat()
+    proposal2 = make_proposal(world["action"], world["report"], world["ids"], timestamp)
+    verification2 = world["gateway"].verify(proposal2, world["report"])
+    assert verification2.passed
+    with pytest.raises(Stage22Error, match="nonce has already been consumed"):
+        world["gateway"].issue_approval_token(
+            proposal2, verification2,
+            reviewer_assertion=assertion, reason="Replay the first signed identity assertion.",
+        )
+
+
+def test_stage22_feedback_identity_nonce_is_single_use_across_operations(tmp_path):
+    world = make_world(tmp_path)
+    first_token = approval(world)
+    first = world["gateway"].execute(
+        world["proposal"], world["verification"], approval_token=first_token,
+    )
+    assert first.status is GatewayExecutionStatus.SUCCEEDED
+
+    feedback_assertion = identity(
+        world, "independent-reviewer", ["action:feedback-review:prepare_safe_state"],
+    )
+    world["gateway"].review_feedback(
+        world["proposal"], world["verification"],
+        reviewer_assertion=feedback_assertion,
+        accepted=True, reason="Reviewed the signed external observation.",
+    )
+
+    world["now"][0] += 1
+    timestamp = datetime.fromtimestamp(world["now"][0], timezone.utc).isoformat()
+    proposal2 = make_proposal(world["action"], world["report"], world["ids"], timestamp)
+    verification2 = world["gateway"].verify(proposal2, world["report"])
+    approval_assertion = identity(world, "operator-b", ["action:approve:prepare_safe_state"])
+    second_token = world["gateway"].issue_approval_token(
+        proposal2, verification2,
+        reviewer_assertion=approval_assertion,
+        reason="Approve the second proposal independently.",
+    )
+    second = world["gateway"].execute(
+        proposal2, verification2, approval_token=second_token,
+    )
+    assert second.status is GatewayExecutionStatus.SUCCEEDED
+
+    with pytest.raises(Stage22Error, match="nonce has already been consumed"):
+        world["gateway"].review_feedback(
+            proposal2, verification2,
+            reviewer_assertion=feedback_assertion,
+            accepted=True, reason="Replay the first feedback identity assertion.",
+        )
+
+
 def test_stage22_rejects_untrusted_or_incomplete_identity_issuers(tmp_path):
     with pytest.raises(Stage22Error, match="safe"):
         ReviewerAuthenticator({"bad issuer": IDENTITY_KEY})
