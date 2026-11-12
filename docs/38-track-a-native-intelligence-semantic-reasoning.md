@@ -72,6 +72,38 @@ matrices into the model. The implementation now derives a separate model seed
 and has a regression test asserting that learned initialization differs from
 the benchmark's hidden matrices. The leaked run is excluded from evidence.
 
+## Three-seed results
+
+At 60 epochs with intermediate-transition supervision, both architectures passed
+order-control and no-collapse checks across the three seeds, but all six
+seed-runs failed the positive held-out-margin check:
+
+| Architecture | Mean held-out top-1 | Mean positive similarity | Mean candidate margin | Mean order margin | Margin gate |
+|---|---:|---:|---:|---:|---|
+| MLP | 2.61% | 0.0262 | -0.3131 | 0.0128 | **FAIL (0/3)** |
+| Linear operator | 2.06% | 0.0151 | -0.3037 | 0.0169 | **FAIL (0/3)** |
+
+At 240 epochs, the models made a substantial improvement:
+
+| Architecture | Held-out top-1 | Mean positive similarity | Mean candidate margin | Mean order margin | Margin gate |
+|---|---:|---:|---:|---:|---|
+| MLP | 34.96% | 0.2782 | -0.0852 | 0.2732 | **FAIL (0/3)** |
+| Linear operator | 40.72% | 0.3012 | -0.0649 | 0.3005 | **FAIL (0/3)** |
+
+Chance top-1 is about 0.75–0.81%, depending on seed candidate count. At
+240 epochs, both architectures exceed chance on all seeds, produce positive
+order margins, and avoid representation collapse. The linear operator is
+stronger than the MLP on these aggregate synthetic metrics. However, all six
+seed-runs still fail the unchanged requirement that the correct held-out target
+rank above its hardest distractor with a positive margin. This is a substantial
+synthetic generalization improvement, not a gate pass or evidence of
+natural-language reasoning.
+
+The next predeclared ablation increases the linear operator's contrastive
+weight from `0.10` to `0.25` at the same 240-epoch budget, retaining all
+three seeds and the exact same acceptance criteria. The 0.10 results remain
+frozen for comparison.
+
 ## Natural semantic benchmark intake
 
 CLUTRR was examined as a candidate natural-language relational reasoning
