@@ -68,3 +68,20 @@ jobs:
             artifacts/exp6_multiseed_screening_ci.json
             artifacts/exp6_operator_multiseed_screening_ci.json
           if-no-files-found: ignore
+      - name: Enforce structured-operator three-seed screen
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report_path = Path("artifacts/exp6_operator_multiseed_screening_ci.json")
+          if not report_path.exists():
+              raise SystemExit("Structured-operator screening report is missing")
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          if not report.get("screening_passed_all_seeds", False):
+              raise SystemExit(
+                  "Structured-operator research gate failed; see the uploaded per-seed report"
+              )
+          print("All three structured-operator seeds passed the screening gate.")
+          PY
