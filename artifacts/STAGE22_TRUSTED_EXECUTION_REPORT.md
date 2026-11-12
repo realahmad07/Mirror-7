@@ -3,7 +3,7 @@
 **Status:** Implementation committed on the Stage 22 branch; final acceptance pending CI, Deep Regression and Security Guard.  
 **Implementation:** `mirror_crystal/stage22_trusted_execution.py`  
 **Tests:** `mirror_crystal/tests/test_stage22_trusted_execution.py`  
-**Focused test cases:** 21
+**Focused test cases:** 22
 
 ## Delivered
 
@@ -22,9 +22,9 @@
 
 ## Focused verification coverage
 
-The 21 focused test cases cover:
+The 22 focused test cases cover:
 
-- Identity assertion signature, trusted issuer, scope, audience and expiry.
+- Identity assertion signature, trusted issuer, scope, audience and expiry; SQLite creation of missing parent directories.
 - Adapter allow-list immutability and required host methods.
 - Dry-run isolation and audit recording; mandatory approval for real execution.
 - Exact approval scopes, self-approval rejection, proposal/verification/adapter binding, token expiry and one-use replay blocking.
@@ -32,7 +32,7 @@ The 21 focused test cases cover:
 - Signed adapter outcomes, durable ledger restart, event immutability, hash-chain tamper detection and external head-anchor mismatch.
 - Postcondition mismatch, compensating action, positive recovery observation and failed recovery observation.
 - Uncertain external outcome and recovery without re-execution.
-- Invalid adapter signatures and independent feedback reviewer separation.
+- Invalid adapter signatures and independent feedback reviewer separation, including reviews after the original execution freshness window expires.
 - Read-only mismatch is not mislabeled as rolled back.
 
 ## Security invariants
