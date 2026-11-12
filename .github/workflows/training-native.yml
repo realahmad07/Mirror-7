@@ -51,12 +51,14 @@ jobs:
         run: >-
           python -m training.evaluate_experiment6
           --device cpu --epochs 240 --seeds 17,29,43
+          --transition-supervision-weight 1.0
           --output artifacts/exp6_multiseed_screening_ci.json
       - name: Run three-seed structured-operator ablation
         continue-on-error: true
         run: >-
           python -m training.evaluate_experiment6
-          --device cpu --epochs 60 --seeds 17,29,43
+          --device cpu --epochs 240 --seeds 17,29,43
+          --transition-supervision-weight 1.0
           --transition-architecture linear_operator
           --output artifacts/exp6_operator_multiseed_screening_ci.json
       - name: Upload semantic screening reports
