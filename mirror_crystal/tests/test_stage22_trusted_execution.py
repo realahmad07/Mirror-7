@@ -410,6 +410,9 @@ def test_stage22_unknown_outcome_is_reconciled_by_idempotency_key_without_reexec
     assert result.status is GatewayExecutionStatus.UNKNOWN
     assert world["ledger"].operation(world["proposal"].proposal_id)["status"] == "unknown"
 
+    # Reconciliation remains permitted after the new-execution freshness window,
+    # because it resolves an already reserved/possibly committed external operation.
+    world["now"][0] += 3601
     recovered = world["gateway"].recover(world["proposal"], world["verification"])
     assert recovered.status is GatewayExecutionStatus.SUCCEEDED
     assert recovered.observed_output == {"status": "prepared", "target": 296.15}
@@ -446,6 +449,8 @@ def test_stage22_feedback_review_requires_an_independent_scoped_reviewer(tmp_pat
         world["proposal"], world["verification"], approval_token=token,
     )
     assert result.status is GatewayExecutionStatus.SUCCEEDED
+    # Feedback can be independently reviewed after the proposal's execution TTL.
+    world["now"][0] += 3601
 
     with pytest.raises(Stage22Error, match="independent"):
         world["gateway"].review_feedback(
@@ -516,3 +521,12 @@ def test_stage22_read_only_action_does_not_claim_rollback_capability(tmp_path):
     assert result.status is GatewayExecutionStatus.POSTCONDITION_MISMATCH
     assert result.rollback_status == "not_supported"
     assert world["adapter"].calls.count("compensate") == 0
+
+def test_stage22_audit_ledger_creates_missing_parent_directories(tmp_path):
+    nested_path = tmp_path / "audit" / "nested" / "events.sqlite"
+    ledger = DurableAuditLedger(nested_path, AUDIT_KEY)
+    ledger.append("ledger.initialized", "deployment-1", {"created": True})
+    assert nested_path.is_file()
+    assert ledger.verify_chain().valid
+    ledger.close()
+

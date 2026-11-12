@@ -411,13 +411,14 @@ class DurableAuditLedger:
             raise Stage22Error("audit ledger signing key must contain at least 32 bytes")
         self.path = str(path)
         self._key = bytes(signing_key)
+        if self.path != ":memory:":
+            Path(self.path).parent.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
         self._conn = sqlite3.connect(self.path, timeout=20.0, isolation_level=None, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.execute("PRAGMA synchronous=FULL")
         if self.path != ":memory:":
-            Path(self.path).parent.mkdir(parents=True, exist_ok=True)
             self._conn.execute("PRAGMA journal_mode=WAL")
         self._conn.executescript("""
             CREATE TABLE IF NOT EXISTS ledger_events (
@@ -810,7 +811,8 @@ class TrustedActionGateway:
         if checked > now + 30 or now - checked > self.verification_max_age_seconds:
             raise Stage22Error("independent Stage 21 verification is stale or future-dated")
 
-    def _require_verified(self, proposal: GroundedActionProposal, verification: ActionVerificationReport) -> None:
+    def _require_bound_verification(self, proposal: GroundedActionProposal, verification: ActionVerificationReport) -> None:
+        """Require the exact in-memory Stage 21 verification without imposing a start-time TTL."""
         if not isinstance(proposal, GroundedActionProposal) or not isinstance(verification, ActionVerificationReport):
             raise Stage22Error("exact Stage 21 proposal and verification objects are required")
         if not verification.passed or verification.proposal_id != proposal.proposal_id:
@@ -818,10 +820,14 @@ class TrustedActionGateway:
         stored = self._verified.get(proposal.proposal_id)
         if stored is None or stored[0] != proposal.fingerprint or stored[1] != verification:
             raise Stage22Error("proposal must be verified by this gateway instance before authorization")
-        self._check_freshness(proposal, verification)
         definition, _, _ = self._definition_and_adapter(proposal)
         if definition.fingerprint != proposal.definition_fingerprint or verification.definition_fingerprint != definition.fingerprint:
             raise Stage22Error("Stage 21 action definition changed after verification")
+
+    def _require_verified(self, proposal: GroundedActionProposal, verification: ActionVerificationReport) -> None:
+        """Freshness gate for issuing approval or starting a new external operation."""
+        self._require_bound_verification(proposal, verification)
+        self._check_freshness(proposal, verification)
 
     def verify(self, proposal: GroundedActionProposal, report: Any) -> ActionVerificationReport:
         """Run the existing Stage 21 evidence/provenance and action-policy checkers."""
@@ -1130,7 +1136,9 @@ class TrustedActionGateway:
         verification: ActionVerificationReport,
     ) -> GatewayExecutionReport:
         """Reconcile an unknown/partial operation by idempotency key; never blindly re-execute."""
-        self._require_verified(proposal, verification)
+        # An operation already committed to the ledger must remain reconcilable after
+        # proposal/verification start-time TTLs expire; no new side effect is authorized here.
+        self._require_bound_verification(proposal, verification)
         operation = self.ledger.operation(proposal.proposal_id)
         if operation is None or operation["status"] not in {"unknown", "executing", "recovery_failed"}:
             raise Stage22Error("only unknown, interrupted or recovery-failed operations can be reconciled")
@@ -1186,7 +1194,8 @@ class TrustedActionGateway:
         accepted: bool,
         reason: str,
     ) -> FeedbackReviewReport:
-        self._require_verified(proposal, verification)
+        # Feedback review concerns a recorded outcome, not a new execution authorization.
+        self._require_bound_verification(proposal, verification)
         if not isinstance(accepted, bool):
             raise Stage22Error("feedback decision must be boolean")
         identity = self.authenticator.authenticate(reviewer_assertion, now=self.clock())
