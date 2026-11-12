@@ -8,6 +8,7 @@ from .experiment6_learned_operations import (
     LearnedOperationBrain,
     _batch,
     evaluate,
+    derive_model_initialization_seed,
     loss_fn,
     _deduplicate_examples,
     make_world,
@@ -79,6 +80,36 @@ def test_linear_operator_architecture_matches_declared_transition_contract():
     assert output.shape == state.shape
     assert torch.isfinite(output).all()
     assert model.operation_matrices.shape == (cfg.operations, cfg.state_dim, cfg.state_dim)
+
+
+def test_operator_model_initialization_is_independent_of_hidden_world_matrices():
+    cfg = Config(
+        state_dim=12,
+        concept_dim=12,
+        concepts=5,
+        operations=4,
+        max_chain=3,
+        epochs=1,
+        transition_architecture="linear_operator",
+    )
+    seed = 17
+    generator = torch.Generator().manual_seed(seed)
+    torch.randn(cfg.concepts, cfg.concept_dim, generator=generator)
+    hidden_matrices = []
+    for operation_id in range(cfg.operations):
+        matrix = torch.randn(
+            cfg.concept_dim, cfg.concept_dim, generator=generator,
+        ) * 0.35
+        if operation_id % 2 == 0:
+            matrix += torch.eye(cfg.concept_dim) * (0.15 + 0.03 * operation_id)
+        hidden_matrices.append(matrix)
+
+    model, _, _ = train_model(cfg, seed, "cpu")
+    assert derive_model_initialization_seed(seed) != seed
+    assert not torch.allclose(
+        model.operation_matrices.detach(),
+        torch.stack(hidden_matrices),
+    )
 
 
 def test_linear_operator_architecture_rejects_dimension_mismatch():
