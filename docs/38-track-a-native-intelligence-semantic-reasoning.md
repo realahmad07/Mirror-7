@@ -54,7 +54,7 @@ python -m pytest training/test_experiment6_learned_operations.py training/test_e
 Run the three-seed screening experiment:
 
 ```bash
-python -m training.evaluate_experiment6 --device cuda --epochs 60 --seeds 17,29,43 --output artifacts/exp6_multiseed_screening.json
+python -m training.evaluate_experiment6 --device cuda --epochs 240 --seeds 17,29,43 --output artifacts/exp6_multiseed_screening.json
 ```
 
 ## Structural transition-model ablation
