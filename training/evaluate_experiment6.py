@@ -93,6 +93,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--contrastive-weight", type=float, default=0.10)
+    parser.add_argument(
+        "--transition-architecture",
+        choices=("mlp", "linear_operator"),
+        default="mlp",
+    )
     parser.add_argument("--device", default=None)
     parser.add_argument("--output", default="artifacts/exp6_multiseed_screening.json")
     args = parser.parse_args(argv)
@@ -106,6 +111,7 @@ def main(argv: list[str] | None = None) -> int:
         config=Config(
             epochs=args.epochs, lr=args.lr,
             contrastive_weight=args.contrastive_weight,
+            transition_architecture=args.transition_architecture,
         ),
         device=args.device,
     )
