@@ -40,10 +40,17 @@ python -m training.evaluate_experiment6 \
   --output artifacts/exp6_multiseed_screening.json
 ```
 
-Use the same device, PyTorch version, configuration, and code commit when
-comparing runs. The evaluator reports held-out candidate ranking, contrastive
-margin, swapped-order negative controls, representation-collapse diagnostics,
-and per-seed benchmark fingerprints.
+The default `mlp` transition is the shared MLP baseline. A structural
+ablation matching the synthetic generator's per-operation transition form is
+available as `--transition-architecture linear_operator`. It learns a separate
+matrix per operation and applies `normalize(tanh(state @ matrix.T))`. The target
+matrices are not copied into the model; this is a declared inductive-bias
+comparison, not evidence of natural-language semantics.
+
+Use the same device, PyTorch version, data fingerprint, training budget, and
+evaluator when comparing the two architectures. The evaluator reports held-out
+candidate ranking, contrastive margin, swapped-order negative controls,
+representation-collapse diagnostics, and per-seed benchmark fingerprints.
 
 ## Promotion gate
 
