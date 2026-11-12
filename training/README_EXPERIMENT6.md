@@ -17,7 +17,10 @@ streams. Training deduplicates repeated `(concept, operation-chain)` tasks and
 combines duplicate-aware in-batch hard-negative ranking (default contrastive
 weight `0.10`, configurable with `--contrastive-weight`) with teacher-forced
 supervision for every intermediate transition (default weight `1.0`, configurable
-with `--transition-supervision-weight`). Target-equivalent vectors are masked
+with `--transition-supervision-weight`). An optional free-running rollout loss
+(default `0.0`, configurable with `--rollout-supervision-weight`) feeds each
+predicted intermediate state into the next operation and supervises accumulated
+rollout error using training traces only. Target-equivalent vectors are masked
 rather than treated as false negatives. Intermediate traces from held-out rows
 are never used for optimization and are included in the benchmark fingerprint.
 The generated world, including target vectors and train/held-out assignment, has
@@ -55,6 +58,14 @@ python -m training.evaluate_experiment6 \
   --contrastive-weight 0.25 --transition-supervision-weight 1.0 \
   --transition-architecture linear_operator \
   --output artifacts/exp6_operator_contrastive025_screening.json
+
+# Free-running rollout supervision: own predictions become later operation inputs
+python -m training.evaluate_experiment6 \
+  --device cuda --epochs 240 --seeds 17,29,43 \
+  --contrastive-weight 0.10 --transition-supervision-weight 1.0 \
+  --rollout-supervision-weight 1.0 \
+  --transition-architecture linear_operator \
+  --output artifacts/exp6_operator_rollout1_screening.json
 ```
 
 The default `mlp` transition is the shared MLP baseline. A structural
