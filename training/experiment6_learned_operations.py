@@ -22,6 +22,22 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+TARGET_EQUIVALENCE_COSINE_THRESHOLD = 1.0 - 1e-6
+
+
+def _target_equivalence_mask(targets: torch.Tensor) -> torch.Tensor:
+    normalized = F.normalize(targets, dim=-1)
+    return normalized @ normalized.T >= TARGET_EQUIVALENCE_COSINE_THRESHOLD
+
+
+def _unique_target_representatives(equivalent: torch.Tensor) -> list[int]:
+    representatives: list[int] = []
+    for index in range(equivalent.shape[0]):
+        if not any(bool(equivalent[index, prior]) for prior in representatives):
+            representatives.append(index)
+    return representatives
+
+
 @dataclass(frozen=True)
 class Config:
     state_dim: int = 64
@@ -389,13 +405,10 @@ def evaluate(
     *,
     split: str = "held_out",
 ) -> dict[str, Any]:
-    """Evaluate a deduplicated train or held-out candidate set and order controls."""
+    """Rank semantic target classes, not duplicate/equivalent target vectors."""
     if split not in {"train", "held_out"}:
         raise ValueError("split must be 'train' or 'held_out'")
     model.eval()
-    # Random generation samples operation chains with replacement. Collapse
-    # repeated (concept, operation-sequence) tasks before constructing the
-    # candidate matrix so identical targets cannot count as false negatives.
     rows = _deduplicate_examples([
         row for row in examples
         if row.held_out == (split == "held_out")
@@ -403,62 +416,65 @@ def evaluate(
     if len(rows) < 2:
         raise ValueError("held-out evaluation requires at least two unique tasks")
 
-    predictions = []
-    positive_scores = []
-    order_margins = []
+    predictions, positive_scores, order_margins = [], [], []
     with torch.no_grad():
         targets = F.normalize(torch.stack([row.target for row in rows]).to(device), dim=-1)
+        equivalent = _target_equivalence_mask(targets)
+        valid_negative = ~equivalent
+        effective_counts = valid_negative.sum(dim=1) + 1
         for row in rows:
             concept_ids, operations, _ = _batch([row], device)
             prediction = model.compose(concept_ids, operations)[0]
             predictions.append(prediction)
             positive_scores.append(float((prediction * row.target.to(device)).sum()))
-
             if len(row.ops) >= 2 and row.ops[-1] != row.ops[-2]:
                 swapped = row.ops[:-2] + (row.ops[-1], row.ops[-2])
                 swapped_tensor = torch.tensor([swapped], dtype=torch.long, device=device)
                 swapped_prediction = model.compose(concept_ids, swapped_tensor)[0]
-                swapped_score = float((swapped_prediction * row.target.to(device)).sum())
-                order_margins.append(positive_scores[-1] - swapped_score)
+                order_margins.append(
+                    positive_scores[-1] - float((swapped_prediction * row.target.to(device)).sum())
+                )
 
         prediction_matrix = F.normalize(torch.stack(predictions), dim=-1)
         similarities = prediction_matrix @ targets.T
-        candidate_margins = []
-        correct = []
+        candidate_margins, correct = [], []
         for index in range(len(rows)):
             positive = similarities[index, index]
-            negative_scores = similarities[index].clone()
-            negative_scores[index] = -torch.inf
-            hardest_negative = negative_scores.max()
-            candidate_margins.append(float(positive - hardest_negative))
-            correct.append(bool(positive > hardest_negative))
+            if bool(valid_negative[index].any()):
+                negatives = similarities[index].masked_fill(~valid_negative[index], -torch.inf)
+                hardest = negatives.max()
+                candidate_margins.append(float(positive - hardest))
+                correct.append(bool(positive > hardest))
+            else:
+                correct.append(True)
 
-        collapse_similarity = None
-        if len(rows) > 1:
-            pairwise = prediction_matrix @ prediction_matrix.T
-            off_diagonal = ~torch.eye(len(rows), dtype=torch.bool, device=device)
-            collapse_similarity = float(pairwise[off_diagonal].mean())
+        distinct_pairs = valid_negative & ~torch.eye(len(rows), dtype=torch.bool, device=device)
+        pairwise = prediction_matrix @ prediction_matrix.T
+        collapse_similarity = (
+            float(pairwise[distinct_pairs].mean()) if bool(distinct_pairs.any()) else None
+        )
+        equivalent_pair_count = int(
+            (equivalent & ~torch.eye(len(rows), dtype=torch.bool, device=device)).sum().item() // 2
+        )
 
-    order_control_count = len(order_margins)
-    order_margin = statistics.fmean(order_margins) if order_margins else None
+    order_count = len(order_margins)
     return {
         "split": split,
         "count": len(rows),
-        "candidate_count": len(rows),
-        "chance_accuracy": 1.0 / len(rows),
+        "candidate_count": len(_unique_target_representatives(equivalent)),
+        "mean_effective_candidate_count": float(effective_counts.float().mean()),
+        "equivalent_target_pair_count": equivalent_pair_count,
+        "chance_accuracy": statistics.fmean(1.0 / int(n) for n in effective_counts.tolist()),
         "accuracy": sum(correct) / len(correct),
-        "margin": statistics.fmean(candidate_margins),
+        "margin": statistics.fmean(candidate_margins) if candidate_margins else None,
         "mean_positive_similarity": statistics.fmean(positive_scores),
-        "order_control_count": order_control_count,
-        "order_margin": order_margin,
+        "order_control_count": order_count,
+        "order_margin": statistics.fmean(order_margins) if order_margins else None,
         "order_violation_rate": (
-            sum(value <= 0 for value in order_margins) / order_control_count
-            if order_control_count else None
+            sum(value <= 0 for value in order_margins) / order_count if order_count else None
         ),
         "collapse_similarity": collapse_similarity,
-        "held_out_concept_count": sum(
-            row.concept >= cfg.concepts - 2 for row in rows
-        ),
+        "held_out_concept_count": sum(row.concept >= cfg.concepts - 2 for row in rows),
         "structured_composition_count": sum(
             (len(row.ops) >= 4 and row.ops[:2] == (0, 1))
             or (len(row.ops) >= 5 and row.ops[-2:] == (4, 5))
