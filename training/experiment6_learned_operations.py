@@ -438,13 +438,19 @@ def evaluate(
         prediction_matrix = F.normalize(torch.stack(predictions), dim=-1)
         similarities = prediction_matrix @ targets.T
         candidate_margins, correct = [], []
+        row_margins: list[float | None] = [None] * len(rows)
+        row_correct: list[bool] = [True] * len(rows)
         for index in range(len(rows)):
             positive = similarities[index, index]
             if bool(valid_negative[index].any()):
                 negatives = similarities[index].masked_fill(~valid_negative[index], -torch.inf)
                 hardest = negatives.max()
-                candidate_margins.append(float(positive - hardest))
-                correct.append(bool(positive > hardest))
+                margin_value = float(positive - hardest)
+                is_correct = bool(positive > hardest)
+                candidate_margins.append(margin_value)
+                correct.append(is_correct)
+                row_margins[index] = margin_value
+                row_correct[index] = is_correct
             else:
                 correct.append(True)
 
@@ -457,9 +463,32 @@ def evaluate(
             (equivalent & ~torch.eye(len(rows), dtype=torch.bool, device=device)).sum().item() // 2
         )
 
+    def summarize_stratum(indices: list[int]) -> dict[str, Any]:
+        margins = [row_margins[index] for index in indices if row_margins[index] is not None]
+        return {
+            "count": len(indices),
+            "accuracy": statistics.fmean(float(row_correct[index]) for index in indices) if indices else None,
+            "mean_candidate_margin": statistics.fmean(margins) if margins else None,
+            "positive_margin_rate": statistics.fmean(float(value > 0) for value in margins) if margins else None,
+        }
+
+    unseen_concept = [i for i, row in enumerate(rows) if row.concept >= cfg.concepts - 2]
+    heldout_prefix = [i for i, row in enumerate(rows) if len(row.ops) >= 4 and row.ops[:2] == (0, 1)]
+    heldout_suffix = [i for i, row in enumerate(rows) if len(row.ops) >= 5 and row.ops[-2:] == (4, 5)]
+    stratified = {
+        "unseen_concept": summarize_stratum(unseen_concept),
+        "seen_concept": summarize_stratum([i for i in range(len(rows)) if i not in set(unseen_concept)]),
+        "heldout_prefix_01": summarize_stratum(heldout_prefix),
+        "heldout_suffix_45": summarize_stratum(heldout_suffix),
+    }
+    for chain_length in range(1, cfg.max_chain + 1):
+        indices = [i for i, row in enumerate(rows) if len(row.ops) == chain_length]
+        stratified[f"chain_length_{chain_length}"] = summarize_stratum(indices)
+
     order_count = len(order_margins)
     return {
         "split": split,
+        "stratified_ranking": stratified,
         "count": len(rows),
         "candidate_count": len(_unique_target_representatives(equivalent)),
         "mean_effective_candidate_count": float(effective_counts.float().mean()),
