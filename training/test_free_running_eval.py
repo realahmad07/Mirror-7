@@ -165,6 +165,7 @@ def _comparison_report(checkpoint_hash, *, case_hash="same-cases", prompt_hash="
             },
         })
     return {
+        "evaluation": "native_free_running_diagnostics_v2",
         "checkpoint_sha256": checkpoint_hash,
         "selected_cases_sha256": case_hash,
         "prompt_file_sha256": prompt_hash,
@@ -206,6 +207,24 @@ def test_paired_comparison_rejects_different_decoding_settings():
     )
     import pytest
     with pytest.raises(ValueError, match="decoding"):
+        compare_evaluation_reports(baseline, candidate)
+
+
+
+def test_paired_comparison_rejects_different_seed_lists():
+    baseline = _comparison_report("baseline", seeds=(17, 29, 43))
+    candidate = _comparison_report("candidate", seeds=(17, 31, 43))
+    import pytest
+    with pytest.raises(ValueError, match="different seed lists"):
+        compare_evaluation_reports(baseline, candidate)
+
+
+def test_paired_comparison_rejects_reports_without_checkpoint_fingerprints():
+    baseline = _comparison_report("baseline")
+    candidate = _comparison_report("candidate", output="candidate")
+    candidate["checkpoint_sha256"] = None
+    import pytest
+    with pytest.raises(ValueError, match="missing checkpoint_sha256"):
         compare_evaluation_reports(baseline, candidate)
 
 
