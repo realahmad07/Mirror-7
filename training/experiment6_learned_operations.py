@@ -185,15 +185,19 @@ def evaluate(
     examples: list[Example],
     cfg: Config,
     device: str | torch.device,
+    *,
+    split: str = "held_out",
 ) -> dict[str, Any]:
-    """Evaluate only held-out rows against held-out targets and order controls."""
+    """Evaluate a deduplicated train or held-out candidate set and order controls."""
+    if split not in {"train", "held_out"}:
+        raise ValueError("split must be 'train' or 'held_out'")
     model.eval()
     # Random generation samples operation chains with replacement. Collapse
     # repeated (concept, operation-sequence) tasks before constructing the
     # candidate matrix so identical targets cannot count as false negatives.
     unique_rows = {}
     for row in examples:
-        if row.held_out:
+        if row.held_out == (split == "held_out"):
             unique_rows.setdefault((row.concept, row.ops), row)
     rows = list(unique_rows.values())
     if len(rows) < 2:
@@ -238,6 +242,7 @@ def evaluate(
     order_control_count = len(order_margins)
     order_margin = statistics.fmean(order_margins) if order_margins else None
     return {
+        "split": split,
         "count": len(rows),
         "candidate_count": len(rows),
         "chance_accuracy": 1.0 / len(rows),

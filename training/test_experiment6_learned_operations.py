@@ -92,6 +92,19 @@ def test_seeded_training_initialization_and_world_are_reproducible():
     assert all(torch.equal(first.state_dict()[key], second.state_dict()[key]) for key in first.state_dict())
 
 
+def test_evaluator_can_measure_train_and_heldout_splits_separately():
+    cfg = Config()
+    world = make_world(cfg, 11)
+    model = LearnedOperationBrain(cfg)
+    train_metrics = evaluate(model, world, cfg, "cpu", split="train")
+    heldout_metrics = evaluate(model, world, cfg, "cpu", split="held_out")
+    assert train_metrics["split"] == "train"
+    assert heldout_metrics["split"] == "held_out"
+    assert train_metrics["count"] != heldout_metrics["count"]
+    with pytest.raises(ValueError, match="split"):
+        evaluate(model, world, cfg, "cpu", split="validation")
+
+
 def test_evaluator_reports_heldout_ranking_order_and_collapse_controls():
     cfg = Config()
     world = make_world(cfg, 29)

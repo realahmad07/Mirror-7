@@ -33,8 +33,9 @@ def run_multiseed_benchmark(
     resolved_device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     results = []
     for seed in seed_list:
-        model, examples, _ = train_model(cfg, seed, resolved_device)
-        metrics = evaluate(model, examples, cfg, resolved_device)
+        model, examples, history = train_model(cfg, seed, resolved_device)
+        train_metrics = evaluate(model, examples, cfg, resolved_device, split="train")
+        metrics = evaluate(model, examples, cfg, resolved_device, split="held_out")
         checks = {
             "positive_heldout_margin": metrics["margin"] > 0,
             "above_candidate_chance": metrics["accuracy"] > metrics["chance_accuracy"],
@@ -49,6 +50,9 @@ def run_multiseed_benchmark(
         results.append({
             "seed": seed,
             "dataset_sha256": world_fingerprint(cfg, seed, examples),
+            "train_metrics": train_metrics,
+            "held_out_metrics": metrics,
+            "training_history": history,
             "metrics": metrics,
             "screening_checks": checks,
             "screening_passed": all(checks.values()),
@@ -109,6 +113,7 @@ def main(argv: list[str] | None = None) -> int:
         "screening_passed_all_seeds": report["screening_passed_all_seeds"],
         "promotion_eligible": report["promotion_eligible"],
         "aggregate": report["aggregate"],
+        "per_seed": report["results"],
     }, indent=2))
     return 0 if report["screening_passed_all_seeds"] else 2
 

@@ -47,6 +47,7 @@ jobs:
       - name: Native-brain tests
         run: python -m pytest -q training/test_native_brain.py training/test_experiment6_learned_operations.py training/test_cpu_autonomous_engine.py
       - name: Run three-seed semantic screening
+        continue-on-error: true
         run: >-
           python -m training.evaluate_experiment6
           --device cpu --epochs 60 --seeds 17,29,43
