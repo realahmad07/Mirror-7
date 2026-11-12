@@ -57,6 +57,11 @@ def test_loss_uses_hardest_distinct_negative_candidate():
     loss = loss_fn(prediction, target, candidates, margin=0.30)
     assert loss.item() == pytest.approx(0.10, abs=1e-5)
 
+    downweighted = loss_fn(
+        prediction, target, candidates, margin=0.30, contrastive_weight=0.10,
+    )
+    assert downweighted.item() == pytest.approx(0.01, abs=1e-5)
+
 def test_exp6_forward_and_world():
     cfg = Config()
     model = LearnedOperationBrain(cfg)
