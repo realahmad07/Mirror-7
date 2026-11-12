@@ -263,7 +263,7 @@ See [Stage 20 design](docs/35-stage20-multimodal-grounding.md) and [acceptance r
 
 ## Stage 21 — Grounded Autonomous Action & Feedback
 
-**Status: bounded implementation; full acceptance pending CI.**
+**Status: PASS within the bounded proposal, independent-check, sandbox-execution and feedback scope.**
 
 - Immutable action proposals bind a registered code definition, strict JSON inputs, field-to-observation bindings, Stage 20 report fingerprint, selected observation IDs and expected postconditions; each input must match observations from at least two authenticated modalities/sources.
 - Two distinct verifier identities check cross-modal verified agreement/source provenance and the registered action contract before execution. Evidence that is unsigned, incomplete, altered or not part of one verified agreement is blocked.
@@ -271,9 +271,27 @@ See [Stage 20 design](docs/35-stage20-multimodal-grounding.md) and [acceptance r
 - Predicted postconditions are compared with actual sandbox outputs. Success, mismatch and fail-closed execution errors are recorded with evidence-bound feedback and a single-use proposal history.
 - Consequential actions require a separately recorded human approval. The proposal author cannot approve, and approval is bound to the exact proposal and verification record.
 
-**Explicit limits:** no direct device, hardware, external service, filesystem or production actuation is performed. The host must authenticate reviewer identities, persist the audit ledger and enforce the approval token before any real-world side effect. Trusted knowledge is never silently updated from execution feedback.
+**Explicit limits:** Stage 21 itself does not directly operate devices or services; those effects are available only through the separately governed Stage 22 host-adapter gateway. Trusted knowledge is never silently updated from execution feedback.
 
 See [Stage 21 design](docs/36-stage21-grounded-autonomous-action.md) and [acceptance report](artifacts/STAGE21_GROUNDED_ACTION_REPORT.md).
 
 
 See [Stage 19 design](docs/34-stage19-controlled-self-improvement.md) and [acceptance report](artifacts/STAGE19_CONTROLLED_SELF_IMPROVEMENT_REPORT.md).
+
+
+## Stage 22 — Trusted Real-World Execution & Operational Governance
+
+**Status: implementation added on the Stage 22 branch; acceptance pending the focused suite, Fast CI, Deep Regression and Security Guard on the final PR head.**
+
+- The trusted gateway accepts only Stage 21 proposals that this gateway instance has independently verified and whose action definition remains pinned to the Stage 21 allow-list.
+- Host adapters are explicitly registered and immutable. Each adapter declares allowed action IDs and an Ed25519 verification key; dry-run, execute, observe and compensate receipts are signed over the exact adapter/action/request/idempotency/operation/result envelope.
+- Reviewer identity assertions are signed by host-trusted issuers, audience-bound, scope-limited and short-lived. Human approval tokens are bound to the exact proposal, verification, adapter and action and expire within ten minutes; the default lifetime is five minutes.
+- A durable SQLite WAL event ledger uses FULL synchronous commits, append-only event triggers, a SHA-256 previous-hash chain and an HMAC key supplied separately from the database. Proposal execution reservation, approval-token consumption, unique idempotency and per-action rate-limit checks are transactionally enforced.
+- Non-dry-run calls require a single-use approval. Uncertain external outcomes are marked UNKNOWN and require signed reconciliation by idempotency key rather than automatic re-execution.
+- Reversible/consequential actions require explicit recovery postconditions. Compensation is followed by a signed external observation; rollback is not considered successful until that observation proves the recovery conditions.
+- Feedback decisions require a different authenticated reviewer with a dedicated action-specific scope. Accepted/rejected feedback is durably recorded and does not mutate Stage 20 evidence, trusted facts or capability registries.
+
+**Explicit limits:** this is a host integration framework, not a generic network client or universal actuator. The host must supply audited adapter implementations, manage issuer/adapter/gateway/ledger keys, protect the SQLite file and externally pin ledger-head hashes. Adapter correctness and real service/device authorization remain deployment responsibilities.
+
+See [Stage 22 design](docs/37-stage22-trusted-real-world-execution.md) and [acceptance report](artifacts/STAGE22_TRUSTED_EXECUTION_REPORT.md).
+

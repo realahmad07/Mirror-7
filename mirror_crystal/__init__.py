@@ -631,3 +631,28 @@ __all__ += [
     "GroundedActionEngine", "GroundedActionError", "GroundedActionProposal",
     "GroundedActionRegistry", "HumanActionApproval",
 ]
+
+from .stage22_trusted_execution import (
+    ActionAdapterRequest,
+    AdapterPhase,
+    AdapterReceipt,
+    DurableAuditLedger,
+    FeedbackReviewReport,
+    GatewayExecutionReport,
+    GatewayExecutionStatus,
+    LedgerVerification,
+    ReviewerAuthenticator,
+    ReviewerIdentity,
+    Stage22Error,
+    TrustedActionAdapter,
+    TrustedActionAdapterRegistry,
+    TrustedActionGateway,
+)
+
+__all__ += [
+    "ActionAdapterRequest", "AdapterPhase", "AdapterReceipt",
+    "DurableAuditLedger", "FeedbackReviewReport", "GatewayExecutionReport",
+    "GatewayExecutionStatus", "LedgerVerification", "ReviewerAuthenticator",
+    "ReviewerIdentity", "Stage22Error", "TrustedActionAdapter",
+    "TrustedActionAdapterRegistry", "TrustedActionGateway",
+]
