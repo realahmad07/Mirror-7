@@ -36,6 +36,13 @@ class Config:
     lr: float = 5e-4
     margin: float = 0.20
     contrastive_weight: float = 0.10
+    transition_architecture: str = "mlp"
+
+    def __post_init__(self) -> None:
+        if self.transition_architecture not in {"mlp", "linear_operator"}:
+            raise ValueError("transition_architecture must be 'mlp' or 'linear_operator'")
+        if self.transition_architecture == "linear_operator" and self.state_dim != self.concept_dim:
+            raise ValueError("linear_operator architecture requires state_dim == concept_dim")
 
 
 class LearnedOperationBrain(nn.Module):
@@ -43,19 +50,47 @@ class LearnedOperationBrain(nn.Module):
         super().__init__()
         self.cfg = cfg
         self.concept = nn.Embedding(cfg.concepts, cfg.state_dim)
-        self.operation = nn.Embedding(cfg.operations, cfg.op_dim)
-        self.step = nn.Sequential(
-            nn.Linear(cfg.state_dim + cfg.op_dim, cfg.hidden_dim),
-            nn.GELU(),
-            nn.LayerNorm(cfg.hidden_dim),
-            nn.Linear(cfg.hidden_dim, cfg.state_dim),
-        )
-        self.norm = nn.LayerNorm(cfg.state_dim)
+
+        if cfg.transition_architecture == "linear_operator":
+            # Structural ablation matched to the synthetic world generator:
+            # each operation applies tanh(state @ matrix.T), then normalization.
+            # No target matrices are copied into this model.
+            self.operation_matrices = nn.Parameter(
+                torch.empty(cfg.operations, cfg.state_dim, cfg.state_dim)
+            )
+            with torch.no_grad():
+                for operation_id in range(cfg.operations):
+                    nn.init.normal_(
+                        self.operation_matrices[operation_id], mean=0.0, std=0.35,
+                    )
+                    if operation_id % 2 == 0:
+                        self.operation_matrices[operation_id].diagonal().add_(
+                            0.15 + 0.03 * operation_id
+                        )
+            self.operation = None
+            self.step = None
+            self.norm = None
+        else:
+            self.operation = nn.Embedding(cfg.operations, cfg.op_dim)
+            self.step = nn.Sequential(
+                nn.Linear(cfg.state_dim + cfg.op_dim, cfg.hidden_dim),
+                nn.GELU(),
+                nn.LayerNorm(cfg.hidden_dim),
+                nn.Linear(cfg.hidden_dim, cfg.state_dim),
+            )
+            self.norm = nn.LayerNorm(cfg.state_dim)
 
     def encode_concept(self, concept_ids: torch.Tensor) -> torch.Tensor:
         return F.normalize(self.concept(concept_ids), dim=-1)
 
     def apply(self, state: torch.Tensor, op_ids: torch.Tensor) -> torch.Tensor:
+        if self.cfg.transition_architecture == "linear_operator":
+            matrices = self.operation_matrices.index_select(0, op_ids)
+            transformed = torch.bmm(
+                state.unsqueeze(1), matrices.transpose(1, 2),
+            ).squeeze(1)
+            return F.normalize(torch.tanh(transformed), dim=-1)
+
         op = self.operation(op_ids)
         delta = self.step(torch.cat([state, op], dim=-1))
         return F.normalize(self.norm(state + delta), dim=-1)
@@ -374,6 +409,7 @@ def train(args: argparse.Namespace) -> None:
     cfg = Config(
         epochs=args.epochs, lr=args.lr,
         contrastive_weight=args.contrastive_weight,
+        transition_architecture=args.transition_architecture,
     )
     device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
     model, examples, history = train_model(cfg, args.seed, device)
@@ -404,6 +440,11 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--contrastive-weight", type=float, default=0.10)
+    parser.add_argument(
+        "--transition-architecture",
+        choices=("mlp", "linear_operator"),
+        default="mlp",
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", default=None)
     train(parser.parse_args())
