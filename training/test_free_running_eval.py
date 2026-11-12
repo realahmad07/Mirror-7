@@ -1,6 +1,7 @@
 import json
 
 from training.free_running_eval import (
+    compare_evaluation_reports,
     evaluate_checkpoint,
     fingerprint_cases,
     load_prompt_cases,
@@ -81,6 +82,9 @@ def test_evaluation_report_records_checkpoint_and_prompt_fingerprints(tmp_path, 
         prompt_file=prompts,
     )
     assert report["evaluation"] == "native_free_running_diagnostics_v2"
+    assert report["seed_sensitivity"]["measured"] is False
+    assert report["seed_sensitivity"]["mode"] == "not_measured_greedy_decode"
+    assert len({row["response"] for row in report["samples"]}) == 1
     assert report["checkpoint_sha256"] == sha256_file(checkpoint)
     assert report["checkpoint_size_bytes"] == checkpoint.stat().st_size
     assert report["prompt_file_sha256"] == sha256_file(prompts)
@@ -119,3 +123,106 @@ def test_prompt_loader_accepts_prompt_and_target_aliases(tmp_path):
         "prompt": "Explain recursion",
         "target": "A function calls itself.",
     }]
+
+def _comparison_report(checkpoint_hash, *, case_hash="same-cases", prompt_hash="same-prompts", seeds=(17, 29, 43), decoding=None, output="original"):
+    decoding = decoding or {
+        "mode": "greedy",
+        "max_new_tokens": 64,
+        "temperature": 0.0,
+        "top_k": 40,
+    }
+    samples = []
+    for seed in seeds:
+        samples.append({
+            "case_id": "case-1",
+            "seed": seed,
+            "metrics": {
+                "prompt_keyword_coverage": 0.5 if output == "original" else 0.75,
+                "char_trigram_diversity": 0.4 if output == "original" else 0.6,
+                "word_fivegram_diversity": 0.8,
+                "utf8_bytes": 20 if output == "original" else 22,
+                "replacement_character_count": 0,
+                "terminated": True,
+                "exact_match": False,
+            },
+        })
+    return {
+        "checkpoint_sha256": checkpoint_hash,
+        "selected_cases_sha256": case_hash,
+        "prompt_file_sha256": prompt_hash,
+        "decoding": decoding,
+        "summary": {"seeds": list(seeds)},
+        "samples": samples,
+    }
+
+
+def test_paired_comparison_requires_identical_prompts_seeds_and_decoding():
+    baseline = _comparison_report("baseline")
+    candidate = _comparison_report("candidate", output="candidate")
+    comparison = compare_evaluation_reports(baseline, candidate)
+
+    assert comparison["paired_samples"] == 3
+    assert comparison["deltas"]["prompt_keyword_coverage"]["mean_candidate_minus_baseline"] == 0.25
+    assert comparison["deltas"]["char_trigram_diversity"]["mean_candidate_minus_baseline"] == 0.2
+    assert "do not establish improved" in comparison["interpretation_boundary"]
+
+
+def test_paired_comparison_rejects_different_case_fingerprints():
+    baseline = _comparison_report("baseline")
+    candidate = _comparison_report("candidate", case_hash="different")
+    import pytest
+    with pytest.raises(ValueError, match="selected_cases_sha256"):
+        compare_evaluation_reports(baseline, candidate)
+
+
+def test_paired_comparison_rejects_different_decoding_settings():
+    baseline = _comparison_report("baseline")
+    candidate = _comparison_report(
+        "candidate",
+        decoding={
+            "mode": "stochastic",
+            "max_new_tokens": 64,
+            "temperature": 0.7,
+            "top_k": 40,
+        },
+    )
+    import pytest
+    with pytest.raises(ValueError, match="decoding"):
+        compare_evaluation_reports(baseline, candidate)
+
+
+def test_stochastic_evaluation_labels_seed_variation_as_sampling_only(tmp_path, monkeypatch):
+    import sys
+    import types
+    import torch
+
+    checkpoint = tmp_path / "model.pt"
+    checkpoint.write_bytes(b"minimal checkpoint fixture")
+
+    class FakeModel:
+        def eval(self):
+            return self
+
+        def generate_text(self, prompt, **kwargs):
+            sample = int(torch.randint(0, 100000, (1,)).item())
+            return f"sample {sample}"
+
+    fake_module = types.ModuleType("training.native_conversation_v5")
+    fake_module.load_checkpoint = lambda path, device: (FakeModel(), {
+        "format": "test-fixture",
+        "config": {"test": True},
+    })
+    monkeypatch.setitem(sys.modules, "training.native_conversation_v5", fake_module)
+
+    report = evaluate_checkpoint(
+        checkpoint,
+        [{"case_id": "p1", "prompt": "Explain matrices", "target": None}],
+        seeds=(17, 29, 43),
+        device="cpu",
+        temperature=0.7,
+    )
+    assert report["seed_sensitivity"]["measured"] is True
+    assert report["seed_sensitivity"]["mode"] == "sampling_variation"
+    assert len({row["response"] for row in report["samples"]}) == 3
+
+
