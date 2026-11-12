@@ -2,9 +2,9 @@
 
 This pilot uses opaque operation IDs and variable-length compositions. Padding is
 represented by -1 and is masked during composition; it is never interpreted as
-operation zero. Seeds control model initialization and row shuffling. The training objective ranks targets against duplicate-aware in-batch hard
-negatives. World generation and model initialization use independent derived
-random streams. Results are bounded synthetic evidence, not open-domain reasoning.
+operation zero. Seeds control model initialization and row shuffling. The training objective combines duplicate-aware in-batch final-state ranking
+with teacher-forced supervision at every observed intermediate transition.
+World generation and model initialization use independent derived random streams. Results are bounded synthetic evidence, not open-domain reasoning.
 """
 from __future__ import annotations
 
