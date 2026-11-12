@@ -63,7 +63,11 @@ values) of the synthetic target generator. It is evaluated alongside the
 original MLP with the same generated worlds, seeds, training budget and held-out
 gate. This tests whether a more suitable transition inductive bias recovers
 synthetic latent dynamics; even a pass would not establish natural semantic
-understanding.
+understanding. The first operator run is invalid: the world and model shared a
+seeded random stream, and matching initialization shapes copied hidden target
+matrices into the model. The implementation now derives a separate model seed
+and has a regression test asserting that learned initialization differs from
+the benchmark's hidden matrices. The leaked run is excluded from evidence.
 
 ## Acceptance boundaries
 
