@@ -169,6 +169,7 @@ def run_python_regression_in_container(
     max_loop_steps: int = 50000,
     image: str | None = None,
     runtime: str | None = None,
+    result_contracts: dict[str, str] | None = None,
 ) -> ContainerExecutionResult:
     """Run candidate code and a trusted regression harness in a fresh container."""
     if not isinstance(candidate_source, str) or not candidate_source.strip():
@@ -179,6 +180,17 @@ def run_python_regression_in_container(
         return ContainerExecutionResult(False, "", "regression cases must be a non-empty list", "", None, None)
     if expected_key not in {"baseline_expected", "candidate_expected"}:
         return ContainerExecutionResult(False, "", "unsupported expected output key", "", None, None)
+    if result_contracts is None:
+        result_contracts = {}
+    if not isinstance(result_contracts, dict):
+        return ContainerExecutionResult(False, "", "result_contracts must be an object", "", None, None)
+    case_ids = [case.get("case_id") for case in regression_cases if isinstance(case, dict)]
+    if len(case_ids) != len(regression_cases) or any(not isinstance(value, str) or not value for value in case_ids):
+        return ContainerExecutionResult(False, "", "each regression case must have a non-empty string case_id", "", None, None)
+    if len(set(case_ids)) != len(case_ids):
+        return ContainerExecutionResult(False, "", "regression case IDs must be unique", "", None, None)
+    if set(result_contracts) - set(case_ids) or any(value != "json_object" for value in result_contracts.values()):
+        return ContainerExecutionResult(False, "", "result_contracts contains an unknown case or unsupported contract", "", None, None)
     if not 1 <= float(timeout_seconds) <= 60:
         return ContainerExecutionResult(False, "", "timeout must be between 1 and 60 seconds", "", None, None)
     try:
@@ -186,6 +198,7 @@ def run_python_regression_in_container(
             "candidate_source": candidate_source,
             "regression_cases": regression_cases,
             "expected_key": expected_key,
+            "result_contracts": result_contracts,
             "max_loop_steps": int(max_loop_steps),
             "candidate_timeout_seconds": float(timeout_seconds),
         }, allow_nan=False, separators=(",", ":"))

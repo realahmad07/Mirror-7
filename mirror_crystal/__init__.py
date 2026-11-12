@@ -604,3 +604,30 @@ __all__ += [
     "RealWorldGroundingEngine",
     "SourceTrustRegistry",
 ]
+
+
+from .stage21_grounded_action import (
+    ActionCheckDecision,
+    ActionCheckResult,
+    ActionExecutionReport,
+    ActionExecutionStatus,
+    ActionFeedback,
+    ActionRisk,
+    ActionSandboxResult,
+    ActionVerificationReport,
+    ContainerActionExecutor,
+    GroundedActionDefinition,
+    GroundedActionEngine,
+    GroundedActionError,
+    GroundedActionProposal,
+    GroundedActionRegistry,
+    HumanActionApproval,
+)
+
+__all__ += [
+    "ActionCheckDecision", "ActionCheckResult", "ActionExecutionReport",
+    "ActionExecutionStatus", "ActionFeedback", "ActionRisk", "ActionSandboxResult",
+    "ActionVerificationReport", "ContainerActionExecutor", "GroundedActionDefinition",
+    "GroundedActionEngine", "GroundedActionError", "GroundedActionProposal",
+    "GroundedActionRegistry", "HumanActionApproval",
+]
