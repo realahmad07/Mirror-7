@@ -36,6 +36,7 @@ class Config:
     lr: float = 5e-4
     margin: float = 0.20
     contrastive_weight: float = 0.10
+    transition_supervision_weight: float = 1.0
     transition_architecture: str = "mlp"
 
     def __post_init__(self) -> None:
@@ -43,6 +44,8 @@ class Config:
             raise ValueError("transition_architecture must be 'mlp' or 'linear_operator'")
         if self.transition_architecture == "linear_operator" and self.state_dim != self.concept_dim:
             raise ValueError("linear_operator architecture requires state_dim == concept_dim")
+        if self.contrastive_weight < 0 or self.transition_supervision_weight < 0:
+            raise ValueError("loss weights must be non-negative")
 
 
 class LearnedOperationBrain(nn.Module):
@@ -125,6 +128,7 @@ class Example:
     ops: tuple[int, ...]
     target: torch.Tensor
     held_out: bool
+    intermediate_states: tuple[torch.Tensor, ...] = ()
 
 
 def _deduplicate_examples(examples: list[Example]) -> list[Example]:
@@ -147,12 +151,14 @@ def make_world(cfg: Config, seed: int) -> list[Example]:
             matrix += torch.eye(cfg.concept_dim) * (0.15 + 0.03 * op)
         matrices.append(matrix)
 
-    def target_for(concept: int, operations: tuple[int, ...]) -> torch.Tensor:
+    def trace_for(concept: int, operations: tuple[int, ...]) -> tuple[torch.Tensor, ...]:
         state = base[concept]
+        trace = []
         for operation in operations:
             state = torch.tanh(state @ matrices[operation].T)
             state = F.normalize(state, dim=-1)
-        return state
+            trace.append(state.clone())
+        return tuple(trace)
 
     examples = []
     for concept in range(cfg.concepts):
@@ -164,11 +170,13 @@ def make_world(cfg: Config, seed: int) -> list[Example]:
                     or (length >= 4 and operations[0] == 0 and operations[1] == 1)
                     or (length >= 5 and operations[-2:] == (4, 5))
                 )
+                trace = trace_for(concept, operations)
                 examples.append(Example(
                     concept=concept,
                     ops=operations,
-                    target=target_for(concept, operations),
+                    target=trace[-1],
                     held_out=held_out,
+                    intermediate_states=trace,
                 ))
     return examples
 
@@ -176,7 +184,7 @@ def make_world(cfg: Config, seed: int) -> list[Example]:
 def world_fingerprint(cfg: Config, seed: int, examples: list[Example]) -> str:
     """Hash the generated benchmark, including targets and train/held-out labels."""
     payload = {
-        "format": "mirror7-exp6-semantic-world-v2",
+        "format": "mirror7-exp6-semantic-world-v3",
         "seed": int(seed),
         "world_config": {
             "concepts": cfg.concepts,
@@ -191,6 +199,10 @@ def world_fingerprint(cfg: Config, seed: int, examples: list[Example]) -> str:
                 "operations": list(row.ops),
                 "held_out": row.held_out,
                 "target": [round(float(value), 7) for value in row.target.tolist()],
+                "intermediate_states": [
+                    [round(float(value), 7) for value in state.tolist()]
+                    for state in row.intermediate_states
+                ],
             }
             for row in examples
         ],
