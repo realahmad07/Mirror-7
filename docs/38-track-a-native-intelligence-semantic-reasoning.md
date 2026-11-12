@@ -171,6 +171,39 @@ added to the research branch. The existing CI artifact predates this diagnostic
 addition, so the new strata are not yet measured. Re-run the three-seed screen
 and inspect all per-seed strata before choosing another architecture or loss.
 
+## Composition-robust training phase: rollout dose response
+
+The corrected-evaluator three-seed artifact (commit `0ee5859`) was inspected
+by subgroup. For the linear-operator / contrastive-0.10 baseline, mean held-out
+candidate margins across seeds were:
+
+| Held-out stratum | Mean margin | Mean top-1 accuracy |
+|---|---:|---:|
+| Unseen concept | -0.0694 | 40.3% |
+| Seen concept | -0.0625 | 39.7% |
+| Held-out prefix `0→1` | -0.0222 | 44.4% |
+| Held-out suffix `4→5` | -0.1314 | 28.3% |
+| Chain length 3 | +0.0097 | 62.3% |
+| Chain length 4 | -0.0465 | 41.0% |
+| Chain length 5 | -0.1175 | 29.0% |
+
+The failure is not isolated to unseen concepts: seen and unseen concept
+strata both have negative average margins. The sharpest and most consistent
+degradation is composition depth and the held-out `4→5` suffix. Every seed's
+five-operation margin is negative (between -0.1326 and -0.1015). This supports
+investigating accumulated rollout error; it does not prove that rollout loss
+will solve it.
+
+Next controlled phase: a rollout-supervision dose-response at weights 0.10 and
+0.25, alongside the existing 1.0 ablation. Each uses the same 240 epochs,
+seeds 17/29/43, linear-operator architecture, contrastive weight 0.10,
+teacher-forced transition weight 1.0, and held-out evaluator. The two new
+reports are retained as CI artifacts. The all-seed gate is unchanged and
+considers all structured-operator configurations. A run is not accepted unless
+every seed meets positive held-out margin, above-chance ranking, positive order
+margin, and no-collapse checks. Results for the 0.10/0.25 dose runs are pending
+execution; no improvement is claimed yet.
+
 ## Natural semantic benchmark intake
 
 CLUTRR was examined as a candidate natural-language relational reasoning
