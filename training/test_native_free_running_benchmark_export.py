@@ -22,6 +22,7 @@ def test_exported_heldout_bundle_is_frozen_and_explicitly_not_promotion_grade(tm
     assert len(cases) == manifest["case_count"] == 10
     assert manifest["case_ids"] == [case["case_id"] for case in cases]
     assert manifest["prompt_file_sha256"] == saved_manifest["prompt_file_sha256"]
+    assert saved_manifest["manifest_path"] == str(manifest_path)
     assert manifest["promotion_eligible"] is False
     assert "not been audited for disjointness" in " ".join(manifest["limitations"])
     assert all(case["target"] for case in cases)
@@ -38,3 +39,15 @@ def test_exporter_keeps_dev_and_heldout_partitions_disjoint():
     assert dev_ids.isdisjoint(heldout_ids)
     assert all(case["source_partition"] == "dev" for case in dev)
     assert all(case["source_partition"] == "held_out" for case in heldout)
+
+
+def test_exporter_rejects_prompt_and_manifest_path_collision(tmp_path):
+    import pytest
+
+    output = tmp_path / "same-path.json"
+    with pytest.raises(ValueError, match="different output paths"):
+        export_prompt_bundle(
+            output,
+            partition="held_out",
+            manifest_path=output,
+        )
