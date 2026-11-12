@@ -90,6 +90,14 @@ class Example:
     held_out: bool
 
 
+def _deduplicate_examples(examples: list[Example]) -> list[Example]:
+    """Keep one deterministic row per semantic input task."""
+    unique: dict[tuple[int, tuple[int, ...]], Example] = {}
+    for row in examples:
+        unique.setdefault((row.concept, tuple(row.ops)), row)
+    return list(unique.values())
+
+
 def make_world(cfg: Config, seed: int) -> list[Example]:
     rng = random.Random(seed)
     generator = torch.Generator().manual_seed(seed)
@@ -160,9 +168,39 @@ def loss_fn(
     negatives: torch.Tensor,
     margin: float,
 ) -> torch.Tensor:
+    """Fit each target while ranking it above distinct in-batch alternatives.
+
+    Identical (or numerically equivalent) target vectors are excluded from the
+    negative set. Treating a duplicate target as a negative creates an impossible
+    margin constraint for two examples that have the same correct answer.
+    """
+    if prediction.ndim != 2 or target.shape != prediction.shape:
+        raise ValueError("prediction and target must have the same rank-2 shape")
+    if negatives.ndim != 2 or negatives.shape[1] != prediction.shape[1]:
+        raise ValueError("negative candidates must be a rank-2 tensor with matching width")
+    if negatives.shape[0] == 0:
+        raise ValueError("negative candidate set must not be empty")
+
+    prediction = F.normalize(prediction, dim=-1)
+    target = F.normalize(target, dim=-1)
+    candidates = F.normalize(negatives, dim=-1)
+
     positive_score = (prediction * target).sum(-1)
-    negative_score = (prediction * negatives).sum(-1)
-    return (1 - positive_score).mean() + F.relu(negative_score - positive_score + margin).mean()
+    candidate_scores = prediction @ candidates.T
+    target_similarity = target @ candidates.T
+
+    # A target-equivalent vector is another valid positive, not a negative.
+    valid_negative = target_similarity < (1.0 - 1e-6)
+    hardest_negative = candidate_scores.masked_fill(
+        ~valid_negative, -torch.inf,
+    ).max(dim=-1).values
+    has_negative = valid_negative.any(dim=-1)
+    margin_loss = torch.where(
+        has_negative,
+        F.relu(hardest_negative - positive_score + margin),
+        torch.zeros_like(positive_score),
+    )
+    return (1 - positive_score).mean() + margin_loss.mean()
 
 
 def _batch(examples: list[Example], device: str | torch.device):
@@ -195,11 +233,10 @@ def evaluate(
     # Random generation samples operation chains with replacement. Collapse
     # repeated (concept, operation-sequence) tasks before constructing the
     # candidate matrix so identical targets cannot count as false negatives.
-    unique_rows = {}
-    for row in examples:
-        if row.held_out == (split == "held_out"):
-            unique_rows.setdefault((row.concept, row.ops), row)
-    rows = list(unique_rows.values())
+    rows = _deduplicate_examples([
+        row for row in examples
+        if row.held_out == (split == "held_out")
+    ])
     if len(rows) < 2:
         raise ValueError("held-out evaluation requires at least two unique tasks")
 
@@ -289,8 +326,10 @@ def train_model(
         raise ValueError("epochs and batch_size must be positive")
     seed_everything(seed)
     examples = make_world(cfg, seed)
-    train_rows = [row for row in examples if not row.held_out]
-    held_out_rows = [row for row in examples if row.held_out]
+    # Repeated random draws of the same (concept, operation chain) add no
+    # information and can become false negatives in contrastive batches.
+    train_rows = _deduplicate_examples([row for row in examples if not row.held_out])
+    held_out_rows = _deduplicate_examples([row for row in examples if row.held_out])
     if not train_rows or len(held_out_rows) < 2:
         raise ValueError("benchmark must contain train rows and at least two held-out rows")
 
@@ -306,8 +345,9 @@ def train_model(
             batch = train_rows[start:start + cfg.batch_size]
             concept_ids, operations, targets = _batch(batch, device)
             prediction = model.compose(concept_ids, operations)
-            negatives = targets[torch.randperm(targets.shape[0], device=device)]
-            loss = loss_fn(prediction, targets, negatives, cfg.margin)
+            # Compare against all distinct targets in this minibatch. The loss
+            # masks target-equivalent vectors and uses the hardest valid negative.
+            loss = loss_fn(prediction, targets, targets, cfg.margin)
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
