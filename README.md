@@ -1281,7 +1281,7 @@ Detailed Stage 17 correction report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.
 | **Stage 18** | **Autonomous Research** | Research question synthesis, literature and source discovery, evidence comparison, reproducible experiment design, and structured empirical reports. |
 | **Stage 19** | **Controlled Self-Improvement** | Proposal of code/rule changes, isolated sandbox testing, baseline regression comparisons, automatic regression rejection, and human-in-the-loop deployment gating. |
 | **Stage 20** | **Multimodal & Real-World Grounding** | Cross-modal processing for images, documents, and real-world telemetry; grounding latent conclusions into verified observable sensory evidence. |
-| **Stage 21** | **Integration & Independent Evaluation** | End-to-end subsystem orchestration, adversarial stress-testing, unseen task suites, long-horizon stability benchmarks, and independent trust verification. |
+| **Stage 21** | **Grounded Autonomous Action & Feedback** | Evidence-bound action proposals; independent evidence-provenance and action-policy checks; Stage 19 isolated-container execution; trusted result-contract enforcement; predicted-versus-observed postcondition comparison; failure feedback without silent knowledge mutation; and separate human approval for consequential actions. |
 
 ### Stage 18 — Autonomous Research
 
