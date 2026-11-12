@@ -54,7 +54,7 @@ def test_evaluation_report_records_checkpoint_and_prompt_fingerprints(tmp_path, 
     checkpoint.write_bytes(b"minimal checkpoint fixture")
     prompts = tmp_path / "prompts.jsonl"
     prompts.write_text(
-        json.dumps({"case_id": "p1", "prompt": "Explain matrices", "target": "Matrices."}) + "\\n",
+        json.dumps({"case_id": "p1", "prompt": "Explain matrices", "target": "Matrices."}) + "\n",
         encoding="utf-8",
     )
 
