@@ -40,7 +40,21 @@ After the implementation tests pass, run:
 ```bash
 python -m training.evaluate_experiment6 \
   --device cuda --epochs 240 --seeds 17,29,43 \
+  --contrastive-weight 0.10 --transition-supervision-weight 1.0 \
   --output artifacts/exp6_multiseed_screening.json
+
+python -m training.evaluate_experiment6 \
+  --device cuda --epochs 240 --seeds 17,29,43 \
+  --contrastive-weight 0.10 --transition-supervision-weight 1.0 \
+  --transition-architecture linear_operator \
+  --output artifacts/exp6_operator_screening.json
+
+# Predeclared contrastive-weight ablation (same model, data and compute budget)
+python -m training.evaluate_experiment6 \
+  --device cuda --epochs 240 --seeds 17,29,43 \
+  --contrastive-weight 0.25 --transition-supervision-weight 1.0 \
+  --transition-architecture linear_operator \
+  --output artifacts/exp6_operator_contrastive025_screening.json
 ```
 
 The default `mlp` transition is the shared MLP baseline. A structural
