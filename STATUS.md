@@ -6,7 +6,7 @@ The corrected Experiment 6 implementation masks variable-length padding, stores 
 
 **Code status:** implementation and targeted tests are in the active Track A PR; exact-head Fast CI, Security Guard, and Native Brain Training checks are running.
 
-**Research status:** NOT YET PASSED. At 240 epochs, the MLP reached 34.96% held-out top-1 with mean margin -0.0851; the leakage-free linear operator reached 40.72% with mean margin -0.0649. Both beat chance and pass order/no-collapse checks, but all six seed-runs fail the required positive held-out-margin gate. The matched 0.25 contrastive-weight ablation worsened the operator (34.10% top-1, mean margin -0.1024 versus 40.72%, -0.0649 at weight 0.10); both failed the positive-margin gate. A new free-running rollout-supervision operator ablation is running with unchanged thresholds. Frozen Experiment 5/7 comparison and an approved, source-disjoint natural-semantic benchmark remain open. The native 10.57M byte model's free-running instability remains an explicit limitation.
+**Research status:** NOT YET PASSED. At 240 epochs, the MLP reached 34.96% held-out top-1 with mean margin -0.0851; the leakage-free linear operator reached 40.72% with mean margin -0.0649. Both beat chance and pass order/no-collapse checks, but all six seed-runs fail the required positive held-out-margin gate. The matched 0.25 contrastive-weight ablation worsened the operator (34.10% top-1, mean margin -0.1024 versus 40.72%, -0.0649 at weight 0.10); both failed the positive-margin gate. The free-running rollout-supervision operator ablation was worse (31.98% held-out top-1, mean margin -0.1112) and was rejected. A held-out evaluator inconsistency for equivalent target states has now been fixed; matched runs must be repeated under the corrected evaluator. Frozen Experiment 5/7 comparison and an approved, source-disjoint natural-semantic benchmark remain open. The native 10.57M byte model's free-running instability remains an explicit limitation.
 
 See [docs/38-track-a-native-intelligence-semantic-reasoning.md](docs/38-track-a-native-intelligence-semantic-reasoning.md).
 
@@ -36,7 +36,7 @@ The 75+ hour initial build and research cycle is complete.
 | 3 | Explicit state transformations became learnable on the defined benchmark. |
 | 4B | Held-out Top-1 87.18% and compositional margin 0.2967 on the defined benchmark. |
 | 5 | 60.71% mean accuracy on bounded variable-length chains. |
-| 6 | Corrected 240-epoch runs: MLP 34.96% and linear operator 40.72% held-out top-1; both beat chance but fail positive-margin gate on all seeds. Contrastive weight 0.25 worsened held-out top-1 to 34.10% and mean margin to -0.1024; all three seeds still failed. Free-running rollout-supervision ablation pending. |
+| 6 | Corrected 240-epoch runs: MLP 34.96% and linear operator 40.72% held-out top-1; both beat chance but fail positive-margin gate on all seeds. Contrastive weight 0.25 worsened held-out top-1 to 34.10% and mean margin to -0.1024; all three seeds still failed. Free-running rollout-supervision rejected (31.98% top-1, mean margin -0.1112); equivalent-target evaluator fix added, corrected reruns pending. |
 | 7 | 63.33% length-5 and 65.56% unseen-concept mean; matched the frozen primary baseline. |
 
 ## Research boundary
