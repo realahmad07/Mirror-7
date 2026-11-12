@@ -11,6 +11,7 @@ from .experiment6_learned_operations import (
     derive_model_initialization_seed,
     loss_fn,
     _deduplicate_examples,
+    _target_equivalence_mask,
     make_world,
     seed_everything,
     train_model,
@@ -64,6 +65,35 @@ def test_loss_uses_hardest_distinct_negative_candidate():
         prediction, target, candidates, margin=0.30, contrastive_weight=0.10,
     )
     assert downweighted.item() == pytest.approx(0.01, abs=1e-5)
+
+
+def test_heldout_evaluation_masks_equivalent_targets_from_negatives():
+    cfg = Config(state_dim=12, concept_dim=12, concepts=6, operations=6, max_chain=3)
+    model = LearnedOperationBrain(cfg)
+    world = make_world(cfg, 83)
+    rows = [row for row in world if row.held_out][:8]
+    assert len(rows) >= 3
+    shared = rows[0].target.clone()
+    rows[1] = replace(rows[1], target=shared.clone())
+    metrics = evaluate(model, rows, cfg, "cpu")
+    assert metrics["equivalent_target_pair_count"] >= 1
+    assert metrics["candidate_count"] < metrics["count"]
+    assert metrics["mean_effective_candidate_count"] < metrics["count"]
+    assert metrics["margin"] is not None
+    assert 0.0 <= metrics["chance_accuracy"] <= 1.0
+
+
+def test_target_equivalence_mask_is_symmetric_and_keeps_distinct_targets():
+    targets = torch.nn.functional.normalize(torch.tensor([
+        [1.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+    ]), dim=-1)
+    mask = _target_equivalence_mask(targets)
+    assert torch.equal(mask, mask.T)
+    assert mask[0, 1] and mask[1, 0]
+    assert not mask[0, 2]
+    assert mask.diag().all()
 
 
 def test_world_contains_a_complete_teacher_forced_transition_trace():
