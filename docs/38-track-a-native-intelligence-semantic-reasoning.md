@@ -117,6 +117,21 @@ decoding budgets, and include human-adjudicated or independently verifiable
 quality labels. Recurrent, state-space, and compact-attention alternatives must
 share the same data, parameter/compute budget, and evaluator.
 
+## Native free-running evaluation hardening
+
+The V5 free-running evaluator records checkpoint, source-prompt-file and
+selected-case fingerprints. It now also labels decoding mode correctly:
+repeating different seeds under greedy decoding is deterministic replay, not
+seed-variance evidence. Sampling runs report seed variation as sampling-only;
+the model weights remain fixed.
+
+A paired report comparator requires identical prompt/case fingerprints, seed
+lists and decoding settings before calculating per-case/per-seed deltas for
+format and lexical diagnostics. Those deltas are not semantic correctness,
+factuality or user-preference scores. The evaluator still needs a frozen
+source-disjoint prompt set and independent human/oracle quality labels before
+it can support capability claims.
+
 ## Status
 
 **Implementation hardening:** completed in this increment.
