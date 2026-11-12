@@ -10,6 +10,23 @@ from training.free_running_eval import (
 )
 
 
+def _install_fake_torch(monkeypatch):
+    """Provide only the RNG surface used by the evaluator; fast CI need not install torch."""
+    import random
+    import sys
+    import types
+
+    rng = random.Random()
+    fake_torch = types.ModuleType("torch")
+    fake_torch.manual_seed = lambda seed: rng.seed(int(seed))
+    fake_torch.cuda = types.SimpleNamespace(
+        is_available=lambda: False,
+        manual_seed_all=lambda seed: None,
+    )
+    monkeypatch.setitem(sys.modules, "torch", fake_torch)
+    return rng
+
+
 def test_generation_diagnostics_measure_prompt_grounding_repetition_and_exact_match():
     metrics = score_generation(
         "Explain Python functions and classes",
@@ -51,6 +68,7 @@ def test_evaluation_report_records_checkpoint_and_prompt_fingerprints(tmp_path, 
     import sys
     import types
 
+    _install_fake_torch(monkeypatch)
     checkpoint = tmp_path / "model.pt"
     checkpoint.write_bytes(b"minimal checkpoint fixture")
     prompts = tmp_path / "prompts.jsonl"
@@ -97,6 +115,7 @@ def test_evaluation_rejects_duplicate_seed_ids(tmp_path, monkeypatch):
     import types
     import pytest
 
+    _install_fake_torch(monkeypatch)
     checkpoint = tmp_path / "model.pt"
     checkpoint.write_bytes(b"minimal checkpoint fixture")
     fake_module = types.ModuleType("training.native_conversation_v5")
@@ -194,8 +213,9 @@ def test_paired_comparison_rejects_different_decoding_settings():
 def test_stochastic_evaluation_labels_seed_variation_as_sampling_only(tmp_path, monkeypatch):
     import sys
     import types
-    import torch
+    import random
 
+    rng = _install_fake_torch(monkeypatch)
     checkpoint = tmp_path / "model.pt"
     checkpoint.write_bytes(b"minimal checkpoint fixture")
 
@@ -204,7 +224,7 @@ def test_stochastic_evaluation_labels_seed_variation_as_sampling_only(tmp_path, 
             return self
 
         def generate_text(self, prompt, **kwargs):
-            sample = int(torch.randint(0, 100000, (1,)).item())
+            sample = rng.randrange(100000)
             return f"sample {sample}"
 
     fake_module = types.ModuleType("training.native_conversation_v5")
