@@ -141,6 +141,36 @@ older evaluator and must not be compared numerically with the corrected
 evaluator. Re-run the matched configurations with the corrected evaluator
 before making any selection or promotion decision.
 
+## Corrected-evaluator rerun and failure localization
+
+The three-seed rerun was executed with the equivalent-target correction active.
+The per-seed reports were retrieved from the CI artifact and inspected:
+
+| Configuration | Seed 17 margin / accuracy | Seed 29 margin / accuracy | Seed 43 margin / accuracy |
+|---|---:|---:|---:|
+| MLP, contrastive 0.10 | -0.1182 / 31.34% | -0.0770 / 35.34% | -0.0602 / 38.21% |
+| Linear operator, contrastive 0.10 | -0.0863 / 35.82% | -0.0301 / 48.12% | -0.0783 / 38.21% |
+| Linear operator, contrastive 0.25 | -0.1215 / 28.36% | -0.0690 / 40.60% | -0.1167 / 33.33% |
+| Linear operator, rollout 1.0 | -0.1410 / 26.12% | -0.0733 / 41.35% | -0.1194 / 28.46% |
+
+All configurations remain above candidate chance and have positive order margins
+without representation collapse, but every seed fails the positive candidate
+margin requirement. No configuration passes the screen. The 0.10 linear
+operator remains the best of these tested configurations, not an accepted model.
+
+To localize this failure rather than change thresholds, the evaluator now emits
+ranking metrics stratified by seen/unseen concept, operation-chain length, and
+the two held-out composition patterns (prefix 0→1 and suffix 4→5). Each
+stratum ranks its examples against the same complete held-out candidate bank
+and reports count, accuracy, mean candidate margin, and positive-margin rate.
+This separates concept-transfer failures from composition-depth or specific
+operator-combination failures without changing the main acceptance metric.
+
+**Execution status:** the stratified evaluator and regression test have been
+added to the research branch. The existing CI artifact predates this diagnostic
+addition, so the new strata are not yet measured. Re-run the three-seed screen
+and inspect all per-seed strata before choosing another architecture or loss.
+
 ## Natural semantic benchmark intake
 
 CLUTRR was examined as a candidate natural-language relational reasoning
