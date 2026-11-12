@@ -129,6 +129,8 @@ def evaluate_checkpoint(
     import torch
     from training.native_conversation_v5 import load_checkpoint
 
+    if max_new_tokens < 1 or top_k < 1 or temperature < 0:
+        raise ValueError("decoding limits must be positive and temperature non-negative")
     resolved_device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     model, payload = load_checkpoint(checkpoint, device=resolved_device)
     model.eval()
@@ -164,6 +166,7 @@ def evaluate_checkpoint(
             rows.append({
                 "case_id": case["case_id"],
                 "seed": seed,
+                "decode_mode": "stochastic" if temperature > 0 else "greedy",
                 "prompt": case["prompt"],
                 "response": output,
                 "metrics": metrics,
@@ -209,6 +212,7 @@ def evaluate_checkpoint(
         "model_config": payload.get("config", {}),
         "device": resolved_device,
         "decoding": {
+            "mode": "stochastic" if temperature > 0 else "greedy",
             "max_new_tokens": max_new_tokens,
             "temperature": temperature,
             "top_k": top_k,
@@ -217,12 +221,102 @@ def evaluate_checkpoint(
             "enforce_valid_utf8": True,
         },
         "summary": summary,
+        "seed_sensitivity": {
+            "measured": temperature > 0,
+            "mode": "sampling_variation" if temperature > 0 else "not_measured_greedy_decode",
+            "note": (
+                "Seeds vary sampling only; model weights and prompts remain fixed."
+                if temperature > 0
+                else "Greedy decoding is deterministic; repeated seed IDs do not measure variability."
+            ),
+        },
         "samples": rows,
         "limitations": [
             "Prompt keyword coverage and repetition statistics are lexical diagnostics, not semantic correctness.",
             "Exact match is reported only when a target is present and is not a substitute for semantic evaluation.",
             "A checkpoint comparison is valid only with the same frozen cases, seeds, and decoding settings.",
         ],
+    }
+
+
+def compare_evaluation_reports(
+    baseline: dict[str, Any],
+    candidate: dict[str, Any],
+) -> dict[str, Any]:
+    """Compare two free-running reports only when evaluation conditions match.
+
+    The paired deltas are descriptive generation diagnostics. They are not
+    semantic-quality or factual-correctness measurements.
+    """
+    required_equal_fields = (
+        "selected_cases_sha256",
+        "prompt_file_sha256",
+        "decoding",
+    )
+    for field in required_equal_fields:
+        if baseline.get(field) != candidate.get(field):
+            raise ValueError(f"reports use different {field}")
+    baseline_summary = baseline.get("summary", {})
+    candidate_summary = candidate.get("summary", {})
+    if baseline_summary.get("seeds") != candidate_summary.get("seeds"):
+        raise ValueError("reports use different seed lists")
+
+    def index_rows(report: dict[str, Any]) -> dict[tuple[str, int], dict[str, Any]]:
+        indexed: dict[tuple[str, int], dict[str, Any]] = {}
+        for row in report.get("samples", []):
+            key = (str(row.get("case_id")), int(row.get("seed")))
+            if key in indexed:
+                raise ValueError(f"duplicate sample key: {key}")
+            indexed[key] = row
+        return indexed
+
+    baseline_rows = index_rows(baseline)
+    candidate_rows = index_rows(candidate)
+    if not baseline_rows or baseline_rows.keys() != candidate_rows.keys():
+        raise ValueError("reports do not contain the same case/seed sample keys")
+
+    metric_names = (
+        "prompt_keyword_coverage",
+        "char_trigram_diversity",
+        "word_fivegram_diversity",
+        "utf8_bytes",
+        "replacement_character_count",
+        "terminated",
+        "exact_match",
+    )
+    deltas: dict[str, Any] = {}
+    for name in metric_names:
+        values = []
+        for key in baseline_rows:
+            before = baseline_rows[key]["metrics"].get(name)
+            after = candidate_rows[key]["metrics"].get(name)
+            if before is None or after is None:
+                continue
+            values.append(float(after) - float(before))
+        deltas[name] = {
+            "paired_count": len(values),
+            "mean_candidate_minus_baseline": (
+                round(statistics.fmean(values), 6) if values else None
+            ),
+            "median_candidate_minus_baseline": (
+                round(statistics.median(values), 6) if values else None
+            ),
+        }
+
+    return {
+        "comparison": "native_free_running_paired_diagnostics_v1",
+        "baseline_checkpoint_sha256": baseline.get("checkpoint_sha256"),
+        "candidate_checkpoint_sha256": candidate.get("checkpoint_sha256"),
+        "selected_cases_sha256": candidate.get("selected_cases_sha256"),
+        "prompt_file_sha256": candidate.get("prompt_file_sha256"),
+        "decoding": candidate.get("decoding"),
+        "seeds": candidate_summary.get("seeds"),
+        "paired_samples": len(baseline_rows),
+        "deltas": deltas,
+        "interpretation_boundary": (
+            "Positive or negative lexical/format deltas do not establish improved "
+            "semantic correctness, factuality, reasoning, or user preference."
+        ),
     }
 
 
