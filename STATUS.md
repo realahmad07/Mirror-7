@@ -2,11 +2,11 @@
 
 ## Research Workstream A — Native intelligence + semantic reasoning
 
-The corrected Experiment 6 implementation now masks variable-length padding, seeds the model's RNGs, fingerprints generated benchmark worlds, and reports held-out ranking, swapped-order controls, and representation-collapse diagnostics. The three-seed runner and focused tests are available.
+The corrected Experiment 6 implementation masks variable-length padding, stores and supervises intermediate transitions, separates model/world RNG streams, fingerprints final and intermediate targets, and reports held-out candidate ranking, order controls, and representation-collapse diagnostics. The native free-running evaluator also records checkpoint/prompt fingerprints, distinguishes greedy replay from stochastic seed variation, and supports paired report comparison under identical evaluation conditions.
 
-**Code status:** implementation hardening complete, subject to PR CI.
+**Code status:** implementation and targeted tests are in the active Track A PR; exact-head Fast CI, Security Guard, and Native Brain Training checks are running.
 
-**Research status:** NOT YET PASSED. The corrected three-seed experiment, frozen Experiment 5/7 comparison, and natural-semantic held-out benchmark remain to be run. The native 10.57M byte model's free-running instability remains an explicit limitation.
+**Research status:** NOT YET PASSED. At 240 epochs, the MLP reached 34.96% held-out top-1 with mean margin -0.0851; the leakage-free linear operator reached 40.72% with mean margin -0.0649. Both beat chance and pass order/no-collapse checks, but all six seed-runs fail the required positive held-out-margin gate. A matched 0.25 contrastive-weight operator ablation is running with unchanged thresholds. Frozen Experiment 5/7 comparison and an approved, source-disjoint natural-semantic benchmark remain open. The native 10.57M byte model's free-running instability remains an explicit limitation.
 
 See [docs/38-track-a-native-intelligence-semantic-reasoning.md](docs/38-track-a-native-intelligence-semantic-reasoning.md).
 
@@ -36,7 +36,7 @@ The 75+ hour initial build and research cycle is complete.
 | 3 | Explicit state transformations became learnable on the defined benchmark. |
 | 4B | Held-out Top-1 87.18% and compositional margin 0.2967 on the defined benchmark. |
 | 5 | 60.71% mean accuracy on bounded variable-length chains. |
-| 6 | Historical result not promotion-grade; corrected variable-length masking and seeded evaluation are implemented, with a fresh three-seed run pending. |
+| 6 | Corrected 240-epoch runs: MLP 34.96% and linear operator 40.72% held-out top-1; both beat chance but fail positive-margin gate on all seeds. Matched 0.25 contrastive-weight ablation pending. |
 | 7 | 63.33% length-5 and 65.56% unseen-concept mean; matched the frozen primary baseline. |
 
 ## Research boundary
