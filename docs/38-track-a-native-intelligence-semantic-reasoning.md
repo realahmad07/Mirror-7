@@ -33,7 +33,8 @@ The corrected Experiment 6 implementation:
 3. Seeds model initialization, data generation, and row order.
 4. Deduplicates repeated `(concept, operation-chain)` training tasks and ranks
    predictions against distinct in-batch target alternatives. Target-equivalent
-   vectors are masked so they cannot become false negatives.
+   vectors are masked so they cannot become false negatives; the contrastive
+   weight is configurable and recorded in the benchmark config.
 5. Fingerprints the generated semantic world, including target vectors and
    train/held-out assignment.
 6. Evaluates held-out predictions against held-out candidate targets, not a
