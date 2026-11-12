@@ -186,6 +186,16 @@ factuality or user-preference scores. The evaluator still needs a frozen
 source-disjoint prompt set and independent human/oracle quality labels before
 it can support capability claims.
 
+Compare two saved reports without loading a model:
+
+```bash
+python -m training.compare_free_running_reports \\
+  --baseline artifacts/native_free_running_baseline.json \\
+  --candidate artifacts/native_free_running_candidate.json \\
+  --output artifacts/native_free_running_paired_comparison.json
+```
+
+
 ## Status
 
 **Implementation and evaluation hardening:** completed for this increment.
