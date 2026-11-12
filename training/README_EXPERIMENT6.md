@@ -39,7 +39,7 @@ After the implementation tests pass, run:
 
 ```bash
 python -m training.evaluate_experiment6 \
-  --device cuda --epochs 60 --seeds 17,29,43 \
+  --device cuda --epochs 240 --seeds 17,29,43 \
   --output artifacts/exp6_multiseed_screening.json
 ```
 
