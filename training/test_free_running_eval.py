@@ -90,15 +90,6 @@ def test_evaluation_report_records_checkpoint_and_prompt_fingerprints(tmp_path, 
         "config": {"test": True},
     })
     monkeypatch.setitem(sys.modules, "training.native_conversation_v5", fake_module)
-    import types
-    fake_torch = types.ModuleType("torch")
-    fake_torch.manual_seed = lambda seed: None
-    fake_torch.cuda = types.SimpleNamespace(
-        is_available=lambda: False,
-        manual_seed_all=lambda seed: None,
-    )
-    monkeypatch.setitem(sys.modules, "torch", fake_torch)
-
     cases = load_prompt_cases(prompts)
     report = evaluate_checkpoint(
         checkpoint,
@@ -221,7 +212,6 @@ def test_paired_comparison_rejects_different_decoding_settings():
 def test_stochastic_evaluation_labels_seed_variation_as_sampling_only(tmp_path, monkeypatch):
     import sys
     import types
-    import random
 
     rng = _install_fake_torch(monkeypatch)
     checkpoint = tmp_path / "model.pt"
