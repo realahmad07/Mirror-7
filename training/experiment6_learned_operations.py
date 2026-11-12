@@ -343,7 +343,7 @@ def evaluate(
 
 
 def seed_everything(seed: int) -> None:
-    """Seed model initialization and all RNGs used by the training loop."""
+    """Seed Python and PyTorch RNGs for a single independent random stream."""
     random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():
@@ -351,6 +351,11 @@ def seed_everything(seed: int) -> None:
     if hasattr(torch.backends, "cudnn"):
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
+
+
+def derive_model_initialization_seed(world_seed: int) -> int:
+    """Derive a separate reproducible initialization seed from the world seed."""
+    return (int(world_seed) ^ 0x5EED5EED) & ((1 << 63) - 1)
 
 
 def train_model(
@@ -371,6 +376,10 @@ def train_model(
     if not train_rows or len(held_out_rows) < 2:
         raise ValueError("benchmark must contain train rows and at least two held-out rows")
 
+    # Do not reuse the benchmark generator's random stream for model weights.
+    # For the matrix-operator ablation, identical streams and matching tensor
+    # shapes would copy the hidden target matrices into the model at init.
+    seed_everything(derive_model_initialization_seed(seed))
     model = LearnedOperationBrain(cfg).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.lr, weight_decay=1e-2)
     shuffle_rng = random.Random(seed)
