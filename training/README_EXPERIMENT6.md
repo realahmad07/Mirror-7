@@ -14,8 +14,9 @@ be treated as directly comparable to this corrected run.
 
 Model initialization and row shuffling are seeded. Training deduplicates repeated
 `(concept, operation-chain)` tasks and uses a duplicate-aware in-batch hard-negative
-margin objective. Target-equivalent vectors are masked rather than treated as false
-negatives.
+margin objective (default contrastive weight `0.10`, configurable with
+`--contrastive-weight`). Target-equivalent vectors are masked rather than treated
+as false negatives.
 The generated world, including target vectors and train/held-out assignment, has
 a SHA-256 fingerprint recorded in checkpoints and evaluation reports.
 
