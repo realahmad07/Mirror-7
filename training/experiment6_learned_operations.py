@@ -35,6 +35,7 @@ class Config:
     batch_size: int = 128
     lr: float = 5e-4
     margin: float = 0.20
+    contrastive_weight: float = 0.10
 
 
 class LearnedOperationBrain(nn.Module):
@@ -168,6 +169,7 @@ def loss_fn(
     target: torch.Tensor,
     negatives: torch.Tensor,
     margin: float,
+    contrastive_weight: float = 1.0,
 ) -> torch.Tensor:
     """Fit each target while ranking it above distinct in-batch alternatives.
 
@@ -201,7 +203,7 @@ def loss_fn(
         F.relu(hardest_negative - positive_score + margin),
         torch.zeros_like(positive_score),
     )
-    return (1 - positive_score).mean() + margin_loss.mean()
+    return (1 - positive_score).mean() + contrastive_weight * margin_loss.mean()
 
 
 def _batch(examples: list[Example], device: str | torch.device):
@@ -348,7 +350,10 @@ def train_model(
             prediction = model.compose(concept_ids, operations)
             # Compare against all distinct targets in this minibatch. The loss
             # masks target-equivalent vectors and uses the hardest valid negative.
-            loss = loss_fn(prediction, targets, targets, cfg.margin)
+            loss = loss_fn(
+                prediction, targets, targets, cfg.margin,
+                contrastive_weight=cfg.contrastive_weight,
+            )
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -366,7 +371,10 @@ def train_model(
 
 
 def train(args: argparse.Namespace) -> None:
-    cfg = Config(epochs=args.epochs, lr=args.lr)
+    cfg = Config(
+        epochs=args.epochs, lr=args.lr,
+        contrastive_weight=args.contrastive_weight,
+    )
     device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
     model, examples, history = train_model(cfg, args.seed, device)
     final = evaluate(model, examples, cfg, device)
@@ -395,6 +403,7 @@ def main() -> None:
     parser.add_argument("--output", default="/content/drive/MyDrive/Mirror7/mirror7_exp6_pilot.pt")
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--lr", type=float, default=5e-4)
+    parser.add_argument("--contrastive-weight", type=float, default=0.10)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", default=None)
     train(parser.parse_args())
