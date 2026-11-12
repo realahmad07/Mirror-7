@@ -98,3 +98,16 @@ The remaining broader research goal is not unrestricted transfer: it is to estab
 - [Phase 7 implementation and acceptance boundaries](30-phase7-failure-diagnosis-and-targeted-repair.md).
 
 This closes a bounded failure-feedback loop; it does not establish unrestricted self-modifying software, arbitrary code repair, general scientific discovery or AGI.
+
+## Operational governance milestone — Stage 22
+
+The operational path now complements the native-language research track:
+
+- [Stage 22 design and acceptance boundaries](37-stage22-trusted-real-world-execution.md).
+- Host adapters are explicit, immutable and action-scoped; no generic network or shell bridge is exposed.
+- Reviewer identity is authenticated by host-issued signed assertions; approvals are short-lived, action-scoped and single-use.
+- External actions require adapter-signed observations, a durable tamper-evident event chain and transactional idempotency/replay controls.
+- Interrupted outcomes are reconciled rather than blindly retried; reversible/consequential actions require signed, independently observed recovery checks.
+- Feedback is separately reviewed and never silently promoted into trusted knowledge.
+
+The native model roadmap remains a separate research track: operational governance does not imply stronger free-running language generation or general intelligence.

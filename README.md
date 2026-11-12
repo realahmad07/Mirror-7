@@ -1274,7 +1274,7 @@ Phase 17 provides dependency planning and allow-listed tool dispatch with explic
 
 Detailed Stage 17 correction report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md](artifacts/STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.md).
 
-### Stages 18–21 Master Roadmap
+### Stages 18–22 Master Roadmap
 
 | Stage | Subsystem / Focus | Core Objectives & Invariants |
 | :--- | :--- | :--- |
@@ -1282,6 +1282,7 @@ Detailed Stage 17 correction report: [STAGE17_PLANNING_TOOL_INTELLIGENCE_REPORT.
 | **Stage 19** | **Controlled Self-Improvement** | Proposal of code/rule changes, isolated sandbox testing, baseline regression comparisons, automatic regression rejection, and human-in-the-loop deployment gating. |
 | **Stage 20** | **Multimodal & Real-World Grounding** | Cross-modal processing for images, documents, and real-world telemetry; grounding latent conclusions into verified observable sensory evidence. |
 | **Stage 21** | **Grounded Autonomous Action & Feedback** | Evidence-bound action proposals; independent evidence-provenance and action-policy checks; Stage 19 isolated-container execution; trusted result-contract enforcement; predicted-versus-observed postcondition comparison; failure feedback without silent knowledge mutation; and separate human approval for consequential actions. |
+| **Stage 22** | **Trusted Real-World Execution & Operational Governance** | Explicit host-adapter allow-lists; signed reviewer identities and short-lived scoped approvals; SQLite WAL tamper-evident audit; one-use execution/idempotency keys; dry-run, rate limits and expiry; compensating actions with post-rollback observation; and independently reviewed feedback with no automatic knowledge promotion. |
 
 ### Stage 18 — Autonomous Research
 
@@ -1308,6 +1309,19 @@ The cross-modal engine compares observations tied to the same entity and attribu
 Mirror compares returned sandbox observations with predicted postconditions, records matches, mismatches and execution failures in an append-only in-memory history, and never silently changes trusted knowledge. Consequential actions require a separate, single-use human approval from someone other than the proposal author. Read-only and reversible classifications remain bound to the registered host allow-list and exact definition digest.
 
 **Explicit limits:** Stage 21 executes bounded computations inside the isolated container; it does not directly operate hardware, external services, the host filesystem or production systems. A separate trusted host adapter must authenticate reviewers, persist the audit ledger, and enforce the approval token before any consequential real-world side effect. The current implementation is not a general-purpose autonomous actuator. See [Stage 21 design and boundaries](docs/36-stage21-grounded-autonomous-action.md) and [Stage 21 acceptance report](artifacts/STAGE21_GROUNDED_ACTION_REPORT.md).
+
+
+### Stage 22 — Trusted Real-World Execution & Operational Governance
+
+**Implementation status: bounded trusted-host gateway; no general-purpose actuator or built-in production adapter.** Stage 22 moves Stage 21's evidence-bound proposal and internal verification into a host-enforced execution boundary. Only explicitly registered, code-reviewed `TrustedActionAdapter` implementations can communicate with an external service or device. There is no arbitrary URL, shell, dynamic plugin, credential or network access from proposal code.
+
+Reviewer identities arrive as short-lived HMAC-signed assertions from host-trusted identity providers. A real execution requires a separate signed approval token bound to the exact proposal, Stage 21 verification, adapter, action, reviewer scope and expiry. Tokens are single-use and proposal execution is reserved transactionally with a unique idempotency key. Dry-run remains non-mutating and is separately recorded.
+
+Each adapter returns Ed25519-signed, request-bound dry-run, execution, observation and compensation receipts. Mirror compares the independently observed external state with Stage 21's declared postconditions. Interrupted or uncertain outcomes are marked UNKNOWN and reconciled by idempotency key; Mirror never blindly repeats an external mutation. Reversible/consequential adapters must define recovery postconditions, and rollback is accepted only after a separately signed post-compensation observation satisfies them.
+
+The durable audit ledger uses SQLite WAL, FULL synchronous commits, immutable event rows, a SHA-256 hash chain and an HMAC key held outside the database. A host should pin the ledger head hash in a separate trusted system to detect database rollback/truncation. Adapter/action rate limits and approval consumption are enforced transactionally. Failed or mismatched outcomes remain quarantined records; an authenticated reviewer with a distinct feedback-review scope must make a separate decision. No Stage 20 evidence, trusted fact or capability is automatically updated from an execution result.
+
+**Explicit limits:** adapter implementations, identity-provider keys, adapter signing keys, gateway/audit secrets, the local SQLite file, network isolation and production authorization remain host deployment responsibilities. The gateway cannot make an untrusted adapter safe; adapters must be code-reviewed and constrained to the specific service/device operations they expose. The audit chain detects tampering only while its HMAC key remains secret; an externally pinned head is required for rollback/truncation detection. This is a controlled integration boundary, not unrestricted autonomous control. See [Stage 22 design and boundaries](docs/37-stage22-trusted-real-world-execution.md) and [Stage 22 acceptance report](artifacts/STAGE22_TRUSTED_EXECUTION_REPORT.md).
 
 ### Current verification status
 
