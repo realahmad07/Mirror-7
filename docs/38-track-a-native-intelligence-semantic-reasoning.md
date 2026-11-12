@@ -150,6 +150,28 @@ quality labels. Recurrent, state-space, and compact-attention alternatives must
 share the same data, parameter/compute budget, and evaluator.
 
 ## Native free-running evaluation hardening
+The existing repository held-out split can be exported for a reproducible
+**smoke run** (10 prompts across the ten evaluation dimensions):
+
+```bash
+python -m training.export_native_free_running_prompts \
+  --partition held_out \
+  --output artifacts/native_free_running_legacy_heldout_v1.jsonl
+
+python -m training.free_running_eval \
+  --checkpoint path/to/native_conversation_v5.pt \
+  --prompts artifacts/native_free_running_legacy_heldout_v1.jsonl \
+  --seeds 17,29,43 --temperature 0.7 \
+  --max-new-tokens 384 --device cuda \
+  --output artifacts/native_free_running_report.json
+```
+
+The exporter writes a manifest with the prompt-file hash and explicitly sets
+`promotion_eligible=false`. The repository's held-out label is not proof that
+these prompts are disjoint from the separate Google Drive training corpus.
+Use this bundle for a smoke diagnosis only; do not use it to claim model
+improvement or natural semantic understanding.
+
 
 The V5 free-running evaluator records checkpoint, source-prompt-file and
 selected-case fingerprints. It now also labels decoding mode correctly:
