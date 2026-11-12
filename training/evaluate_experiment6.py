@@ -94,6 +94,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--contrastive-weight", type=float, default=0.10)
     parser.add_argument("--transition-supervision-weight", type=float, default=1.0)
+    parser.add_argument("--rollout-supervision-weight", type=float, default=0.0)
     parser.add_argument(
         "--transition-architecture",
         choices=("mlp", "linear_operator"),
@@ -113,6 +114,7 @@ def main(argv: list[str] | None = None) -> int:
             epochs=args.epochs, lr=args.lr,
             contrastive_weight=args.contrastive_weight,
             transition_supervision_weight=args.transition_supervision_weight,
+            rollout_supervision_weight=args.rollout_supervision_weight,
             transition_architecture=args.transition_architecture,
         ),
         device=args.device,
