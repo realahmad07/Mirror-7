@@ -97,6 +97,14 @@ def test_evaluator_reports_heldout_ranking_order_and_collapse_controls():
     world = make_world(cfg, 29)
     model = LearnedOperationBrain(cfg)
     metrics = evaluate(model, world, cfg, "cpu")
+    first_held_out = next(row for row in world if row.held_out)
+    duplicated_world = world + [
+        Example(first_held_out.concept, first_held_out.ops, first_held_out.target.clone(), True)
+    ]
+    duplicate_metrics = evaluate(model, duplicated_world, cfg, "cpu")
+    assert duplicate_metrics["count"] == metrics["count"]
+    assert duplicate_metrics["accuracy"] == pytest.approx(metrics["accuracy"])
+    assert duplicate_metrics["margin"] == pytest.approx(metrics["margin"])
     assert metrics["count"] > 1
     assert metrics["chance_accuracy"] == pytest.approx(1 / metrics["count"])
     assert metrics["order_control_count"] > 0

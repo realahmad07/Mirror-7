@@ -188,9 +188,16 @@ def evaluate(
 ) -> dict[str, Any]:
     """Evaluate only held-out rows against held-out targets and order controls."""
     model.eval()
-    rows = [row for row in examples if row.held_out]
+    # Random generation samples operation chains with replacement. Collapse
+    # repeated (concept, operation-sequence) tasks before constructing the
+    # candidate matrix so identical targets cannot count as false negatives.
+    unique_rows = {}
+    for row in examples:
+        if row.held_out:
+            unique_rows.setdefault((row.concept, row.ops), row)
+    rows = list(unique_rows.values())
     if len(rows) < 2:
-        raise ValueError("held-out evaluation requires at least two examples")
+        raise ValueError("held-out evaluation requires at least two unique tasks")
 
     predictions = []
     positive_scores = []
@@ -232,6 +239,7 @@ def evaluate(
     order_margin = statistics.fmean(order_margins) if order_margins else None
     return {
         "count": len(rows),
+        "candidate_count": len(rows),
         "chance_accuracy": 1.0 / len(rows),
         "accuracy": sum(correct) / len(correct),
         "margin": statistics.fmean(candidate_margins),
