@@ -72,6 +72,18 @@ matrices into the model. The implementation now derives a separate model seed
 and has a regression test asserting that learned initialization differs from
 the benchmark's hidden matrices. The leaked run is excluded from evidence.
 
+## Natural semantic benchmark intake
+
+CLUTRR was examined as a candidate natural-language relational reasoning
+benchmark because it tests multi-hop kinship inference, held-out rule
+combinations, and robustness to irrelevant/disconnected facts. It is **not
+approved for inclusion in Mirror's active training/evaluation bundle at this
+time**: the upstream repository declares CC-BY-NC 4.0, while the Hugging Face
+mirror marks its license as unknown. Resolve the applicable rights and intended
+commercial-use permissions before downloading, caching, transforming, or
+redistributing the dataset. Do not treat the existing external API reference
+in the repository as license approval.
+
 ## Acceptance boundaries
 
 A screening report is only an implementation-level research gate. It is not a
