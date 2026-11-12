@@ -23,6 +23,23 @@ _STOPWORDS = {
 }
 
 
+def sha256_file(path: str | Path) -> str:
+    """Hash a file incrementally so large checkpoints do not need to fit in RAM."""
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def fingerprint_cases(cases: Iterable[dict[str, Any]]) -> str:
+    """Hash the exact normalized case list used by an evaluation run."""
+    encoded = json.dumps(
+        list(cases), ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _tokens(value: str) -> list[str]:
     return re.findall(r"[a-z0-9_]+", str(value).casefold())
 
@@ -107,6 +124,7 @@ def evaluate_checkpoint(
     max_new_tokens: int = 384,
     temperature: float = 0.0,
     top_k: int = 40,
+    prompt_file: str | Path | None = None,
 ) -> dict[str, Any]:
     import torch
     from training.native_conversation_v5 import load_checkpoint
@@ -119,6 +137,14 @@ def evaluate_checkpoint(
     seed_list = [int(item) for item in seeds]
     if not seed_list:
         raise ValueError("at least one seed is required")
+    if len(set(seed_list)) != len(seed_list):
+        raise ValueError("evaluation seeds must be unique")
+    if not case_list:
+        raise ValueError("at least one prompt case is required")
+    checkpoint_path = Path(checkpoint)
+    checkpoint_sha256 = sha256_file(checkpoint_path)
+    selected_cases_sha256 = fingerprint_cases(case_list)
+    prompt_file_sha256 = sha256_file(prompt_file) if prompt_file is not None else None
 
     for seed in seed_list:
         torch.manual_seed(seed)
@@ -172,8 +198,13 @@ def evaluate_checkpoint(
         ),
     }
     return {
-        "evaluation": "native_free_running_diagnostics_v1",
+        "evaluation": "native_free_running_diagnostics_v2",
         "checkpoint": str(checkpoint),
+        "checkpoint_sha256": checkpoint_sha256,
+        "checkpoint_size_bytes": checkpoint_path.stat().st_size,
+        "prompt_file": str(prompt_file) if prompt_file is not None else None,
+        "prompt_file_sha256": prompt_file_sha256,
+        "selected_cases_sha256": selected_cases_sha256,
         "checkpoint_format": payload.get("format"),
         "model_config": payload.get("config", {}),
         "device": resolved_device,
@@ -219,6 +250,7 @@ def main(argv: list[str] | None = None) -> int:
         max_new_tokens=args.max_new_tokens,
         temperature=args.temperature,
         top_k=args.top_k,
+        prompt_file=args.prompts,
     )
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
