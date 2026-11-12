@@ -268,6 +268,54 @@ def _batch(examples: list[Example], device: str | torch.device):
     return concept_ids, operations, targets
 
 
+def transition_supervision_loss(
+    model: LearnedOperationBrain,
+    examples: list[Example],
+    device: str | torch.device,
+) -> torch.Tensor:
+    """Teacher-force each observed training prefix to supervise every transition.
+
+    Only the selected training rows are passed here. Held-out traces are never
+    used for optimization. At step zero, the model's learned concept state is
+    used; later steps use the preceding observed state as the teacher-forced
+    input. Final free-running composition remains the evaluation target.
+    """
+    if not examples:
+        raise ValueError("transition supervision requires training examples")
+    if any(len(row.intermediate_states) != len(row.ops) for row in examples):
+        raise ValueError("each operation must have one intermediate target state")
+
+    step_losses = []
+    max_length = max(len(row.ops) for row in examples)
+    for position in range(max_length):
+        active_rows = [row for row in examples if len(row.ops) > position]
+        if not active_rows:
+            continue
+        concept_ids = torch.tensor(
+            [row.concept for row in active_rows], dtype=torch.long, device=device,
+        )
+        op_ids = torch.tensor(
+            [row.ops[position] for row in active_rows], dtype=torch.long, device=device,
+        )
+        if position == 0:
+            input_states = model.encode_concept(concept_ids)
+        else:
+            input_states = torch.stack([
+                row.intermediate_states[position - 1] for row in active_rows
+            ]).to(device)
+        target_states = F.normalize(torch.stack([
+            row.intermediate_states[position] for row in active_rows
+        ]).to(device), dim=-1)
+        predictions = model.apply(input_states, op_ids)
+        step_losses.append(
+            (1 - (F.normalize(predictions, dim=-1) * target_states).sum(-1)).mean()
+        )
+
+    if not step_losses:
+        raise ValueError("transition supervision found no valid operation steps")
+    return torch.stack(step_losses).mean()
+
+
 def evaluate(
     model: LearnedOperationBrain,
     examples: list[Example],
@@ -399,6 +447,7 @@ def train_model(
     for epoch in range(1, cfg.epochs + 1):
         shuffle_rng.shuffle(train_rows)
         total_loss = 0.0
+        total_transition_loss = 0.0
         batch_count = 0
         for start in range(0, len(train_rows), cfg.batch_size):
             batch = train_rows[start:start + cfg.batch_size]
@@ -406,21 +455,25 @@ def train_model(
             prediction = model.compose(concept_ids, operations)
             # Compare against all distinct targets in this minibatch. The loss
             # masks target-equivalent vectors and uses the hardest valid negative.
-            loss = loss_fn(
+            ranking_loss = loss_fn(
                 prediction, targets, targets, cfg.margin,
                 contrastive_weight=cfg.contrastive_weight,
             )
+            step_loss = transition_supervision_loss(model, batch, device)
+            loss = ranking_loss + cfg.transition_supervision_weight * step_loss
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
             total_loss += float(loss.detach())
+            total_transition_loss += float(step_loss.detach())
             batch_count += 1
 
         if epoch == 1 or epoch % max(1, log_every) == 0 or epoch == cfg.epochs:
             history.append({
                 "epoch": epoch,
                 "loss": total_loss / max(1, batch_count),
+                "transition_loss": total_transition_loss / max(1, batch_count),
                 **evaluate(model, examples, cfg, device),
             })
     return model, examples, history
@@ -430,6 +483,7 @@ def train(args: argparse.Namespace) -> None:
     cfg = Config(
         epochs=args.epochs, lr=args.lr,
         contrastive_weight=args.contrastive_weight,
+        transition_supervision_weight=args.transition_supervision_weight,
         transition_architecture=args.transition_architecture,
     )
     device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
@@ -461,6 +515,7 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--contrastive-weight", type=float, default=0.10)
+    parser.add_argument("--transition-supervision-weight", type=float, default=1.0)
     parser.add_argument(
         "--transition-architecture",
         choices=("mlp", "linear_operator"),
