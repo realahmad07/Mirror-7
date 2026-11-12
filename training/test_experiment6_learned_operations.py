@@ -399,3 +399,38 @@ def test_training_loop_runs_with_masked_variable_length_batches():
     assert all("rollout_loss" in row for row in history)
     assert len([row for row in world if row.held_out]) > 1
     assert torch.isfinite(next(model.parameters())).all()
+
+
+
+def test_evaluator_reports_heldout_ranking_strata_by_concept_chain_and_composition():
+    cfg = Config(
+        state_dim=12,
+        concept_dim=12,
+        concepts=6,
+        operations=6,
+        max_chain=5,
+    )
+    model = LearnedOperationBrain(cfg)
+    world = make_world(cfg, 137)
+    metrics = evaluate(model, world, cfg, "cpu")
+    strata = metrics["stratified_ranking"]
+
+    assert strata["unseen_concept"]["count"] == metrics["held_out_concept_count"]
+    assert (
+        strata["unseen_concept"]["count"] + strata["seen_concept"]["count"]
+        == metrics["count"]
+    )
+    assert sum(
+        strata[f"chain_length_{length}"]["count"]
+        for length in range(1, cfg.max_chain + 1)
+    ) == metrics["count"]
+    assert strata["heldout_prefix_01"]["count"] > 0
+    assert strata["heldout_suffix_45"]["count"] > 0
+    for result in strata.values():
+        assert set(result) == {
+            "count", "accuracy", "mean_candidate_margin", "positive_margin_rate"
+        }
+        if result["count"]:
+            assert 0.0 <= result["accuracy"] <= 1.0
+            assert result["mean_candidate_margin"] is not None
+            assert 0.0 <= result["positive_margin_rate"] <= 1.0
