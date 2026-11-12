@@ -80,6 +80,26 @@ jobs:
           --rollout-supervision-weight 1.0
           --transition-architecture linear_operator
           --output artifacts/exp6_operator_rollout1_multiseed_screening_ci.json
+      - name: Run three-seed low-dose rollout supervision ablation (0.10)
+        continue-on-error: true
+        run: >-
+          python -m training.evaluate_experiment6
+          --device cpu --epochs 240 --seeds 17,29,43
+          --contrastive-weight 0.10
+          --transition-supervision-weight 1.0
+          --rollout-supervision-weight 0.10
+          --transition-architecture linear_operator
+          --output artifacts/exp6_operator_rollout010_multiseed_screening_ci.json
+      - name: Run three-seed low-dose rollout supervision ablation (0.25)
+        continue-on-error: true
+        run: >-
+          python -m training.evaluate_experiment6
+          --device cpu --epochs 240 --seeds 17,29,43
+          --contrastive-weight 0.10
+          --transition-supervision-weight 1.0
+          --rollout-supervision-weight 0.25
+          --transition-architecture linear_operator
+          --output artifacts/exp6_operator_rollout025_multiseed_screening_ci.json
       - name: Upload semantic screening reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -90,6 +110,8 @@ jobs:
             artifacts/exp6_operator_multiseed_screening_ci.json
             artifacts/exp6_operator_contrastive025_multiseed_screening_ci.json
             artifacts/exp6_operator_rollout1_multiseed_screening_ci.json
+            artifacts/exp6_operator_rollout010_multiseed_screening_ci.json
+            artifacts/exp6_operator_rollout025_multiseed_screening_ci.json
           if-no-files-found: ignore
       - name: Enforce structured-operator three-seed screen
         if: always()
@@ -102,6 +124,8 @@ jobs:
               Path("artifacts/exp6_operator_multiseed_screening_ci.json"),
               Path("artifacts/exp6_operator_contrastive025_multiseed_screening_ci.json"),
               Path("artifacts/exp6_operator_rollout1_multiseed_screening_ci.json"),
+              Path("artifacts/exp6_operator_rollout010_multiseed_screening_ci.json"),
+              Path("artifacts/exp6_operator_rollout025_multiseed_screening_ci.json"),
           ]
           reports = []
           for report_path in report_paths:
