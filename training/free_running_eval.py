@@ -250,17 +250,28 @@ def compare_evaluation_reports(
     The paired deltas are descriptive generation diagnostics. They are not
     semantic-quality or factual-correctness measurements.
     """
+    for report_name, report in (("baseline", baseline), ("candidate", candidate)):
+        for field in ("checkpoint_sha256", "selected_cases_sha256", "decoding"):
+            if not report.get(field):
+                raise ValueError(f"{report_name} report is missing {field}")
     required_equal_fields = (
         "selected_cases_sha256",
         "prompt_file_sha256",
         "decoding",
+        "evaluation",
     )
     for field in required_equal_fields:
         if baseline.get(field) != candidate.get(field):
             raise ValueError(f"reports use different {field}")
     baseline_summary = baseline.get("summary", {})
     candidate_summary = candidate.get("summary", {})
-    if baseline_summary.get("seeds") != candidate_summary.get("seeds"):
+    baseline_seeds = baseline_summary.get("seeds")
+    candidate_seeds = candidate_summary.get("seeds")
+    if not baseline_seeds or not candidate_seeds:
+        raise ValueError("reports must include non-empty seed lists")
+    if len(set(baseline_seeds)) != len(baseline_seeds) or len(set(candidate_seeds)) != len(candidate_seeds):
+        raise ValueError("reports must use unique seed lists")
+    if baseline_seeds != candidate_seeds:
         raise ValueError("reports use different seed lists")
 
     def index_rows(report: dict[str, Any]) -> dict[tuple[str, int], dict[str, Any]]:
@@ -307,6 +318,7 @@ def compare_evaluation_reports(
 
     return {
         "comparison": "native_free_running_paired_diagnostics_v1",
+        "evaluation": candidate.get("evaluation"),
         "baseline_checkpoint_sha256": baseline.get("checkpoint_sha256"),
         "candidate_checkpoint_sha256": candidate.get("checkpoint_sha256"),
         "selected_cases_sha256": candidate.get("selected_cases_sha256"),
