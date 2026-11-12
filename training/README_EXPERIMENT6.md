@@ -12,11 +12,14 @@ masks it during composition, and rejects malformed padding. This changes the
 training semantics; checkpoints trained by the earlier implementation must not
 be treated as directly comparable to this corrected run.
 
-Model initialization and row shuffling are seeded. Training deduplicates repeated
-`(concept, operation-chain)` tasks and uses a duplicate-aware in-batch hard-negative
-margin objective (default contrastive weight `0.10`, configurable with
-`--contrastive-weight`). Target-equivalent vectors are masked rather than treated
-as false negatives.
+World generation and model initialization use independent, reproducible random
+streams. Training deduplicates repeated `(concept, operation-chain)` tasks and
+combines duplicate-aware in-batch hard-negative ranking (default contrastive
+weight `0.10`, configurable with `--contrastive-weight`) with teacher-forced
+supervision for every intermediate transition (default weight `1.0`, configurable
+with `--transition-supervision-weight`). Target-equivalent vectors are masked
+rather than treated as false negatives. Intermediate traces from held-out rows
+are never used for optimization and are included in the benchmark fingerprint.
 The generated world, including target vectors and train/held-out assignment, has
 a SHA-256 fingerprint recorded in checkpoints and evaluation reports.
 
