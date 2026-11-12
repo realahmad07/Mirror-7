@@ -166,7 +166,16 @@ it can support capability claims.
 
 ## Status
 
-**Implementation hardening:** completed in this increment.
+**Implementation and evaluation hardening:** completed for this increment.
 
-**Native intelligence / semantic-reasoning research outcome:** pending the
-three-seed run, frozen-baseline comparison, and natural-semantic evaluation.
+**Synthetic Experiment 6:** the 240-epoch, three-seed MLP and linear-operator
+runs show substantial improvement over the 60-epoch results, but all seeds
+still fail the positive held-out candidate-margin gate. The 0.25 operator
+contrastive-weight ablation is predeclared and under evaluation; no gate has
+been relaxed.
+
+**Track A completion:** not complete. It still requires a passing synthetic
+screen, frozen Experiment 5/7 baseline comparison, a license-approved natural
+semantic benchmark, and human/independent external evaluation. Native-language
+free-running quality also remains unmeasured on the current checkpoint by this
+workstream.
