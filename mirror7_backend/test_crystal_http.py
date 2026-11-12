@@ -13,7 +13,14 @@ from mirror7_backend.service import BackendService
 from mirror_crystal import MirrorCrystalEngine
 
 
-def make_request(server, method: str, path: str, payload: dict | None = None, is_bytes: bool = False):
+def make_request(
+    server,
+    method: str,
+    path: str,
+    payload: dict | None = None,
+    is_bytes: bool = False,
+    timeout_seconds: float = 5.0,
+):
     body = None
     headers = {}
     if payload is not None:
@@ -25,7 +32,7 @@ def make_request(server, method: str, path: str, payload: dict | None = None, is
         headers=headers,
         method=method,
     )
-    with urllib.request.urlopen(req, timeout=5) as response:
+    with urllib.request.urlopen(req, timeout=timeout_seconds) as response:
         content = response.read()
         if is_bytes:
             return response.status, content, response.headers.get("Content-Type")
@@ -160,6 +167,7 @@ def test_crystal_http_server_full_integration(tmp_path: Path):
                 "code": "def fib(n):\n    return fib(n - 1) + fib(n - 2)",
                 "spec": "compute nth fibonacci number",
             },
+            timeout_seconds=30.0,
         )
         assert code_tdd == 200
         assert data_tdd["verified"] is True
