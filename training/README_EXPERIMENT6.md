@@ -1,44 +1,62 @@
 # Experiment 6 — Learned Operation Semantics
 
 Experiment 6 tests whether Mirror's native state-transition mechanism can learn
-the meaning of operations from experience instead of relying on semantically
-named operations such as INVERT/RESET.
+opaque operations and compose variable-length transformations.
 
-## Design
+## Correctness fix
 
-- Opaque operation IDs: OP_A through OP_F.
-- No operation-name semantics are encoded in the model.
-- A learned operation embedding conditions the state transition.
-- Chains vary from length 1 through 5.
-- Held-out concept identities and structured operation combinations are never
-  used for training.
-- Evaluation measures target similarity, contrastive margin, order sensitivity,
-  and identity behavior.
+The previous batching path padded short sequences with operation ID `0`. Because
+the model executed every column, padding was incorrectly treated as a real
+operation. The current implementation uses `-1` as a right-padding sentinel,
+masks it during composition, and rejects malformed padding. This changes the
+training semantics; checkpoints trained by the earlier implementation must not
+be treated as directly comparable to this corrected run.
 
-The pilot is deliberately small and isolated from the Exp-5 checkpoint format.
+Model initialization, minibatch negative sampling, and row shuffling are seeded.
+The generated world, including target vectors and train/held-out assignment, has
+a SHA-256 fingerprint recorded in checkpoints and evaluation reports.
 
-## Colab
+## Pilot
 
 From the repository root:
 
 ```bash
 python -m training.experiment6_learned_operations \
-  --output /content/drive/MyDrive/Mirror7/mirror7_exp6_pilot.pt \
+  --output artifacts/mirror7_exp6_corrected_seed42.pt \
   --epochs 60 --seed 42
 ```
 
-Run the pilot only. Do not start 3-seed validation until the frozen benchmark
-shows a predefined improvement over the Exp-5 mechanism.
+## Three-seed screening run
 
-## Gate
+After the implementation tests pass, run:
 
-Proceed only if the pilot demonstrates:
+```bash
+python -m training.evaluate_experiment6 \
+  --device cuda --epochs 60 --seeds 17,29,43 \
+  --output artifacts/exp6_multiseed_screening.json
+```
 
-1. positive held-out margin;
-2. materially above-chance held-out accuracy;
-3. positive order margin against swapped operations;
-4. stable identity behavior where an identity composition is included;
-5. no collapse where all operation sequences map to the same state.
+Use the same device, PyTorch version, configuration, and code commit when
+comparing runs. The evaluator reports held-out candidate ranking, contrastive
+margin, swapped-order negative controls, representation-collapse diagnostics,
+and per-seed benchmark fingerprints.
 
-A passing pilot is evidence for learned operation-conditioned state
-transformation on this benchmark, not evidence of general reasoning or AGI.
+## Promotion gate
+
+The screening report checks, independently for each seed:
+
+1. Positive held-out candidate margin.
+2. Accuracy above the candidate-ranking chance rate.
+3. Positive score margin against swapped final operations.
+4. No near-total representation collapse.
+
+A screening pass is **not** promotion. Promotion remains blocked until the
+corrected model is compared with a frozen Experiment 5/7 baseline under the same
+benchmark and compute budget, and until natural semantic relations are tested
+with disjoint train/validation/test cases plus adversarial controls.
+
+There is no identity operation in the current OP_A–OP_F task grammar; therefore
+an OP_A/OP_A sequence is not an identity test and is not reported as one.
+
+The experiment is bounded synthetic evidence, not proof of open-domain
+reasoning, general intelligence, or AGI.

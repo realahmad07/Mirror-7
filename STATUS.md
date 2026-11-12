@@ -1,5 +1,15 @@
 # Mirror 7 — Current Status
 
+## Research Workstream A — Native intelligence + semantic reasoning
+
+The corrected Experiment 6 implementation now masks variable-length padding, seeds the model's RNGs, fingerprints generated benchmark worlds, and reports held-out ranking, swapped-order controls, and representation-collapse diagnostics. The three-seed runner and focused tests are available.
+
+**Code status:** implementation hardening complete, subject to PR CI.
+
+**Research status:** NOT YET PASSED. The corrected three-seed experiment, frozen Experiment 5/7 comparison, and natural-semantic held-out benchmark remain to be run. The native 10.57M byte model's free-running instability remains an explicit limitation.
+
+See [docs/38-track-a-native-intelligence-semantic-reasoning.md](docs/38-track-a-native-intelligence-semantic-reasoning.md).
+
 ## Repository state
 
 The 75+ hour initial build and research cycle is complete.
@@ -26,7 +36,7 @@ The 75+ hour initial build and research cycle is complete.
 | 3 | Explicit state transformations became learnable on the defined benchmark. |
 | 4B | Held-out Top-1 87.18% and compositional margin 0.2967 on the defined benchmark. |
 | 5 | 60.71% mean accuracy on bounded variable-length chains. |
-| 6 | Opaque operation learning exposed a depth/generalization bottleneck. |
+| 6 | Historical result not promotion-grade; corrected variable-length masking and seeded evaluation are implemented, with a fresh three-seed run pending. |
 | 7 | 63.33% length-5 and 65.56% unseen-concept mean; matched the frozen primary baseline. |
 
 ## Research boundary

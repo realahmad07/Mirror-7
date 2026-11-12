@@ -1,23 +1,20 @@
 """Experiment 6: learned operation semantics for Mirror's native state brain.
 
-This is a controlled pilot. Operation identifiers are opaque (OP_A..OP_F); their
-meanings are not encoded in the identifier names. The model must learn an
-operation embedding and compose variable-length transformations. The benchmark
-holds out operation combinations and concept identities, and includes order and
-shuffled-operation controls.
-
-This experiment is intentionally separate from the Exp-5 checkpoint format so
-the result cannot be mistaken for a continuation of the previous synthetic
-operation vocabulary.
+This pilot uses opaque operation IDs and variable-length compositions. Padding is
+represented by -1 and is masked during composition; it is never interpreted as
+operation zero. Seeds control model initialization, minibatch negatives, and row
+shuffling. Results are bounded synthetic evidence, not open-domain reasoning.
 """
-
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import random
-from dataclasses import dataclass
+import statistics
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 import torch
 import torch.nn as nn
@@ -53,18 +50,35 @@ class LearnedOperationBrain(nn.Module):
         )
         self.norm = nn.LayerNorm(cfg.state_dim)
 
-    def encode_concept(self, concept_ids):
+    def encode_concept(self, concept_ids: torch.Tensor) -> torch.Tensor:
         return F.normalize(self.concept(concept_ids), dim=-1)
 
-    def apply(self, state, op_ids):
+    def apply(self, state: torch.Tensor, op_ids: torch.Tensor) -> torch.Tensor:
         op = self.operation(op_ids)
         delta = self.step(torch.cat([state, op], dim=-1))
         return F.normalize(self.norm(state + delta), dim=-1)
 
-    def compose(self, concept_ids, op_sequences):
+    def compose(self, concept_ids: torch.Tensor, op_sequences: torch.Tensor) -> torch.Tensor:
+        """Compose valid operations; -1 is a masked right-padding sentinel."""
+        if op_sequences.ndim != 2:
+            raise ValueError("operation sequences must be a rank-2 tensor")
+        if concept_ids.ndim != 1 or concept_ids.shape[0] != op_sequences.shape[0]:
+            raise ValueError("concept IDs must be rank-1 and match the batch size")
+        if bool((op_sequences < -1).any()):
+            raise ValueError("operation padding sentinel must be -1")
+        if bool((op_sequences >= self.cfg.operations).any()):
+            raise ValueError("operation ID is outside the configured vocabulary")
+
+        valid = op_sequences >= 0
+        if op_sequences.shape[1] > 1 and bool((valid[:, 1:] & ~valid[:, :-1]).any()):
+            raise ValueError("operation padding must be a contiguous right suffix")
+
         state = self.encode_concept(concept_ids)
-        for i in range(op_sequences.shape[1]):
-            state = self.apply(state, op_sequences[:, i])
+        for column in range(op_sequences.shape[1]):
+            active = valid[:, column].unsqueeze(-1)
+            safe_ids = op_sequences[:, column].clamp_min(0)
+            proposed = self.apply(state, safe_ids)
+            state = torch.where(active, proposed, state)
         return state
 
 
@@ -76,138 +90,254 @@ class Example:
     held_out: bool
 
 
-def make_world(cfg: Config, seed: int):
+def make_world(cfg: Config, seed: int) -> list[Example]:
     rng = random.Random(seed)
-    g = torch.Generator().manual_seed(seed)
-    base = F.normalize(torch.randn(cfg.concepts, cfg.concept_dim, generator=g), dim=-1)
+    generator = torch.Generator().manual_seed(seed)
+    base = F.normalize(torch.randn(cfg.concepts, cfg.concept_dim, generator=generator), dim=-1)
 
-    # Opaque operations have learned latent effects. Names/IDs carry no semantics.
     matrices = []
     for op in range(cfg.operations):
-        m = torch.randn(cfg.concept_dim, cfg.concept_dim, generator=g) * 0.35
+        matrix = torch.randn(cfg.concept_dim, cfg.concept_dim, generator=generator) * 0.35
         if op % 2 == 0:
-            m += torch.eye(cfg.concept_dim) * (0.15 + 0.03 * op)
-        matrices.append(m)
+            matrix += torch.eye(cfg.concept_dim) * (0.15 + 0.03 * op)
+        matrices.append(matrix)
 
-    def target_for(c, ops):
-        x = base[c]
-        for op in ops:
-            x = torch.tanh(x @ matrices[op].T)
-            x = F.normalize(x, dim=-1)
-        return x
+    def target_for(concept: int, operations: tuple[int, ...]) -> torch.Tensor:
+        state = base[concept]
+        for operation in operations:
+            state = torch.tanh(state @ matrices[operation].T)
+            state = F.normalize(state, dim=-1)
+        return state
 
     examples = []
-    for c in range(cfg.concepts):
+    for concept in range(cfg.concepts):
         for length in range(1, cfg.max_chain + 1):
-            # Keep enough coverage for every length while holding out structured
-            # combinations and concept identities.
             for _ in range(16):
-                ops = tuple(rng.randrange(cfg.operations) for _ in range(length))
-                held = (
-                    (c in {cfg.concepts - 2, cfg.concepts - 1} and length >= 3)
-                    or (length >= 4 and ops[0] == 0 and ops[1] == 1)
-                    or (length >= 5 and ops[-2:] == (4, 5))
+                operations = tuple(rng.randrange(cfg.operations) for _ in range(length))
+                held_out = (
+                    (concept in {cfg.concepts - 2, cfg.concepts - 1} and length >= 3)
+                    or (length >= 4 and operations[0] == 0 and operations[1] == 1)
+                    or (length >= 5 and operations[-2:] == (4, 5))
                 )
-                examples.append(Example(c, ops, target_for(c, ops), held))
+                examples.append(Example(
+                    concept=concept,
+                    ops=operations,
+                    target=target_for(concept, operations),
+                    held_out=held_out,
+                ))
     return examples
 
 
-def loss_fn(pred, target, negatives, margin):
-    pos = (pred * target).sum(-1)
-    neg = (pred * negatives).sum(-1)
-    return (1 - pos).mean() + F.relu(neg - pos + margin).mean()
+def world_fingerprint(cfg: Config, seed: int, examples: list[Example]) -> str:
+    """Hash the generated benchmark, including targets and train/held-out labels."""
+    payload = {
+        "format": "mirror7-exp6-semantic-world-v2",
+        "seed": int(seed),
+        "config": asdict(cfg),
+        "examples": [
+            {
+                "concept": row.concept,
+                "operations": list(row.ops),
+                "held_out": row.held_out,
+                "target": [round(float(value), 7) for value in row.target.tolist()],
+            }
+            for row in examples
+        ],
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
-def _batch(examples, device):
-    c = torch.tensor([e.concept for e in examples], dtype=torch.long, device=device)
-    n = max(len(e.ops) for e in examples)
-    ops = torch.zeros((len(examples), n), dtype=torch.long, device=device)
-    for i, e in enumerate(examples):
-        ops[i, :len(e.ops)] = torch.tensor(e.ops, device=device)
-    target = F.normalize(torch.stack([e.target for e in examples]).to(device), dim=-1)
-    return c, ops, target
+def loss_fn(
+    prediction: torch.Tensor,
+    target: torch.Tensor,
+    negatives: torch.Tensor,
+    margin: float,
+) -> torch.Tensor:
+    positive_score = (prediction * target).sum(-1)
+    negative_score = (prediction * negatives).sum(-1)
+    return (1 - positive_score).mean() + F.relu(negative_score - positive_score + margin).mean()
 
 
-def evaluate(model, examples, cfg, device):
+def _batch(examples: list[Example], device: str | torch.device):
+    if not examples:
+        raise ValueError("cannot create a batch from zero examples")
+    concept_ids = torch.tensor([row.concept for row in examples], dtype=torch.long, device=device)
+    max_length = max(len(row.ops) for row in examples)
+    operations = torch.full(
+        (len(examples), max_length), -1, dtype=torch.long, device=device,
+    )
+    for index, row in enumerate(examples):
+        if row.ops:
+            operations[index, :len(row.ops)] = torch.tensor(row.ops, dtype=torch.long, device=device)
+    targets = F.normalize(torch.stack([row.target for row in examples]).to(device), dim=-1)
+    return concept_ids, operations, targets
+
+
+def evaluate(
+    model: LearnedOperationBrain,
+    examples: list[Example],
+    cfg: Config,
+    device: str | torch.device,
+) -> dict[str, Any]:
+    """Evaluate only held-out rows against held-out targets and order controls."""
     model.eval()
-    rows = [e for e in examples if e.held_out]
-    if not rows:
-        raise AssertionError("held-out set is empty")
+    rows = [row for row in examples if row.held_out]
+    if len(rows) < 2:
+        raise ValueError("held-out evaluation requires at least two examples")
+
+    predictions = []
+    positive_scores = []
+    order_margins = []
     with torch.no_grad():
-        margins, correct = [], []
-        order_margins = []
-        identity = []
-        for e in rows:
-            c, ops, target = _batch([e], device)
-            pred = model.compose(c, ops)
-            pos = float((pred * target).sum())
-            wrong = []
-            for j in range(min(8, len(examples))):
-                w = examples[(j * 37) % len(examples)]
-                wrong.append(float((pred * w.target.to(device)).sum()))
-            neg = max(wrong)
-            margins.append(pos - neg)
-            correct.append(pos > neg)
-            if len(e.ops) >= 2:
-                shuffled = list(e.ops)
-                shuffled[-1], shuffled[-2] = shuffled[-2], shuffled[-1]
-                so = torch.tensor([shuffled], device=device)
-                sp = model.compose(c, so)
-                order_margins.append(pos - float((sp * target).sum()))
-            if len(e.ops) >= 2 and e.ops[-2:] == (0, 0):
-                identity.append(float((pred * model.encode_concept(c)).sum()))
+        targets = F.normalize(torch.stack([row.target for row in rows]).to(device), dim=-1)
+        for row in rows:
+            concept_ids, operations, _ = _batch([row], device)
+            prediction = model.compose(concept_ids, operations)[0]
+            predictions.append(prediction)
+            positive_scores.append(float((prediction * row.target.to(device)).sum()))
+
+            if len(row.ops) >= 2 and row.ops[-1] != row.ops[-2]:
+                swapped = row.ops[:-2] + (row.ops[-1], row.ops[-2])
+                swapped_tensor = torch.tensor([swapped], dtype=torch.long, device=device)
+                swapped_prediction = model.compose(concept_ids, swapped_tensor)[0]
+                swapped_score = float((swapped_prediction * row.target.to(device)).sum())
+                order_margins.append(positive_scores[-1] - swapped_score)
+
+        prediction_matrix = F.normalize(torch.stack(predictions), dim=-1)
+        similarities = prediction_matrix @ targets.T
+        candidate_margins = []
+        correct = []
+        for index in range(len(rows)):
+            positive = similarities[index, index]
+            negative_scores = similarities[index].clone()
+            negative_scores[index] = -torch.inf
+            hardest_negative = negative_scores.max()
+            candidate_margins.append(float(positive - hardest_negative))
+            correct.append(bool(positive > hardest_negative))
+
+        collapse_similarity = None
+        if len(rows) > 1:
+            pairwise = prediction_matrix @ prediction_matrix.T
+            off_diagonal = ~torch.eye(len(rows), dtype=torch.bool, device=device)
+            collapse_similarity = float(pairwise[off_diagonal].mean())
+
+    order_control_count = len(order_margins)
+    order_margin = statistics.fmean(order_margins) if order_margins else None
     return {
         "count": len(rows),
+        "chance_accuracy": 1.0 / len(rows),
         "accuracy": sum(correct) / len(correct),
-        "margin": sum(margins) / len(margins),
-        "order_margin": sum(order_margins) / max(1, len(order_margins)),
-        "identity_similarity": sum(identity) / max(1, len(identity)),
+        "margin": statistics.fmean(candidate_margins),
+        "mean_positive_similarity": statistics.fmean(positive_scores),
+        "order_control_count": order_control_count,
+        "order_margin": order_margin,
+        "order_violation_rate": (
+            sum(value <= 0 for value in order_margins) / order_control_count
+            if order_control_count else None
+        ),
+        "collapse_similarity": collapse_similarity,
+        "held_out_concept_count": sum(
+            row.concept >= cfg.concepts - 2 for row in rows
+        ),
+        "structured_composition_count": sum(
+            (len(row.ops) >= 4 and row.ops[:2] == (0, 1))
+            or (len(row.ops) >= 5 and row.ops[-2:] == (4, 5))
+            for row in rows
+        ),
     }
 
 
-def train(args):
-    cfg = Config(epochs=args.epochs, lr=args.lr)
-    device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
-    examples = make_world(cfg, args.seed)
-    train_rows = [e for e in examples if not e.held_out]
-    val_rows = [e for e in examples if e.held_out]
+def seed_everything(seed: int) -> None:
+    """Seed model initialization and all RNGs used by the training loop."""
+    random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    if hasattr(torch.backends, "cudnn"):
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+
+def train_model(
+    cfg: Config,
+    seed: int,
+    device: str | torch.device,
+    *,
+    log_every: int = 10,
+) -> tuple[LearnedOperationBrain, list[Example], list[dict[str, Any]]]:
+    if cfg.epochs < 1 or cfg.batch_size < 1:
+        raise ValueError("epochs and batch_size must be positive")
+    seed_everything(seed)
+    examples = make_world(cfg, seed)
+    train_rows = [row for row in examples if not row.held_out]
+    held_out_rows = [row for row in examples if row.held_out]
+    if not train_rows or len(held_out_rows) < 2:
+        raise ValueError("benchmark must contain train rows and at least two held-out rows")
+
     model = LearnedOperationBrain(cfg).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.lr, weight_decay=1e-2)
-    rng = random.Random(args.seed)
+    shuffle_rng = random.Random(seed)
+    history = []
     for epoch in range(1, cfg.epochs + 1):
-        rng.shuffle(train_rows)
-        total = 0.0
+        shuffle_rng.shuffle(train_rows)
+        total_loss = 0.0
+        batch_count = 0
         for start in range(0, len(train_rows), cfg.batch_size):
             batch = train_rows[start:start + cfg.batch_size]
-            c, ops, target = _batch(batch, device)
-            pred = model.compose(c, ops)
-            shuffled = target[torch.randperm(target.shape[0], device=device)]
-            loss = loss_fn(pred, target, shuffled, cfg.margin)
+            concept_ids, operations, targets = _batch(batch, device)
+            prediction = model.compose(concept_ids, operations)
+            negatives = targets[torch.randperm(targets.shape[0], device=device)]
+            loss = loss_fn(prediction, targets, negatives, cfg.margin)
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
-            total += float(loss.detach())
-        if epoch == 1 or epoch % 10 == 0 or epoch == cfg.epochs:
-            metrics = evaluate(model, examples, cfg, device)
-            print(json.dumps({"epoch": epoch, "loss": total / max(1, (len(train_rows)+cfg.batch_size-1)//cfg.batch_size), **metrics}))
+            total_loss += float(loss.detach())
+            batch_count += 1
+
+        if epoch == 1 or epoch % max(1, log_every) == 0 or epoch == cfg.epochs:
+            history.append({
+                "epoch": epoch,
+                "loss": total_loss / max(1, batch_count),
+                **evaluate(model, examples, cfg, device),
+            })
+    return model, examples, history
+
+
+def train(args: argparse.Namespace) -> None:
+    cfg = Config(epochs=args.epochs, lr=args.lr)
+    device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
+    model, examples, history = train_model(cfg, args.seed, device)
+    final = evaluate(model, examples, cfg, device)
+    data_sha256 = world_fingerprint(cfg, args.seed, examples)
+
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    torch.save({"format": "mirror7-native-brain-exp6-pilot-v1",
-                "config": cfg.__dict__, "seed": args.seed,
-                "state_dict": model.state_dict()}, output)
-    print(json.dumps({"output": str(output), "parameters": sum(p.numel() for p in model.parameters()),
-                      "final": evaluate(model, examples, cfg, device)}))
+    torch.save({
+        "format": "mirror7-native-brain-exp6-pilot-v2",
+        "config": asdict(cfg),
+        "seed": args.seed,
+        "dataset_sha256": data_sha256,
+        "state_dict": model.state_dict(),
+    }, output)
+    print(json.dumps({
+        "output": str(output),
+        "parameters": sum(parameter.numel() for parameter in model.parameters()),
+        "dataset_sha256": data_sha256,
+        "history": history,
+        "final": final,
+    }))
 
 
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--output", default="/content/drive/MyDrive/Mirror7/mirror7_exp6_pilot.pt")
-    p.add_argument("--epochs", type=int, default=60)
-    p.add_argument("--lr", type=float, default=5e-4)
-    p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--device", default=None)
-    train(p.parse_args())
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", default="/content/drive/MyDrive/Mirror7/mirror7_exp6_pilot.pt")
+    parser.add_argument("--epochs", type=int, default=60)
+    parser.add_argument("--lr", type=float, default=5e-4)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--device", default=None)
+    train(parser.parse_args())
 
 
 if __name__ == "__main__":

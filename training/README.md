@@ -2,6 +2,15 @@
 
 This directory contains the training and research infrastructure for learned language/response realization, native semantic-state research, knowledge transfer from teacher models, and independent evaluation.
 
+
+## Native intelligence + semantic reasoning
+
+The active research entry points are [Experiment 6](./README_EXPERIMENT6.md),
+[the three-seed screening runner](./evaluate_experiment6.py), and
+[Research Workstream A](../docs/38-track-a-native-intelligence-semantic-reasoning.md).
+Free-running generation diagnostics are available in `free_running_eval.py`;
+their lexical scores do not establish semantic or factual correctness.
+
 ## Architectural Boundaries
 
 The native neural models and reasoning discovery engines are modular layers designed to operate in harmony with Mirror 7's core symbolic runtime (`phase140_unified_cognitive_runtime`). They do **not** replace the backend runtime, nor do they create a permanent dependency on external pretrained models during production inference.
