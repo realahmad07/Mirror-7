@@ -265,7 +265,12 @@ def evaluate_ruletaker(
     manifest = load_manifest(manifest_path)
     dataset_file = Path(dataset_path)
     dataset_sha256 = sha256_file(dataset_file)
-    if expected_source_sha256 and dataset_sha256.casefold() != expected_source_sha256.casefold():
+    pinned_file = manifest["pinned_test_file"]
+    pinned_filename = Path(pinned_file["path"]).name
+    required_hash = expected_source_sha256
+    if dataset_file.suffix.casefold() == ".parquet" and dataset_file.name == pinned_filename:
+        required_hash = required_hash or pinned_file["sha256"]
+    if required_hash and dataset_sha256.casefold() != required_hash.casefold():
         raise ValueError("dataset file SHA-256 does not match the expected source hash")
     rows = load_ruletaker_rows(dataset_file)
     expected_rows = manifest["splits"]["test"]["num_examples"]
