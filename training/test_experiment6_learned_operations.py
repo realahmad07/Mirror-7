@@ -1,5 +1,6 @@
 import torch
 import pytest
+from dataclasses import replace
 
 from .experiment6_learned_operations import (
     Config,
@@ -85,6 +86,8 @@ def test_seeded_training_initialization_and_world_are_reproducible():
     second_fingerprint = world_fingerprint(cfg, 123, second_world)
 
     assert first_fingerprint == second_fingerprint
+    training_only_change = replace(cfg, epochs=2, batch_size=64, lr=1e-3, state_dim=32, hidden_dim=64)
+    assert world_fingerprint(training_only_change, 123, first_world) == first_fingerprint
     assert first.state_dict().keys() == second.state_dict().keys()
     assert all(torch.equal(first.state_dict()[key], second.state_dict()[key]) for key in first.state_dict())
 

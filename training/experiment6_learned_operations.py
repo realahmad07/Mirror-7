@@ -133,7 +133,13 @@ def world_fingerprint(cfg: Config, seed: int, examples: list[Example]) -> str:
     payload = {
         "format": "mirror7-exp6-semantic-world-v2",
         "seed": int(seed),
-        "config": asdict(cfg),
+        "world_config": {
+            "concepts": cfg.concepts,
+            "operations": cfg.operations,
+            "concept_dim": cfg.concept_dim,
+            "max_chain": cfg.max_chain,
+            "examples_per_concept_length": 16,
+        },
         "examples": [
             {
                 "concept": row.concept,
