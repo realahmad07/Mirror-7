@@ -78,6 +78,32 @@ reused the same stream and is invalidated; it is excluded from all reported
 results. This is a declared inductive-bias comparison, not evidence of
 natural-language semantics.
 
+Two additional matched rollout-dose ablations are now predeclared in CI.
+They retain the same three seeds, 240 epochs, architecture, contrastive weight,
+teacher-forced transition weight, and evaluator, changing only rollout
+supervision weight to 0.10 or 0.25:
+
+```bash
+python -m training.evaluate_experiment6 \
+  --device cuda --epochs 240 --seeds 17,29,43 \
+  --contrastive-weight 0.10 --transition-supervision-weight 1.0 \
+  --rollout-supervision-weight 0.10 \
+  --transition-architecture linear_operator \
+  --output artifacts/exp6_operator_rollout010_screening.json
+
+python -m training.evaluate_experiment6 \
+  --device cuda --epochs 240 --seeds 17,29,43 \
+  --contrastive-weight 0.10 --transition-supervision-weight 1.0 \
+  --rollout-supervision-weight 0.25 \
+  --transition-architecture linear_operator \
+  --output artifacts/exp6_operator_rollout025_screening.json
+```
+
+These are dose-response experiments motivated by the observed degradation on
+long (five-operation) held-out chains and the `4→5` suffix composition. They
+are not assumed to improve results. All six structured-operator configurations
+are included in the unchanged all-seed acceptance gate; no threshold is relaxed.
+
 Use the same device, PyTorch version, data fingerprint, training budget, and
 evaluator when comparing the two architectures. The evaluator reports held-out
 candidate ranking, contrastive margin, swapped-order negative controls,
