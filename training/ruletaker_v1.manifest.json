@@ -1,0 +1,49 @@
+{
+  "dataset_id": "tasksource/ruletaker",
+  "task": "binary entailment classification over controlled natural-language theories and assertions",
+  "benchmark_type": "controlled_natural_language_synthetic_reasoning",
+  "language": "en",
+  "license": "Apache-2.0",
+  "dataset_card_url": "https://huggingface.co/datasets/tasksource/ruletaker",
+  "upstream_generator_url": "https://github.com/allenai/ruletaker",
+  "paper": "Clark, Tafjord, Richardson (2020), Transformers as Soft Reasoners over Language, IJCAI-20, DOI 10.24963/ijcai.2020/537",
+  "pinned_test_file": {
+    "path": "data/test-00000-of-00001-402c217dbcd02599.parquet",
+    "revision": "64d8c52fddf8054b91b0791fe6535b9b5b6e2b96",
+    "sha256": "51dd62b07c199ba82870345e6c872eb0314770fbb0efbf30a632a1edbbbf3ffd",
+    "size_bytes": 3723098
+  },
+  "splits": {
+    "train": {
+      "num_examples": 480152
+    },
+    "dev": {
+      "num_examples": 75872
+    },
+    "test": {
+      "num_examples": 151911
+    }
+  },
+  "features": [
+    "context",
+    "question",
+    "label",
+    "config"
+  ],
+  "labels": [
+    "entailment",
+    "not entailment"
+  ],
+  "configurations": [
+    "depth-1",
+    "depth-2",
+    "depth-3",
+    "depth-4",
+    "depth-5",
+    "depth-6",
+    "depth-7",
+    "depth-8"
+  ],
+  "use_boundary": "Evaluation only. Do not add test rows to training. This benchmark is templated/controlled language and does not establish performance on organic natural text.",
+  "source_integrity_note": "When using the pinned Parquet file, verify SHA-256 before evaluation. Converted JSONL exports must preserve all rows and be traceable to this file; report their own file hash."
+}
