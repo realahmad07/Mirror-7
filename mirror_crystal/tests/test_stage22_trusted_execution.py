@@ -243,7 +243,7 @@ def test_stage22_identity_assertions_are_signed_scoped_audience_and_expiry_bound
 
 
 def test_stage22_rejects_untrusted_or_incomplete_identity_issuers(tmp_path):
-    with pytest.raises(Stage22Error, match="trusted"):
+    with pytest.raises(Stage22Error, match="safe"):
         ReviewerAuthenticator({"bad issuer": IDENTITY_KEY})
     world = make_world(tmp_path)
     token = identity(world, "reviewer-1", ["action:approve:prepare_safe_state"])
@@ -253,10 +253,13 @@ def test_stage22_rejects_untrusted_or_incomplete_identity_issuers(tmp_path):
 
 
 def test_stage22_adapter_allowlist_is_immutable_and_requires_all_host_methods(tmp_path):
+    class IncompleteAdapter(TrustedActionAdapter):
+        adapter_id = "incomplete-adapter"
+
     adapters = TrustedActionAdapterRegistry()
     with pytest.raises(Stage22Error, match="implement host method"):
         adapters.register(
-            TrustedActionAdapter(), verification_public_key=b"x" * 32,
+            IncompleteAdapter(), verification_public_key=b"x" * 32,
             action_ids=["prepare_safe_state"],
         )
 
