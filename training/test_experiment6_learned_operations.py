@@ -8,6 +8,8 @@ from .experiment6_learned_operations import (
     LearnedOperationBrain,
     _batch,
     evaluate,
+    loss_fn,
+    _deduplicate_examples,
     make_world,
     seed_everything,
     train_model,
@@ -18,6 +20,42 @@ from .experiment6_learned_operations import (
 def _example(concept: int, ops: tuple[int, ...]) -> Example:
     return Example(concept, ops, torch.nn.functional.normalize(torch.randn(64), dim=0), False)
 
+
+
+def test_duplicate_tasks_are_deduplicated_before_training():
+    cfg = Config()
+    world = make_world(cfg, 101)
+    unique = _deduplicate_examples(world)
+    assert len(unique) == len({(row.concept, row.ops) for row in world})
+    assert len(unique) < len(world)
+
+
+def test_duplicate_targets_are_not_used_as_contrastive_negatives():
+    target = torch.nn.functional.normalize(torch.tensor([
+        [1.0,  0.0],
+        [1.0,  0.0],
+        [0.0,  1.0],
+        [0.0,  1.0],
+    ]), dim=-1)
+    prediction = target.clone().requires_grad_(True)
+
+    loss = loss_fn(prediction, target, target, margin=0.20)
+    assert loss.item() == pytest.approx(0.0, abs=1e-6)
+    loss.backward()
+    assert torch.isfinite(prediction.grad).all()
+
+
+def test_loss_uses_hardest_distinct_negative_candidate():
+    target = torch.tensor([[1.0, 0.0]])
+    prediction = target.clone()
+    candidates = torch.nn.functional.normalize(torch.tensor([
+        [1.0, 0.0],   # The positive itself must be masked.
+        [0.8, 0.6],   # Hardest valid negative: score 0.8.
+        [0.0, 1.0],
+    ]), dim=-1)
+
+    loss = loss_fn(prediction, target, candidates, margin=0.30)
+    assert loss.item() == pytest.approx(0.10, abs=1e-5)
 
 def test_exp6_forward_and_world():
     cfg = Config()
