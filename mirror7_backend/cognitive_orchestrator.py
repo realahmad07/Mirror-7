@@ -42,6 +42,30 @@ class UnifiedCognitiveOrchestrator:
         self.math_confidence_threshold = math_confidence_threshold
         self.synthesizer = EvidenceSynthesisEngine()
 
+        # Native CPU intelligence organs
+        from mirror_crystal.native_intelligence import (
+            PersonalFactMemory,
+            ConversationOrgan,
+            LogicOrgan,
+            WordProblemSolver,
+            CuratedKnowledgeOrgan,
+            RetrievalGuard,
+            KnowledgeGraphEngine,
+            MultiHopChainingEngine,
+            MicroEmbeddingEngine,
+            DocumentAutoCrystallizerEngine,
+        )
+        self.fact_memory = PersonalFactMemory()
+        self.conversation = ConversationOrgan()
+        self.logic = LogicOrgan()
+        self.word_problems = WordProblemSolver()
+        self.curated_knowledge = CuratedKnowledgeOrgan()
+        self.retrieval_guard = RetrievalGuard
+        self.knowledge_graph = KnowledgeGraphEngine()
+        self.multi_hop = MultiHopChainingEngine(kg=self.knowledge_graph)
+        self.semantic_search = MicroEmbeddingEngine()
+        self.auto_crystallizer = DocumentAutoCrystallizerEngine(kg=self.knowledge_graph)
+
     @staticmethod
     def _is_math_query(prompt: str) -> bool:
         text = prompt.casefold()
@@ -59,12 +83,15 @@ class UnifiedCognitiveOrchestrator:
     @staticmethod
     def _is_code_request(prompt: str) -> bool:
         text = prompt.casefold()
+        if re.search(r"\b(?:write|create|implement|build|generate|make)\s+(?:an?\s+)?(?:python\s+)?(?:function|script|program|code|class|method)\b", text):
+            return True
         markers = (
             "write code", "generate code", "implement", "build a function",
             "write a function", "create a class", "write a script",
             "program this", "code this", "fix this code", "implement in python",
             "implement in javascript", "create an api", "build an api",
             "python code", "python program", "python script", "write a program",
+            "python function",
         )
         return any(marker in text for marker in markers)
 
@@ -184,18 +211,25 @@ class UnifiedCognitiveOrchestrator:
                 answer = getattr(vault_result, "answer", None)
                 if answer and tier != "honest_abstain":
                     is_verified = self._is_verified_crystal_result(vault_result)
-                    evidence.append(self._candidate(
-                        "crystal_knowledge",
-                        answer,
-                        getattr(vault_result, "confidence", 0.0),
-                        "verified_claims" if is_verified else "unverified_knowledge",
-                        is_verified,
-                        {
-                            "mode": getattr(vault_result, "mode", None),
-                            "matched_rule_id": getattr(vault_result, "matched_rule_id", None),
-                            "reasoning_trace": list(getattr(vault_result, "reasoning_trace", []) or []),
-                        },
-                    ))
+                    rule_id = getattr(vault_result, "matched_rule_id", None)
+                    # Filter spurious vault matches that have zero or low topical overlap
+                    if not is_verified and rule_id is not None:
+                        is_rel, _, _ = self.retrieval_guard.is_relevant(prompt, prompt, str(answer))
+                        if not is_rel:
+                            answer = None
+                    if answer:
+                        evidence.append(self._candidate(
+                            "crystal_knowledge",
+                            answer,
+                            getattr(vault_result, "confidence", 0.0),
+                            "verified_claims" if is_verified else "unverified_knowledge",
+                            is_verified,
+                            {
+                                "mode": getattr(vault_result, "mode", None),
+                                "matched_rule_id": getattr(vault_result, "matched_rule_id", None),
+                                "reasoning_trace": list(getattr(vault_result, "reasoning_trace", []) or []),
+                            },
+                        ))
         except Exception as exc:
             errors.append({"source": "crystal_knowledge", "error": type(exc).__name__})
 
@@ -334,6 +368,63 @@ class UnifiedCognitiveOrchestrator:
                 )
             except Exception:
                 pass
+
+        user_name = self.fact_memory.get(session_id, "name")
+        native_hit = None
+        fallback_hit = None
+        if not evidence:
+            fallback_hit = self.knowledge_graph.lookup_from_prompt(prompt) or self.curated_knowledge.lookup(prompt)
+
+        if candidate_code is None and not self._is_code_request(prompt) and not self._is_math_query(prompt):
+            native_hit = (
+                self.fact_memory.try_store(session_id, prompt)
+                or self.fact_memory.try_recall(session_id, prompt)
+                or self.conversation.respond(prompt, session_id=session_id, user_name=user_name)
+                or self.multi_hop.resolve_chain(prompt)
+                or self.logic.respond(prompt)
+                or self.word_problems.solve(prompt)
+                or fallback_hit
+            )
+        elif candidate_code is None and not self._is_code_request(prompt):
+            # For queries flagged with math keywords that might be word problems or curated definitions
+            native_hit = (
+                self.word_problems.solve(prompt)
+                or fallback_hit
+            )
+
+        if native_hit is not None:
+            return {
+                "answer": native_hit.answer,
+                "answer_qualification": native_hit.qualification,
+                "confidence": native_hit.confidence,
+                "mode": f"native_{native_hit.kind}",
+                "epistemic_tier": "verified_native_result" if native_hit.verified else "conversational_context",
+                "verified": native_hit.verified,
+                "task_result_verified": False,
+                "task_code_verified": False,
+                "task_execution_verified": False,
+                "abstained": False,
+                "verification_status": "verified" if native_hit.verified else "contextual_response",
+                "candidate_answer": native_hit.answer,
+                "candidate_source": f"native_{native_hit.kind}",
+                "memory_context": memory_context,
+                "memory_used_as_evidence": False,
+                "sources_consulted": list(dict.fromkeys(sources_consulted + [f"native_{native_hit.kind}"])),
+                "evidence": evidence,
+                "computed_candidates": computed_candidates,
+                "synthesis": synthesis,
+                "generated_code": generated_code,
+                "code_generation": code_generation,
+                "code_verification": code_verification,
+                "universal_intelligence": universal_report,
+                "task_execution": universal_execution,
+                "conflict": False,
+                "errors": errors,
+                "can_teach": False,
+                "teach_template": None,
+                "consent_log_requested": bool(consent_log),
+                "steps": list(native_hit.steps),
+            }
 
         if task_code_verified:
             final_code = str(code_verification.get("final_code") or generated_code)

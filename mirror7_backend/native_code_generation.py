@@ -128,4 +128,52 @@ class NativeCodeGenerationProvider:
             )
             return self._validated_result(code, tests, "square a number", "square")
 
+        # Reverse string / text
+        if re.search(r"\breverse\b", lower) and re.search(r"\b(?:string|str|text|word|characters)\b", lower):
+            code = "def reverse_string(s):\n    return s[::-1]\n"
+            tests = (
+                "assert reverse_string('hello') == 'olleh'\n"
+                "assert reverse_string('') == ''\n"
+                "assert reverse_string('Mirror') == 'rorriM'\n"
+            )
+            return self._validated_result(code, tests, "reverse a string", "reverse_string")
+
+        # Prime number check
+        if re.search(r"\bprime\b", lower) and any(w in lower for w in ("check", "checks", "test", "is", "whether", "function")):
+            code = (
+                "def is_prime(n):\n"
+                "    if n < 2:\n"
+                "        return False\n"
+                "    for i in range(2, int(n ** 0.5) + 1):\n"
+                "        if n % i == 0:\n"
+                "            return False\n"
+                "    return True\n"
+            )
+            tests = (
+                "assert is_prime(2) is True\n"
+                "assert is_prime(3) is True\n"
+                "assert is_prime(4) is False\n"
+                "assert is_prime(17) is True\n"
+                "assert is_prime(1) is False\n"
+            )
+            return self._validated_result(code, tests, "check if a number is prime", "is_prime")
+
+        # Factorial
+        if re.search(r"\bfactorial\b", lower):
+            code = (
+                "def factorial(n):\n"
+                "    if n < 0:\n"
+                "        raise ValueError('n must be non-negative')\n"
+                "    res = 1\n"
+                "    for i in range(2, n + 1):\n"
+                "        res *= i\n"
+                "    return res\n"
+            )
+            tests = (
+                "assert factorial(0) == 1\n"
+                "assert factorial(1) == 1\n"
+                "assert factorial(5) == 120\n"
+            )
+            return self._validated_result(code, tests, "calculate factorial", "factorial")
+
         return None

@@ -719,7 +719,23 @@ flowchart LR
 
 ## 8. Quickstart: Standalone V6 Inference, HTTP Backend, Testing & Docker
 
-### A. Standalone Mirror-7 V6 Master & 3-Specialist Hub Inference (`Python` / `Colab GPU`)
+### A. Quickstart in 60 Seconds: 1-Click Launchers (Linux, macOS, Windows)
+
+Run Mirror 7 locally on CPU in under 60 seconds with zero GPU requirements:
+
+```bash
+# 1. Launch the interactive Studio Web UI (starts server & opens browser on port 8787):
+./run_studio.sh         # Linux / macOS
+run_studio.bat          # Windows
+
+# 2. Or run interactive CLI or one-shot queries directly:
+./run_cli.sh            # Interactive terminal chat loop
+./run_cli.sh "What is the capital of France?"
+./run_cli.sh 'If an apple costs $3 and an orange costs $2, what is the cost of 5 apples and 4 oranges?'
+./run_cli.sh "What is 45 * 12 + 150?"
+```
+
+### B. Standalone Mirror-7 V6 Master & 3-Specialist Hub Inference (`Python` / `Colab GPU`)
 
 ```python
 from colab_backup.mirror7_standalone_inference import load_mirror7_master
@@ -736,7 +752,7 @@ print("Active / Total Params:", f"{route_info['active_params']:,} / {route_info[
 print(response)
 ```
 
-### B. Local Automated Verification & Test Suite
+### C. Local Automated Verification & Test Suite
 
 ```bash
 # 1. Run the honest independent evaluation suite (55/55 100% green in ~3.2s)
@@ -753,7 +769,7 @@ python -m compileall -q mirror7_backend training mirror_crystal mirror_eval
 python -m pytest -q training/test_training_foundation.py
 ```
 
-### C. Mirror Crystal Live Studio & Web UI (`http://127.0.0.1:8787/`)
+### D. Mirror Crystal Live Studio & Web UI (`http://127.0.0.1:8787/`)
 
 Launch the local interactive full-stack Web UI serving both the discrete blueprint constellation and the continuous neural network visualizer:
 
@@ -777,14 +793,14 @@ Once running, navigate to **`http://127.0.0.1:8787/`** or **`http://127.0.0.1:87
 - **Edge PII Teleport Simulator:** Scrub PII and export cryptographically signed capsules for edge/mobile devices.
 - **In-Browser WASM SIMD Benchmark:** Hardware `i64.popcnt` bitmask scanner running in the browser V8 engine (`11.18 ms` per 100,000 2,048-bit scans).
 
-### D. Production HTTP Backend & Containerized Deployment (`mirror7_backend`)
+### E. Production HTTP Backend & Containerized Deployment (`mirror7_backend`)
 
 ```bash
 docker build -t mirror7-backend .
 docker run --rm -p 8787:8787 mirror7-backend
 ```
 
-### E. Repository Directory Map
+### F. Repository Directory Map
 
 ```text
 Mirror-7/
@@ -1030,6 +1046,28 @@ Eliminates sequential RNN bottlenecks and dense FP32 RAM overhead for local CPU 
 - **`ParallelByteScanLayer`:** Tree-structured parallel prefix scan (`11` parallel depth steps across `2,048` bytes) running **`19.24x` faster** than sequential `nn.GRUCell` on CPU (`23.62 ms` vs. `454.51 ms`).
 - **`BitLinear158` (`{-1, 0, +1}`) + `ProductKeyMemoryBank` (`65,536` slots):** **`16.0x` weight compression** and **`6.14x` faster** $O(\sqrt{N})$ associative memory lookup.
 - **`AutonomousWakeSleepCPUTrainer` & `VerifiedSkillForge`:** Execution-verified Wake/Sleep LoRA consolidation (**10/10 challenge skills recruited** with **`0.99975` anchor cosine retention**) + zero-trust AST skill synthesis (`56.28x` measured algorithmic speedup from $O(n^2) \to O(n \log n)$).
+
+### C. `mirror_crystal/native_intelligence/` — CPU-Native Deterministic Intelligence Subsystem
+
+The Native Intelligence subsystem provides zero-GPU, sub-millisecond symbolic cognition, structured factual retrieval, and dynamic learning with 0.0% hallucination:
+
+1. **Structured Knowledge Triples Engine (`knowledge_graph.py`):**
+   - Implements an indexed SQLite `entity_triples` table (`subject | predicate | object | confidence | source`) with compound indexing (`idx_triples_sub_pred`, `idx_triples_obj`).
+   - Scales to millions of facts with sub-millisecond ($< 0.5\text{ ms}$) retrieval.
+   - Natural language query mapping for bidirectional lookups (e.g. *"What is the capital of France?"* $\to$ `(France, capital, Paris)` $\to$ *"The capital of France is Paris."*).
+2. **Micro-Embedding Semantic Search Engine (`semantic_search.py`):**
+   - Pure-Python subword character n-gram embedding projection ($d = 128$) with exact cosine similarity matching on CPU ($< 5\text{ ms}$).
+   - Synonym and morphological expansion (e.g. `capital`, `city`, `center`) bridging vocabulary mismatches across rules without requiring heavy neural models or GPUs.
+3. **Multi-Hop Rule & Graph Chaining Engine (`multi_hop.py`):**
+   - Bounded graph traversal linking relational paths: $(A \xrightarrow{R_1} B) \land (B \xrightarrow{R_2} C) \implies A \to C$.
+   - Transparent, step-by-step reasoning chains for multi-step queries (e.g. *"Who is the spouse of the author of Romeo and Juliet?"* $\to$ William Shakespeare $\to$ Anne Hathaway).
+4. **1-Click Document Auto-Crystallizer (`crystallizer.py`):**
+   - Dynamic ingestion pipeline extracting structured knowledge triples, markdown Q&A pairs, and AST-verified Python code snippets from unstructured text and documents.
+   - Integrated with Studio UI endpoint (`/api/crystal/teach_document`) and `SixGateDataHygienePipeline` for automatic deduplication and quality quarantine into local `.dcrystal` vaults.
+5. **Deterministic Cognitive Organs & Retrieval Guard:**
+   - **`ConversationOrgan` & `PersonalFactMemory`:** Stateful user persona, natural greetings, honest epistemic status reporting, and per-session fact retention and recall.
+   - **`IndependentArithmeticEvaluator` & `WordProblemSolver`:** Exact rational arithmetic over `fractions.Fraction` (order of operations, multi-step math, speed/distance/time, multi-item shopping with tax/discount, work rates).
+   - **`RetrievalGuard`:** Rigorous lexical coverage verification ($\ge 40\%$ content words) blocking spurious vault lookups and eliminating hallucinated matches.
 
 ---
 

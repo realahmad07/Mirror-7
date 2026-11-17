@@ -306,6 +306,10 @@ class BackendService:
         if self.crystal_vault is None:
             from mirror_crystal import MirrorCrystalEngine
             self.crystal_vault = MirrorCrystalEngine()
+        try:
+            self.cognitive_orchestrator.auto_crystallizer.crystallize_text(text, title=title)
+        except Exception:
+            pass
         if hasattr(self.crystal_vault, "ingest_document"):
             return self.crystal_vault.ingest_document(text, title=title)
         from mirror_crystal import DocumentAutoCrystallizer

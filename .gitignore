@@ -25,3 +25,7 @@ artifacts/*.pt
 # Note: .dcrystal, .sqlite, and rule/blueprint datasets are now permitted in git
 artifacts/*.sqlite
 training/data/
+*.sqlite-wal
+*.sqlite-shm
+*.dcrystal-wal
+*.dcrystal-shm
