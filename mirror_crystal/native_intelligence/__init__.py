@@ -27,6 +27,7 @@ from .knowledge_graph import KnowledgeGraphEngine, FactTriple
 from .semantic_search import MicroEmbeddingEngine
 from .multi_hop import MultiHopChainingEngine
 from .crystallizer import DocumentAutoCrystallizerEngine
+from .context_reasoner import ContextReasoner
 
 __all__ = [
     "NativeAnswer",
@@ -44,4 +45,5 @@ __all__ = [
     "MicroEmbeddingEngine",
     "MultiHopChainingEngine",
     "DocumentAutoCrystallizerEngine",
+    "ContextReasoner",
 ]

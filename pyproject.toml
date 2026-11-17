@@ -23,6 +23,7 @@ include = [
   "mirror7_backend*",
   "mirror_crystal*",
   "mirror_eval*",
+  "mirror_lm*",
   "phase359_response_generation_adapter*",
   "phase362_response_generation_config*",
   "phase364_response_generation_validation*",
@@ -44,4 +45,5 @@ testpaths = [
   "training",
   "mirror_crystal",
   "mirror_eval",
+  "mirror_lm",
 ]

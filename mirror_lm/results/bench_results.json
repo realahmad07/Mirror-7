@@ -1,0 +1,60 @@
+{
+  "corpus": {
+    "train_docs": 747,
+    "val_docs": 100,
+    "train_utf8_bytes": 329335,
+    "bpe_compression_bytes_per_token": 2.43
+  },
+  "byte_level_transformer": {
+    "params": 951552,
+    "vocab_size": 263,
+    "init_val": {
+      "loss": 5.55818,
+      "perplexity": 259.351,
+      "bits_per_byte": 8.0384,
+      "tokens": 40576,
+      "bytes": 40477
+    },
+    "steps": 200,
+    "elapsed_s": 25.957,
+    "final_val": {
+      "loss": 2.23836,
+      "perplexity": 9.378,
+      "bits_per_byte": 3.2372,
+      "tokens": 40576,
+      "bytes": 40477
+    }
+  },
+  "bpe_transformer": {
+    "params": 869504,
+    "vocab_size": 1024,
+    "init_val": {
+      "loss": 6.93927,
+      "perplexity": 1032.014,
+      "bits_per_byte": 4.2165,
+      "tokens": 17024,
+      "bytes": 40420
+    },
+    "steps": 197,
+    "elapsed_s": 25.289,
+    "final_val": {
+      "loss": 3.92744,
+      "perplexity": 50.777,
+      "bits_per_byte": 2.3864,
+      "tokens": 17024,
+      "bytes": 40420
+    }
+  },
+  "samples_greedy": {
+    "byte_level": {
+      "Mirror 7 is a": "nd and `mirror_cores and and and and and and and",
+      "Every stage requires": " and and and and and and and contration and and ",
+      "Verification ensures that": "e and and and and and and and and and and and an"
+    },
+    "bpe_1024": {
+      "Mirror 7 is a": " semantic-.",
+      "Every stage requires": ".",
+      "Verification ensures that": " the service."
+    }
+  }
+}

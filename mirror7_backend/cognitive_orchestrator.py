@@ -54,6 +54,7 @@ class UnifiedCognitiveOrchestrator:
             MultiHopChainingEngine,
             MicroEmbeddingEngine,
             DocumentAutoCrystallizerEngine,
+            ContextReasoner,
         )
         self.fact_memory = PersonalFactMemory()
         self.conversation = ConversationOrgan()
@@ -65,6 +66,7 @@ class UnifiedCognitiveOrchestrator:
         self.multi_hop = MultiHopChainingEngine(kg=self.knowledge_graph)
         self.semantic_search = MicroEmbeddingEngine()
         self.auto_crystallizer = DocumentAutoCrystallizerEngine(kg=self.knowledge_graph)
+        self.context_reasoner = ContextReasoner()
 
     @staticmethod
     def _is_math_query(prompt: str) -> bool:
@@ -381,6 +383,7 @@ class UnifiedCognitiveOrchestrator:
                 or self.fact_memory.try_recall(session_id, prompt)
                 or self.conversation.respond(prompt, session_id=session_id, user_name=user_name)
                 or self.multi_hop.resolve_chain(prompt)
+                or self.context_reasoner.respond(prompt)
                 or self.logic.respond(prompt)
                 or self.word_problems.solve(prompt)
                 or fallback_hit
@@ -389,6 +392,7 @@ class UnifiedCognitiveOrchestrator:
             # For queries flagged with math keywords that might be word problems or curated definitions
             native_hit = (
                 self.word_problems.solve(prompt)
+                or self.context_reasoner.respond(prompt)
                 or fallback_hit
             )
 
