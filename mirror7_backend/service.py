@@ -76,6 +76,8 @@ class BackendService:
         self._crystal_query_coordinator: Any | None = None
         self._cognitive_orchestrator: Any | None = None
         self._universal_intelligence_pipeline: Any | None = None
+        self._concept_lattice: Any | None = None
+        self._concept_lattice_sig: tuple[int, int] | None = None
         self._is_ready: bool = False
         self._warmup_ms: float = 0.0
         if self.crystal_vault is None and enable_crystal_auto_load:
@@ -722,11 +724,13 @@ class BackendService:
 
         lattice_nodes = 0
         lattice_domains: dict[str, int] = {}
+        lattice_telemetry: dict[str, Any] = {}
         try:
-            from mirror_crystal.open_ended_concept_lattice import OpenEndedConceptLatticeEngine
-            _lat = OpenEndedConceptLatticeEngine()
+            _lat = self._get_concept_lattice()
             lattice_nodes = _lat.concept_count()
             lattice_domains = _lat.domain_distribution()
+            if hasattr(_lat, "vault_telemetry"):
+                lattice_telemetry = _lat.vault_telemetry()
         except Exception:
             pass
         lattice_pairs = (lattice_nodes * (lattice_nodes - 1)) // 2
@@ -746,7 +750,7 @@ class BackendService:
                 "CounterfactualWhatIfEngine, CEGIS AST Code Repair & ZeroParamDataAnalyst",
                 "ConversationalBlueprintEngine (Plotkin Anti-Unification + Raw-Data Eviction)",
                 "CategorizedConversationDomainEngine (12 Human Domains + Cross-Domain Blender + Socratic Coach + Document Composer)",
-                "OpenEndedConceptLatticeEngine (3,200+ Multi-Source 5-Facet ConceptNodes, O(1) Trigram Index & Compositional Synthesizer)",
+                "OpenEndedConceptLatticeEngine (Disk-Backed SQLite FTS5 & Zlib 5-Facet ConceptNodes, O(1) Sharded Inverted Index & Compositional Synthesizer)",
                 "MarketIntelligenceOrgans (Newton Law Discovery, EV/ROI Decision Matrix, Multi-Organ Pipeline, AST Security Auditor)",
                 "FrontierIntelligenceOrgans (0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Auditor, Fault-Tree Diagnostician)",
                 "ScientificPluginIntelligenceEngine (PubChem, ChEMBL, openFDA, UniProt, ClinVar, Reactome, ClinicalTrials, arXiv, Context7)",
@@ -761,6 +765,9 @@ class BackendService:
                 "combinatorial_cross_pairs": lattice_pairs,
                 "discourse_operator_combinations": lattice_pairs * 12,
                 "domain_breakdown": lattice_domains,
+                "storage_backend": lattice_telemetry.get("storage_backend", "sqlite_fts5_zlib_disk"),
+                "schema_version": lattice_telemetry.get("schema_version", "v4_fts5_zlib"),
+                "vault_disk_mb": lattice_telemetry.get("vault_disk_mb", 0.0),
             },
             "antigravity_science_plugins_distilled": [
                 "pubchem-database",
@@ -933,18 +940,31 @@ class BackendService:
             mem.close()
 
     # =========================================================================
-    # Market-Launch Open-Ended Concept Lattice API (10,000+ Concepts, O(1) CPU)
+    # Market-Launch Open-Ended Concept Lattice API (50,000+ Concepts, Disk FTS5)
     # =========================================================================
     def _get_concept_lattice(self):
-        from mirror_crystal.open_ended_concept_lattice import OpenEndedConceptLatticeEngine
-        return OpenEndedConceptLatticeEngine()
+        from mirror_crystal.open_ended_concept_lattice import (
+            OpenEndedConceptLatticeEngine,
+            _DEFAULT_VAULT_PATH,
+        )
+        sig: tuple[int, int] | None = None
+        if _DEFAULT_VAULT_PATH.exists():
+            st = _DEFAULT_VAULT_PATH.stat()
+            sig = (st.st_mtime_ns, st.st_size)
+        if self._concept_lattice is None or self._concept_lattice_sig != sig:
+            if self._concept_lattice is not None and hasattr(self._concept_lattice, "close"):
+                self._concept_lattice.close()
+            self._concept_lattice = OpenEndedConceptLatticeEngine()
+            self._concept_lattice_sig = sig
+        return self._concept_lattice
 
     def lattice_status(self) -> dict[str, Any]:
-        """Return live telemetry for Mirror 7's Sub-Linear O(1) Open-Ended Concept Lattice."""
+        """Return live telemetry for Mirror 7's Disk-Backed SQLite FTS5 Open-Ended Concept Lattice."""
         lat = self._get_concept_lattice()
         total = lat.concept_count()
         dist = lat.domain_distribution()
         pairs = (total * (total - 1)) // 2
+        tel = lat.vault_telemetry() if hasattr(lat, "vault_telemetry") else {}
         return {
             "ok": True,
             "version": lat.VERSION,
@@ -953,6 +973,11 @@ class BackendService:
             "combinatorial_cross_pairs": pairs,
             "discourse_operator_combinations": pairs * 12,
             "domain_breakdown": dist,
+            "storage_backend": tel.get("storage_backend", "sqlite_fts5_zlib_disk"),
+            "schema_version": tel.get("schema_version", "v4_fts5_zlib"),
+            "lru_cache_entries": tel.get("lru_cache_entries", 0),
+            "lru_cache_maxsize": tel.get("lru_cache_maxsize", 1024),
+            "vault_disk_mb": tel.get("vault_disk_mb", 0.0),
             "uses_neural_parameters": False,
             "uses_third_party_llm": False,
         }
