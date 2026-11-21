@@ -15,6 +15,7 @@ import re
 import sqlite3
 from typing import Any
 
+from .categorized_conversation_domains import CategorizedConversationDomainEngine
 from .compression_analogy_engine import symmetric_raw_ncd
 from .conversational_blueprint_engine import ConversationalBlueprintEngine
 
@@ -143,6 +144,7 @@ class CreativeConversationEngine:
         self.vault_path = Path(vault_path) if vault_path is not None else None
         self._fed_pairs: list[tuple[str, str, str]] = list(_SEED_DIALOGUE_PAIRS)
         self.blueprint_engine = ConversationalBlueprintEngine()
+        self.domain_engine = CategorizedConversationDomainEngine()
         if self.vault_path is not None and self.vault_path.exists():
             self.load_from_vault(self.vault_path)
 
@@ -464,7 +466,21 @@ class CreativeConversationEngine:
                 response=best_pair[2],
             )
 
-        # 6. Unbounded Conversational Blueprints & Pragmatic Speech-Act Operators (O(1) rule memory, infinite topics)
+        # 6b. 12-Domain Categorized General Conversation Taxonomy (Mental Wellness, Career, SWE, Finance, Study, Relationships, Health, Philosophy, History, Wit, Future AI, Rapport)
+        dom_hit = self.domain_engine.route_domain_conversation(text)
+        if dom_hit.matched:
+            sess_state = self.blueprint_engine._sessions.setdefault(session_id, self.blueprint_engine._sessions.get(session_id) or __import__("mirror_crystal.conversational_blueprint_engine", fromlist=["DiscourseSessionState"]).DiscourseSessionState())
+            sess_state.active_topic = dom_hit.extracted_topic
+            sess_state.last_speech_act = dom_hit.domain_id
+            sess_state.turn_count += 1
+            return CreativeResponse(
+                matched=True,
+                kind="categorized_domain_dialogue",
+                rule_id=dom_hit.domain_id,
+                response=dom_hit.response,
+            )
+
+        # 7. Unbounded Conversational Blueprints & Pragmatic Speech-Act Operators (O(1) rule memory, infinite topics)
         bp_hit = self.blueprint_engine.respond(text, session_id=session_id)
         if bp_hit.matched:
             return CreativeResponse(

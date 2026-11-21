@@ -484,6 +484,50 @@ def test_antigravity_science_plugins_chemistry_calculus_arxiv_and_uniprot():
     assert "Met-Ala-Stop" in rna.explanation
 
 
+def test_12_categorized_conversation_domains_equation_balancer_fda_and_clinvar():
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Universal Chemical Equation Matrix Balancer + Stoichiometry
+    b1 = router.route("Balance chemical equation: Fe + O2 -> Fe2O3")
+    assert b1.matched is True
+    assert "4Fe + 3O2 -> 2Fe2O3" in b1.explanation
+
+    b2 = router.route("Balance equation: C3H8 + O2 -> CO2 + H2O")
+    assert b2.matched is True
+    assert "C3H8 + 5O2 -> 3CO2 + 4H2O" in b2.explanation
+
+    st = router.route("How many grams in 4 moles of H2O?")
+    assert st.matched is True
+    assert st.output == 72.06
+
+    # 2. openFDA Drug Safety & ClinVar Pathogenic Variants
+    fda = router.route("Check openFDA side effects and safety warning for Metformin")
+    assert fda.matched is True
+    assert "lactic acidosis" in fda.explanation
+
+    cv = router.route("How many pathogenic variants does BRCA1 have in ClinVar?")
+    assert cv.matched is True
+    assert cv.output == 14336.0
+
+    # 3. 12-Domain Categorized General Conversation + Cross-Domain Blending (Loop Iteration 2)
+    d_blend = router.route(
+        "Yaar mujhe freelancing mein clients nahi mil rahe aur is wajah se bohot anxiety aur overthinking ho rahi hai"
+    )
+    assert d_blend.matched is True
+    assert "Cross-Domain Synthesized Blueprint" in d_blend.explanation
+    assert "Proof-of-Work" in d_blend.explanation
+    assert "Cognitive Reset" in d_blend.explanation
+
+    d_phil = router.route("Allama Iqbal ki Khudi aur Stoicism ka falsafa kya sikhata hai?")
+    assert d_phil.matched is True
+    assert "Khudi" in d_phil.explanation
+
+    d_hist = router.route("Ibn Khaldun ka Asabiyyah aur Islamic Golden Age ke scientists ka kya kirdar tha?")
+    assert d_hist.matched is True
+    assert "Al-Khwarizmi" in d_hist.explanation
+
+
+
 
 
 

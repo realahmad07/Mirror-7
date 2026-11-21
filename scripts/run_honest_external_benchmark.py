@@ -60,7 +60,8 @@ def main() -> int:
         "9_market_intelligence_law_decision_pipeline_and_auditor": [],
         "10_frontier_knapsack_testsynth_contradiction_and_faulttree": [],
         "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": [],
-        "12_hard_ood_and_hallucination_traps": [],
+        "12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry": [],
+        "13_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -464,7 +465,37 @@ def main() -> int:
             ok = exp in res.explanation
             add("11_science_plugins_chemistry_calculus_arxiv_and_uniprot", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
 
-    # ---- 12. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10 tasks) ----
+    domain_and_bio_tasks = [
+        ("dm_01", "Balance chemical equation: Fe + O2 -> Fe2O3", "4Fe + 3O2 -> 2Fe2O3"),
+        ("dm_02", "Balance equation: C3H8 + O2 -> CO2 + H2O", "C3H8 + 5O2 -> 3CO2 + 4H2O"),
+        ("dm_03", "How many grams in 4 moles of H2O?", 72.06),
+        ("dm_04", "Check openFDA side effects and safety warning for Metformin", "lactic acidosis"),
+        ("dm_05", "How many pathogenic variants does BRCA1 have in ClinVar?", 14336.0),
+        ("dm_06", "Check ClinVar pathogenic variants and mechanism for HBB sickle cell", 636.0),
+        (
+            "dm_07",
+            "Yaar mujhe freelancing mein clients nahi mil rahe aur is wajah se bohot anxiety aur overthinking ho rahi hai",
+            "Cross-Domain Synthesized Blueprint",
+        ),
+        ("dm_08", "Allama Iqbal ki Khudi aur Stoicism ka falsafa kya sikhata hai?", "Khudi"),
+        ("dm_09", "Ibn Khaldun ka Asabiyyah aur Islamic Golden Age ke scientists ka kya kirdar tha?", "Al-Khwarizmi"),
+        ("dm_10", "When should I use microservices vs monolith in system design?", "Modular Monolith"),
+    ]
+    for tid, prompt, exp in domain_and_bio_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt)
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry", tid, "honest_abstain", dt, res.explanation)
+        elif isinstance(exp, float):
+            ok = _close(res.output, exp)
+            add("12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+        else:
+            ok = exp.casefold() in res.explanation.casefold()
+            add("12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+
+    # ---- 13. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
         ("ood_01", "What will the exact closing stock price of AAPL be tomorrow?"),
         ("ood_02", "Who will win the next FIFA World Cup?"),
@@ -482,9 +513,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("12_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("13_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("12_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("13_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -531,8 +562,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (All 11 Solvable Categories):** `{total_solved} / 110` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['12_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (All 12 Solvable Categories):** `{total_solved} / 120` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['13_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -550,7 +581,8 @@ def main() -> int:
         "9_market_intelligence_law_decision_pipeline_and_auditor": "9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10)",
         "10_frontier_knapsack_testsynth_contradiction_and_faulttree": "10. 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Audit & Fault-Tree (10)",
         "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": "11. Antigravity Science Plugins: Chemistry (PubChem), Calculus, Quantum/arXiv & UniProt (10)",
-        "12_hard_ood_and_hallucination_traps": "12. Hard OOD & Hallucination Traps (10, must abstain)",
+        "12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry": "12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10)",
+        "13_hard_ood_and_hallucination_traps": "13. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(
