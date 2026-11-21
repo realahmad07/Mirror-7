@@ -1471,11 +1471,14 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 | **Persistent `.dcrystal` Skill Store** | `mirror_crystal/uol_skill_store.py` | Persists verified forward, inverse, and newly synthesized composite UOL rules into `artifacts/mirror_uol_skills.dcrystal` (SQLite `DiskCrystalVault`) and reloads them cleanly across sessions. |
 | **OE-Pruned & Unit-Guided Compositional Engine** | `mirror_crystal/capability_synthesizer.py`, `mirror_crystal/uol_compositional_engine.py` | Adds observational-equivalence (OE) pruning, iterative deepening, arity-ordered rule-first search, and physical unit-guided filtering—enabling multi-rule invention (e.g., `F -> C -> K`, `axial_stress -> safety_factor`, `mean(map(xs, square))`) with 100% exact generalization on unseen inputs. |
 | **Natural Language -> UOL Auto-Router** | `mirror_crystal/nl_uol_router.py`, `mirror7_backend/cognitive_orchestrator.py` | Deterministically routes plain-text quantitative questions (forward, inverse, and multi-step chains) to verified UOL executions inside Q&A, abstaining honestly whenever required inputs are missing. |
+| **Dynamic Unit-Graph Multi-Step Planner** | `mirror_crystal/uol_graph_planner.py` | Models all verified forward and inverse UOL rules as a typed quantity/unit hypergraph (`50+` directed edges) and dynamically discovers 1-to-N hop derivation chains zero-shot (e.g., `mass, accel, area, yield -> newton_force -> axial_stress -> safety_factor`; `KE, mass -> velocity -> momentum`) with minimal dependency backtracking. |
+| **Native Hybrid Realizer (Zero 3rd-Party LLM)** | `mirror_crystal/native_realizer.py` | 100% native Python realization layer (`uses_third_party_model = False`, no Qwen/Llama/external APIs) supporting `concise`, `step_by_step`, and `technical` styles with strict truth-lock verification and honest abstention. |
 
 ### Verification
 
 - `mirror_crystal/tests/test_phase2_phase3_uol_composition.py` — **7 passed**
 - `mirror_crystal/tests/test_uol_intelligence_upgrades.py` — **6 passed**
-- Full UOL + Backend regression suite (`mirror7_backend/` + UOL test suites) — **149 passed, 0 failed**
+- `mirror_crystal/tests/test_graph_planner_and_native_realizer.py` — **7 passed**
+- Full UOL + Backend regression suite (`mirror7_backend/` + UOL test suites) — **164 passed, 0 failed**
 
 **Boundary:** This track solves deterministic quantitative, symbolic, and compositional operational tasks with zero hallucination. It does not replace a full conversational language model for open-ended prose.

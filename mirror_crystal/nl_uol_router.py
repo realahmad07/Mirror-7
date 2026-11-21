@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import re
 from typing import Any, Mapping
 
+from .native_realizer import NativeHybridRealizer
 from .operational_language import (
     Call,
     Program,
@@ -19,6 +20,7 @@ from .operational_language import (
     Var,
     VariableSpec,
 )
+from .uol_graph_planner import UOLGraphPlanner
 from .uol_inverse_deriver import derive_all_inverse_rules
 from .uol_rule_library import build_default_uol
 
@@ -34,6 +36,7 @@ class NLRouteResult:
     unit: str = ""
     explanation: str = ""
     missing_inputs: tuple[str, ...] = ()
+    steps: tuple[dict[str, Any], ...] = ()
 
     def __post_init__(self):
         if self.inputs is None:
@@ -236,8 +239,54 @@ _BINDINGS: tuple[_RuleBinding, ...] = (
 )
 
 
+_QUANTITY_ALIASES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("safety_factor", ("safety factor", "factor of safety")),
+    ("electrical_power", ("electrical power", "electric power", "wattage", "power")),
+    ("kinetic_energy", ("kinetic energy", "ke")),
+    ("potential_energy", ("potential energy", "gravitational energy", "pe")),
+    ("input_energy", ("input energy",)),
+    ("yield_strength", ("yield strength", "allowable stress")),
+    ("bending_moment", ("bending moment", "beam moment")),
+    ("cylinder_volume", ("cylinder volume", "volume of cylinder", "volume of a cylinder")),
+    ("circle_area", ("circle area", "area of circle", "area of a circle")),
+    ("triangle_area", ("triangle area", "area of triangle", "area of a triangle")),
+    ("wave_speed", ("wave speed", "wave velocity")),
+    ("simple_interest", ("simple interest",)),
+    ("discount_price", ("discount price", "discounted price")),
+    ("discount_rate", ("discount rate",)),
+    ("acceleration", ("acceleration", "accel")),
+    ("momentum", ("momentum",)),
+    ("efficiency", ("efficiency",)),
+    ("velocity", ("velocity", "speed")),
+    ("distance", ("distance",)),
+    ("resistance", ("resistance", "ohms")),
+    ("current", ("current", "amps")),
+    ("voltage", ("voltage", "volts")),
+    ("stress", ("applied stress", "axial stress", "stress")),
+    ("force", ("force", "load")),
+    ("mass", ("mass", "weight")),
+    ("area", ("area",)),
+    ("height", ("height",)),
+    ("radius", ("radius",)),
+    ("volume", ("volume", "vol")),
+    ("density", ("density",)),
+    ("work", ("work done", "output energy", "work")),
+    ("gravity", ("gravity",)),
+    ("frequency", ("frequency", "freq")),
+    ("wavelength", ("wavelength", "lambda")),
+    ("celsius", ("celsius",)),
+    ("fahrenheit", ("fahrenheit",)),
+    ("kelvin", ("kelvin",)),
+    ("moles", ("moles", "mol")),
+    ("liters", ("liters",)),
+    ("molarity", ("molarity",)),
+    ("bmi", ("bmi", "body mass index")),
+    ("span", ("span",)),
+)
+
+
 class NaturalLanguageUOLRouter:
-    """Deterministic NL -> UOL executor supporting forward, inverse, and composed chains."""
+    """Deterministic NL -> UOL executor supporting forward, inverse, and dynamic graph chains."""
 
     def __init__(self, uol: UOL | None = None, *, include_inverses: bool = True) -> None:
         if uol is not None:
@@ -249,6 +298,60 @@ class NaturalLanguageUOLRouter:
                 self.uol = UOL(all_rules)
             else:
                 self.uol = base
+        self.graph_planner = UOLGraphPlanner(self.uol)
+        self.realizer = NativeHybridRealizer(default_style="step_by_step")
+
+    def _route_dynamic_graph(self, lower: str) -> NLRouteResult | None:
+        """Use UOLGraphPlanner to dynamically discover multi-step derivations (1-4 hops)."""
+        target_qty: str | None = None
+        for qty, aliases in _QUANTITY_ALIASES:
+            for alias in aliases:
+                pat = rf"\b(?:find|calculate|compute|what\s+is(?:\s+the)?|solve\s+for|get|determine)\s+(?:the\s+)?{re.escape(alias)}\b"
+                if re.search(pat, lower):
+                    target_qty = qty
+                    break
+            if target_qty is not None:
+                break
+        if target_qty is None:
+            return None
+
+        known: dict[str, float] = {}
+        for qty, aliases in _QUANTITY_ALIASES:
+            if qty == target_qty:
+                continue
+            val = _extract_param(lower, aliases)
+            if val is not None:
+                known[qty] = val
+
+        if not known:
+            return None
+
+        plan = self.graph_planner.plan_and_execute(known, target_qty, max_hops=4)
+        if not plan.solved or plan.output is None or not plan.steps:
+            return None
+
+        realized = self.realizer.realize_graph_plan(plan, style="step_by_step")
+        steps_payload = tuple(
+            {
+                "step_index": s.step_index,
+                "rule_id": s.rule_id,
+                "rule_name": s.rule_name,
+                "inputs": dict(s.inputs),
+                "output_quantity": s.output_quantity,
+                "output_value": s.output_value,
+                "output_unit": s.output_unit,
+            }
+            for s in plan.steps
+        )
+        return NLRouteResult(
+            matched=True,
+            rule_ids=plan.rule_ids,
+            inputs=known,
+            output=plan.output,
+            unit=plan.unit,
+            explanation=realized.text,
+            steps=steps_payload,
+        )
 
     def _run_rule(self, rule_id: str, inputs: Mapping[str, float]) -> float | int | bool:
         rule = self.uol.rules.get(rule_id)
@@ -400,6 +503,11 @@ class NaturalLanguageUOLRouter:
                 else:
                     fwd_inputs[pname] = val
             if missing_fwd:
+                # Before abstaining, check if the dynamic unit-graph planner can derive
+                # the missing intermediate quantities from other given inputs!
+                graph_hit = self._route_dynamic_graph(lower)
+                if graph_hit is not None:
+                    return graph_hit
                 return NLRouteResult(
                     False,
                     rule_ids=(binding.rule_id,),
@@ -420,5 +528,10 @@ class NaturalLanguageUOLRouter:
                 unit=binding.unit,
                 explanation=f"Verified UOL rule {binding.rule_id}: {formatted}{unit_suffix}",
             )
+
+        # 4. Zero-shot multi-step unit-graph planner fallback
+        graph_hit = self._route_dynamic_graph(lower)
+        if graph_hit is not None:
+            return graph_hit
 
         return NLRouteResult(False, explanation="no matching UOL rule for prompt")

@@ -373,6 +373,9 @@ class UnifiedCognitiveOrchestrator:
                         "output": routed.output,
                         "unit": routed.unit,
                         "explanation": routed.explanation,
+                        "steps": list(routed.steps),
+                        "realizer_engine": "mirror-native-hybrid-realizer-v1",
+                        "uses_third_party_model": False,
                     }
             except Exception as exc:
                 errors.append(f"uol_router:{type(exc).__name__}")
