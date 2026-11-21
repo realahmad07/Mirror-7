@@ -20,6 +20,7 @@ from mirror_crystal.capability_synthesizer import (
 from mirror_crystal.knowledge_uol import KnowledgeRuleImporter
 from mirror_crystal.operational_language import UOL, VariableSpec, program_dict
 from mirror_crystal.task_understanding import TaskUnderstandingEngine
+from mirror_crystal.uol_rule_library import default_uol_knowledge_records
 
 
 class UniversalIntelligencePipeline:
@@ -34,9 +35,12 @@ class UniversalIntelligencePipeline:
         execution_engine: Any | None = None,
         verification_engine: Any | None = None,
         required_verification_checks: Mapping[str, tuple[str, ...]] | None = None,
+        include_builtin_uol_rules: bool = False,
     ) -> None:
         if not callable(vault_provider):
             raise TypeError("vault_provider must be callable")
+        if not isinstance(include_builtin_uol_rules, bool):
+            raise TypeError("include_builtin_uol_rules must be a boolean")
         for name, value in (
             ("max_knowledge_records", max_knowledge_records),
             ("max_capabilities", max_capabilities),
@@ -46,6 +50,7 @@ class UniversalIntelligencePipeline:
         self._vault_provider = vault_provider
         self.max_knowledge_records = max_knowledge_records
         self.max_capabilities = max_capabilities
+        self.include_builtin_uol_rules = include_builtin_uol_rules
         self.task_engine = TaskUnderstandingEngine()
         self.matcher = CapabilityMatcher()
         self.composer = CapabilityCompositionPlanner()
@@ -60,12 +65,20 @@ class UniversalIntelligencePipeline:
 
     def _knowledge(self, vault: Any, domain: str):
         listing = getattr(vault, "list_knowledge_records", None)
-        if not callable(listing):
-            return KnowledgeRuleImporter().import_records(())
-        records = listing(
-            domain=domain if domain != "general" else None,
-            limit=self.max_knowledge_records,
+        records = list(
+            listing(
+                domain=domain if domain != "general" else None,
+                limit=self.max_knowledge_records,
+            )
+            if callable(listing)
+            else ()
         )
+        if self.include_builtin_uol_rules:
+            builtin = default_uol_knowledge_records(
+                domains=(domain, "general") if domain != "general" else None
+            )
+            existing_ids = {r.knowledge_id for r in records}
+            records.extend(r for r in builtin if r.knowledge_id not in existing_ids)
         return KnowledgeRuleImporter().import_records(records)
 
     def analyze(

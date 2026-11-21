@@ -12,7 +12,7 @@ class RuleStatus(str, Enum):
 
 _TYPES={"any","null","boolean","integer","number","text","array","record"}
 _ALIASES={"bool":"boolean","int":"integer","float":"number","numeric":"number","string":"text","object":"record","list":"array"}
-_OPS={"add":2,"subtract":2,"multiply":2,"divide":2,"modulo":2,"power":2,"minimum":2,"maximum":2,"equal":2,"less_than":2,"less_equal":2,"greater_than":2,"greater_equal":2,"and":2,"or":2,"not":1,"negate":1,"absolute":1,"concat":2,"length":1,"sum":1,"product":1}
+_OPS={"add":2,"subtract":2,"multiply":2,"divide":2,"modulo":2,"power":2,"minimum":2,"maximum":2,"equal":2,"less_than":2,"less_equal":2,"greater_than":2,"greater_equal":2,"and":2,"or":2,"not":1,"negate":1,"absolute":1,"sqrt":1,"log":1,"exp":1,"sin":1,"cos":1,"floor":1,"ceil":1,"round":1,"concat":2,"length":1,"sum":1,"product":1}
 _ID=re.compile(r"^[A-Za-z_][A-Za-z0-9_.:-]{0,127}$")
 
 def _type_name(value):
@@ -176,9 +176,10 @@ def _infer(e,env,rules,active):
         if e.operator in _OPS:
             arity=_OPS[e.operator]
             if len(ts)!=arity:raise UOLError(f"{e.operator} expects {arity} args")
-            if e.operator in {"add","subtract","multiply","divide","modulo","power","minimum","maximum","negate","absolute","sum","product"}:
+            if e.operator in {"add","subtract","multiply","divide","modulo","power","minimum","maximum","negate","absolute","sqrt","log","exp","sin","cos","floor","ceil","round","sum","product"}:
                 if (e.operator in {"sum","product"} and ts[0]!="array") or (e.operator not in {"sum","product"} and any(x not in {"integer","number","any"} for x in ts)):raise UOLError("numeric operator type mismatch")
-                return "number" if e.operator in {"divide","power","sum","product"} or "number" in ts else "integer"
+                if e.operator in {"floor","ceil","round"}:return "integer"
+                return "number" if e.operator in {"divide","power","sqrt","log","exp","sin","cos","sum","product"} or "number" in ts else "integer"
             if e.operator in {"and","or","not"} and any(x not in {"boolean","any"} for x in ts):raise UOLError("boolean operator type mismatch")
             if e.operator in {"less_than","less_equal","greater_than","greater_equal"} and not(all(x in {"integer","number","any"} for x in ts) or all(x=="text" for x in ts)):raise UOLError("comparison type mismatch")
             if e.operator=="concat" and any(x not in {"text","any"} for x in ts):raise UOLError("concat type mismatch")
@@ -189,8 +190,8 @@ def _infer(e,env,rules,active):
         if len(ts)!=len(r.inputs):raise UOLError("rule arity mismatch")
         local={}
         for p,t in zip(r.inputs,ts):
-            if p.value_type not in {"any",t} and not(p.value_type=="number" and t=="integer"):raise UOLError("rule input type mismatch")
-            local[p.name]=t
+            if t!="any" and p.value_type not in {"any",t} and not(p.value_type=="number" and t=="integer"):raise UOLError("rule input type mismatch")
+            local[p.name]=p.value_type if t=="any" else t
         return _infer(r.body,local,rules,active|{e.operator})
     if isinstance(e,If):
         if _infer(e.condition,env,rules,active) not in {"boolean","any"}:raise UOLError("if condition must be boolean")
@@ -359,7 +360,7 @@ class UOL:
                     local[p.name]=v
                 return self._eval(r.body,local,budget,depth+1,active+(r.rule_id,))
             op=e.operator
-            if op in {"add","subtract","multiply","divide","modulo","power","minimum","maximum","negate","absolute","sum","product"}:
+            if op in {"add","subtract","multiply","divide","modulo","power","minimum","maximum","negate","absolute","sqrt","log","exp","sin","cos","floor","ceil","round","sum","product"}:
                 vals=a[0] if op in {"sum","product"} else a
                 if any(isinstance(x,bool) or not isinstance(x,(int,float)) for x in vals):raise UOLExecutionError("numeric operator received non-number")
                 if op=="sum":out=sum(vals)
@@ -381,6 +382,20 @@ class UOL:
                 elif op=="minimum":out=min(a)
                 elif op=="maximum":out=max(a)
                 elif op=="negate":out=-a[0]
+                elif op=="sqrt":
+                    if a[0]<0:raise UOLExecutionError("sqrt domain error")
+                    out=math.sqrt(a[0])
+                elif op=="log":
+                    if a[0]<=0:raise UOLExecutionError("log domain error")
+                    out=math.log(a[0])
+                elif op=="exp":
+                    if abs(a[0])>30:raise UOLExecutionError("exp bounds exceeded")
+                    out=math.exp(a[0])
+                elif op=="sin":out=math.sin(a[0])
+                elif op=="cos":out=math.cos(a[0])
+                elif op=="floor":out=math.floor(a[0])
+                elif op=="ceil":out=math.ceil(a[0])
+                elif op=="round":out=round(a[0])
                 else:out=abs(a[0])
                 self._bound(out);return out
             if op=="equal":return a[0]==a[1]

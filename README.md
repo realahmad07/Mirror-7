@@ -1456,3 +1456,26 @@ Based on the verified architecture and measured experimental results, the follow
 - **Objective:** Establish true external validity by packaging `mirror_eval/generalization/` into an automated, air-gapped test runner.
 - **Mechanism:** Provide an open-source evaluation container that external researchers can mount against any LLM endpoint or local model to compare open-vocabulary generalization, fallacy rejection, and distractor robustness against Mirror 7's signed attestation bundles.
 
+
+---
+
+## CPU UOL Intelligence Upgrade: Executable Rules, Compositional Synthesis, Inverse Derivation & NL Auto-Router
+
+Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable knowledge and composition pipeline without requiring a GPU or external LLM:
+
+| Component | Module | Capability |
+|---|---|---|
+| **Executable UOL Rule Library** | `mirror_crystal/uol_rule_library.py` | 45 canonical, SHA-256 provenance-tracked, executable UOL rules across **5 domains** (mathematics, physics, engineering, biology/chemistry, economics) imported through `KnowledgeRuleImporter`. |
+| **Richer Scientific Primitives** | `mirror_crystal/operational_language.py` | Added bounded `sqrt`, `log`, `exp`, `sin`, `cos`, `floor`, `ceil`, and `round` with strict domain checks and typed UOL rule calls inside `MapExpr`/`FoldExpr`. |
+| **Bidirectional Inverse Deriver** | `mirror_crystal/uol_inverse_deriver.py` | Symbolically isolates variables in forward UOL formulas (e.g., `KE = 0.5*m*v^2 -> v = sqrt(2*KE/m)`) and admits only inverses that pass 5-point independent round-trip verification (**75 derived inverse rules -> 120 total verified executable skills**). |
+| **Persistent `.dcrystal` Skill Store** | `mirror_crystal/uol_skill_store.py` | Persists verified forward, inverse, and newly synthesized composite UOL rules into `artifacts/mirror_uol_skills.dcrystal` (SQLite `DiskCrystalVault`) and reloads them cleanly across sessions. |
+| **OE-Pruned & Unit-Guided Compositional Engine** | `mirror_crystal/capability_synthesizer.py`, `mirror_crystal/uol_compositional_engine.py` | Adds observational-equivalence (OE) pruning, iterative deepening, arity-ordered rule-first search, and physical unit-guided filtering—enabling multi-rule invention (e.g., `F -> C -> K`, `axial_stress -> safety_factor`, `mean(map(xs, square))`) with 100% exact generalization on unseen inputs. |
+| **Natural Language -> UOL Auto-Router** | `mirror_crystal/nl_uol_router.py`, `mirror7_backend/cognitive_orchestrator.py` | Deterministically routes plain-text quantitative questions (forward, inverse, and multi-step chains) to verified UOL executions inside Q&A, abstaining honestly whenever required inputs are missing. |
+
+### Verification
+
+- `mirror_crystal/tests/test_phase2_phase3_uol_composition.py` — **7 passed**
+- `mirror_crystal/tests/test_uol_intelligence_upgrades.py` — **6 passed**
+- Full UOL + Backend regression suite (`mirror7_backend/` + UOL test suites) — **149 passed, 0 failed**
+
+**Boundary:** This track solves deterministic quantitative, symbolic, and compositional operational tasks with zero hallucination. It does not replace a full conversational language model for open-ended prose.

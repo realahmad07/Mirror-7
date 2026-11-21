@@ -28,6 +28,7 @@ class UnifiedCognitiveOrchestrator:
         code_generation_provider: Callable[[str], Any] | None = None,
         synthesis_provider: Callable[[dict[str, Any]], Any] | None = None,
         universal_intelligence_provider: Callable[[], Any] | None = None,
+        uol_router_provider: Callable[[], Any] | None = None,
     ) -> None:
         if not 0.0 <= math_confidence_threshold <= 1.0:
             raise ValueError("math_confidence_threshold must be between 0 and 1")
@@ -38,6 +39,8 @@ class UnifiedCognitiveOrchestrator:
         self._code_generation_provider = code_generation_provider
         self._synthesis_provider = synthesis_provider
         self._universal_intelligence_provider = universal_intelligence_provider
+        self._uol_router_provider = uol_router_provider
+        self._default_uol_router: Any | None = None
         self.metrics = metrics
         self.math_confidence_threshold = math_confidence_threshold
         self.synthesizer = EvidenceSynthesisEngine()
@@ -350,7 +353,31 @@ class UnifiedCognitiveOrchestrator:
             and int(code_verification.get("tests_passed", 0) or 0)
                 == int(code_verification.get("tests_generated", 0) or 0)
         )
-        task_result_verified = task_execution_verified or task_code_verified
+        uol_route_payload: dict[str, Any] | None = None
+        task_uol_verified = False
+        if not (task_code_verified or task_execution_verified or verified_answer or self._is_code_request(prompt)):
+            try:
+                router = self._uol_router_provider() if self._uol_router_provider is not None else self._default_uol_router
+                if router is None:
+                    from mirror_crystal.nl_uol_router import NaturalLanguageUOLRouter
+                    router = NaturalLanguageUOLRouter()
+                    self._default_uol_router = router
+                routed = router.route(prompt)
+                if routed.matched:
+                    task_uol_verified = True
+                    sources_consulted.append("uol_auto_router")
+                    uol_route_payload = {
+                        "matched": True,
+                        "rule_ids": list(routed.rule_ids),
+                        "inputs": dict(routed.inputs),
+                        "output": routed.output,
+                        "unit": routed.unit,
+                        "explanation": routed.explanation,
+                    }
+            except Exception as exc:
+                errors.append(f"uol_router:{type(exc).__name__}")
+
+        task_result_verified = task_execution_verified or task_code_verified or task_uol_verified
         clarification_required = bool(generation_needs_input)
         abstained = not (verified_answer or task_result_verified or clarification_required)
         candidate = max(
@@ -396,7 +423,7 @@ class UnifiedCognitiveOrchestrator:
                 or fallback_hit
             )
 
-        if native_hit is not None:
+        if native_hit is not None and not task_uol_verified:
             return {
                 "answer": native_hit.answer,
                 "answer_qualification": native_hit.qualification,
@@ -442,6 +469,9 @@ class UnifiedCognitiveOrchestrator:
                 "The requested task was completed and independently verified. "
                 "Verified outputs: " + repr(universal_execution.get("verified_outputs", {}))
             )
+            qualification = "verified_task_result"
+        elif task_uol_verified and uol_route_payload is not None:
+            final_answer = str(uol_route_payload["explanation"])
             qualification = "verified_task_result"
         elif clarification_required:
             final_answer = str(generation_needs_input)
@@ -507,6 +537,7 @@ class UnifiedCognitiveOrchestrator:
             "code_generation": code_generation,
             "code_verification": code_verification,
             "universal_intelligence": universal_report,
+            "uol_route": uol_route_payload,
             "task_execution": universal_execution,
             "conflict": conflict,
             "errors": errors,
