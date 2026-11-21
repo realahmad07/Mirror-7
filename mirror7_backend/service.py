@@ -720,6 +720,17 @@ class BackendService:
         answered_q = self.metrics.get("crystal_queries_answered") or 0
         abstention_rate = round((abstained_q / total_q) * 100.0, 2) if total_q > 0 else 0.0
 
+        lattice_nodes = 0
+        lattice_domains: dict[str, int] = {}
+        try:
+            from mirror_crystal.open_ended_concept_lattice import OpenEndedConceptLatticeEngine
+            _lat = OpenEndedConceptLatticeEngine()
+            lattice_nodes = _lat.concept_count()
+            lattice_domains = _lat.domain_distribution()
+        except Exception:
+            pass
+        lattice_pairs = (lattice_nodes * (lattice_nodes - 1)) // 2
+
         return {
             "ok": True,
             "total_vault_rules": total_rules,
@@ -735,6 +746,7 @@ class BackendService:
                 "CounterfactualWhatIfEngine, CEGIS AST Code Repair & ZeroParamDataAnalyst",
                 "ConversationalBlueprintEngine (Plotkin Anti-Unification + Raw-Data Eviction)",
                 "CategorizedConversationDomainEngine (12 Human Domains + Cross-Domain Blender + Socratic Coach + Document Composer)",
+                "OpenEndedConceptLatticeEngine (3,200+ Multi-Source 5-Facet ConceptNodes, O(1) Trigram Index & Compositional Synthesizer)",
                 "MarketIntelligenceOrgans (Newton Law Discovery, EV/ROI Decision Matrix, Multi-Organ Pipeline, AST Security Auditor)",
                 "FrontierIntelligenceOrgans (0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Auditor, Fault-Tree Diagnostician)",
                 "ScientificPluginIntelligenceEngine (PubChem, ChEMBL, openFDA, UniProt, ClinVar, Reactome, ClinicalTrials, arXiv, Context7)",
@@ -743,6 +755,13 @@ class BackendService:
                 "CrossSessionMemoryGraph (Persistent Multi-Turn WAL)",
             ],
             "conversation_domains_count": 12,
+            "open_ended_concept_lattice": {
+                "concept_nodes": lattice_nodes,
+                "domains_count": len(lattice_domains),
+                "combinatorial_cross_pairs": lattice_pairs,
+                "discourse_operator_combinations": lattice_pairs * 12,
+                "domain_breakdown": lattice_domains,
+            },
             "antigravity_science_plugins_distilled": [
                 "pubchem-database",
                 "chembl-database",

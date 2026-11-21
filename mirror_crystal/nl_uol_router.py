@@ -758,13 +758,13 @@ class NaturalLanguageUOLRouter:
                 explanation=sci_hit.explanation,
             )
 
-        # 0b-1e. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesizer
-        lattice_hit = self.concept_lattice.route_open_ended(prompt)
-        if lattice_hit.matched:
+        # 0b-1e. Explicit Open-Ended Concept Lattice Commands (status, domain listing, live concept compilation)
+        lattice_cmd_hit = self.concept_lattice.route_explicit_command(prompt)
+        if lattice_cmd_hit.matched:
             return NLRouteResult(
                 matched=True,
-                rule_ids=tuple(f"concept_lattice.{c}" for c in lattice_hit.concepts_used),
-                explanation=lattice_hit.response,
+                rule_ids=tuple(f"concept_lattice.{c}" for c in lattice_cmd_hit.concepts_used),
+                explanation=lattice_cmd_hit.response,
             )
 
         # 0b-2. Self-Evolving Symbolic Law Discovery (Newton Finite-Difference & Exponential Inducer)
@@ -821,6 +821,15 @@ class NaturalLanguageUOLRouter:
         # 0e. Parameter-Free Unstructured Prose Summarization, OpenIE Ingestion, Document QA & Comparative RST Discourse
         prose_hit = self.prose_engine.route_unstructured_prompt(prompt)
         if prose_hit is not None:
+            if not prose_hit.get("matched") and "prose.comparative_rst_synthesis" in prose_hit.get("rule_ids", ()):
+                # Fall back to the 3,200+ Open-Ended Concept Lattice (5.12M+ pairs) before abstaining!
+                lat_cmp = self.concept_lattice.route_open_ended(prompt)
+                if lat_cmp.matched:
+                    return NLRouteResult(
+                        matched=True,
+                        rule_ids=tuple(f"concept_lattice.{c}" for c in lat_cmp.concepts_used),
+                        explanation=lat_cmp.response,
+                    )
             return NLRouteResult(
                 matched=bool(prose_hit["matched"]),
                 rule_ids=tuple(prose_hit.get("rule_ids", ())),
@@ -968,6 +977,16 @@ class NaturalLanguageUOLRouter:
                 rule_ids=(analogy_hit.schema_id,),
                 output=analogy_hit.output,
                 explanation=analogy_hit.explanation,
+            )
+
+        # 8.5. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesizer
+        # Placed AFTER all exact quantitative/algebra/logic/prose/doc-QA solvers so 1,500+ concepts never hijack exact organs.
+        lattice_hit = self.concept_lattice.route_open_ended(prompt)
+        if lattice_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=tuple(f"concept_lattice.{c}" for c in lattice_hit.concepts_used),
+                explanation=lattice_hit.response,
             )
 
         # 9. Parameter-Free Creative Writing, Bilingual Dialogue & Unbounded Conversational Blueprints

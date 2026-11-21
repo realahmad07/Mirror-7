@@ -2,8 +2,8 @@
   "benchmark": "mirror-honest-external-style-v1",
   "uses_gpu": false,
   "uses_third_party_llm": false,
-  "total_tasks": 150,
-  "total_solved_correct": 140,
+  "total_tasks": 160,
+  "total_solved_correct": 150,
   "total_honest_abstain": 10,
   "total_wrong_or_hallucinated": 0,
   "overall_hallucination_rate_pct": 0.0,
@@ -13,105 +13,112 @@
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 12.802
+      "median_latency_ms": 4.957
     },
     "2_algebra_systems_and_formal_logic": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 5.933
+      "median_latency_ms": 3.737
     },
     "3_gsm8k_style_arithmetic_word_problems": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 145.608
+      "median_latency_ms": 8.037
     },
     "4_unseen_paraphrased_word_problem_transfer": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 169.293
+      "median_latency_ms": 15.649
     },
     "5_unstructured_summarization_and_comparative_prose": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 2.341
+      "median_latency_ms": 2.737
     },
     "6_document_qa_counterfactual_code_repair_and_data_analyst": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 1.211
+      "median_latency_ms": 1.598
     },
     "7_creative_writing_conversation_and_live_feeding": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 3.413
+      "median_latency_ms": 4.212
     },
     "8_discourse_fusion_morphology_distiller_and_goal_planner": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 1.323
+      "median_latency_ms": 1.623
     },
     "9_market_intelligence_law_decision_pipeline_and_auditor": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 0.389
+      "median_latency_ms": 0.74
     },
     "10_frontier_knapsack_testsynth_contradiction_and_faulttree": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 0.095
+      "median_latency_ms": 0.154
     },
     "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 0.212
+      "median_latency_ms": 0.276
     },
     "12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 0.276
+      "median_latency_ms": 0.316
     },
     "13_socratic_coach_document_composer_chembl_reactome_and_context7": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 1.514
+      "median_latency_ms": 1.598
     },
     "14_open_ended_concept_lattice_and_cross_concept_synthesis": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 0.281
+      "median_latency_ms": 4.207
     },
-    "15_hard_ood_and_hallucination_traps": {
+    "15_bulk_harvested_3200plus_multisource_concept_vault": {
+      "total": 10,
+      "solved_correct": 10,
+      "honest_abstain": 0,
+      "wrong_or_hallucinated": 0,
+      "median_latency_ms": 4.849
+    },
+    "16_hard_ood_and_hallucination_traps": {
       "total": 10,
       "solved_correct": 0,
       "honest_abstain": 10,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 76.794
+      "median_latency_ms": 72.49
     }
   },
   "details": {
@@ -119,61 +126,61 @@
       {
         "task_id": "par_01",
         "outcome": "solved_correct",
-        "latency_ms": 228.179,
+        "latency_ms": 128.2,
         "note": "out=125.0"
       },
       {
         "task_id": "par_02",
         "outcome": "solved_correct",
-        "latency_ms": 11.915,
+        "latency_ms": 4.798,
         "note": "out=400.0"
       },
       {
         "task_id": "par_03",
         "outcome": "solved_correct",
-        "latency_ms": 73.328,
+        "latency_ms": 43.083,
         "note": "out=250000.0"
       },
       {
         "task_id": "par_04",
         "outcome": "solved_correct",
-        "latency_ms": 18.649,
+        "latency_ms": 5.67,
         "note": "out=60.0"
       },
       {
         "task_id": "par_05",
         "outcome": "solved_correct",
-        "latency_ms": 29.543,
+        "latency_ms": 4.311,
         "note": "out=500.0"
       },
       {
         "task_id": "par_06",
         "outcome": "solved_correct",
-        "latency_ms": 8.862,
+        "latency_ms": 6.231,
         "note": "out=6.0"
       },
       {
         "task_id": "par_07",
         "outcome": "solved_correct",
-        "latency_ms": 5.905,
+        "latency_ms": 3.376,
         "note": "out=22.857142857142858"
       },
       {
         "task_id": "par_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.855,
+        "latency_ms": 0.365,
         "note": "out=98.60000000000001"
       },
       {
         "task_id": "par_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.845,
+        "latency_ms": 0.334,
         "note": "out=310.15"
       },
       {
         "task_id": "par_10",
         "outcome": "solved_correct",
-        "latency_ms": 13.689,
+        "latency_ms": 5.116,
         "note": "out=5.0"
       }
     ],
@@ -181,61 +188,61 @@
       {
         "task_id": "al_01",
         "outcome": "solved_correct",
-        "latency_ms": 53.704,
+        "latency_ms": 21.388,
         "note": "Verified linear solution: x = 8 (checked LHS == RHS)."
       },
       {
         "task_id": "al_02",
         "outcome": "solved_correct",
-        "latency_ms": 6.387,
+        "latency_ms": 3.068,
         "note": "Verified linear solution: x = 5 (checked LHS == RHS)."
       },
       {
         "task_id": "al_03",
         "outcome": "solved_correct",
-        "latency_ms": 5.954,
+        "latency_ms": 2.857,
         "note": "Verified quadratic roots (discriminant=1): x = 3, 4 (checked LHS == RHS)."
       },
       {
         "task_id": "al_04",
         "outcome": "solved_correct",
-        "latency_ms": 5.149,
+        "latency_ms": 3.555,
         "note": "Verified linear system solution: x = 4, y = 2 (all 2 equations verified LHS == RHS)."
       },
       {
         "task_id": "al_05",
         "outcome": "solved_correct",
-        "latency_ms": 5.912,
+        "latency_ms": 3.918,
         "note": "Verified linear system solution: x = 13/7 (1.85714), y = 17/7 (2.42857), z = 33/7 (4.71429) (all 3 equations verified LHS == RHS)."
       },
       {
         "task_id": "al_06",
         "outcome": "solved_correct",
-        "latency_ms": 7.797,
+        "latency_ms": 4.631,
         "note": "PROVEN True: 'cobra' -> 'cold-blooded' via 3 deductive step(s): cobra -> snake (Cobra is a snake) => snake -> reptile (All snakes are reptiles) => reptile -> cold-blooded (All reptiles are cold-blooded)"
       },
       {
         "task_id": "al_07",
         "outcome": "solved_correct",
-        "latency_ms": 4.007,
+        "latency_ms": 3.273,
         "note": "PROVEN True: P > 10 via chain: P > Q , Q > R , R = 10"
       },
       {
         "task_id": "al_08",
         "outcome": "solved_correct",
-        "latency_ms": 10.879,
+        "latency_ms": 8.054,
         "note": "PROVEN constraint solution: x=14, y=7 (verified against 2 constraint(s))."
       },
       {
         "task_id": "al_09",
         "outcome": "solved_correct",
-        "latency_ms": 3.433,
+        "latency_ms": 2.787,
         "note": "Verified linear solution: x = 2 (checked LHS == RHS)."
       },
       {
         "task_id": "al_10",
         "outcome": "solved_correct",
-        "latency_ms": 4.662,
+        "latency_ms": 4.157,
         "note": "PROVEN True: '17' -> 'odd' via 2 deductive step(s): 17 -> prime above 2 (17 is a prime above 2) => prime above 2 -> odd (All primes above 2 are odd)"
       }
     ],
@@ -243,61 +250,61 @@
       {
         "task_id": "gsm_01",
         "outcome": "solved_correct",
-        "latency_ms": 12.461,
+        "latency_ms": 7.101,
         "note": "Verified SemanticVM (rate_production): 60 | RATE_MUL: 12/hour * 5 hours = 60"
       },
       {
         "task_id": "gsm_02",
         "outcome": "solved_correct",
-        "latency_ms": 166.723,
+        "latency_ms": 7.026,
         "note": "Verified SemanticVM (sequential_inventory_vm): 27 | INIT: state = 45 -> SUB: 45 - 18 = 27"
       },
       {
         "task_id": "gsm_03",
         "outcome": "solved_correct",
-        "latency_ms": 168.942,
+        "latency_ms": 147.849,
         "note": "Verified SemanticVM (buy_and_change): 22 | UNIT_COST: 7 * $4 = $28 -> CHANGE_DUE: $50 - $28 = $22"
       },
       {
         "task_id": "gsm_04",
         "outcome": "solved_correct",
-        "latency_ms": 14.154,
+        "latency_ms": 8.718,
         "note": "Verified SemanticVM (rate_distance): 240 | RATE_MUL: 80 * 3 = 240"
       },
       {
         "task_id": "gsm_05",
         "outcome": "solved_correct",
-        "latency_ms": 200.888,
+        "latency_ms": 146.666,
         "note": "Verified SemanticVM (unit_partition): 9 | UNIT_PARTITION: 36 / 4 = 9"
       },
       {
         "task_id": "gsm_06",
         "outcome": "solved_correct",
-        "latency_ms": 167.547,
+        "latency_ms": 7.356,
         "note": "Verified SemanticVM (relative_scale_total): 32 | ANCHOR: 8 -> SCALED: 3 * 8 = 24 -> LEDGER_SUM: 8 + 24 = 32"
       },
       {
         "task_id": "gsm_07",
         "outcome": "solved_correct",
-        "latency_ms": 151.739,
+        "latency_ms": 4.764,
         "note": "Verified SemanticVM (percent_discount): 60 | DISCOUNT_AMT: 80 * (25 / 100) = 20 -> FINAL_PRICE: 80 - 20 = 60"
       },
       {
         "task_id": "gsm_08",
         "outcome": "solved_correct",
-        "latency_ms": 129.642,
+        "latency_ms": 6.041,
         "note": "Verified SemanticVM (equal_split): 32 | EQUAL_SPLIT: 96 / 3 = 32"
       },
       {
         "task_id": "gsm_09",
         "outcome": "solved_correct",
-        "latency_ms": 139.476,
+        "latency_ms": 171.058,
         "note": "Verified SemanticVM (sequential_inventory_vm): 435 | INIT: state = 500 -> SUB: 500 - 125 = 375 -> ADD: 375 + 60 = 435"
       },
       {
         "task_id": "gsm_10",
         "outcome": "solved_correct",
-        "latency_ms": 135.899,
+        "latency_ms": 186.514,
         "note": "Verified SemanticVM (discourse_ledger_total): 45 | LEDGER[0]: 15 -> LEDGER[1] (twice): 15 * 2 = 30 -> LEDGER_SUM: 15 + 30 = 45"
       }
     ],
@@ -305,61 +312,61 @@
       {
         "task_id": "ut_01",
         "outcome": "solved_correct",
-        "latency_ms": 133.475,
+        "latency_ms": 8.269,
         "note": "Verified SemanticVM (percent_discount): 200 | DISCOUNT_AMT: 250 * (20 / 100) = 50 -> FINAL_PRICE: 250 - 50 = 200"
       },
       {
         "task_id": "ut_02",
         "outcome": "solved_correct",
-        "latency_ms": 217.048,
+        "latency_ms": 8.996,
         "note": "Verified SemanticVM (buy_and_change): 6 | UNIT_COST: 4 * $6 = $24 -> CHANGE_DUE: $30 - $24 = $6"
       },
       {
         "task_id": "ut_03",
         "outcome": "solved_correct",
-        "latency_ms": 13.526,
+        "latency_ms": 11.356,
         "note": "Analogical Skeleton-NCD transfer (analogy.equal_bill_split, ncd=0.431, formula=total_money / count, slots=(5.0, 125.0)) -> 25"
       },
       {
         "task_id": "ut_04",
         "outcome": "solved_correct",
-        "latency_ms": 198.912,
+        "latency_ms": 169.057,
         "note": "Verified SemanticVM (sequential_inventory_vm): 770 | INIT: state = 900 -> SUB: 900 - 240 = 660 -> ADD: 660 + 110 = 770"
       },
       {
         "task_id": "ut_05",
         "outcome": "solved_correct",
-        "latency_ms": 178.61,
+        "latency_ms": 151.436,
         "note": "Verified SemanticVM (rate_distance): 180 | RATE_MUL: 45 * 4 = 180"
       },
       {
         "task_id": "ut_06",
         "outcome": "solved_correct",
-        "latency_ms": 240.09,
+        "latency_ms": 139.443,
         "note": "Verified SemanticVM (rate_production): 150 | RATE_MUL: 25/hour * 6 hours = 150"
       },
       {
         "task_id": "ut_07",
         "outcome": "solved_correct",
-        "latency_ms": 159.977,
+        "latency_ms": 7.635,
         "note": "Verified SemanticVM (relative_scale_total): 60 | ANCHOR: 12 -> SCALED: 4 * 12 = 48 -> LEDGER_SUM: 12 + 48 = 60"
       },
       {
         "task_id": "ut_08",
         "outcome": "solved_correct",
-        "latency_ms": 145.727,
+        "latency_ms": 150.543,
         "note": "Verified SemanticVM (discourse_ledger_total): 72 | LEDGER[0]: 18 -> LEDGER[1] (triple): 18 * 3 = 54 -> LEDGER_SUM: 18 + 54 = 72"
       },
       {
         "task_id": "ut_09",
         "outcome": "solved_correct",
-        "latency_ms": 196.646,
+        "latency_ms": 19.942,
         "note": "Verified SemanticVM (percent_increase): 138 | SURCHARGE_AMT: 120 * (15 / 100) = 18 -> FINAL_PRICE: 120 + 18 = 138"
       },
       {
         "task_id": "ut_10",
         "outcome": "solved_correct",
-        "latency_ms": 135.143,
+        "latency_ms": 7.049,
         "note": "Verified SemanticVM (unit_partition): 12 | UNIT_PARTITION: 72 / 6 = 12"
       }
     ],
@@ -367,61 +374,61 @@
       {
         "task_id": "up_01",
         "outcome": "solved_correct",
-        "latency_ms": 16.821,
+        "latency_ms": 8.735,
         "note": "Khulasa (0-Parameter Submodular-NCD Summary \u2014 3/7 ahem jumlay):"
       },
       {
         "task_id": "up_02",
         "outcome": "solved_correct",
-        "latency_ms": 3.458,
+        "latency_ms": 5.505,
         "note": "Executive Summary (0-Parameter Submodular-NCD \u2014 3/7 key sentences):"
       },
       {
         "task_id": "up_03",
         "outcome": "solved_correct",
-        "latency_ms": 1.687,
+        "latency_ms": 3.132,
         "note": "Khulasa (0-Parameter Submodular-NCD Summary \u2014 3/4 ahem jumlay):"
       },
       {
         "task_id": "up_04",
         "outcome": "solved_correct",
-        "latency_ms": 6.847,
+        "latency_ms": 11.369,
         "note": "Taqabuli Tajziya (0-Parameter Grounded Comparative Analysis): Mughal vs. Ottoman"
       },
       {
         "task_id": "up_05",
         "outcome": "solved_correct",
-        "latency_ms": 2.777,
+        "latency_ms": 4.126,
         "note": "Comparative Analysis (0-Parameter Grounded RST Synthesis): Mughal vs. Ottoman"
       },
       {
         "task_id": "up_06",
         "outcome": "solved_correct",
-        "latency_ms": 2.694,
+        "latency_ms": 2.326,
         "note": "Comparative Analysis (0-Parameter Grounded RST Synthesis): Tcp vs. Udp"
       },
       {
         "task_id": "up_07",
         "outcome": "solved_correct",
-        "latency_ms": 1.988,
+        "latency_ms": 2.342,
         "note": "Comparative Analysis (0-Parameter Grounded RST Synthesis): Symbolic Ai vs. Neural Llm"
       },
       {
         "task_id": "up_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.586,
+        "latency_ms": 0.616,
         "note": "Ingested 2 OpenIE proposition(s) into Concept Graph under topic(s): indus valley."
       },
       {
         "task_id": "up_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.438,
+        "latency_ms": 0.467,
         "note": "Ingested 2 OpenIE proposition(s) into Concept Graph under topic(s): mesopotamia."
       },
       {
         "task_id": "up_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.892,
+        "latency_ms": 1.219,
         "note": "Comparative Analysis (0-Parameter Grounded RST Synthesis): Indus Valley vs. Mesopotamia"
       }
     ],
@@ -429,61 +436,61 @@
       {
         "task_id": "adv_01",
         "outcome": "solved_correct",
-        "latency_ms": 2.368,
+        "latency_ms": 2.91,
         "note": "Grounded Answer (0-Parameter Document QA | Topic: Contract | Provenance: ingested_contract_doc):"
       },
       {
         "task_id": "adv_02",
         "outcome": "solved_correct",
-        "latency_ms": 0.938,
+        "latency_ms": 1.224,
         "note": "Grounded Answer (0-Parameter Document QA | Topic: Contract | Provenance: ingested_contract_doc):"
       },
       {
         "task_id": "adv_03",
         "outcome": "solved_correct",
-        "latency_ms": 0.563,
+        "latency_ms": 1.061,
         "note": "Grounded Answer (0-Parameter Document QA | Topic: Mesopotamia | Provenance: user_taught_text):"
       },
       {
         "task_id": "adv_04",
         "outcome": "solved_correct",
-        "latency_ms": 2.627,
+        "latency_ms": 5.934,
         "note": "Verified Symbolic Counterfactual (physics.kinetic_energy): perturbations [mass*2, velocity*3] => scaling factor = 18x (homogeneity verified at 2 anchor points)."
       },
       {
         "task_id": "adv_05",
         "outcome": "solved_correct",
-        "latency_ms": 0.296,
+        "latency_ms": 0.418,
         "note": "Verified Symbolic Counterfactual (physics.kinetic_energy): perturbations [mass*2, velocity*3] => scaling factor = 18x (homogeneity verified at 2 anchor points)."
       },
       {
         "task_id": "adv_06",
         "outcome": "solved_correct",
-        "latency_ms": 1.483,
+        "latency_ms": 1.971,
         "note": "Verified Counterfactual Contract Simulation: base=120000, delay=3 -> penalty_rate=6%, penalty_amount=7200, net_payout=112800"
       },
       {
         "task_id": "adv_07",
         "outcome": "solved_correct",
-        "latency_ms": 26.598,
+        "latency_ms": 37.993,
         "note": "Verified AST Code Repair (factorial):"
       },
       {
         "task_id": "adv_08",
         "outcome": "solved_correct",
-        "latency_ms": 1.914,
+        "latency_ms": 2.26,
         "note": "Verified AST Code Repair (sum_to_n):"
       },
       {
         "task_id": "adv_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.704,
+        "latency_ms": 0.731,
         "note": "Verified Data Analysis Report (0-Parameter Statistical & OLS Engine \u2014 N=6):"
       },
       {
         "task_id": "adv_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.254,
+        "latency_ms": 0.252,
         "note": "Verified Data Analysis Report (0-Parameter Statistical & OLS Engine \u2014 N=4):"
       }
     ],
@@ -491,61 +498,61 @@
       {
         "task_id": "cr_01",
         "outcome": "solved_correct",
-        "latency_ms": 131.356,
+        "latency_ms": 151.125,
         "note": "Poem (Autumn in Lahore):"
       },
       {
         "task_id": "cr_02",
         "outcome": "solved_correct",
-        "latency_ms": 15.317,
+        "latency_ms": 22.197,
         "note": "Nazm / Shayari (Autumn \u2014 Lahore):"
       },
       {
         "task_id": "cr_03",
         "outcome": "solved_correct",
-        "latency_ms": 2.977,
+        "latency_ms": 4.513,
         "note": "5-Act Short Story (Subject: A Young Coder):"
       },
       {
         "task_id": "cr_04",
         "outcome": "solved_correct",
-        "latency_ms": 3.085,
+        "latency_ms": 3.487,
         "note": "5-Act Kahani (Topic: Dosti):"
       },
       {
         "task_id": "cr_05",
         "outcome": "solved_correct",
-        "latency_ms": 3.742,
+        "latency_ms": 3.91,
         "note": "Creative Brainstorming & Strategic Ideas (Edge Ai Startups):"
       },
       {
         "task_id": "cr_06",
         "outcome": "solved_correct",
-        "latency_ms": 4.905,
+        "latency_ms": 6.019,
         "note": "Alhamdulillah, main bilkul theek aur active hoon! Mera 0-parameter CPU crystal engine full speed par chal raha hai. Aap sunayein, aaj aap ka din kaisa guzar raha hai?"
       },
       {
         "task_id": "cr_07",
         "outcome": "solved_correct",
-        "latency_ms": 5.25,
+        "latency_ms": 6.313,
         "note": "Samajh sakta hoon yaar, musalsal bakery ki dukan insan ki mental aur physical energy nichor leti hai. Thori der ke liye bakery ki dukan se dhyan hata kar aaram karo \u2014 jab dimagh fresh hoti hai to bakery ki dukan ke naye aur asaan tareeqay khud samajh aane lagte hain."
       },
       {
         "task_id": "cr_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.079,
+        "latency_ms": 0.085,
         "note": "Learned new conversational response for 'mujhe python seekhna hai' (total fed pairs: 8)."
       },
       {
         "task_id": "cr_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.301,
+        "latency_ms": 0.332,
         "note": "Distilled Generalized Blueprint Rule 'bp.induced.4' via Anti-Unification and EVICTED 148 bytes of raw dialogue data!"
       },
       {
         "task_id": "cr_10",
         "outcome": "solved_correct",
-        "latency_ms": 2.734,
+        "latency_ms": 3.071,
         "note": "quantum robotics seekhne ke liye rozana 1 chota project banao!"
       }
     ],
@@ -553,61 +560,61 @@
       {
         "task_id": "fg_01",
         "outcome": "solved_correct",
-        "latency_ms": 126.57,
+        "latency_ms": 145.875,
         "note": "[Multi-Intent Fused Response: Conversational Blueprint + Quantitative Solver]"
       },
       {
         "task_id": "fg_02",
         "outcome": "solved_correct",
-        "latency_ms": 129.033,
+        "latency_ms": 200.962,
         "note": "[Multi-Intent Fused Response: Conversational Blueprint + Quantitative Solver]"
       },
       {
         "task_id": "fg_03",
         "outcome": "solved_correct",
-        "latency_ms": 23.277,
+        "latency_ms": 31.825,
         "note": "Samajh sakta hoon yaar, musalsal parhai insan ki mental aur physical energy nichor leti hai. Thori der ke liye parhai se dhyan hata kar aaram karo \u2014 jab dimagh fresh hoti hai to parhai ke naye aur asaan tareeqay khud samajh aane lagte hain."
       },
       {
         "task_id": "fg_04",
         "outcome": "solved_correct",
-        "latency_ms": 2.687,
+        "latency_ms": 3.927,
         "note": "Samajh sakta hoon yaar, musalsal karobar insan ki mental aur physical energy nichor leta hai. Thori der ke liye karobar se dhyan hata kar aaram karo \u2014 jab dimagh fresh hota hai to karobar ke naye aur asaan tareeqay khud samajh aane lagte hain."
       },
       {
         "task_id": "fg_05",
         "outcome": "solved_correct",
-        "latency_ms": 0.537,
+        "latency_ms": 0.592,
         "note": "Zero-Bloat Corpus Distillation Complete (files=1):"
       },
       {
         "task_id": "fg_06",
         "outcome": "solved_correct",
-        "latency_ms": 2.108,
+        "latency_ms": 2.655,
         "note": "elixir seekhne ke liye rozana 2 ghantay code likho!"
       },
       {
         "task_id": "fg_07",
         "outcome": "solved_correct",
-        "latency_ms": 0.053,
+        "latency_ms": 0.1,
         "note": "4-Phase Symbolic Goal Roadmap (Python \u2014 Total: 40 Din):"
       },
       {
         "task_id": "fg_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.031,
+        "latency_ms": 0.062,
         "note": "Verified Goal Progress (Python): Phase 3/4 completed -> 75% done (10 days remaining out of 40 days)."
       },
       {
         "task_id": "fg_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.034,
+        "latency_ms": 0.069,
         "note": "4-Phase Symbolic Goal Roadmap (Distributed Systems \u2014 Total: 56 Days):"
       },
       {
         "task_id": "fg_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.026,
+        "latency_ms": 0.042,
         "note": "Verified Goal Progress (Distributed Systems): Phase 2/4 completed -> 50% done (28 days remaining out of 56 days)."
       }
     ],
@@ -615,61 +622,61 @@
       {
         "task_id": "mk_01",
         "outcome": "solved_correct",
-        "latency_ms": 0.955,
+        "latency_ms": 1.87,
         "note": "Discovered Exact Symbolic Law (Newton Finite-Difference degree=2, 0-residual verified on 4 points): y = x^2 + 3*x + 1 | Evaluated at x=10 => y = 131"
       },
       {
         "task_id": "mk_02",
         "outcome": "solved_correct",
-        "latency_ms": 0.392,
+        "latency_ms": 0.788,
         "note": "Discovered Exact Symbolic Law (Newton Finite-Difference degree=1, 0-residual verified on 4 points): y = 3*x + 4 | Evaluated at x=20 => y = 64"
       },
       {
         "task_id": "mk_03",
         "outcome": "solved_correct",
-        "latency_ms": 0.33,
+        "latency_ms": 0.575,
         "note": "Discovered Exact Exponential Law: y = 1 * (3^x) | At x=6 => y=729"
       },
       {
         "task_id": "mk_04",
         "outcome": "solved_correct",
-        "latency_ms": 1.741,
+        "latency_ms": 3.133,
         "note": "Verified Multi-Criteria Decision Matrix (Winner: Option A | EV=$30000 | Risk-Adjusted ROI=300%):"
       },
       {
         "task_id": "mk_05",
         "outcome": "solved_correct",
-        "latency_ms": 0.362,
+        "latency_ms": 0.597,
         "note": "Verified Multi-Criteria Decision Matrix (Winner: Option B | EV=$23000 | Risk-Adjusted ROI=575%):"
       },
       {
         "task_id": "mk_06",
         "outcome": "solved_correct",
-        "latency_ms": 1.26,
+        "latency_ms": 2.175,
         "note": "Verified Multi-Organ Workflow Pipeline:"
       },
       {
         "task_id": "mk_07",
         "outcome": "solved_correct",
-        "latency_ms": 0.386,
+        "latency_ms": 0.658,
         "note": "Verified Multi-Organ Workflow Pipeline:"
       },
       {
         "task_id": "mk_08",
         "outcome": "solved_correct",
-        "latency_ms": 1.137,
+        "latency_ms": 2.107,
         "note": "Verified AST Codebase Audit Report (0-Parameter Static Analyzer):"
       },
       {
         "task_id": "mk_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.377,
+        "latency_ms": 0.693,
         "note": "Verified AST Codebase Audit Report (0-Parameter Static Analyzer):"
       },
       {
         "task_id": "mk_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.223,
+        "latency_ms": 0.438,
         "note": "Verified AST Codebase Audit Report (0-Parameter Static Analyzer):"
       }
     ],
@@ -677,61 +684,61 @@
       {
         "task_id": "fr_01",
         "outcome": "solved_correct",
-        "latency_ms": 1.431,
+        "latency_ms": 2.792,
         "note": "Verified Optimal Resource Allocation (Exact 0/1 Knapsack Solver | Budget=$50000):"
       },
       {
         "task_id": "fr_02",
         "outcome": "solved_correct",
-        "latency_ms": 0.1,
+        "latency_ms": 0.196,
         "note": "Verified Optimal Resource Allocation (Exact 0/1 Knapsack Solver | Budget=$10000):"
       },
       {
         "task_id": "fr_03",
         "outcome": "solved_correct",
-        "latency_ms": 0.436,
+        "latency_ms": 0.802,
         "note": "Verified White-Box AST Unit-Test Suite (safe_divide | 4 passing assertions, 2 edge-case warnings):"
       },
       {
         "task_id": "fr_04",
         "outcome": "solved_correct",
-        "latency_ms": 0.359,
+        "latency_ms": 0.384,
         "note": "Verified White-Box AST Unit-Test Suite (clamp_positive | 7 passing assertions, 0 edge-case warnings):"
       },
       {
         "task_id": "fr_05",
         "outcome": "solved_correct",
-        "latency_ms": 0.873,
+        "latency_ms": 1.004,
         "note": "CONTRADICTION DETECTED (Numeric Value Conflict):"
       },
       {
         "task_id": "fr_06",
         "outcome": "solved_correct",
-        "latency_ms": 0.089,
+        "latency_ms": 0.113,
         "note": "CONTRADICTION DETECTED (Polarity / Negation Conflict):"
       },
       {
         "task_id": "fr_07",
         "outcome": "solved_correct",
-        "latency_ms": 0.073,
+        "latency_ms": 0.082,
         "note": "CONSISTENT (No numeric or polarity contradiction found between Claim A and Claim B)."
       },
       {
         "task_id": "fr_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.077,
+        "latency_ms": 0.076,
         "note": "Verified Fault-Tree Root-Cause Diagnosis (fault.db_missing_index):"
       },
       {
         "task_id": "fr_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.055,
+        "latency_ms": 0.058,
         "note": "Verified Fault-Tree Root-Cause Diagnosis (fault.memory_leak):"
       },
       {
         "task_id": "fr_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.051,
+        "latency_ms": 0.055,
         "note": "Verified Fault-Tree Root-Cause Diagnosis (fault.connection_pool_exhaustion):"
       }
     ],
@@ -739,61 +746,61 @@
       {
         "task_id": "sc_01",
         "outcome": "solved_correct",
-        "latency_ms": 0.316,
+        "latency_ms": 0.364,
         "note": "PubChem-Plugin Distilled Blueprint (Aspirin | CID 2244 | https://pubchem.ncbi.nlm.nih.gov/compound/2244):"
       },
       {
         "task_id": "sc_02",
         "outcome": "solved_correct",
-        "latency_ms": 0.078,
+        "latency_ms": 0.098,
         "note": "PubChem-Plugin Distilled Blueprint (Caffeine | CID 2519 | https://pubchem.ncbi.nlm.nih.gov/compound/2519):"
       },
       {
         "task_id": "sc_03",
         "outcome": "solved_correct",
-        "latency_ms": 0.372,
+        "latency_ms": 0.407,
         "note": "Verified IUPAC Molar Mass (Ca(OH)2): 74.092 g/mol [Composition: Cax1 (54.1%), Hx2 (2.7%), Ox2 (43.2%)]"
       },
       {
         "task_id": "sc_04",
         "outcome": "solved_correct",
-        "latency_ms": 0.295,
+        "latency_ms": 0.338,
         "note": "Verified Acid-Base Equilibrium: [H+] = 0.001 M => pH = -log10(0.001) = 3 (pOH = 11)"
       },
       {
         "task_id": "sc_05",
         "outcome": "solved_correct",
-        "latency_ms": 0.586,
+        "latency_ms": 0.663,
         "note": "Verified Symbolic Derivative: d/dx [3x^3 - 5x^2 + 4x - 7] = 9*x^2 - 10*x + 4 | Evaluated at x=2 => 20"
       },
       {
         "task_id": "sc_06",
         "outcome": "solved_correct",
-        "latency_ms": 0.201,
+        "latency_ms": 0.294,
         "note": "Verified Symbolic Definite Integral: int_{0}^{4} (3x^2 + 2x) dx = [x^3 + x^2]_{0}^{4} = 80"
       },
       {
         "task_id": "sc_07",
         "outcome": "solved_correct",
-        "latency_ms": 0.097,
+        "latency_ms": 0.131,
         "note": "Verified Exact Combinatorics: C(10, 3) = 120"
       },
       {
         "task_id": "sc_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.223,
+        "latency_ms": 0.259,
         "note": "Verified Special Relativity Lorentz Factor: v = 0.8c => gamma = 1 / sqrt(1 - 0.8^2) = 1.66667"
       },
       {
         "task_id": "sc_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.111,
+        "latency_ms": 0.137,
         "note": "arXiv-Plugin Grounded Synthesis (Horodecki et al., Rev. Mod. Phys. 81:865-942 | https://arxiv.org/abs/quant-ph/0702225v2 & https://arxiv.org/abs/quant-ph/0101120v1):"
       },
       {
         "task_id": "sc_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.116,
+        "latency_ms": 0.127,
         "note": "UniProtKB-Plugin Distilled Blueprint (P04637 / P53_HUMAN | Gene: TP53 | https://www.uniprot.org/uniprotkb/P04637):"
       }
     ],
@@ -801,61 +808,61 @@
       {
         "task_id": "dm_01",
         "outcome": "solved_correct",
-        "latency_ms": 0.336,
+        "latency_ms": 0.386,
         "note": "Verified Balanced Chemical Equation (Exact Nullspace Atom-Conservation Proof): 4Fe + 3O2 -> 2Fe2O3 [Stoichiometric Coefficients: [4, 3, 2], sum=9]"
       },
       {
         "task_id": "dm_02",
         "outcome": "solved_correct",
-        "latency_ms": 0.216,
+        "latency_ms": 0.245,
         "note": "Verified Balanced Chemical Equation (Exact Nullspace Atom-Conservation Proof): C3H8 + 5O2 -> 3CO2 + 4H2O [Stoichiometric Coefficients: [1, 5, 3, 4], sum=13]"
       },
       {
         "task_id": "dm_03",
         "outcome": "solved_correct",
-        "latency_ms": 0.111,
+        "latency_ms": 0.123,
         "note": "Verified Stoichiometry (H2O, MW=18.015 g/mol): 4 mol * 18.015 g/mol = 72.06 g"
       },
       {
         "task_id": "dm_04",
         "outcome": "solved_correct",
-        "latency_ms": 0.052,
+        "latency_ms": 0.058,
         "note": "openFDA-Plugin Distilled Drug Safety Blueprint (Metformin | https://open.fda.gov/apis/drug/event/):"
       },
       {
         "task_id": "dm_05",
         "outcome": "solved_correct",
-        "latency_ms": 0.121,
+        "latency_ms": 0.13,
         "note": "ClinVar-Plugin Distilled Genomic Variant Blueprint (Gene: BRCA1 | Locus: 17q21.31 (GRCh38) | https://www.ncbi.nlm.nih.gov/clinvar/):"
       },
       {
         "task_id": "dm_06",
         "outcome": "solved_correct",
-        "latency_ms": 0.126,
+        "latency_ms": 0.134,
         "note": "ClinVar-Plugin Distilled Genomic Variant Blueprint (Gene: HBB | Locus: 11p15.4 (GRCh38 chr11:5227002:T>A / NM_000518.5:c.20A>T p.Glu6Val) | https://www.ncbi.nlm.nih.gov/clinvar/):"
       },
       {
         "task_id": "dm_07",
         "outcome": "solved_correct",
-        "latency_ms": 125.51,
+        "latency_ms": 161.25,
         "note": "[Cross-Domain Synthesized Blueprint: Mental Wellness, Stress, Overthinking & Emotional Resilience + Career Growth, Freelancing, Job Interviews & Salary Negotiation]"
       },
       {
         "task_id": "dm_08",
         "outcome": "solved_correct",
-        "latency_ms": 13.664,
+        "latency_ms": 15.182,
         "note": "[Domain 8: Philosophy, Khudi & Psychology Blueprint | Topic: stoicism]"
       },
       {
         "task_id": "dm_09",
         "outcome": "solved_correct",
-        "latency_ms": 3.985,
+        "latency_ms": 4.806,
         "note": "[Domain 9: Historical & Civilizational Dynamics Blueprint | Topic: islamic golden age]"
       },
       {
         "task_id": "dm_10",
         "outcome": "solved_correct",
-        "latency_ms": 3.291,
+        "latency_ms": 6.208,
         "note": "[Domain 3: Software & System Architecture Blueprint | Topic: microservices]"
       }
     ],
@@ -863,61 +870,61 @@
       {
         "task_id": "sp_01",
         "outcome": "solved_correct",
-        "latency_ms": 4.429,
+        "latency_ms": 6.868,
         "note": "Khush aamdeed Ahmad bhai! Aap ka 'AI startup' ka irada bohot shandar hai. Bataiye, is waqt 'AI startup' mein sab se bada bottleneck ya mushkil kya aa rahi hai?"
       },
       {
         "task_id": "sp_02",
         "outcome": "solved_correct",
-        "latency_ms": 3.199,
+        "latency_ms": 4.21,
         "note": "[Socratic Coaching Blueprint | User: Ahmad | Project: AI startup | Bottleneck: marketing aur sales]"
       },
       {
         "task_id": "sp_03",
         "outcome": "solved_correct",
-        "latency_ms": 3.389,
+        "latency_ms": 5.192,
         "note": "[Professional Upwork Proposal Blueprint | Target Project: a Python FastAPI backend project]"
       },
       {
         "task_id": "sp_04",
         "outcome": "solved_correct",
-        "latency_ms": 2.774,
+        "latency_ms": 3.024,
         "note": "[Professional Email Blueprint | Subject: Leave Request \u2014 Medical Rest And Recovery (Sick Leave)]"
       },
       {
         "task_id": "sp_05",
         "outcome": "solved_correct",
-        "latency_ms": 3.632,
+        "latency_ms": 4.07,
         "note": "[Verified JSON Schema Blueprint | Entity: an e-commerce order API]"
       },
       {
         "task_id": "sp_06",
         "outcome": "solved_correct",
-        "latency_ms": 0.185,
+        "latency_ms": 0.121,
         "note": "ChEMBL-Plugin Distilled Target Blueprint (CHEMBL203 | Epidermal Growth Factor Receptor EGFR | UniProt P00533):"
       },
       {
         "task_id": "sp_07",
         "outcome": "solved_correct",
-        "latency_ms": 0.098,
+        "latency_ms": 0.056,
         "note": "ChEMBL-Plugin Distilled Molecule Blueprint (CHEMBL25 | Acetylsalicylic Acid / Aspirin | Max Phase 4 Approved Drug):"
       },
       {
         "task_id": "sp_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.254,
+        "latency_ms": 0.172,
         "note": "Reactome-Plugin Distilled Pathway Blueprint (Homo sapiens Taxon 9606 | https://reactome.org/):"
       },
       {
         "task_id": "sp_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.139,
+        "latency_ms": 0.129,
         "note": "ClinicalTrials.gov-Plugin Distilled Trial Design Blueprint (APIv2 | https://clinicaltrials.gov/):"
       },
       {
         "task_id": "sp_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.143,
+        "latency_ms": 0.134,
         "note": "Context7-Plugin Distilled Framework Best-Practice Blueprint:"
       }
     ],
@@ -925,123 +932,185 @@
       {
         "task_id": "lt_01",
         "outcome": "solved_correct",
-        "latency_ms": 0.725,
-        "note": "[Open-Ended Concept Lattice (Blockchain & Distributed Ledger) | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 1]"
+        "latency_ms": 6.791,
+        "note": "[Open-Ended Concept Lattice (Blockchain & Distributed Ledger) | Category: computer_science | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 1]"
       },
       {
         "task_id": "lt_02",
         "outcome": "solved_correct",
-        "latency_ms": 0.458,
-        "note": "[Open-Ended Cross-Concept Lattice Synthesis: Blockchain & Distributed Ledger x Modern Cryptography | Sub-Linear Candidates Scanned: 2 | NCD=0.706]"
+        "latency_ms": 5.441,
+        "note": "[Open-Ended Cross-Concept Lattice Synthesis: Blockchain & Distributed Ledger x Modern Cryptography | Sub-Linear Candidates Scanned: 52 | NCD=0.706]"
       },
       {
         "task_id": "lt_03",
         "outcome": "solved_correct",
-        "latency_ms": 0.266,
-        "note": "[Open-Ended Concept Lattice (Photosynthesis) | Facets: mechanism, tradeoffs | O(1) Candidates Scanned: 1]"
+        "latency_ms": 3.969,
+        "note": "[Open-Ended Concept Lattice (Photosynthesis) | Category: biology_genomics | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 48]"
       },
       {
         "task_id": "lt_04",
         "outcome": "solved_correct",
-        "latency_ms": 0.256,
-        "note": "[Open-Ended Concept Lattice (Monetary & Price Inflation) | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 1]"
+        "latency_ms": 3.873,
+        "note": "[Open-Ended Concept Lattice (Monetary & Price Inflation) | Category: economics_finance | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 2]"
       },
       {
         "task_id": "lt_05",
         "outcome": "solved_correct",
-        "latency_ms": 0.282,
-        "note": "[Open-Ended Concept Lattice (OS-Level Containerization (Docker)) | Facets: mechanism, tradeoffs | O(1) Candidates Scanned: 1]"
+        "latency_ms": 4.41,
+        "note": "[Open-Ended Concept Lattice (OS-Level Containerization (Docker)) | Category: software_engineering | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 50]"
       },
       {
         "task_id": "lt_06",
         "outcome": "solved_correct",
-        "latency_ms": 0.269,
-        "note": "[Open-Ended Concept Lattice (Database B-Tree & LSM Indexing) | Facets: definition, mechanism, applications, tradeoffs | O(1) Candidates Scanned: 1]"
+        "latency_ms": 3.603,
+        "note": "[Open-Ended Concept Lattice (Database B-Tree & LSM Indexing) | Category: software_engineering | Facets: definition, mechanism, applications, tradeoffs | O(1) Candidates Scanned: 11]"
       },
       {
         "task_id": "lt_07",
         "outcome": "solved_correct",
-        "latency_ms": 0.386,
-        "note": "[Open-Ended Cross-Concept Lattice Synthesis: Operating System Kernel x Compiler & Program Translation Pipeline | Sub-Linear Candidates Scanned: 2 | NCD=0.825]"
+        "latency_ms": 4.004,
+        "note": "[Open-Ended Cross-Concept Lattice Synthesis: Operating System Kernel x Compiler & Program Translation Pipeline | Sub-Linear Candidates Scanned: 54 | NCD=0.825]"
       },
       {
         "task_id": "lt_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.218,
-        "note": "[Open-Ended Concept Lattice (Zero-Trust Cybersecurity) | Facets: mechanism, tradeoffs | O(1) Candidates Scanned: 1]"
+        "latency_ms": 4.507,
+        "note": "[Open-Ended Concept Lattice (Zero-Trust Cybersecurity) | Category: cybersecurity_networking | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 48]"
       },
       {
         "task_id": "lt_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.852,
+        "latency_ms": 8.995,
         "note": "Compiled 5-Facet ConceptNode 'webassembly' into Inverted Lattice Index (raw=343 bytes -> node=340 bytes)."
       },
       {
         "task_id": "lt_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.28,
-        "note": "[Open-Ended Concept Lattice (Webassembly) | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 1]"
+        "latency_ms": 3.496,
+        "note": "[Open-Ended Concept Lattice (WebAssembly) | Category: general_knowledge | Facets: definition, mechanism, tradeoffs | O(1) Candidates Scanned: 1]"
       }
     ],
-    "15_hard_ood_and_hallucination_traps": [
+    "15_bulk_harvested_3200plus_multisource_concept_vault": [
+      {
+        "task_id": "bv_01",
+        "outcome": "solved_correct",
+        "latency_ms": 0.96,
+        "note": "[Open-Ended Concept Lattice Vault Status | Total 5-Facet ConceptNodes: 3204 | Domains: 21 | Combinatorial Cross-Concept Pairs: 5,131,206]"
+      },
+      {
+        "task_id": "bv_02",
+        "outcome": "solved_correct",
+        "latency_ms": 1.734,
+        "note": "[Concept Lattice Domain 'physics' | Total Concepts: 224]"
+      },
+      {
+        "task_id": "bv_03",
+        "outcome": "solved_correct",
+        "latency_ms": 4.915,
+        "note": "[Open-Ended Concept Lattice (Raft Distributed Consensus Algorithm) | Category: computer_science | Facets: definition, tradeoffs | O(1) Candidates Scanned: 48]"
+      },
+      {
+        "task_id": "bv_04",
+        "outcome": "solved_correct",
+        "latency_ms": 5.813,
+        "note": "[Open-Ended Concept Lattice (Cross-Origin Resource Sharing (CORS)) | Category: cybersecurity_networking | Facets: definition, tradeoffs | O(1) Candidates Scanned: 65]"
+      },
+      {
+        "task_id": "bv_05",
+        "outcome": "solved_correct",
+        "latency_ms": 3.633,
+        "note": "[Open-Ended Concept Lattice (Content Security Policy (CSP)) | Category: cybersecurity_networking | Facets: definition | O(1) Candidates Scanned: 30]"
+      },
+      {
+        "task_id": "bv_06",
+        "outcome": "solved_correct",
+        "latency_ms": 4.784,
+        "note": "[Open-Ended Concept Lattice (Python asyncio (Asynchronous I/O)) | Category: software_engineering | Facets: definition, mechanism, applications, tradeoffs | O(1) Candidates Scanned: 90]"
+      },
+      {
+        "task_id": "bv_07",
+        "outcome": "solved_correct",
+        "latency_ms": 180.661,
+        "note": "[Open-Ended Concept Lattice (Python sqlite3 (Embedded SQL DB)) | Category: software_engineering | Facets: definition | O(1) Candidates Scanned: 90]"
+      },
+      {
+        "task_id": "bv_08",
+        "outcome": "solved_correct",
+        "latency_ms": 14.942,
+        "note": "[Open-Ended Cross-Concept Comparison: OS-Level Containerization (Docker) vs Kubernetes Container Orchestration (K8s) | Sub-Linear Candidates Scanned: 50 | NCD=0.777]"
+      },
+      {
+        "task_id": "bv_09",
+        "outcome": "solved_correct",
+        "latency_ms": 4.07,
+        "note": "[Open-Ended Cross-Concept Lattice Synthesis: CRISPR x Gene | Sub-Linear Candidates Scanned: 6 | NCD=0.799]"
+      },
+      {
+        "task_id": "bv_10",
+        "outcome": "solved_correct",
+        "latency_ms": 5.283,
+        "note": "[Open-Ended Concept Lattice (Fourier Transform & Fast Fourier Transform (FFT)) | Category: mathematics | Facets: mechanism | O(1) Candidates Scanned: 7]"
+      }
+    ],
+    "16_hard_ood_and_hallucination_traps": [
       {
         "task_id": "ood_01",
         "outcome": "honest_abstain",
-        "latency_ms": 8.52,
+        "latency_ms": 13.247,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_02",
         "outcome": "honest_abstain",
-        "latency_ms": 184.105,
+        "latency_ms": 194.955,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_03",
         "outcome": "honest_abstain",
-        "latency_ms": 171.948,
+        "latency_ms": 198.731,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_04",
         "outcome": "honest_abstain",
-        "latency_ms": 314.98,
+        "latency_ms": 165.22,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_05",
         "outcome": "honest_abstain",
-        "latency_ms": 170.109,
+        "latency_ms": 170.432,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_06",
         "outcome": "honest_abstain",
-        "latency_ms": 26.371,
+        "latency_ms": 22.755,
         "note": "Matched UOL rule physics.kinetic_energy, missing inputs: mass, velocity"
       },
       {
         "task_id": "ood_07",
         "outcome": "honest_abstain",
-        "latency_ms": 83.516,
+        "latency_ms": 79.368,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_08",
         "outcome": "honest_abstain",
-        "latency_ms": 59.379,
+        "latency_ms": 42.75,
         "note": "Matched UOL rule physics.ohms_voltage, missing inputs: resistance"
       },
       {
         "task_id": "ood_09",
         "outcome": "honest_abstain",
-        "latency_ms": 1.35,
+        "latency_ms": 0.946,
         "note": "Mirror abstains from ungrounded comparison: missing verified propositions for 'atlantis'. Teach Mirror via 'Learn text: <paragraph>' first."
       },
       {
         "task_id": "ood_10",
         "outcome": "honest_abstain",
-        "latency_ms": 70.073,
+        "latency_ms": 65.613,
         "note": "no matching UOL rule for prompt"
       }
     ]

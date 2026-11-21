@@ -1,0 +1,43 @@
+{
+  "total_unique_concepts": 3203,
+  "total_domains": 21,
+  "combinatorial_cross_pairs": 5128003,
+  "discourse_operator_combinations": 61536036,
+  "raw_bytes_fetched": 6500668,
+  "distilled_node_bytes": 2008879,
+  "compression_eviction_pct": 69.1,
+  "elapsed_seconds": 61.08,
+  "source_counts": {
+    "seed_foundational": 10,
+    "curated_20_domain_catalog": 643,
+    "browser_verified_web_portals": 89,
+    "live_wikipedia_api": 2280,
+    "python_stdlib_docs_introspector": 60,
+    "live_arxiv_api": 121
+  },
+  "domain_counts": {
+    "chemistry": 590,
+    "mathematics": 283,
+    "software_engineering": 240,
+    "physics": 224,
+    "biology_genomics": 219,
+    "cybersecurity_networking": 199,
+    "computer_science": 184,
+    "history_civilization": 175,
+    "engineering": 138,
+    "earth_climate_science": 125,
+    "artificial_intelligence": 124,
+    "linguistics_literature": 109,
+    "economics_finance": 95,
+    "everyday_life_productivity": 92,
+    "astronomy_space": 90,
+    "law_governance": 84,
+    "medicine_pharmacology": 80,
+    "psychology_cognitive": 55,
+    "philosophy_ethics": 48,
+    "business_management": 43,
+    "general_knowledge": 6
+  },
+  "vault_path": "C:\\Users\\Ali Computers\\.gemini\\antigravity\\brain\\a898f823-e2d0-47d4-8476-3c5b509f9b39\\scratch\\mirror7_remote\\artifacts\\mirror_uol_skills.dcrystal",
+  "median_lookup_ms": 0.255
+}

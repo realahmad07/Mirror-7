@@ -615,6 +615,66 @@ def test_open_ended_concept_lattice_sublinear_trigram_and_cross_synthesis():
     assert "DOM access" in r3.explanation
 
 
+def test_bulk_harvested_3200plus_multisource_vault_and_offline_harvester(tmp_path):
+    import time
+    from mirror7_backend.service import BackendService
+    from mirror_crystal.bulk_concept_harvester import run_bulk_concept_harvest
+
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Production .dcrystal vault holds >= 1,000 (3,200+) multi-domain ConceptNodes
+    assert router.concept_lattice.concept_count() >= 1000
+    assert len(router.concept_lattice.domain_distribution()) >= 20
+
+    # 2. Vault telemetry & domain listing commands
+    st_res = router.route("Concept lattice status")
+    assert st_res.matched is True
+    assert "Total 5-Facet ConceptNodes:" in st_res.explanation
+
+    dom_res = router.route("List concepts in physics")
+    assert dom_res.matched is True
+    assert "Concept Lattice Domain 'physics'" in dom_res.explanation
+
+    # 3. Cross-source open-ended queries (MDN Web Docs, Official Python Docs, Wikipedia Vital, Curated, Cross-Comparison)
+    cors = router.route("Explain Cross-Origin Resource Sharing and its tradeoffs")
+    assert cors.matched is True
+    assert "cross-site" in cors.explanation.casefold()
+
+    py_async = router.route("Explain Python asyncio")
+    assert py_async.matched is True
+    assert "async/await" in py_async.explanation.casefold()
+
+    cmp_dk = router.route("Compare Docker and Kubernetes")
+    assert cmp_dk.matched is True
+    assert "Cross-Concept Comparison" in cmp_dk.explanation
+
+    # 4. Verify sub-linear O(1) lookup latency (< 15 ms per query even at 3,200+ concepts)
+    t0 = time.perf_counter()
+    for q in ("What is Raft consensus?", "Explain CRISPR gene editing", "How does Fourier transform work?"):
+        res = router.concept_lattice.route_open_ended(q)
+        assert res.matched is True
+    avg_ms = ((time.perf_counter() - t0) * 1000.0) / 3.0
+    assert avg_ms < 15.0
+
+    # 5. Backend telemetry exposes live concept lattice scale
+    svc = BackendService()
+    cov = svc.crystal_coverage_map()
+    assert cov["open_ended_concept_lattice"]["concept_nodes"] >= 1000
+    assert cov["open_ended_concept_lattice"]["combinatorial_cross_pairs"] >= 499_500
+
+    # 6. Offline deterministic harvester smoke test on isolated tmp vault
+    tmp_vault = tmp_path / "test_harvest.dcrystal"
+    rep = run_bulk_concept_harvest(
+        vault_path=tmp_vault,
+        include_live_wikipedia=False,
+        include_live_arxiv=False,
+        include_python_docs=True,
+    )
+    assert rep.total_unique_concepts >= 750
+    assert rep.total_domains >= 20
+
+
+
 
 
 
