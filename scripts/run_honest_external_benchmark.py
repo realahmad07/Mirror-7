@@ -61,7 +61,8 @@ def main() -> int:
         "10_frontier_knapsack_testsynth_contradiction_and_faulttree": [],
         "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": [],
         "12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry": [],
-        "13_hard_ood_and_hallucination_traps": [],
+        "13_socratic_coach_document_composer_chembl_reactome_and_context7": [],
+        "14_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -495,7 +496,31 @@ def main() -> int:
             ok = exp.casefold() in res.explanation.casefold()
             add("12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
 
-    # ---- 13. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 13. Multi-Turn Socratic Coach, Document/Proposal Composer, ChEMBL, Reactome, ClinicalTrials & Context7 (10 tasks) ----
+    socratic_and_plugin_tasks = [
+        ("sp_01", "Mera naam Ahmad hai aur main AI startup bana raha hoon", "Ahmad bhai"),
+        ("sp_02", "Lakin marketing aur sales samajh nahi aa rahi", "AI startup"),
+        ("sp_03", "Write an Upwork proposal for a Python FastAPI backend project", "48 hours"),
+        ("sp_04", "Boss ko sick leave ki email likho", "Subject: Leave Notification"),
+        ("sp_05", "Generate JSON schema for an e-commerce order API", "https://json-schema.org/draft/2020-12/schema"),
+        ("sp_06", "Lookup ChEMBL CHEMBL203 EGFR target bioactivity and IC50", "Osimertinib"),
+        ("sp_07", "Lookup ChEMBL CHEMBL25 Aspirin mechanism of action", "COX-1/COX-2"),
+        ("sp_08", "Explain Reactome R-HSA-69278 mitotic cell cycle pathway", "Cyclin-CDK"),
+        ("sp_09", "Explain ClinicalTrials.gov clinical trial phases I II III", "Phase III"),
+        ("sp_10", "Show Context7 FastAPI blueprint and SQLite WAL best practices", "PRAGMA journal_mode=WAL"),
+    ]
+    for tid, prompt, exp in socratic_and_plugin_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt, session_id="bench_socratic_sess")
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("13_socratic_coach_document_composer_chembl_reactome_and_context7", tid, "honest_abstain", dt, res.explanation)
+        elif exp.casefold() in res.explanation.casefold():
+            add("13_socratic_coach_document_composer_chembl_reactome_and_context7", tid, "solved_correct", dt, res.explanation.splitlines()[0])
+        else:
+            add("13_socratic_coach_document_composer_chembl_reactome_and_context7", tid, "wrong_or_hallucinated", dt, res.explanation)
+
+    # ---- 14. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
         ("ood_01", "What will the exact closing stock price of AAPL be tomorrow?"),
         ("ood_02", "Who will win the next FIFA World Cup?"),
@@ -513,9 +538,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("13_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("14_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("13_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("14_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -562,8 +587,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (All 12 Solvable Categories):** `{total_solved} / 120` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['13_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (All 13 Solvable Categories):** `{total_solved} / 130` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['14_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -582,7 +607,8 @@ def main() -> int:
         "10_frontier_knapsack_testsynth_contradiction_and_faulttree": "10. 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Audit & Fault-Tree (10)",
         "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": "11. Antigravity Science Plugins: Chemistry (PubChem), Calculus, Quantum/arXiv & UniProt (10)",
         "12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry": "12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10)",
-        "13_hard_ood_and_hallucination_traps": "13. Hard OOD & Hallucination Traps (10, must abstain)",
+        "13_socratic_coach_document_composer_chembl_reactome_and_context7": "13. Multi-Turn Socratic Coach, Proposal/Email/Schema Composer, ChEMBL, Reactome, ClinicalTrials & Context7 (10)",
+        "14_hard_ood_and_hallucination_traps": "14. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(

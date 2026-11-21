@@ -423,7 +423,19 @@ class CreativeConversationEngine:
         if re.search(r"\b(?:brainstorm|give\s+me\s+(?:\d+\s+)?(?:creative\s+|startup\s+)?ideas|ideas\s+for|ideas\s+batao)\b", lower):
             return self.compose_brainstorm(text)
 
-        # 5. Check Induced & Universal Parameterized Slot Blueprints first (extracts <slot_0> & updates 128-byte session state)
+        # 5. Check Socratic Personal Coach & Parameterized Slot Blueprints first (extracts <slot_0> & updates 128-byte session state)
+        if re.search(r"\b(?:mera\s+naam|my\s+name\s+is)\b", lower) or re.match(
+            r"^\s*(?:lakin|lekin|magar|but|however)\b", lower
+        ):
+            socratic_hit = self.blueprint_engine.respond(text, session_id=session_id)
+            if socratic_hit.matched and socratic_hit.blueprint_id.startswith("bp.socratic."):
+                return CreativeResponse(
+                    matched=True,
+                    kind="socratic_coaching",
+                    rule_id=socratic_hit.blueprint_id,
+                    response=socratic_hit.response,
+                )
+
         for bp in self.blueprint_engine._blueprints:
             if re.match(bp.trigger_pattern, text, flags=re.IGNORECASE):
                 bp_hit = self.blueprint_engine.respond(text, session_id=session_id)

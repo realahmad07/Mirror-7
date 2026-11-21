@@ -527,6 +527,64 @@ def test_12_categorized_conversation_domains_equation_balancer_fda_and_clinvar()
     assert "Al-Khwarizmi" in d_hist.explanation
 
 
+def test_socratic_coach_document_composer_remaining_plugins_and_service_status():
+    from mirror7_backend.service import BackendService
+
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Multi-Turn Socratic Personal Coach (Name + Project + Sub-Problem Continuity)
+    t1 = router.route("Mera naam Ahmad hai aur main AI startup bana raha hoon", session_id="socratic_1")
+    assert t1.matched is True
+    assert "Ahmad bhai" in t1.explanation
+    assert "AI startup" in t1.explanation
+
+    t2 = router.route("Lakin marketing aur sales samajh nahi aa rahi", session_id="socratic_1")
+    assert t2.matched is True
+    assert "Ahmad bhai" in t2.explanation
+    assert "AI startup" in t2.explanation
+    assert "marketing aur sales" in t2.explanation
+
+    # 2. Professional Document, Email, Upwork Proposal & JSON Schema Composer
+    prop = router.route("Write an Upwork proposal for a Python FastAPI backend project")
+    assert prop.matched is True
+    assert "Python FastAPI backend project" in prop.explanation
+    assert "48 hours" in prop.explanation
+
+    email = router.route("Boss ko sick leave ki email likho")
+    assert email.matched is True
+    assert "Subject: Leave Notification" in email.explanation
+
+    jschema = router.route("Generate JSON schema for an e-commerce order API")
+    assert jschema.matched is True
+    assert '"$schema": "https://json-schema.org/draft/2020-12/schema"' in jschema.explanation
+
+    # 3. Remaining 4 Antigravity Plugins (ChEMBL, Reactome, ClinicalTrials.gov, Context7)
+    chembl = router.route("Lookup ChEMBL CHEMBL203 EGFR target bioactivity and IC50")
+    assert chembl.matched is True
+    assert "Osimertinib" in chembl.explanation
+
+    reactome = router.route("Explain Reactome R-HSA-69278 mitotic cell cycle pathway")
+    assert reactome.matched is True
+    assert "Cyclin-CDK" in reactome.explanation
+
+    ct = router.route("Explain ClinicalTrials.gov clinical trial phases I II III")
+    assert ct.matched is True
+    assert "Phase III" in ct.explanation
+
+    c7 = router.route("Show Context7 FastAPI blueprint and SQLite WAL best practices")
+    assert c7.matched is True
+    assert "PRAGMA journal_mode=WAL" in c7.explanation
+
+    # 4. BackendService crystal_coverage_map telemetry verification
+    svc = BackendService()
+    st = svc.crystal_coverage_map()
+    assert st["uses_neural_parameters"] is False
+    assert st["uses_third_party_llm"] is False
+    assert st["conversation_domains_count"] == 12
+    assert "chembl-database" in st["antigravity_science_plugins_distilled"]
+
+
+
 
 
 

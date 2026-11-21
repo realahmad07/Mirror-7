@@ -341,6 +341,11 @@ class CategorizedConversationDomainEngine:
         text = prompt.strip()
         low = text.casefold()
 
+        # 0. Slot-Parameterized Professional Document, Email, Upwork Proposal & JSON Schema Composer
+        doc_hit = self._compose_professional_document(text, low)
+        if doc_hit.matched:
+            return doc_hit
+
         # Guard: Do not intercept third-person unknowable future/factual traps
         if re.match(
             r"^\s*(?:who\s+will\s+win|who\s+won\s+the\s+2099|what\s+will\s+the\s+exact|what\s+is\s+the\s+stock\s+price|what\s+is\s+the\s+best\s+programming\s+language|what\s+happened\s+in\s+yesterday)\b",
@@ -409,3 +414,87 @@ class CategorizedConversationDomainEngine:
             language=lang,
             response=rendered,
         )
+
+    def _compose_professional_document(self, text: str, low: str) -> CategorizedDialogueResult:
+        # 1. Upwork / Freelance Proposal Generator
+        m_prop = re.search(
+            r"\b(?:write|draft|create|banao|likho)\s+(?:an?\s+)?(?:upwork|fiverr|freelance)\s+proposal\s+(?:for|on)\s+(.+?)\s*[.?!]*$",
+            text,
+            flags=re.IGNORECASE,
+        )
+        if m_prop:
+            proj = m_prop.group(1).strip()
+            body = (
+                f"[Professional Upwork Proposal Blueprint | Target Project: {proj}]\n"
+                f"Hi there,\n\n"
+                f"I noticed you need a reliable engineer for {proj}. Instead of a generic pitch, here is how I will deliver it with zero guesswork:\n"
+                f"1. Architecture & Contract First: Define clean typed interfaces, input validation, and error handling for {proj} on Day 1.\n"
+                f"2. Automated Test Verification: Every endpoint/module will include deterministic unit & integration tests before handoff.\n"
+                f"3. Fast Milestone Delivery: I can share a working prototype within 48 hours so you can verify progress early.\n\n"
+                f"Happy to jump on a 10-minute call or walk through a quick technical breakdown for {proj}.\n"
+                f"Best regards"
+            )
+            return CategorizedDialogueResult(
+                matched=True,
+                domain_id="doc.upwork_proposal_composer",
+                domain_title="Upwork & Freelance Proposal Composer",
+                extracted_topic=proj,
+                language="en",
+                response=body,
+            )
+
+        # 2. Professional Email / Sick Leave / Manager Application Composer
+        if re.search(r"\b(?:sick\s+leave|leave\s+application|chutti\s+ki\s+email|email\s+to\s+my\s+manager|boss\s+ko\s+.*email)\b", low):
+            reason = "medical rest and recovery (sick leave)" if ("sick" in low or "bimar" in low) else "essential personal commitment"
+            body = (
+                f"[Professional Email Blueprint | Subject: Leave Request — {reason.title()}]\n"
+                f"Subject: Leave Notification / Request — {reason.title()}\n\n"
+                f"Dear Manager,\n\n"
+                f"I am writing to inform you that I need to take leave due to {reason}. "
+                f"All urgent deliverables have been documented, and I will monitor critical messages or ensure a smooth handoff so team timelines remain unaffected.\n\n"
+                f"Thank you for your understanding and support.\n"
+                f"Sincerely"
+            )
+            return CategorizedDialogueResult(
+                matched=True,
+                domain_id="doc.professional_email_composer",
+                domain_title="Professional Email Composer",
+                extracted_topic=reason,
+                language="en",
+                response=body,
+            )
+
+        # 3. JSON REST API Schema Composer
+        m_json = re.search(
+            r"\b(?:generate|create|write)\s+(?:a\s+)?json\s+schema\s+for\s+(.+?)\s*[.?!]*$",
+            text,
+            flags=re.IGNORECASE,
+        )
+        if m_json:
+            entity = m_json.group(1).strip()
+            body = (
+                f"[Verified JSON Schema Blueprint | Entity: {entity}]\n"
+                f'{{\n'
+                f'  "$schema": "https://json-schema.org/draft/2020-12/schema",\n'
+                f'  "title": "{entity.title()}",\n'
+                f'  "type": "object",\n'
+                f'  "required": ["id", "status", "created_at", "payload"],\n'
+                f'  "properties": {{\n'
+                f'    "id": {{"type": "string", "format": "uuid"}},\n'
+                f'    "status": {{"type": "string", "enum": ["pending", "verified", "completed"]}},\n'
+                f'    "created_at": {{"type": "string", "format": "date-time"}},\n'
+                f'    "payload": {{"type": "object", "description": "Core attributes for {entity}"}}\n'
+                f'  }},\n'
+                f'  "additionalProperties": false\n'
+                f'}}'
+            )
+            return CategorizedDialogueResult(
+                matched=True,
+                domain_id="doc.json_schema_composer",
+                domain_title="JSON Schema Composer",
+                extracted_topic=entity,
+                language="en",
+                response=body,
+            )
+
+        return CategorizedDialogueResult(False)

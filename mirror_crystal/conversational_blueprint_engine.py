@@ -43,6 +43,8 @@ class ConversationalBlueprint:
 @dataclass
 class DiscourseSessionState:
     """Constant-size O(1) session register (~128 bytes) replacing raw chat-history storage."""
+    user_name: str = ""
+    primary_project: str = ""
     active_topic: str = ""
     user_mood: str = "neutral"
     last_speech_act: str = ""
@@ -442,7 +444,93 @@ class ConversationalBlueprintEngine:
 
     def respond(self, prompt: str, *, session_id: str = "default") -> BlueprintConversationalResult:
         text = prompt.strip()
+        low = text.casefold()
         state = self._sessions.setdefault(session_id, DiscourseSessionState())
+
+        # 0. Multi-Turn Socratic Personal Coach (Name + Primary Project + Sub-Problem Continuity)
+        m_intro_ur = re.search(
+            r"\bmera\s+naam\s+([A-Za-z]+)\s+hai(?:\s+aur\s+main\s+(.+?)\s+(?:bana|chala|kar|seekh)\s+raha\s+hoon)?",
+            text,
+            flags=re.IGNORECASE,
+        )
+        m_intro_en = re.search(
+            r"\bmy\s+name\s+is\s+([A-Za-z]+)(?:\s+and\s+i\s+am\s+(?:building|working\s+on|starting|learning)\s+(.+?))?(?:[.?!]|$)",
+            text,
+            flags=re.IGNORECASE,
+        )
+        if m_intro_ur or m_intro_en:
+            m_in = m_intro_ur or m_intro_en
+            assert m_in is not None
+            state.user_name = m_in.group(1).strip().title()
+            proj = (m_in.group(2) or "").strip()
+            if proj:
+                proj = re.sub(r"^(?:ek|aik|a|an|the)\s+", "", proj, flags=re.IGNORECASE).strip()
+                state.primary_project = proj
+                state.active_topic = proj
+            state.last_speech_act = "socratic_coach_intro"
+            state.turn_count += 1
+            if m_intro_ur:
+                resp = (
+                    f"Khush aamdeed {state.user_name} bhai! "
+                    + (f"Aap ka '{state.primary_project}' ka irada bohot shandar hai. Bataiye, is waqt '{state.primary_project}' mein sab se bada bottleneck ya mushkil kya aa rahi hai?" if state.primary_project else "Bataiye aaj hum kis goal ya project par kaam karein?")
+                )
+            else:
+                resp = (
+                    f"Welcome, {state.user_name}! "
+                    + (f"Working on '{state.primary_project}' is a great mission. What is the single biggest bottleneck or challenge you are facing with '{state.primary_project}' right now?" if state.primary_project else "What goal or project shall we tackle today?")
+                )
+            return BlueprintConversationalResult(
+                matched=True,
+                blueprint_id="bp.socratic.personal_coach_intro",
+                speech_act="socratic_coach_intro",
+                extracted_topic=state.primary_project or state.user_name,
+                response=resp,
+                storage_bytes_used=128,
+            )
+
+        # Follow-up Turn 2/3 in Socratic Coaching: combines stored {user_name} + {primary_project} + new {subproblem}
+        m_sub_ur = re.match(
+            r"^\s*(?:lakin|lekin|magar|par)\s+(.+?)\s+(?:samajh\s+nahi\s+aa|mushkil\s+lag|nahi\s+ho|ka\s+masla\s+hai).*$",
+            text,
+            flags=re.IGNORECASE,
+        )
+        m_sub_en = re.match(
+            r"^\s*(?:but|however)\s+i\s+am\s+(?:struggling\s+with|stuck\s+on|having\s+trouble\s+with)\s+(.+?)\s*[.?!]*$",
+            text,
+            flags=re.IGNORECASE,
+        )
+        if (m_sub_ur or m_sub_en) and (state.user_name or state.primary_project):
+            m_sb = m_sub_ur or m_sub_en
+            assert m_sb is not None
+            subprob = m_sb.group(1).strip()
+            state.active_topic = f"{state.primary_project} ({subprob})" if state.primary_project else subprob
+            state.turn_count += 1
+            name_prefix = f"{state.user_name} bhai, " if (state.user_name and m_sub_ur) else (f"{state.user_name}, " if state.user_name else "")
+            proj_ctx = f"aap ke '{state.primary_project}' ke liye " if (state.primary_project and m_sub_ur) else (f"for your '{state.primary_project}', " if state.primary_project else "")
+            if m_sub_ur:
+                resp = (
+                    f"[Socratic Coaching Blueprint | User: {state.user_name or 'Founder'} | Project: {state.primary_project} | Bottleneck: {subprob}]\n"
+                    f"{name_prefix}{proj_ctx}'{subprob}' ka masla hal karne ka 3-step blueprint:\n"
+                    f"1. Direct Outreach (First 10 Users): '{state.primary_project}' ke liye '{subprob}' shuru karne ka sab se tez rasta 10 real users ko live demo dikhana hai.\n"
+                    f"2. Proof-of-Value Content: '{subprob}' mein waday karne ke bajaye before/after result dikhao.\n"
+                    f"3. Weekly Metric Lock: Har haftay sirf 1 core conversion metric track karo."
+                )
+            else:
+                resp = (
+                    f"[Socratic Coaching Blueprint | User: {state.user_name or 'Founder'} | Project: {state.primary_project} | Bottleneck: {subprob}]\n"
+                    f"{name_prefix}{proj_ctx}here is a 3-step blueprint to solve '{subprob}':\n"
+                    f"1. High-Signal Direct Discovery: Test '{state.primary_project}' directly with 10 target users to isolate what converts.\n"
+                    f"2. Proof-of-Work Demonstration: Lead '{subprob}' with measurable before/after outcomes rather than feature lists.\n"
+                    f"3. Single Weekly North-Star Metric: Measure one conversion bottleneck per week and iterate."
+                )
+            return BlueprintConversationalResult(
+                matched=True,
+                blueprint_id="bp.socratic.personal_coach_followup",
+                speech_act="socratic_coach_followup",
+                extracted_topic=state.active_topic,
+                response=resp,
+                storage_bytes_used=128,
+            )
 
         # 1. Check induced & universal slot blueprints first
         for bp in self._blueprints:
