@@ -10,22 +10,22 @@ This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen alge
 
 | Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |
 |---|---:|---:|---:|---:|
-| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 3.556 |
-| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 3.328 |
-| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 6.611 |
-| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 11.387 |
-| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 1.877 |
-| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 1.125 |
-| 7. Creative Writing (Poetry/Stories), Bilingual Chat & Blueprint Feeding (10) | 10/10 | 0/10 | 0/10 | 3.322 |
-| 8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10) | 10/10 | 0/10 | 0/10 | 1.418 |
-| 9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10) | 10/10 | 0/10 | 0/10 | 0.452 |
-| 10. 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Audit & Fault-Tree (10) | 10/10 | 0/10 | 0/10 | 0.091 |
-| 11. Antigravity Science Plugins: Chemistry (PubChem), Calculus, Quantum/arXiv & UniProt (10) | 10/10 | 0/10 | 0/10 | 0.217 |
-| 12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10) | 10/10 | 0/10 | 0/10 | 0.304 |
-| 13. Multi-Turn Socratic Coach, Proposal/Email/Schema Composer, ChEMBL, Reactome, ClinicalTrials & Context7 (10) | 10/10 | 0/10 | 0/10 | 1.396 |
-| 14. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesis (10) | 10/10 | 0/10 | 0/10 | 4.569 |
-| 15. Phase-1 Public Beta 10,000+ Multi-Source Concept Vault (Wikipedia, MDN, Python Docs, Curated, arXiv) (10) | 10/10 | 0/10 | 0/10 | 5.114 |
-| 16. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 44.338 |
+| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 6.505 |
+| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 5.734 |
+| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 5.623 |
+| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 10.877 |
+| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 2.923 |
+| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 1.462 |
+| 7. Creative Writing (Poetry/Stories), Bilingual Chat & Blueprint Feeding (10) | 10/10 | 0/10 | 0/10 | 3.197 |
+| 8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10) | 10/10 | 0/10 | 0/10 | 1.113 |
+| 9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10) | 10/10 | 0/10 | 0/10 | 0.304 |
+| 10. 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Audit & Fault-Tree (10) | 10/10 | 0/10 | 0/10 | 0.071 |
+| 11. Antigravity Science Plugins: Chemistry (PubChem), Calculus, Quantum/arXiv & UniProt (10) | 10/10 | 0/10 | 0/10 | 0.168 |
+| 12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10) | 10/10 | 0/10 | 0/10 | 0.229 |
+| 13. Multi-Turn Socratic Coach, Proposal/Email/Schema Composer, ChEMBL, Reactome, ClinicalTrials & Context7 (10) | 10/10 | 0/10 | 0/10 | 1.091 |
+| 14. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesis (10) | 10/10 | 0/10 | 0/10 | 2.422 |
+| 15. Phase-1 Public Beta 10,000+ Multi-Source Concept Vault (Wikipedia, MDN, Python Docs, Curated, arXiv) (10) | 10/10 | 0/10 | 0/10 | 2.204 |
+| 16. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 20.078 |
 
 ## Honest Interpretation
 

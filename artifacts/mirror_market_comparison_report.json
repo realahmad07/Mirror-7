@@ -3,7 +3,7 @@
   "total_tasks": 24,
   "passed": 24,
   "pass_rate_pct": 100.0,
-  "median_latency_ms": 3.514,
+  "median_latency_ms": 2.484,
   "failures": [],
   "market_comparison": [
     {
@@ -12,7 +12,7 @@
       "tokenizer": "0 BPE Tokens (Raw UTF-8 Bytes + Typed Slots)",
       "gpu_required": "0 GPUs (Commodity CPU Only)",
       "ram_footprint": "< 25 MB",
-      "median_latency_ms": "3.514 ms",
+      "median_latency_ms": "2.484 ms",
       "math_science_code_exactness": "100.0% (Verified Execution / Nullspace / Newton Proof)",
       "hallucination_rate_on_traps": "0.0% (Strict Epistemic Abstention Gate)",
       "general_conversation_domains": "12 Categorized Blueprint Domains (Bilingual Roman-Urdu & English)",
@@ -60,7 +60,7 @@
       "task_id": "dom_01",
       "matched": true,
       "passed": true,
-      "latency_ms": 145.907,
+      "latency_ms": 116.847,
       "rule_ids": [
         "domain.1_mental_wellness_and_emotions"
       ],
@@ -70,7 +70,7 @@
       "task_id": "dom_02",
       "matched": true,
       "passed": true,
-      "latency_ms": 4.865,
+      "latency_ms": 3.634,
       "rule_ids": [
         "domain.2_career_freelancing_and_interviews"
       ],
@@ -80,7 +80,7 @@
       "task_id": "dom_03",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.224,
+      "latency_ms": 2.533,
       "rule_ids": [
         "domain.3_software_architecture_and_engineering"
       ],
@@ -90,7 +90,7 @@
       "task_id": "dom_04",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.596,
+      "latency_ms": 2.824,
       "rule_ids": [
         "domain.4_business_startups_and_finance"
       ],
@@ -100,7 +100,7 @@
       "task_id": "dom_05",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.432,
+      "latency_ms": 2.971,
       "rule_ids": [
         "domain.5_study_learning_and_productivity"
       ],
@@ -110,7 +110,7 @@
       "task_id": "dom_06",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.672,
+      "latency_ms": 3.127,
       "rule_ids": [
         "domain.6_relationships_communication_and_social"
       ],
@@ -120,7 +120,7 @@
       "task_id": "dom_07",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.42,
+      "latency_ms": 3.143,
       "rule_ids": [
         "domain.7_health_fitness_and_lifestyle"
       ],
@@ -130,7 +130,7 @@
       "task_id": "dom_08",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.16,
+      "latency_ms": 2.843,
       "rule_ids": [
         "domain.8_philosophy_psychology_and_ethics"
       ],
@@ -140,7 +140,7 @@
       "task_id": "dom_09",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.412,
+      "latency_ms": 3.052,
       "rule_ids": [
         "domain.9_history_civilizations_and_geopolitics"
       ],
@@ -150,7 +150,7 @@
       "task_id": "dom_10",
       "matched": true,
       "passed": true,
-      "latency_ms": 2.672,
+      "latency_ms": 2.289,
       "rule_ids": [
         "domain.10_creative_metaphors_humor_and_debate"
       ],
@@ -160,7 +160,7 @@
       "task_id": "dom_11",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.637,
+      "latency_ms": 2.82,
       "rule_ids": [
         "domain.11_science_technology_and_future"
       ],
@@ -170,7 +170,7 @@
       "task_id": "dom_12",
       "matched": true,
       "passed": true,
-      "latency_ms": 4.191,
+      "latency_ms": 2.436,
       "rule_ids": [
         "domain.12_daily_chitchat_and_companionship+domain.8_philosophy_psychology_and_ethics"
       ],
@@ -180,7 +180,7 @@
       "task_id": "dom_13",
       "matched": true,
       "passed": true,
-      "latency_ms": 141.399,
+      "latency_ms": 3.858,
       "rule_ids": [
         "bp.urdu.howto_mastery"
       ],
@@ -190,7 +190,7 @@
       "task_id": "sci_01",
       "matched": true,
       "passed": true,
-      "latency_ms": 0.624,
+      "latency_ms": 0.523,
       "rule_ids": [
         "chemistry.nullspace_equation_balancer"
       ],
@@ -200,7 +200,7 @@
       "task_id": "sci_02",
       "matched": true,
       "passed": true,
-      "latency_ms": 0.244,
+      "latency_ms": 0.224,
       "rule_ids": [
         "chemistry.nullspace_equation_balancer"
       ],
@@ -210,7 +210,7 @@
       "task_id": "sci_03",
       "matched": true,
       "passed": true,
-      "latency_ms": 0.203,
+      "latency_ms": 0.175,
       "rule_ids": [
         "chemistry.nullspace_equation_balancer"
       ],
@@ -220,7 +220,7 @@
       "task_id": "sci_04",
       "matched": true,
       "passed": true,
-      "latency_ms": 0.275,
+      "latency_ms": 0.057,
       "rule_ids": [
         "openfda.aspirin_safety"
       ],
@@ -230,7 +230,7 @@
       "task_id": "sci_05",
       "matched": true,
       "passed": true,
-      "latency_ms": 0.061,
+      "latency_ms": 0.046,
       "rule_ids": [
         "openfda.metformin_safety"
       ],
@@ -240,7 +240,7 @@
       "task_id": "sci_06",
       "matched": true,
       "passed": true,
-      "latency_ms": 3.875,
+      "latency_ms": 0.151,
       "rule_ids": [
         "clinvar.BRCA1"
       ],
@@ -250,7 +250,7 @@
       "task_id": "sci_07",
       "matched": true,
       "passed": true,
-      "latency_ms": 0.166,
+      "latency_ms": 0.114,
       "rule_ids": [
         "clinvar.HBB"
       ],
@@ -260,7 +260,7 @@
       "task_id": "loop2_01",
       "matched": true,
       "passed": true,
-      "latency_ms": 9.979,
+      "latency_ms": 3.415,
       "rule_ids": [
         "domain.1_mental_wellness_and_emotions+domain.2_career_freelancing_and_interviews"
       ],
@@ -270,7 +270,7 @@
       "task_id": "loop2_02",
       "matched": true,
       "passed": true,
-      "latency_ms": 8.702,
+      "latency_ms": 2.305,
       "rule_ids": [
         "domain.7_health_fitness_and_lifestyle"
       ],
@@ -280,7 +280,7 @@
       "task_id": "loop2_03",
       "matched": true,
       "passed": true,
-      "latency_ms": 141.111,
+      "latency_ms": 2.352,
       "rule_ids": [
         "domain.1_mental_wellness_and_emotions"
       ],
@@ -290,7 +290,7 @@
       "task_id": "loop2_04",
       "matched": true,
       "passed": true,
-      "latency_ms": 5.809,
+      "latency_ms": 0.175,
       "rule_ids": [
         "chemistry.stoichiometry_moles_to_grams"
       ],
