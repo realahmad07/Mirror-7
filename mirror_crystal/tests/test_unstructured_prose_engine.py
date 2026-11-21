@@ -346,5 +346,47 @@ def test_four_new_organs_fusion_morphology_distiller_and_goal_planner(tmp_path):
     assert "10 days remaining" in g2.explanation
 
 
+def test_four_market_intelligence_organs_law_decision_pipeline_and_auditor():
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Self-Evolving Symbolic Law Discovery (y = x^2 + 3*x + 1 -> at x=10, y=131)
+    law = router.route("Discover law for x=[1, 2, 3, 4], y=[5, 11, 19, 29] and evaluate at x=10")
+    assert law.matched is True
+    assert law.output == 131.0
+    assert "y = x^2 + 3*x + 1" in law.explanation
+
+    # 2. Multi-Criteria Decision & Expected-Utility Pareto Engine
+    dec = router.route(
+        "Compare Option A (cost $10000, return $50000, success 80%) vs Option B (cost $4000, return $30000, success 90%)"
+    )
+    assert dec.matched is True
+    assert dec.output == 30000.0  # EV(A) = 0.8*50000 - 10000 = $30,000 vs EV(B) = 0.9*30000 - 4000 = $23,000
+    assert "Winner: Option A" in dec.explanation
+
+    # 3. Autonomous Multi-Organ Workflow Pipeline Executor (Outlier Clean -> OLS Forecast -> +15% tax)
+    pipe = router.route(
+        "Clean outliers from [100, 120, 950, 140, 160], predict the next value, and add 15% tax"
+    )
+    assert pipe.matched is True
+    assert pipe.output == 207.0  # clean=[100,120,140,160] -> forecast=180 -> +15% = 207.0
+
+    # 4. Zero-Parameter AST Security, Big-O Complexity & Dead-Code Auditor
+    aud = router.route(
+        "Audit security and complexity of:\n"
+        "def run_query(items, cmd):\n"
+        "    eval(cmd)\n"
+        "    for x in items:\n"
+        "        for y in items:\n"
+        "            pass\n"
+        "    return 1\n"
+        "    z = 99\n"
+    )
+    assert aud.matched is True
+    assert "O(N^2)" in aud.explanation
+    assert "eval()" in aud.explanation
+    assert "Unreachable / Dead Statements: 1" in aud.explanation
+
+
+
 
 

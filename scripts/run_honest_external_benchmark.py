@@ -57,7 +57,8 @@ def main() -> int:
         "6_document_qa_counterfactual_code_repair_and_data_analyst": [],
         "7_creative_writing_conversation_and_live_feeding": [],
         "8_discourse_fusion_morphology_distiller_and_goal_planner": [],
-        "9_hard_ood_and_hallucination_traps": [],
+        "9_market_intelligence_law_decision_pipeline_and_auditor": [],
+        "10_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -320,7 +321,53 @@ def main() -> int:
             ok = exp.casefold() in res.explanation.casefold()
             add("8_discourse_fusion_morphology_distiller_and_goal_planner", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
 
-    # ---- 9. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 9. Market-Competing Intelligence: Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10 tasks) ----
+    market_tasks = [
+        ("mk_01", "Discover law for x=[1, 2, 3, 4], y=[5, 11, 19, 29] and evaluate at x=10", 131.0),
+        ("mk_02", "Discover formula for x=[1, 2, 3, 4], y=[7, 10, 13, 16] and evaluate at x=20", 64.0),
+        ("mk_03", "Discover law for x=[1, 2, 3, 4], y=[3, 9, 27, 81] and evaluate at x=6", 729.0),
+        (
+            "mk_04",
+            "Compare Option A (cost $10000, return $50000, success 80%) vs Option B (cost $4000, return $30000, success 90%)",
+            30000.0,
+        ),
+        (
+            "mk_05",
+            "Compare ROI of Option A (cost $10000, return $50000, success 80%) vs Option B (cost $4000, return $30000, success 90%)",
+            575.0,
+        ),
+        ("mk_06", "Clean outliers from [100, 120, 950, 140, 160], predict the next value, and add 15% tax", 207.0),
+        ("mk_07", "Clean outliers from [50, 60, 70, 80, 999], find the average, and apply 20% discount", 52.0),
+        (
+            "mk_08",
+            "Audit security and complexity of:\ndef run_query(items, cmd):\n    eval(cmd)\n    for x in items:\n        for y in items:\n            pass\n    return 1\n    z = 99",
+            "O(N^2)",
+        ),
+        (
+            "mk_09",
+            "Audit complexity of:\ndef fib_tree(n):\n    if n <= 1:\n        return n\n    return fib_tree(n - 1) + fib_tree(n - 2)",
+            "O(2^N)",
+        ),
+        (
+            "mk_10",
+            "Audit security of:\ndef run_shell(cmd):\n    subprocess.run(cmd, shell=True)",
+            "shell=True",
+        ),
+    ]
+    for tid, prompt, exp in market_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt)
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("9_market_intelligence_law_decision_pipeline_and_auditor", tid, "honest_abstain", dt, res.explanation)
+        elif isinstance(exp, float):
+            ok = _close(res.output, exp)
+            add("9_market_intelligence_law_decision_pipeline_and_auditor", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+        else:
+            ok = exp in res.explanation
+            add("9_market_intelligence_law_decision_pipeline_and_auditor", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+
+    # ---- 10. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
         ("ood_01", "What will the exact closing stock price of AAPL be tomorrow?"),
         ("ood_02", "Who will win the next FIFA World Cup?"),
@@ -338,9 +385,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("9_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("10_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("9_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("10_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -387,8 +434,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (All 8 Solvable Categories):** `{total_solved} / 80` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['9_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (All 9 Solvable Categories):** `{total_solved} / 90` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['10_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -403,7 +450,8 @@ def main() -> int:
         "6_document_qa_counterfactual_code_repair_and_data_analyst": "6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10)",
         "7_creative_writing_conversation_and_live_feeding": "7. Creative Writing (Poetry/Stories), Bilingual Chat & Blueprint Feeding (10)",
         "8_discourse_fusion_morphology_distiller_and_goal_planner": "8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10)",
-        "9_hard_ood_and_hallucination_traps": "9. Hard OOD & Hallucination Traps (10, must abstain)",
+        "9_market_intelligence_law_decision_pipeline_and_auditor": "9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10)",
+        "10_hard_ood_and_hallucination_traps": "10. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(

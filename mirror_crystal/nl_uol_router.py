@@ -20,6 +20,12 @@ from .discourse_fusion_and_planner import (
     ZeroBloatCorpusDistiller,
 )
 from .formal_logic_engine import solve_formal_logic_prompt
+from .market_intelligence_organs import (
+    ASTCodebaseAuditor,
+    DecisionIntelligenceEngine,
+    MultiOrganPipelineExecutor,
+    SymbolicLawDiscoveryEngine,
+)
 from .native_realizer import NativeHybridRealizer
 from .operational_language import (
     Call,
@@ -341,6 +347,10 @@ class NaturalLanguageUOLRouter:
         )
         self.goal_planner = PersonalGoalPlannerVM()
         self.discourse_fuser = MultiIntentDiscourseFuser()
+        self.law_discovery = SymbolicLawDiscoveryEngine()
+        self.decision_engine = DecisionIntelligenceEngine()
+        self.pipeline_executor = MultiOrganPipelineExecutor()
+        self.code_auditor = ASTCodebaseAuditor()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -668,13 +678,51 @@ class NaturalLanguageUOLRouter:
                     explanation=feed_hit.response,
                 )
 
-        # 0b. Counterexample-Guided Autonomous AST Buggy-Code Repair
+        # 0b. Counterexample-Guided Autonomous AST Buggy-Code Repair & AST Security/Complexity Auditor
+        audit_hit = self.code_auditor.audit_prompt(prompt)
+        if audit_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=("code_auditor.ast_security_and_complexity",),
+                explanation=audit_hit.explanation,
+            )
+
         repair_hit = self.code_repair_engine.repair_prompt(prompt)
         if repair_hit.matched:
             return NLRouteResult(
                 matched=repair_hit.repaired,
                 rule_ids=(f"code_repair.{repair_hit.func_name}",),
                 explanation=repair_hit.explanation,
+            )
+
+        # 0b-2. Self-Evolving Symbolic Law Discovery (Newton Finite-Difference & Exponential Inducer)
+        law_hit = self.law_discovery.discover_from_prompt(prompt)
+        if law_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(f"law_discovery.{law_hit.degree_or_kind}",),
+                output=law_hit.output,
+                explanation=law_hit.explanation,
+            )
+
+        # 0b-3. Multi-Criteria Decision & Expected-Utility Pareto Engine
+        dec_hit = self.decision_engine.evaluate_prompt(prompt)
+        if dec_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=("decision.expected_utility_pareto",),
+                output=dec_hit.output,
+                explanation=dec_hit.explanation,
+            )
+
+        # 0b-4. Autonomous Multi-Organ Workflow Pipeline Executor (Outlier Clean -> OLS Forecast -> Tax/Discount)
+        pipe_hit = self.pipeline_executor.execute_pipeline(prompt)
+        if pipe_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=("pipeline.multi_organ_workflow",),
+                output=pipe_hit.output,
+                explanation=pipe_hit.explanation,
             )
 
         # 0c. Zero-Parameter Tabular, CSV & Time-Series Data Analyst
