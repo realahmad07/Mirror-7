@@ -355,7 +355,9 @@ class UnifiedCognitiveOrchestrator:
         )
         uol_route_payload: dict[str, Any] | None = None
         task_uol_verified = False
-        if not (task_code_verified or task_execution_verified or verified_answer or self._is_code_request(prompt)):
+        if not (task_code_verified or task_execution_verified or verified_answer) and (
+            not self._is_code_request(prompt) or "def " in prompt
+        ):
             try:
                 router = self._uol_router_provider() if self._uol_router_provider is not None else self._default_uol_router
                 if router is None:

@@ -3,19 +3,20 @@
 This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen algebra & formal logic, GSM8K-style free-form word problems, and hard OOD traps** without cherry-picking. Every task is scored strictly into three buckets: **Solved Correctly**, **Honest Abstention (Safe)**, or **Wrong / Hallucinated (Unsafe)**.
 
 - **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)
-- **Total Tasks:** `60`
-- **Solved Correctly (Structured + Paraphrased + GSM8K + Transfer + Unstructured Prose/Comparative):** `48 / 50` solvable tasks
+- **Total Tasks:** `70`
+- **Solved Correctly (All 6 Solvable Categories):** `60 / 60` solvable tasks
 - **OOD Trap Safe Abstention:** `10 / 10`
-- **Overall Wrong / Hallucinated Rate:** **0.0%** (`0 / 60`)
+- **Overall Wrong / Hallucinated Rate:** **0.0%** (`0 / 70`)
 
 | Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |
 |---|---:|---:|---:|---:|
-| 1. Casual English & Roman-Urdu Paraphrases (10) | 9/10 | 1/10 | 0/10 | 3.893 |
-| 2. Unseen Algebra, Systems & Formal Logic (10) | 9/10 | 1/10 | 0/10 | 3.169 |
-| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 4.059 |
-| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 3.824 |
-| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 1.893 |
-| 6. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 2.725 |
+| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 3.501 |
+| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 3.359 |
+| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 4.12 |
+| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 3.942 |
+| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 1.773 |
+| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 0.897 |
+| 7. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 3.817 |
 
 ## Honest Interpretation
 

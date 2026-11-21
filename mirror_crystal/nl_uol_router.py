@@ -10,7 +10,9 @@ from dataclasses import dataclass
 import re
 from typing import Any, Mapping
 
+from .code_repair_engine import CounterexampleCodeRepairEngine
 from .compression_analogy_engine import AnalogicalTransferEngine
+from .counterfactual_engine import CounterfactualWhatIfEngine
 from .formal_logic_engine import solve_formal_logic_prompt
 from .native_realizer import NativeHybridRealizer
 from .operational_language import (
@@ -24,6 +26,7 @@ from .operational_language import (
 )
 from .semantic_frame_vm import SemanticStateVM
 from .symbolic_algebra_solver import solve_algebra_prompt
+from .tabular_data_analyst import ZeroParamDataAnalyst
 from .uol_formula_teacher import compile_formula_to_uol, parse_teach_formula_prompt
 from .uol_graph_planner import UOLGraphPlanner
 from .uol_inverse_deriver import derive_all_inverse_rules
@@ -187,7 +190,7 @@ _BINDINGS: tuple[_RuleBinding, ...] = (
     _RuleBinding(
         "bio.bmi",
         ("bmi", "body mass index"),
-        {"mass_kg": ("mass", "weight", "kg"), "height_m": ("height", "h")},
+        {"mass_kg": ("mass", "weight", "person", "kg"), "height_m": ("height", "tall", "h")},
         unit="kg/m^2",
         inverse_targets={
             "mass_kg": ("find mass", "find weight", "solve for mass"),
@@ -285,7 +288,7 @@ _QUANTITY_ALIASES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("force", ("force", "load")),
     ("mass", ("mass", "weight")),
     ("area", ("area",)),
-    ("height", ("height",)),
+    ("height", ("height", "tall")),
     ("radius", ("radius",)),
     ("volume", ("volume", "vol")),
     ("density", ("density",)),
@@ -322,6 +325,9 @@ class NaturalLanguageUOLRouter:
         self.semantic_vm = SemanticStateVM()
         self.analogy_engine = AnalogicalTransferEngine()
         self.prose_engine = UnstructuredProseEngine()
+        self.counterfactual_engine = CounterfactualWhatIfEngine()
+        self.code_repair_engine = CounterexampleCodeRepairEngine()
+        self.data_analyst = ZeroParamDataAnalyst()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -402,6 +408,7 @@ class NaturalLanguageUOLRouter:
             ("resistance", r"(\d+(?:\.\d+)?)\s*(kohms?|mohms?|ohms?|ω)\b"),
             ("voltage", r"(\d+(?:\.\d+)?)\s*(kv|mv|volts?)\b"),
             ("kinetic_energy", r"(\d+(?:\.\d+)?)\s*(kj|joules?)\b"),
+            ("height", r"(\d+(?:\.\d+)?)\s*(cm|mm|m|meters?|ft|feet)\s+(?:tall|high|height)\b"),
         )
         for qty, pat in unit_inferences:
             if qty == exclude or qty in found:
@@ -589,7 +596,37 @@ class NaturalLanguageUOLRouter:
         if taught_spec is not None:
             return self.teach_formula(taught_spec[0], taught_spec[1])
 
-        # 0b. Parameter-Free Unstructured Prose Summarization, OpenIE Ingestion & Comparative RST Discourse
+        # 0b. Counterexample-Guided Autonomous AST Buggy-Code Repair
+        repair_hit = self.code_repair_engine.repair_prompt(prompt)
+        if repair_hit.matched:
+            return NLRouteResult(
+                matched=repair_hit.repaired,
+                rule_ids=(f"code_repair.{repair_hit.func_name}",),
+                explanation=repair_hit.explanation,
+            )
+
+        # 0c. Zero-Parameter Tabular, CSV & Time-Series Data Analyst
+        data_hit = self.data_analyst.analyze_prompt(prompt)
+        if data_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=("data_analyst.statistical_ols_engine",),
+                output=data_hit.primary_output,
+                explanation=data_hit.explanation,
+            )
+
+        # 0d. Symbolic Counterfactual & 'What-If' Simulation Engine
+        cf_hit = self.counterfactual_engine.solve(prompt)
+        if cf_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(cf_hit.rule_id,),
+                output=cf_hit.output,
+                unit=cf_hit.unit,
+                explanation=cf_hit.explanation,
+            )
+
+        # 0e. Parameter-Free Unstructured Prose Summarization, OpenIE Ingestion, Document QA & Comparative RST Discourse
         prose_hit = self.prose_engine.route_unstructured_prompt(prompt)
         if prose_hit is not None:
             return NLRouteResult(

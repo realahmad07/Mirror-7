@@ -119,3 +119,92 @@ def test_end_to_end_orchestrator_urdu_contract_summary_and_mughal_ottoman():
     assert r2["abstained"] is False
     assert "Mansabdari" in r2["answer"]
     assert "Timar" in r2["answer"]
+
+
+def test_grounded_contract_and_document_qa_plus_sqlite_persistence(tmp_path):
+    vault_file = tmp_path / "openie_test.dcrystal"
+    engine = UnstructuredProseEngine(vault_path=vault_file)
+    engine.ingest_unstructured_text(SAMPLE_LEGAL_CONTRACT, topic="contract", provenance="master_services_agreement")
+
+    # Reload into a brand-new engine instance from SQLite .dcrystal vault
+    reloaded = UnstructuredProseEngine(vault_path=vault_file)
+    q1 = reloaded.route_unstructured_prompt("In the contract, what is the late penalty?")
+    assert q1 is not None and q1["matched"] is True
+    assert "2% per week" in q1["explanation"]
+
+    q2 = reloaded.route_unstructured_prompt("Contract mein arbitration kis shehar mein hogi?")
+    assert q2 is not None and q2["matched"] is True
+    assert "Lahore" in q2["explanation"]
+
+    # Test local file ingestion
+    doc_file = tmp_path / "quantum_computing.txt"
+    doc_file.write_text(
+        "Quantum computing is a computational paradigm that uses quantum bits (qubits) in superposition. "
+        "Quantum processors operate through unitary logic gates and entanglement to accelerate factoring and simulation.",
+        encoding="utf-8",
+    )
+    router = NaturalLanguageUOLRouter()
+    r_file = router.route(f"Learn file about Quantum Computing: {doc_file}")
+    assert r_file.matched is True
+    r_qa = router.route("How do quantum computing processors operate?")
+    assert r_qa.matched is True
+    assert "unitary logic gates" in r_qa.explanation
+
+
+def test_counterfactual_what_if_scaling_and_contract_simulation():
+    router = NaturalLanguageUOLRouter()
+
+    # Physics scaling in English & Roman Urdu
+    c1 = router.route("If mass doubles and velocity triples, by what factor does kinetic energy change?")
+    assert c1.matched is True
+    assert c1.output == 18.0
+
+    c2 = router.route("Agar mass double aur velocity triple ho jaye to kinetic energy kitne guna barh jaye gi?")
+    assert c2.matched is True
+    assert c2.output == 18.0
+
+    c3 = router.route("What if force is tripled and area is halved — by what factor does axial stress change?")
+    assert c3.matched is True
+    assert c3.output == 6.0
+
+    # Contract late penalty counterfactual simulation
+    c4 = router.route(
+        "What if a $120000 contract has a 2% per week late penalty (capped at 10%) and is delivered 3 weeks late? What is the net payout?"
+    )
+    assert c4.matched is True
+    assert c4.output == 112800.0
+
+
+def test_counterexample_guided_ast_code_repair():
+    router = NaturalLanguageUOLRouter()
+
+    r1 = router.route(
+        "Fix this Python code:\ndef factorial(n):\n    return 0 if n <= 1 else n * factorial(n - 1)"
+    )
+    assert r1.matched is True
+    assert "Constant(0 -> 1)" in r1.explanation
+    assert "return 1 if n <= 1 else n * factorial(n - 1)" in r1.explanation
+
+    r2 = router.route(
+        "Fix this function:\ndef sum_to_n(n):\n    total = 0\n    for i in range(n):\n        total += i\n    return total"
+    )
+    assert r2.matched is True
+    assert "range(n + 1)" in r2.explanation
+
+
+def test_zero_parameter_tabular_data_analyst():
+    router = NaturalLanguageUOLRouter()
+
+    d1 = router.route("Predict next value for series: 100, 150, 200, 250")
+    assert d1.matched is True
+    assert d1.output == 300.0
+
+    d2 = router.route("Find outliers in data: 120, 135, 150, 165, 490, 180")
+    assert d2.matched is True
+    assert d2.output == 490.0
+
+    d3 = router.route("Analyze sales data in Urdu: Jan=100, Feb=120, Mar=140, Apr=160, May=180")
+    assert d3.matched is True
+    assert d3.output == 140.0
+    assert "R^2 = 1.0000" in d3.explanation
+

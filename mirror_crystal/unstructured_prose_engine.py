@@ -27,7 +27,9 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 import math
+from pathlib import Path
 import re
+import sqlite3
 from typing import Any, Iterable, Mapping
 
 from .compression_analogy_engine import (
@@ -367,29 +369,226 @@ class ComparativeReport:
     uses_neural_parameters: bool = False
 
 
+_QA_STOPWORDS = frozenset({
+    "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
+    "in", "on", "at", "to", "for", "of", "with", "by", "from", "under", "about",
+    "what", "where", "when", "who", "which", "how", "why", "does", "did", "do",
+    "will", "shall", "can", "may", "much", "many", "according", "contract",
+    "document", "agreement", "text", "article", "ka", "ki", "ke", "ko", "se",
+    "mein", "par", "hai", "hain", "tha", "thi", "hoga", "hogi", "kya", "kahan",
+    "kitna", "kitni", "kitne", "kaise", "kon", "batao", "likho", "aur", "ya",
+})
+
+
+def _stem_word(w: str) -> str:
+    w = w.casefold()
+    for suf in ("tion", "sion", "ment", "ness", "ing", "ed", "es", "s"):
+        if len(w) >= len(suf) + 3 and w.endswith(suf):
+            return w[: -len(suf)]
+    return w
+
+
 class UnstructuredProseEngine:
     """Unified 0-Parameter Engine for Document Summarization, OpenIE Ingestion,
-    Comparative Multi-Topic Synthesis, and Grounded Explanatory Discourse."""
+    Persistent .dcrystal Concept Storage, Grounded Document/Contract Q&A,
+    and Comparative Multi-Topic Synthesis."""
 
-    VERSION = "unstructured-prose-engine-v1"
+    VERSION = "unstructured-prose-engine-v2"
 
-    def __init__(self) -> None:
+    def __init__(self, *, vault_path: str | Path | None = None) -> None:
         self.summarizer = SubmodularNCDSummarizer()
+        self.vault_path = Path(vault_path) if vault_path is not None else None
         self._topics: dict[str, list[Proposition]] = defaultdict(list)
         for topic, props in _SEED_TOPIC_PROPOSITIONS.items():
             self._topics[topic].extend(props)
+        if self.vault_path is not None and self.vault_path.exists():
+            self.load_from_vault(self.vault_path)
+
+    def save_to_vault(self, vault_path: str | Path | None = None) -> int:
+        """Persist all OpenIE propositions into SQLite .dcrystal vault."""
+        target = Path(vault_path) if vault_path is not None else self.vault_path
+        if target is None:
+            return 0
+        target.parent.mkdir(parents=True, exist_ok=True)
+        inserted = 0
+        with sqlite3.connect(str(target)) as conn:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS mirror_openie_propositions (
+                    topic TEXT NOT NULL,
+                    dimension TEXT NOT NULL,
+                    predicate TEXT NOT NULL,
+                    claim_text TEXT NOT NULL,
+                    provenance TEXT NOT NULL,
+                    PRIMARY KEY (topic, claim_text)
+                )
+                """
+            )
+            for topic, props in self._topics.items():
+                for p in props:
+                    cur = conn.execute(
+                        """
+                        INSERT OR IGNORE INTO mirror_openie_propositions
+                        (topic, dimension, predicate, claim_text, provenance)
+                        VALUES (?, ?, ?, ?, ?)
+                        """,
+                        (p.topic, p.dimension, p.predicate, p.claim_text, p.provenance),
+                    )
+                    inserted += cur.rowcount
+            conn.commit()
+        return inserted
+
+    def load_from_vault(self, vault_path: str | Path | None = None) -> int:
+        """Load persisted OpenIE propositions from SQLite .dcrystal vault."""
+        target = Path(vault_path) if vault_path is not None else self.vault_path
+        if target is None or not target.exists():
+            return 0
+        loaded = 0
+        with sqlite3.connect(str(target)) as conn:
+            cur = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='mirror_openie_propositions'"
+            )
+            if cur.fetchone() is None:
+                return 0
+            rows = conn.execute(
+                "SELECT topic, dimension, predicate, claim_text, provenance FROM mirror_openie_propositions"
+            ).fetchall()
+            for topic, dim, pred, claim, prov in rows:
+                existing = {p.claim_text for p in self._topics[topic]}
+                if claim not in existing:
+                    self._topics[topic].append(
+                        Proposition(topic=topic, dimension=dim, predicate=pred, claim_text=claim, provenance=prov)
+                    )
+                    loaded += 1
+        return loaded
 
     def ingest_unstructured_text(self, text: str, *, topic: str = "", provenance: str = "user_taught_text") -> dict[str, Any]:
         """Extract OpenIE propositions from raw prose and index them into the live Concept Graph."""
         props = extract_openie_propositions(text, default_topic=topic, provenance=provenance)
         topics_touched: set[str] = set()
         for p in props:
-            self._topics[p.topic].append(p)
+            existing = {x.claim_text for x in self._topics[p.topic]}
+            if p.claim_text not in existing:
+                self._topics[p.topic].append(p)
             topics_touched.add(p.topic)
+        if self.vault_path is not None:
+            self.save_to_vault(self.vault_path)
         return {
             "ok": len(props) > 0,
             "propositions_extracted": len(props),
             "topics_indexed": sorted(topics_touched),
+        }
+
+    def ingest_file(self, file_path: str | Path, *, topic: str = "") -> dict[str, Any]:
+        """Read a local text/markdown/CSV/JSON file and ingest its propositions into the Concept Graph."""
+        p = Path(file_path)
+        if not p.exists() or not p.is_file():
+            return {"ok": False, "error": f"File not found: {file_path}", "propositions_extracted": 0, "topics_indexed": []}
+        content = p.read_text(encoding="utf-8", errors="replace")
+        inferred_topic = topic.strip() or p.stem.replace("_", " ").replace("-", " ").strip()
+        return self.ingest_unstructured_text(content, topic=inferred_topic, provenance=f"file:{p.name}")
+
+    def answer_grounded_question(self, question: str, *, language: str = "en") -> dict[str, Any] | None:
+        """Zero-parameter grounded Document & Concept Q&A using Wh-Role Matching + Raw-DEFLATE NCD."""
+        q_clean = question.strip()
+        q_low = q_clean.casefold()
+
+        # Guard: Must be an interrogative / question or explicit document lookup
+        is_question = (
+            q_clean.endswith("?")
+            or bool(re.match(r"^\s*(?:what|where|when|who|which|how|why|in\s+the\s+contract|according\s+to|contract\s+mein)\b", q_low))
+            or bool(re.search(r"\b(?:kya|kahan|kitna|kitni|kitne|kaise|kon)\b", q_low))
+        )
+        if not is_question:
+            return None
+
+        # Identify target topic(s) mentioned in the question
+        matched_topics: list[str] = []
+        if re.search(r"\b(?:contract|agreement|lease|clause|party|contractor|client|lessor|lessee|arbitration|penalty)\b", q_low):
+            if "contract" in self._topics and self._topics["contract"]:
+                matched_topics.append("contract")
+
+        for t_key in self._topics:
+            if t_key == "contract":
+                continue
+            if re.search(r"\b" + re.escape(t_key) + r"\b", q_low):
+                matched_topics.append(t_key)
+
+        if not matched_topics:
+            return None
+
+        candidates: list[Proposition] = []
+        for tk in matched_topics:
+            candidates.extend(self._topics[tk])
+        if not candidates:
+            return None
+
+        topic_words = {w for tk in matched_topics for w in tk.split()}
+        q_tokens = [
+            _stem_word(w)
+            for w in re.findall(r"[a-zA-Z0-9]+", q_low)
+            if w not in _QA_STOPWORDS and w not in topic_words and len(w) >= 2
+        ]
+
+        # Semantic Wh-Role detectors
+        wants_penalty = bool(re.search(r"\b(?:penalt\w*|fine|late|delay|breach|jurmana)\b", q_low))
+        wants_where = bool(re.search(r"\b(?:where|city|location|place|arbitration|dispute|kahan|shehar)\b", q_low))
+        wants_money = bool(re.search(r"\b(?:how\s+much|pay\w*|cost|price|rent|amount|installment|fee|kitna|kitni|raqam)\b", q_low))
+        wants_time = bool(re.search(r"\b(?:how\s+many\s+days|how\s+long|deadline|when|days|years|months|notice|termination|terminate|kitne\s+din|muddat)\b", q_low))
+        wants_who = bool(re.search(r"\b(?:who|parties|between|kon)\b", q_low))
+        wants_mech = bool(re.search(r"\b(?:govern\w*|administ\w*|operat\w*|system|mechanism|code|law|handshake|nizaam|kaise)\b", q_low))
+
+        q_bytes = q_low.encode("utf-8")
+        best_prop: Proposition | None = None
+        best_score = 0.0
+
+        for prop in candidates:
+            s_low = prop.claim_text.casefold()
+            s_stems = {_stem_word(w) for w in re.findall(r"[a-zA-Z0-9]+", s_low)}
+            overlap = sum(1 for qt in q_tokens if qt in s_stems)
+
+            role_bonus = 0.0
+            if wants_penalty and re.search(r"\b(?:penalty|late|%\s*per\s*week|up\s+to\s+\d+%)\b", s_low):
+                role_bonus += 2.5
+            if wants_where and re.search(r"\b(?:in\s+[A-Z][a-z]+|arbitration|dispute|suite)\b", prop.claim_text):
+                role_bonus += 2.5
+            if wants_money and re.search(r"(?:\$\s*\d+|\b\d+\s*(?:usd|pkr|dollars?|rupees?)\b)", s_low):
+                role_bonus += 2.2
+            if wants_time and re.search(r"\b(?:\d+\s*(?:days?|years?|months?|weeks?)|deadline|within|notice)\b", s_low):
+                role_bonus += 2.0
+            if wants_who and re.search(r"\b(?:between|party\s+[ab]|client|contractor|lessor|lessee)\b", s_low):
+                role_bonus += 2.2
+            if wants_mech and (prop.dimension == "governance_mechanism" or re.search(r"\b(?:operated|system|code|handshake|through|via)\b", s_low)):
+                role_bonus += 2.0
+
+            if overlap == 0 and role_bonus < 2.0:
+                continue
+
+            ncd_sim = max(0.0, 1.0 - symmetric_raw_ncd(q_bytes, s_low.encode("utf-8")))
+            score = (1.5 * overlap) + role_bonus + (0.8 * ncd_sim)
+            if score > best_score:
+                best_score = score
+                best_prop = prop
+
+        if best_prop is None or best_score < 1.6:
+            return None
+
+        is_urdu = language.casefold() in {"ur", "roman_urdu", "urdu"}
+        if is_urdu:
+            ans = (
+                f"Grounded Jawab (0-Parameter Document QA | Topic: {best_prop.topic.title()} | "
+                f"Provenance: {best_prop.provenance}):\n{best_prop.claim_text}"
+            )
+        else:
+            ans = (
+                f"Grounded Answer (0-Parameter Document QA | Topic: {best_prop.topic.title()} | "
+                f"Provenance: {best_prop.provenance}):\n{best_prop.claim_text}"
+            )
+        return {
+            "matched": True,
+            "kind": "grounded_document_qa",
+            "rule_ids": ("prose.grounded_document_qa",),
+            "explanation": ans,
         }
 
     def _resolve_topic(self, raw_name: str) -> tuple[str, list[Proposition]]:
@@ -538,6 +737,27 @@ class UnstructuredProseEngine:
                     ),
                 }
 
+        # 1b. Local file ingestion ("Learn file [about X]: <path>")
+        m_file = re.match(
+            r"^\s*(?:learn|ingest|store)\s+file(?:\s+about\s+([A-Za-z0-9_\-\s]+?))?\s*[:\-]\s*(.+)$",
+            text,
+            flags=re.IGNORECASE,
+        )
+        if m_file:
+            topic_hint = (m_file.group(1) or "").strip()
+            fpath = m_file.group(2).strip().strip("\"'")
+            stats = self.ingest_file(fpath, topic=topic_hint)
+            if stats.get("ok"):
+                return {
+                    "matched": True,
+                    "kind": "openie_file_ingest",
+                    "rule_ids": ("prose.openie_file_ingest",),
+                    "explanation": (
+                        f"Ingested file '{fpath}' ({stats['propositions_extracted']} OpenIE proposition(s)) "
+                        f"under topic(s): {', '.join(stats['topics_indexed'])}."
+                    ),
+                }
+
         # 2. Submodular-NCD Document / Contract Summarization
         # e.g. "Summarize: <text>", "Urdu mein khulasa likho: <text>", "10-page legal contract ka khulasa Urdu mein likho: <text>"
         m_sum = re.match(
@@ -547,6 +767,8 @@ class UnstructuredProseEngine:
         )
         if m_sum:
             doc_body = m_sum.group(1).strip()
+            # Also index the document sentences under 'contract' so follow-up Document Q&A works seamlessly!
+            self.ingest_unstructured_text(doc_body, topic="contract", provenance="ingested_contract_doc")
             rep = self.summarizer.summarize(doc_body, max_sentences=3, language=lang)
             if rep.ok:
                 return {
@@ -585,5 +807,10 @@ class UnstructuredProseEngine:
                 "rule_ids": ("prose.comparative_rst_synthesis",),
                 "explanation": cmp_rep.rendered_text,
             }
+
+        # 4. Grounded Document & Concept Question Answering
+        qa_hit = self.answer_grounded_question(text, language=lang)
+        if qa_hit is not None:
+            return qa_hit
 
         return None

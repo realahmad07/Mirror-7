@@ -54,7 +54,8 @@ def main() -> int:
         "3_gsm8k_style_arithmetic_word_problems": [],
         "4_unseen_paraphrased_word_problem_transfer": [],
         "5_unstructured_summarization_and_comparative_prose": [],
-        "6_hard_ood_and_hallucination_traps": [],
+        "6_document_qa_counterfactual_code_repair_and_data_analyst": [],
+        "7_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -183,7 +184,8 @@ def main() -> int:
         "The Client agrees to pay $120000 USD in three equal milestone installments upon verified code delivery. "
         "The Contractor must maintain strict confidentiality of all customer financial records for 5 years. "
         "If the Contractor fails to meet the 45-day deadline, a late penalty of 2% per week shall apply up to 10%. "
-        "Either party may terminate this Agreement upon 30 days written notice in the event of a material breach."
+        "Either party may terminate this Agreement upon 30 days written notice in the event of a material breach. "
+        "Disputes arising under this contract shall be resolved through binding arbitration in Lahore."
     )
     lease_doc = (
         "This Commercial Lease Agreement is made between Lessor and Lessee for Suite 400 in Islamabad. "
@@ -226,7 +228,33 @@ def main() -> int:
         else:
             add("5_unstructured_summarization_and_comparative_prose", tid, "wrong_or_hallucinated", dt, res.explanation)
 
-    # ---- 6. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 6. Grounded Document QA, Counterfactual What-If, AST Code Repair & Data Analyst (10 tasks) ----
+    advanced_tasks = [
+        ("adv_01", "In the contract, what is the late penalty?", "2% per week"),
+        ("adv_02", "Contract mein arbitration kis shehar mein hogi?", "Lahore"),
+        ("adv_03", "What legal code did Mesopotamia use?", "Hammurabi's Code"),
+        ("adv_04", "If mass doubles and velocity triples, by what factor does kinetic energy change?", 18.0),
+        ("adv_05", "Agar mass double aur velocity triple ho jaye to kinetic energy kitne guna barh jaye gi?", 18.0),
+        ("adv_06", "What if a $120000 contract has a 2% per week late penalty (capped at 10%) and is delivered 3 weeks late? What is the net payout?", 112800.0),
+        ("adv_07", "Fix this Python code:\ndef factorial(n):\n    return 0 if n <= 1 else n * factorial(n - 1)", "return 1 if n <= 1 else n * factorial(n - 1)"),
+        ("adv_08", "Fix this function:\ndef sum_to_n(n):\n    total = 0\n    for i in range(n):\n        total += i\n    return total", "range(n + 1)"),
+        ("adv_09", "Find outliers in data: 120, 135, 150, 165, 490, 180", 490.0),
+        ("adv_10", "Predict next value for series: 100, 150, 200, 250", 300.0),
+    ]
+    for tid, prompt, exp in advanced_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt)
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("6_document_qa_counterfactual_code_repair_and_data_analyst", tid, "honest_abstain", dt, res.explanation)
+        elif isinstance(exp, float):
+            ok = _close(res.output, exp)
+            add("6_document_qa_counterfactual_code_repair_and_data_analyst", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+        else:
+            ok = exp in res.explanation
+            add("6_document_qa_counterfactual_code_repair_and_data_analyst", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+
+    # ---- 7. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
         ("ood_01", "Write a poem about autumn in Lahore."),
         ("ood_02", "Who will win the next FIFA World Cup?"),
@@ -244,9 +272,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("6_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("7_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("6_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("7_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -293,8 +321,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (Structured + Paraphrased + GSM8K + Transfer + Unstructured Prose/Comparative):** `{total_solved} / 50` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['6_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (All 6 Solvable Categories):** `{total_solved} / 60` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['7_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -306,7 +334,8 @@ def main() -> int:
         "3_gsm8k_style_arithmetic_word_problems": "3. GSM8K-Style Free-Form Word Problems (10)",
         "4_unseen_paraphrased_word_problem_transfer": "4. Unseen Paraphrased Transfer Problems (10)",
         "5_unstructured_summarization_and_comparative_prose": "5. Unstructured Summarization, OpenIE & Comparative Prose (10)",
-        "6_hard_ood_and_hallucination_traps": "6. Hard OOD & Hallucination Traps (10, must abstain)",
+        "6_document_qa_counterfactual_code_repair_and_data_analyst": "6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10)",
+        "7_hard_ood_and_hallucination_traps": "7. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(

@@ -88,11 +88,23 @@ def solve_sat(clauses: Sequence[Sequence[int]]) -> dict[int, bool] | None:
 
 # ---------------- 2. Syllogism & Horn-Clause Prover ----------------
 
+def _singularize_word(w: str) -> str:
+    if len(w) > 3 and w.endswith("ies"):
+        return w[:-3] + "y"
+    if len(w) > 3 and w.endswith("s") and not w.endswith(("ss", "us", "is")):
+        return w[:-1]
+    return w
+
+
 def _singularize(term: str) -> str:
     t = re.sub(r"^(?:a|an|the)\s+", "", term.strip().casefold())
-    if len(t) > 3 and t.endswith("s") and not t.endswith("ss"):
-        return t[:-1]
-    return t
+    words = t.split()
+    if not words:
+        return t
+    words[0] = _singularize_word(words[0])
+    if len(words) > 1:
+        words[-1] = _singularize_word(words[-1])
+    return " ".join(words)
 
 
 def prove_syllogism_prompt(prompt: str) -> LogicProofResult:
