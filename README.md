@@ -1493,6 +1493,7 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 | **Unbounded Conversational Blueprint Distiller & Speech-Act Engine** | `mirror_crystal/conversational_blueprint_engine.py` | Eliminates raw dialogue storage bloat via **Plotkin Anti-Unification (LGG) + LCS Slot Blueprinting** (distilling analogous examples into 1 `<slot_0>` rule and **evicting raw strings**), **Compositional Pragmatic Speech-Act Operators** (open-vocabulary empathy, celebration, first-principles advisory, dialectical reflection), and a **128-Byte Stateful Coreference Register** (`active_topic` pronoun resolution across turns). |
 | **Multi-Intent Discourse Fuser, Urdu Morphology, Zero-Bloat Distiller & Goal Planner** | `mirror_crystal/discourse_fusion_and_planner.py` | Adds 4 zero-parameter cognitive organs: (1) **Multi-Intent Heterogeneous Discourse Fuser** (fuses empathy/mood clauses with quantitative math/word-problem clauses in a single prompt), (2) **Roman-Urdu Morpho-Syntactic Gender Adapter** (automatically inflects `leta/leti`, `deta/deti`, `ka/ki` for feminine vs. masculine slot nouns), (3) **Zero-Bloat Folder/Corpus Blueprint Distiller** (`"Distill folder: <path>"`, compressing redundant dialogue/prose by **65%+** while evicting raw bytes), and (4) **Symbolic Personal Goal & Habit DAG Planner VM** (4-phase milestone roadmaps + multi-turn `%` progress tracking). |
 | **Market-Competing Intelligence: Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor** | `mirror_crystal/market_intelligence_organs.py` | Adds 4 market-grade 0-parameter organs: (1) **Self-Evolving Symbolic Law Discovery Engine** (exact rational Newton finite differences + geometric ratios discovering polynomial/exponential laws like $y = x^2 + 3x + 1$ with 0-residual verification), (2) **Multi-Criteria Decision & Expected-Utility Pareto Engine** (Expected Net Value $\text{EV} = p \cdot R - C$, Risk-Adjusted ROI, and downside exposure), (3) **Autonomous Multi-Organ Workflow Pipeline Executor** (`[Outlier Cleaner -> OLS Forecaster/Aggregator -> Financial Tax/Discount VM]`), and (4) **Zero-Parameter AST Codebase Security, Big-O Complexity & Dead-Code Auditor** ($O(1), O(N), O(N^2), O(2^N)$, `eval/exec/shell=True` detection, and unreachable statements). |
+| **Frontier Intelligence: 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Auditor & Fault-Tree Diagnostician** | `mirror_crystal/frontier_intelligence_organs.py` | Adds 4 frontier 0-parameter organs: (1) **Exact Combinatorial 0/1 Knapsack Resource & Budget Optimizer** (globally optimal project portfolio selection under budget constraints, beating greedy heuristics), (2) **White-Box AST Boundary & Edge-Case Unit-Test Synthesizer** (extracts AST comparison boundaries `c-1, c, c+1`, generates verified `assert` suites, and flags `ZeroDivisionError` traps), (3) **Multi-Document Contradiction & Fact-Check Detector** (detects numeric value conflicts like `45 days` vs `30 days` and polarity/negation conflicts across documents), and (4) **Causal Fault-Tree Root-Cause Diagnostician** (multi-symptom causal DAG troubleshooting for DB indexing, memory leaks, and connection pool exhaustion). |
 
 ### Verification
 
@@ -1503,10 +1504,10 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 - `mirror_crystal/tests/test_unit_normalizer_tdd_and_studio.py` — **3 passed**
 - `mirror_crystal/tests/test_four_native_intelligence_leaps.py` — **4 passed**
 - `mirror_crystal/tests/test_semantic_frame_vm_and_ncd.py` — **5 passed**
-- `mirror_crystal/tests/test_unstructured_prose_engine.py` — **12 passed**
-- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **191 passed, 0 failed**
+- `mirror_crystal/tests/test_unstructured_prose_engine.py` — **13 passed**
+- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **192 passed, 0 failed**
 - Internal Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
-- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`, 100 tasks):
+- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`, 110 tasks):
   - Casual English & Roman-Urdu paraphrases: **10 / 10 solved (100.0%)**, **0 wrong**
   - Unseen algebra, linear systems & formal logic: **10 / 10 solved (100.0%)**, **0 wrong**
   - GSM8K-style free-form arithmetic word problems: **10 / 10 solved (100.0%)**, **0 wrong**
@@ -1516,6 +1517,7 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
   - Creative writing (English/Urdu Poetry & 5-Act Stories), empathetic dialogue & live blueprint distillation: **10 / 10 solved (100.0%)**, **0 wrong**
   - Multi-intent discourse fusion, Roman-Urdu gender morphology, zero-bloat corpus distiller & personal goal DAG planner: **10 / 10 solved (100.0%)**, **0 wrong**
   - Symbolic law discovery, multi-criteria decision matrix, multi-organ workflow pipeline & AST security/complexity auditor: **10 / 10 solved (100.0%)**, **0 wrong**
-  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 100`, `90 / 90` solvable tasks solved)**
+  - 0/1 Knapsack budget optimizer, white-box AST unit-test synthesizer, multi-document contradiction auditor & fault-tree root-cause diagnostician: **10 / 10 solved (100.0%)**, **0 wrong**
+  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 110`, `100 / 100` solvable tasks solved)**
 
 **Boundary:** This track solves deterministic quantitative, symbolic, compositional, extractive/submodular document summarization, and proposition-grounded comparative discourse tasks with zero hallucination. For ungrounded open-domain topics not yet in the vault, feed text via `"Learn text about <topic>: <paragraphs>"` first; otherwise Mirror abstains honestly rather than fabricating facts.

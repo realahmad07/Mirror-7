@@ -387,6 +387,55 @@ def test_four_market_intelligence_organs_law_decision_pipeline_and_auditor():
     assert "Unreachable / Dead Statements: 1" in aud.explanation
 
 
+def test_four_frontier_organs_knapsack_testsynth_contradiction_and_faulttree():
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Exact 0/1 Knapsack Budget & Resource Allocation Optimizer (B + C beats greedy A!)
+    knap = router.route(
+        "Optimize budget $50000 across Project A (cost $35000, profit $40000), "
+        "Project B (cost $25000, profit $28000), Project C (cost $25000, profit $28000)"
+    )
+    assert knap.matched is True
+    assert knap.output == 56000.0
+    assert "Project B, Project C" in knap.explanation
+
+    # 2. White-Box AST Boundary & Edge-Case Unit-Test Synthesizer (catches ZeroDivisionError!)
+    ts = router.route(
+        "Generate edge-case unit tests for:\n"
+        "def safe_divide(a, b):\n"
+        "    return a / b\n"
+    )
+    assert ts.matched is True
+    assert "ZeroDivisionError" in ts.explanation
+    assert "assert safe_divide(10, 2) == 5.0" in ts.explanation
+
+    # 3. Multi-Document Contradiction & Fact-Check Detector
+    c1 = router.route(
+        "Check contradiction: Doc A: The Contractor shall deliver the payment module within 45 days. "
+        "vs Doc B: The Contractor shall deliver the payment module within 30 days."
+    )
+    assert c1.matched is True
+    assert c1.output is True
+    assert "CONTRADICTION DETECTED (Numeric Value Conflict)" in c1.explanation
+
+    c2 = router.route(
+        "Check contradiction: Doc A: Remote work is permitted for all engineers. "
+        "vs Doc B: Remote work is not permitted for all engineers."
+    )
+    assert c2.matched is True
+    assert c2.output is True
+    assert "Polarity / Negation Conflict" in c2.explanation
+
+    # 4. Causal Fault-Tree Root-Cause Diagnostician
+    ft = router.route(
+        "Diagnose root cause: Server CPU is at 95%, RAM is normal, and DB queries are taking 500ms latency."
+    )
+    assert ft.matched is True
+    assert "Missing Database Index" in ft.explanation
+    assert "EXPLAIN ANALYZE" in ft.explanation
+
+
+
 
 
 

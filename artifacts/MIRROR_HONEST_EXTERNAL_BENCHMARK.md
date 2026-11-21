@@ -3,23 +3,24 @@
 This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen algebra & formal logic, GSM8K-style free-form word problems, and hard OOD traps** without cherry-picking. Every task is scored strictly into three buckets: **Solved Correctly**, **Honest Abstention (Safe)**, or **Wrong / Hallucinated (Unsafe)**.
 
 - **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)
-- **Total Tasks:** `100`
-- **Solved Correctly (All 9 Solvable Categories):** `90 / 90` solvable tasks
+- **Total Tasks:** `110`
+- **Solved Correctly (All 10 Solvable Categories):** `100 / 100` solvable tasks
 - **OOD Trap Safe Abstention:** `10 / 10`
-- **Overall Wrong / Hallucinated Rate:** **0.0%** (`0 / 100`)
+- **Overall Wrong / Hallucinated Rate:** **0.0%** (`0 / 110`)
 
 | Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |
 |---|---:|---:|---:|---:|
-| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 2.452 |
-| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 2.319 |
-| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 3.308 |
-| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 3.64 |
-| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 1.411 |
-| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 0.746 |
-| 7. Creative Writing (Poetry/Stories), Bilingual Chat & Blueprint Feeding (10) | 10/10 | 0/10 | 0/10 | 1.911 |
-| 8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10) | 10/10 | 0/10 | 0/10 | 0.958 |
-| 9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10) | 10/10 | 0/10 | 0/10 | 0.243 |
-| 10. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 3.542 |
+| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 6.532 |
+| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 4.754 |
+| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 6.094 |
+| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 6.606 |
+| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 2.894 |
+| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 1.936 |
+| 7. Creative Writing (Poetry/Stories), Bilingual Chat & Blueprint Feeding (10) | 10/10 | 0/10 | 0/10 | 6.446 |
+| 8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10) | 10/10 | 0/10 | 0/10 | 2.377 |
+| 9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10) | 10/10 | 0/10 | 0/10 | 0.71 |
+| 10. 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Audit & Fault-Tree (10) | 10/10 | 0/10 | 0/10 | 0.186 |
+| 11. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 8.226 |
 
 ## Honest Interpretation
 

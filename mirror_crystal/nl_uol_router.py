@@ -20,6 +20,12 @@ from .discourse_fusion_and_planner import (
     ZeroBloatCorpusDistiller,
 )
 from .formal_logic_engine import solve_formal_logic_prompt
+from .frontier_intelligence_organs import (
+    ASTUnitTestSynthesizer,
+    ContradictionAuditEngine,
+    FaultTreeDiagnostician,
+    ResourceAllocationOptimizer,
+)
 from .market_intelligence_organs import (
     ASTCodebaseAuditor,
     DecisionIntelligenceEngine,
@@ -351,6 +357,10 @@ class NaturalLanguageUOLRouter:
         self.decision_engine = DecisionIntelligenceEngine()
         self.pipeline_executor = MultiOrganPipelineExecutor()
         self.code_auditor = ASTCodebaseAuditor()
+        self.resource_optimizer = ResourceAllocationOptimizer()
+        self.test_synthesizer = ASTUnitTestSynthesizer()
+        self.contradiction_auditor = ContradictionAuditEngine()
+        self.fault_diagnostician = FaultTreeDiagnostician()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -678,7 +688,16 @@ class NaturalLanguageUOLRouter:
                     explanation=feed_hit.response,
                 )
 
-        # 0b. Counterexample-Guided Autonomous AST Buggy-Code Repair & AST Security/Complexity Auditor
+        # 0b. Counterexample-Guided Autonomous AST Buggy-Code Repair, AST Security/Complexity Auditor & Unit-Test Synthesizer
+        test_synth_hit = self.test_synthesizer.synthesize_tests(prompt)
+        if test_synth_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(f"test_synth.{test_synth_hit.func_name}",),
+                output=test_synth_hit.output,
+                explanation=test_synth_hit.explanation,
+            )
+
         audit_hit = self.code_auditor.audit_prompt(prompt)
         if audit_hit.matched:
             return NLRouteResult(
@@ -693,6 +712,35 @@ class NaturalLanguageUOLRouter:
                 matched=repair_hit.repaired,
                 rule_ids=(f"code_repair.{repair_hit.func_name}",),
                 explanation=repair_hit.explanation,
+            )
+
+        # 0b-1. Exact 0/1 Knapsack Resource & Budget Allocation Optimizer
+        alloc_hit = self.resource_optimizer.optimize_prompt(prompt)
+        if alloc_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=("optimizer.knapsack_resource_allocation",),
+                output=alloc_hit.output,
+                explanation=alloc_hit.explanation,
+            )
+
+        # 0b-1b. Multi-Document Contradiction & Fact-Check Detector
+        contra_hit = self.contradiction_auditor.check_prompt(prompt)
+        if contra_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(f"contradiction.{contra_hit.conflict_kind}",),
+                output=contra_hit.output,
+                explanation=contra_hit.explanation,
+            )
+
+        # 0b-1c. Causal Fault-Tree Root-Cause Diagnostician
+        diag_hit = self.fault_diagnostician.diagnose_prompt(prompt)
+        if diag_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(diag_hit.fault_id,),
+                explanation=diag_hit.explanation,
             )
 
         # 0b-2. Self-Evolving Symbolic Law Discovery (Newton Finite-Difference & Exponential Inducer)
