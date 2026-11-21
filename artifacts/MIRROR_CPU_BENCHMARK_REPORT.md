@@ -4,19 +4,19 @@
 - **Persisted Verified UOL Skills Loaded:** `120` (`artifacts/mirror_uol_skills.dcrystal`)
 - **Overall Score:** **60 / 60 (100.0%)**
 - **Hallucination Rate (Abstention Traps):** **0.0%** (`0/10`)
-- **Median Task Latency:** **3.516 ms** (Mean: `87.841 ms`)
-- **Result Fingerprint (SHA-256):** `26ee54906acd99c5b7c9e23ea3c0641ca219a87f758a9bd32dbc74ef28931b54`
+- **Median Task Latency:** **5.527 ms** (Mean: `83.461 ms`)
+- **Result Fingerprint (SHA-256):** `748e4316545e75bd1ebd4e2bc5f82679705f4f42caefda9de3345c4cac981675`
 
 ## Category Breakdown
 
 | Category | Passed | Accuracy | Median Latency (ms) |
 |---|---:|---:|---:|
-| 1. Forward UOL Formulas | 10 / 10 | **100.0%** | 1.69 |
-| 2. Bidirectional Inverse Equations | 10 / 10 | **100.0%** | 0.412 |
-| 3. Zero-Shot Multi-Hop Graph Planning (2–3 hops) | 10 / 10 | **100.0%** | 3.413 |
-| 4. Multi-Turn Stateful UOL Dialogue | 10 / 10 | **100.0%** | 2.364 |
-| 5. UOL Compositional Synthesis & TDD Code | 10 / 10 | **100.0%** | 414.686 |
-| 6. Hallucination & Missing-Input Abstention Traps | 10 / 10 | **100.0%** | 12.184 |
+| 1. Forward UOL Formulas | 10 / 10 | **100.0%** | 2.756 |
+| 2. Bidirectional Inverse Equations | 10 / 10 | **100.0%** | 1.019 |
+| 3. Zero-Shot Multi-Hop Graph Planning (2–3 hops) | 10 / 10 | **100.0%** | 7.124 |
+| 4. Multi-Turn Stateful UOL Dialogue | 10 / 10 | **100.0%** | 3.676 |
+| 5. UOL Compositional Synthesis & TDD Code | 10 / 10 | **100.0%** | 290.144 |
+| 6. Hallucination & Missing-Input Abstention Traps | 10 / 10 | **100.0%** | 26.752 |
 
 ## Scope & Boundary
 

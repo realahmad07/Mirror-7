@@ -584,6 +584,38 @@ def test_socratic_coach_document_composer_remaining_plugins_and_service_status()
     assert "chembl-database" in st["antigravity_science_plugins_distilled"]
 
 
+def test_open_ended_concept_lattice_sublinear_trigram_and_cross_synthesis():
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Messy Roman-Urdu with typo ('blokchain', 'kese krta h', 'nuqsan kia h') -> resolved via O(1) trigrams + fuzzy intents!
+    r1 = router.route("yaar blokchain asal mein kaam kese krta h or iska nuqsan kia h?")
+    assert r1.matched is True
+    assert "Merkle trees" in r1.explanation
+    assert "Throughput and latency overhead" in r1.explanation
+
+    # 2. Cross-Concept Compositional Synthesis (Blockchain x Cryptography)
+    r2 = router.route("How do blockchain and cryptography work together?")
+    assert r2.matched is True
+    assert "Cross-Concept Lattice Synthesis: Blockchain & Distributed Ledger x Modern Cryptography" in r2.explanation
+
+    # 3. Live Unsupervised Concept Compilation + Immediate Open-Ended Query
+    c_comp = router.route(
+        "Compile concept WebAssembly: "
+        "WebAssembly (Wasm) is a portable binary instruction format for stack-based virtual machines. "
+        "Wasm works by executing pre-compiled near-native bytecode inside a memory-safe sandboxed linear memory. "
+        "It enables high-performance browser and edge-cloud applications across C++, Rust, and Go. "
+        "However, Wasm has limited direct DOM access and requires host-binding marshaling overhead."
+    )
+    assert c_comp.matched is True
+    assert "Compiled 5-Facet ConceptNode 'webassembly'" in c_comp.explanation
+
+    r3 = router.route("WebAssembly kaam kaise karta hai aur iska fayda aur nuqsan kya hai?")
+    assert r3.matched is True
+    assert "sandboxed linear memory" in r3.explanation
+    assert "DOM access" in r3.explanation
+
+
+
 
 
 

@@ -33,6 +33,7 @@ from .market_intelligence_organs import (
     SymbolicLawDiscoveryEngine,
 )
 from .native_realizer import NativeHybridRealizer
+from .open_ended_concept_lattice import OpenEndedConceptLatticeEngine
 from .operational_language import (
     Call,
     Program,
@@ -363,6 +364,7 @@ class NaturalLanguageUOLRouter:
         self.contradiction_auditor = ContradictionAuditEngine()
         self.fault_diagnostician = FaultTreeDiagnostician()
         self.scientific_engine = ScientificPluginIntelligenceEngine()
+        self.concept_lattice = OpenEndedConceptLatticeEngine()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -754,6 +756,15 @@ class NaturalLanguageUOLRouter:
                 output=sci_hit.output,
                 unit=sci_hit.unit,
                 explanation=sci_hit.explanation,
+            )
+
+        # 0b-1e. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesizer
+        lattice_hit = self.concept_lattice.route_open_ended(prompt)
+        if lattice_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=tuple(f"concept_lattice.{c}" for c in lattice_hit.concepts_used),
+                explanation=lattice_hit.response,
             )
 
         # 0b-2. Self-Evolving Symbolic Law Discovery (Newton Finite-Difference & Exponential Inducer)

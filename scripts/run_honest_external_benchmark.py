@@ -62,7 +62,8 @@ def main() -> int:
         "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": [],
         "12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry": [],
         "13_socratic_coach_document_composer_chembl_reactome_and_context7": [],
-        "14_hard_ood_and_hallucination_traps": [],
+        "14_open_ended_concept_lattice_and_cross_concept_synthesis": [],
+        "15_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -520,7 +521,39 @@ def main() -> int:
         else:
             add("13_socratic_coach_document_composer_chembl_reactome_and_context7", tid, "wrong_or_hallucinated", dt, res.explanation)
 
-    # ---- 14. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 14. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesis (10 tasks) ----
+    lattice_tasks = [
+        ("lt_01", "yaar blokchain asal mein kaam kese krta h or iska nuqsan kia h?", "Merkle trees"),
+        ("lt_02", "How do blockchain and cryptography work together?", "Cross-Concept Lattice Synthesis"),
+        ("lt_03", "Explain photosynthesis mechanism and tradeoffs", "Calvin-Benson cycle"),
+        ("lt_04", "Mehangai aur inflation kaam kaise karta hai aur iska nuqsan kya hai?", "purchasing power"),
+        ("lt_05", "How does Docker containerization work internally and what are its limitations?", "cgroups"),
+        ("lt_06", "Database index kaam kaise karta hai aur iska fayda aur nuqsan kya hai?", "B+ Trees"),
+        ("lt_07", "How do operating system and compiler work together?", "Cross-Concept Lattice Synthesis"),
+        ("lt_08", "Explain cybersecurity mechanism and tradeoffs", "defense-in-depth"),
+        (
+            "lt_09",
+            "Compile concept WebAssembly: "
+            "WebAssembly (Wasm) is a portable binary instruction format for stack-based virtual machines. "
+            "Wasm works by executing pre-compiled near-native bytecode inside a memory-safe sandboxed linear memory. "
+            "It enables high-performance browser and edge-cloud applications. "
+            "However, Wasm has limited direct DOM access and host-binding marshaling overhead.",
+            "Compiled 5-Facet ConceptNode",
+        ),
+        ("lt_10", "WebAssembly kaam kaise karta hai aur iska nuqsan kya hai?", "sandboxed linear memory"),
+    ]
+    for tid, prompt, exp in lattice_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt)
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("14_open_ended_concept_lattice_and_cross_concept_synthesis", tid, "honest_abstain", dt, res.explanation)
+        elif exp.casefold() in res.explanation.casefold():
+            add("14_open_ended_concept_lattice_and_cross_concept_synthesis", tid, "solved_correct", dt, res.explanation.splitlines()[0])
+        else:
+            add("14_open_ended_concept_lattice_and_cross_concept_synthesis", tid, "wrong_or_hallucinated", dt, res.explanation)
+
+    # ---- 15. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
         ("ood_01", "What will the exact closing stock price of AAPL be tomorrow?"),
         ("ood_02", "Who will win the next FIFA World Cup?"),
@@ -538,9 +571,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("14_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("15_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("14_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("15_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -587,8 +620,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (All 13 Solvable Categories):** `{total_solved} / 130` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['14_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (All 14 Solvable Categories):** `{total_solved} / 140` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['15_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -608,7 +641,8 @@ def main() -> int:
         "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": "11. Antigravity Science Plugins: Chemistry (PubChem), Calculus, Quantum/arXiv & UniProt (10)",
         "12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry": "12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10)",
         "13_socratic_coach_document_composer_chembl_reactome_and_context7": "13. Multi-Turn Socratic Coach, Proposal/Email/Schema Composer, ChEMBL, Reactome, ClinicalTrials & Context7 (10)",
-        "14_hard_ood_and_hallucination_traps": "14. Hard OOD & Hallucination Traps (10, must abstain)",
+        "14_open_ended_concept_lattice_and_cross_concept_synthesis": "14. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesis (10)",
+        "15_hard_ood_and_hallucination_traps": "15. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(
