@@ -164,8 +164,12 @@ class BackendService:
             candidates.extend([
                 repo_root / "restorevalutecrytaled" / "mirror_crystal_all_datasets.dcrystal",
                 repo_root / "artifacts" / "mirror_crystal_all_datasets.dcrystal",
+                repo_root / "artifacts" / "mirror_uol_skills.dcrystal",
             ])
-            vault_path = next((path for path in candidates if path.is_file()), None)
+            vault_path = next(
+                (path for path in candidates if path.is_file() and path.stat().st_size > 1024),
+                None,
+            )
             if vault_path is None:
                 self.crystal_vault = None
                 return
@@ -722,6 +726,10 @@ class BackendService:
             "active_domains": domains,
             "domain_breakdown": domain_counts,
             "capability_organs": [
+                "UOLGraphPlanner (Dynamic Multi-Hop Unit-Graph Reasoning)",
+                "NativeHybridRealizer (Zero 3rd-Party LLM Truth-Locked Realizer)",
+                "UnitNormalizer (Automatic Metric/Imperial -> SI Conversion)",
+                "MultiTurnUOLRouter (Stateful Bidirectional UOL Q&A)",
                 "SymbolicCASOrgan (Exact CPU Math)",
                 "FluentByteRealizer (0-Weight Byte Fluent Markov)",
                 "ZeroTrustSandboxJudge (AST & Execution Verifier)",
@@ -729,6 +737,7 @@ class BackendService:
                 "AutonomousDatasetStreamer (arXiv / Repo Worker)",
                 "CloudCrystalNode (Edge Capsule Teleportation)",
             ],
+            "uses_third_party_llm": False,
             "telemetry": {
                 "queries_total": total_q,
                 "queries_answered": answered_q,

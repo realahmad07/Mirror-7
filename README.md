@@ -1476,6 +1476,9 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 | **Native Hybrid Realizer (Zero 3rd-Party LLM)** | `mirror_crystal/native_realizer.py` | 100% native Python realization layer (`uses_third_party_model = False`, no Qwen/Llama/external APIs) supporting `concise`, `step_by_step`, and `technical` styles with strict truth-lock verification and honest abstention. |
 | **Staged Blueprint & Reasoning Admission** | `scripts/admit_staged_rules_to_vault.py`, `artifacts/mirror_uol_skills.dcrystal`, `artifacts/staged_rules_admission_report.json` | Deduplicated admission of **1,343 canonical blueprints** (997 unambiguous roadmap blueprints + 26 source-supported reasoning methods + 320 unique family representatives from the 10,240 reasoning pack) into `artifacts/mirror_uol_skills.dcrystal` (`4.56 MB`, SQLite `integrity_check = ok`, all admitted blueprints strictly `UNVERIFIED`, all 120 verified UOL skills preserved with 0 conflicts). |
 | **Frozen 60-Task CPU Benchmark** | `scripts/run_frozen_benchmark.py`, `artifacts/MIRROR_CPU_BENCHMARK_REPORT.md`, `artifacts/mirror_cpu_benchmark_results.json` | Reproducible 6-category CPU-only benchmark (zero GPU, zero 3rd-party LLM): **60 / 60 (100.0%)**, **0.0% hallucination rate** across 10 abstention traps, **1.287 ms** median latency. |
+| **Automatic SI Unit Normalization** | `mirror_crystal/unit_normalizer.py`, `mirror_crystal/nl_uol_router.py` | Automatically normalizes mixed metric/imperial units (`g -> kg`, `km/h -> m/s`, `cm/mm -> m`, `cm2 -> m2`, `kN -> N`, `kPa/MPa -> Pa`, `mA -> A`, `kohm -> Ohm`) into SI base units before UOL / multi-hop graph execution. |
+| **Expanded Native TDD Code Builder** | `mirror7_backend/native_code_generation.py` | 19 sandbox-verified native Python builders (`print`, `add`, `subtract`, `multiply`, `square`, `reverse_string`, `is_prime`, `factorial`, `fibonacci`, `gcd`, `lcm`, `binary_search`, `two_sum`, `is_palindrome`, `is_anagram`, `prime_factors`, `fizzbuzz`, `matrix_transpose`, `median`) — code is emitted only after 100% of non-vacuous sandbox assertions pass. |
+| **Live Studio UI & Auto-Loaded UOL Vault** | `mirror7_backend/studio.html`, `mirror7_backend/service.py` | `BackendService` auto-loads `artifacts/mirror_uol_skills.dcrystal`, exposes `uses_third_party_llm: false` + new native organs in telemetry, and renders verified multi-step UOL derivations live in Mirror Studio. |
 
 ### Verification
 
@@ -1483,6 +1486,7 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 - `mirror_crystal/tests/test_uol_intelligence_upgrades.py` — **6 passed**
 - `mirror_crystal/tests/test_graph_planner_and_native_realizer.py` — **7 passed**
 - `mirror_crystal/tests/test_multiturn_uol_and_admission.py` — **3 passed**
+- `mirror_crystal/tests/test_unit_normalizer_tdd_and_studio.py` — **3 passed**
 - Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
 
 **Boundary:** This track solves deterministic quantitative, symbolic, and compositional operational tasks with zero hallucination. It does not replace a full conversational language model for open-ended prose.

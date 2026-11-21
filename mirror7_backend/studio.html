@@ -2078,6 +2078,17 @@ angle$
                         <span>mode: ${data.mode}</span>
                     </div>
                     <div class="font-sans text-sm text-white leading-relaxed md-rendered">${renderMarkdown(data.answer)}</div>
+                    ${data.uol_route && data.uol_route.matched ? `
+                        <div class="mt-2 p-2.5 bg-emerald-950/30 border border-emerald-500/40 rounded text-[11px] font-mono text-emerald-300 space-y-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-semibold text-emerald-200">VERIFIED UOL ENGINE • ZERO 3RD-PARTY LLM</span>
+                                <span class="text-emerald-400">${escapeHtml((data.uol_route.rule_ids || []).join(' → '))}</span>
+                            </div>
+                            ${data.uol_route.steps && data.uol_route.steps.length ? `
+                                <div class="text-zinc-300 whitespace-pre-wrap pt-1 border-t border-emerald-500/20">${escapeHtml(data.uol_route.steps.map(s => `${s.step_index}. ${s.rule_name} (${s.rule_id}) → ${s.output_quantity} = ${s.output_value} ${s.output_unit || ''}`.trim()).join('\n'))}</div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
                     ${teachCardHtml}
                     ${data.reasoning_trace && data.reasoning_trace.length ? `
                         <div class="text-[11px] text-cyan-400 cursor-pointer hover:underline flex items-center gap-1 mt-1 select-none" onclick="toggleTrace('${traceId}')">

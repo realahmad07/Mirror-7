@@ -23,6 +23,7 @@ from .operational_language import (
 from .uol_graph_planner import UOLGraphPlanner
 from .uol_inverse_deriver import derive_all_inverse_rules
 from .uol_rule_library import build_default_uol
+from .unit_normalizer import normalize_to_si, unit_pattern_for_quantity
 
 _NUM = r"(-?\d+(?:\.\d+)?)"
 
@@ -43,19 +44,31 @@ class NLRouteResult:
             object.__setattr__(self, "inputs", {})
 
 
-def _extract_param(text: str, aliases: tuple[str, ...]) -> float | None:
-    """Extract a numeric value associated with any alias, e.g. 'mass = 10', 'mass of 10 kg', 'm=5'."""
+def _extract_param(text: str, aliases: tuple[str, ...], *, quantity: str | None = None) -> float | None:
+    """Extract a numeric value associated with any alias, converting attached units to SI."""
+    unit_pat = unit_pattern_for_quantity(quantity)
+    unit_group = rf"(?:\s*({unit_pat})(?![a-zA-Z0-9_]))?" if unit_pat else r"()"
+
     for alias in aliases:
-        # Pattern 1: "alias [=|:|is|of] NUMBER"
-        p1 = rf"\b{re.escape(alias)}\s*(?:=|:|\bis\b|\bof\b)?\s*{_NUM}\b"
+        # Pattern 1: "alias [=|:|is|of] NUMBER [UNIT]"
+        p1 = rf"\b{re.escape(alias)}\s*(?:=|:|\bis\b|\bof\b)?\s*{_NUM}{unit_group}"
         m = re.search(p1, text, flags=re.IGNORECASE)
         if m:
-            return float(m.group(1))
-        # Pattern 2: "NUMBER alias" (e.g. "10 kg mass" or "5 meters radius")
-        p2 = rf"{_NUM}\s*(?:kg|g|m/s|m|s|n|pa|j|w|v|a|ohm|ohms|mol|l|%|k|c|f)?\s+{re.escape(alias)}\b"
-        m2 = re.search(p2, text, flags=re.IGNORECASE)
-        if m2:
-            return float(m2.group(1))
+            raw_val = float(m.group(1))
+            unit_tok = m.group(2) if m.lastindex and m.lastindex >= 2 else None
+            val, _ = normalize_to_si(raw_val, unit_tok, quantity)
+            return val
+        # Pattern 2: "NUMBER [UNIT] alias" (e.g. "2000 g mass", "5 kN force", "200 cm2 area")
+        if unit_pat:
+            p2 = rf"{_NUM}\s*({unit_pat})\s+{re.escape(alias)}\b"
+            m2 = re.search(p2, text, flags=re.IGNORECASE)
+            if m2:
+                val, _ = normalize_to_si(float(m2.group(1)), m2.group(2), quantity)
+                return val
+        p3 = rf"{_NUM}\s*(?:kg|g|m/s|m|s|n|pa|j|w|v|a|ohm|ohms|mol|l|%|k|c|f)?\s+{re.escape(alias)}\b"
+        m3 = re.search(p3, text, flags=re.IGNORECASE)
+        if m3:
+            return float(m3.group(1))
     return None
 
 
@@ -313,7 +326,7 @@ class NaturalLanguageUOLRouter:
         for qty, aliases in _QUANTITY_ALIASES:
             if qty == exclude:
                 continue
-            val = _extract_param(lower, aliases)
+            val = _extract_param(lower, aliases, quantity=qty)
             if val is not None:
                 found[qty] = val
         return found
@@ -452,9 +465,9 @@ class NaturalLanguageUOLRouter:
     def _route_composed_safety_factor(self, lower: str) -> NLRouteResult | None:
         if not any(k in lower for k in ("safety factor", "factor of safety")):
             return None
-        y = _extract_param(lower, ("yield strength", "yield", "allowable"))
-        f = _extract_param(lower, ("force", "load"))
-        a = _extract_param(lower, ("area",))
+        y = _extract_param(lower, ("yield strength", "yield", "allowable"), quantity="yield_strength")
+        f = _extract_param(lower, ("force", "load"), quantity="force")
+        a = _extract_param(lower, ("area",), quantity="area")
         if y is not None and f is not None and a is not None:
             if self.uol.rules.get("eng.axial_stress") and self.uol.rules.get("eng.safety_factor"):
                 stress = float(self._run_rule("eng.axial_stress", {"force": f, "area": a}))
@@ -491,7 +504,7 @@ class NaturalLanguageUOLRouter:
 
         # 3. Forward and inverse rule bindings
         for binding in _BINDINGS:
-            if not any(kw in lower for kw in binding.keywords):
+            if not any(re.search(r"\b" + re.escape(kw) + r"\b", lower) for kw in binding.keywords):
                 continue
 
             # Check if the user is asking for an INVERSE solve (e.g. "find velocity if kinetic energy is 180 and mass is 10")
@@ -500,7 +513,8 @@ class NaturalLanguageUOLRouter:
                     inv_rule_id = f"{binding.rule_id}__solve_{target_var}"
                     if self.uol.rules.get(inv_rule_id) is None:
                         continue
-                    res_val = _extract_param(lower, binding.keywords + ("result",))
+                    res_qty = binding.rule_id.split(".")[-1]
+                    res_val = _extract_param(lower, binding.keywords + ("result",), quantity=res_qty)
                     inv_inputs: dict[str, float] = {}
                     missing: list[str] = []
                     if res_val is None:
@@ -510,7 +524,7 @@ class NaturalLanguageUOLRouter:
                     for pname, aliases in binding.param_aliases.items():
                         if pname == target_var:
                             continue
-                        val = _extract_param(lower, aliases)
+                        val = _extract_param(lower, aliases, quantity=pname)
                         if val is None:
                             missing.append(pname)
                         else:
@@ -543,7 +557,7 @@ class NaturalLanguageUOLRouter:
             fwd_inputs: dict[str, float] = {}
             missing_fwd: list[str] = []
             for pname, aliases in binding.param_aliases.items():
-                val = _extract_param(lower, aliases)
+                val = _extract_param(lower, aliases, quantity=pname)
                 if val is None:
                     missing_fwd.append(pname)
                 else:
