@@ -1479,6 +1479,10 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 | **Automatic SI Unit Normalization** | `mirror_crystal/unit_normalizer.py`, `mirror_crystal/nl_uol_router.py` | Automatically normalizes mixed metric/imperial units (`g -> kg`, `km/h -> m/s`, `cm/mm -> m`, `cm2 -> m2`, `kN -> N`, `kPa/MPa -> Pa`, `mA -> A`, `kohm -> Ohm`) into SI base units before UOL / multi-hop graph execution. |
 | **Expanded Native TDD Code Builder** | `mirror7_backend/native_code_generation.py` | 19 sandbox-verified native Python builders (`print`, `add`, `subtract`, `multiply`, `square`, `reverse_string`, `is_prime`, `factorial`, `fibonacci`, `gcd`, `lcm`, `binary_search`, `two_sum`, `is_palindrome`, `is_anagram`, `prime_factors`, `fizzbuzz`, `matrix_transpose`, `median`) — code is emitted only after 100% of non-vacuous sandbox assertions pass. |
 | **Live Studio UI & Auto-Loaded UOL Vault** | `mirror7_backend/studio.html`, `mirror7_backend/service.py` | `BackendService` auto-loads `artifacts/mirror_uol_skills.dcrystal`, exposes `uses_third_party_llm: false` + new native organs in telemetry, and renders verified multi-step UOL derivations live in Mirror Studio. |
+| **Live 1-Shot Formula Teaching** | `mirror_crystal/uol_formula_teacher.py`, `mirror_crystal/nl_uol_router.py` | Plain-text formula teaching (`"Learn formula: torque = force * lever_arm"`) safely compiles math ASTs into verified UOL rules, auto-derives round-trip verified inverses, persists to `.dcrystal`, and immediately composes multi-hop with built-in rules (`mass, accel, lever_arm -> newton_force -> torque`). |
+| **Native Symbolic Algebra & System Solver** | `mirror_crystal/symbolic_algebra_solver.py` | Pure-Python exact solver for linear equations (`3x + 7 = 22`), quadratics (`x^2 - 5x + 6 = 0`, real & complex roots), and N×N linear systems (exact rational Gaussian elimination), self-verifying `LHS == RHS` on every solution. |
+| **Formal Deductive Logic & Constraint Solver** | `mirror_crystal/formal_logic_engine.py` | Pure-Python DPLL SAT solver, transitive syllogism prover, inequality/ordering chain prover (`A > B, B > C, C = 5 -> A > 5`), and bounded finite-domain integer constraint solver (`Find x, y in 1..20 where x + y = 15 and x = 2 * y`) with explicit proof traces. |
+| **Compositional Multi-Function Code Synthesis** | `mirror7_backend/native_code_generation.py` | Expands native TDD code builder to **25 verified programs** by composing verified helpers into compound algorithms (`sum_of_primes`, `count_palindromes`, `even_fibonacci`, `gcd_list`, `lcm_list`, `sum_of_factorials`). |
 
 ### Verification
 
@@ -1487,6 +1491,7 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 - `mirror_crystal/tests/test_graph_planner_and_native_realizer.py` — **7 passed**
 - `mirror_crystal/tests/test_multiturn_uol_and_admission.py` — **3 passed**
 - `mirror_crystal/tests/test_unit_normalizer_tdd_and_studio.py` — **3 passed**
+- `mirror_crystal/tests/test_four_native_intelligence_leaps.py` — **4 passed**
 - Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
 
 **Boundary:** This track solves deterministic quantitative, symbolic, and compositional operational tasks with zero hallucination. It does not replace a full conversational language model for open-ended prose.

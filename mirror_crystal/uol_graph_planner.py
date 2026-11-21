@@ -210,6 +210,30 @@ class UOLGraphPlanner:
     def edge_count(self) -> int:
         return len(self.edges)
 
+    def register_rule(
+        self,
+        rule: OperationalRule,
+        *,
+        input_quantities: Mapping[str, str],
+        output_quantity: str,
+        output_unit: str = "",
+    ) -> None:
+        """Dynamically add a newly taught or synthesized verified UOL rule into the live graph."""
+        existing = [r for r in self.uol.rules.values() if r.rule_id != rule.rule_id]
+        existing.append(rule)
+        self.uol = UOL(existing)
+        new_edge = QuantityEdge(
+            rule_id=rule.rule_id,
+            rule_name=rule.name,
+            input_quantities={k: v.strip().casefold() for k, v in input_quantities.items()},
+            output_quantity=output_quantity.strip().casefold(),
+            output_unit=output_unit or QUANTITY_UNITS.get(output_quantity.strip().casefold(), ""),
+        )
+        updated = [e for e in self.edges if e.rule_id != rule.rule_id]
+        updated.append(new_edge)
+        updated.sort(key=lambda e: (len(e.input_quantities), e.rule_id))
+        self.edges = tuple(updated)
+
     def _exec_rule(self, rule_id: str, port_inputs: Mapping[str, float]) -> float:
         rule = self.uol.rules.get(rule_id)
         if rule is None:

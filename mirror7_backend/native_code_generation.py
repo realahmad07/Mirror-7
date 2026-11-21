@@ -128,6 +128,134 @@ class NativeCodeGenerationProvider:
             )
             return self._validated_result(code, tests, "square a number", "square")
 
+        # ---------------- Compositional Multi-Function Code Builders ----------------
+        # Composes Mirror's verified building blocks into compound algorithms.
+
+        # 1. Sum of primes up to n (composes is_prime + sum)
+        if re.search(r"\bsum\b", lower) and re.search(r"\bprimes?\b", lower):
+            code = (
+                "def is_prime(n):\n"
+                "    if n < 2:\n"
+                "        return False\n"
+                "    for i in range(2, int(n ** 0.5) + 1):\n"
+                "        if n % i == 0:\n"
+                "            return False\n"
+                "    return True\n\n"
+                "def sum_of_primes(limit):\n"
+                "    return sum(k for k in range(2, limit + 1) if is_prime(k))\n"
+            )
+            tests = (
+                "assert sum_of_primes(1) == 0\n"
+                "assert sum_of_primes(10) == 17\n"
+                "assert sum_of_primes(20) == 77\n"
+            )
+            return self._validated_result(code, tests, "compose is_prime into sum_of_primes", "sum_of_primes")
+
+        # 2. Count palindromes in a list (composes is_palindrome + count)
+        if re.search(r"\bcount\b", lower) and re.search(r"\bpalindromes?\b", lower):
+            code = (
+                "def is_palindrome(text):\n"
+                "    cleaned = ''.join(ch.lower() for ch in text if ch.isalnum())\n"
+                "    return cleaned == cleaned[::-1]\n\n"
+                "def count_palindromes(words):\n"
+                "    return sum(1 for w in words if is_palindrome(w))\n"
+            )
+            tests = (
+                "assert count_palindromes(['level', 'mirror', 'radar', '']) == 3\n"
+                "assert count_palindromes(['abc', 'def']) == 0\n"
+                "assert count_palindromes([]) == 0\n"
+            )
+            return self._validated_result(code, tests, "compose is_palindrome into count_palindromes", "count_palindromes")
+
+        # 3. Even Fibonacci numbers up to limit (composes fibonacci generator + even filter)
+        if re.search(r"\beven\b", lower) and re.search(r"\bfibonacci\b|\bfib\b", lower):
+            code = (
+                "def even_fibonacci(limit):\n"
+                "    out = []\n"
+                "    a, b = 0, 1\n"
+                "    while a <= limit:\n"
+                "        if a % 2 == 0:\n"
+                "            out.append(a)\n"
+                "        a, b = b, a + b\n"
+                "    return out\n"
+            )
+            tests = (
+                "assert even_fibonacci(10) == [0, 2, 8]\n"
+                "assert even_fibonacci(40) == [0, 2, 8, 34]\n"
+                "assert even_fibonacci(0) == [0]\n"
+            )
+            return self._validated_result(code, tests, "filter even fibonacci numbers up to limit", "even_fibonacci")
+
+        # 4. GCD of a list of numbers (composes gcd + fold)
+        if re.search(r"\bgcd\b", lower) and re.search(r"\blist\b|\barray\b|\bnumbers\b", lower) and not re.search(r"\btwo\b", lower):
+            code = (
+                "def gcd(a, b):\n"
+                "    a, b = abs(a), abs(b)\n"
+                "    while b:\n"
+                "        a, b = b, a % b\n"
+                "    return a\n\n"
+                "def gcd_list(nums):\n"
+                "    if not nums:\n"
+                "        raise ValueError('nums must not be empty')\n"
+                "    acc = nums[0]\n"
+                "    for x in nums[1:]:\n"
+                "        acc = gcd(acc, x)\n"
+                "    return acc\n"
+            )
+            tests = (
+                "assert gcd_list([12, 18, 24]) == 6\n"
+                "assert gcd_list([7, 13, 19]) == 1\n"
+                "assert gcd_list([42]) == 42\n"
+            )
+            return self._validated_result(code, tests, "compose gcd over a list", "gcd_list")
+
+        # 5. LCM of a list of numbers (composes lcm + fold)
+        if re.search(r"\blcm\b", lower) and re.search(r"\blist\b|\barray\b|\bnumbers\b", lower) and not re.search(r"\btwo\b", lower):
+            code = (
+                "def gcd(a, b):\n"
+                "    a, b = abs(a), abs(b)\n"
+                "    while b:\n"
+                "        a, b = b, a % b\n"
+                "    return a\n\n"
+                "def lcm(a, b):\n"
+                "    if a == 0 or b == 0:\n"
+                "        return 0\n"
+                "    return abs(a * b) // gcd(a, b)\n\n"
+                "def lcm_list(nums):\n"
+                "    if not nums:\n"
+                "        raise ValueError('nums must not be empty')\n"
+                "    acc = nums[0]\n"
+                "    for x in nums[1:]:\n"
+                "        acc = lcm(acc, x)\n"
+                "    return acc\n"
+            )
+            tests = (
+                "assert lcm_list([4, 6, 8]) == 24\n"
+                "assert lcm_list([3, 5, 7]) == 105\n"
+                "assert lcm_list([9]) == 9\n"
+            )
+            return self._validated_result(code, tests, "compose lcm over a list", "lcm_list")
+
+        # 6. Sum of factorials 1! + 2! + ... + n! (composes factorial + sum)
+        if re.search(r"\bsum\b", lower) and re.search(r"\bfactorials?\b", lower):
+            code = (
+                "def factorial(n):\n"
+                "    res = 1\n"
+                "    for i in range(2, n + 1):\n"
+                "        res *= i\n"
+                "    return res\n\n"
+                "def sum_of_factorials(n):\n"
+                "    if n < 1:\n"
+                "        return 0\n"
+                "    return sum(factorial(i) for i in range(1, n + 1))\n"
+            )
+            tests = (
+                "assert sum_of_factorials(0) == 0\n"
+                "assert sum_of_factorials(3) == 9\n"
+                "assert sum_of_factorials(5) == 153\n"
+            )
+            return self._validated_result(code, tests, "compose factorial into sum_of_factorials", "sum_of_factorials")
+
         # Reverse string / text
         if re.search(r"\breverse\b", lower) and re.search(r"\b(?:string|str|text|word|characters)\b", lower):
             code = "def reverse_string(s):\n    return s[::-1]\n"

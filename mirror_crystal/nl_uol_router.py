@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import re
 from typing import Any, Mapping
 
+from .formal_logic_engine import solve_formal_logic_prompt
 from .native_realizer import NativeHybridRealizer
 from .operational_language import (
     Call,
@@ -20,6 +21,8 @@ from .operational_language import (
     Var,
     VariableSpec,
 )
+from .symbolic_algebra_solver import solve_algebra_prompt
+from .uol_formula_teacher import compile_formula_to_uol, parse_teach_formula_prompt
 from .uol_graph_planner import UOLGraphPlanner
 from .uol_inverse_deriver import derive_all_inverse_rules
 from .uol_rule_library import build_default_uol
@@ -314,6 +317,58 @@ class NaturalLanguageUOLRouter:
         self.graph_planner = UOLGraphPlanner(self.uol)
         self.realizer = NativeHybridRealizer(default_style="step_by_step")
         self._session_quantities: dict[str, dict[str, float]] = {}
+        self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
+
+    def _all_quantity_aliases(self) -> tuple[tuple[str, tuple[str, ...]], ...]:
+        return tuple(self._dynamic_quantity_aliases) + _QUANTITY_ALIASES
+
+    def _register_quantity_alias(self, qty: str) -> None:
+        clean = qty.strip().casefold()
+        existing = {q for q, _ in self._all_quantity_aliases()}
+        if clean not in existing:
+            aliases = (clean, clean.replace("_", " ")) if "_" in clean else (clean,)
+            self._dynamic_quantity_aliases.append((clean, aliases))
+
+    def teach_formula(
+        self,
+        target_name: str,
+        expr_str: str,
+        *,
+        domain: str = "taught",
+        vault_path: str | None = None,
+    ) -> NLRouteResult:
+        """Compile a plain-text formula into a verified UOL rule + inverses and wire live into the graph."""
+        taught = compile_formula_to_uol(target_name, expr_str, domain=domain, vault_path=vault_path)
+        if not taught.ok or taught.forward_rule is None:
+            return NLRouteResult(False, explanation=taught.message)
+
+        fwd = taught.forward_rule
+        in_map = {p.name: p.name.casefold() for p in fwd.inputs}
+        self._register_quantity_alias(taught.target_quantity)
+        for q in in_map.values():
+            self._register_quantity_alias(q)
+
+        # Register forward rule in both UOL and live GraphPlanner
+        self.graph_planner.register_rule(
+            fwd,
+            input_quantities=in_map,
+            output_quantity=taught.target_quantity,
+        )
+        # Register every round-trip verified inverse rule in live GraphPlanner too!
+        for inv in taught.inverse_rules:
+            target_port = inv.rule_id.split("__solve_")[-1]
+            inv_map = {p.name: (taught.target_quantity if p.name == "result" else p.name.casefold()) for p in inv.inputs}
+            self.graph_planner.register_rule(
+                inv,
+                input_quantities=inv_map,
+                output_quantity=target_port.casefold(),
+            )
+        self.uol = self.graph_planner.uol
+        return NLRouteResult(
+            matched=True,
+            rule_ids=tuple(r.rule_id for r in taught.all_rules),
+            explanation=taught.message,
+        )
 
     def get_session_quantities(self, session_id: str) -> dict[str, float]:
         return dict(self._session_quantities.get(session_id, {}))
@@ -323,7 +378,7 @@ class NaturalLanguageUOLRouter:
 
     def _extract_all_quantities(self, lower: str, *, exclude: str | None = None) -> dict[str, float]:
         found: dict[str, float] = {}
-        for qty, aliases in _QUANTITY_ALIASES:
+        for qty, aliases in self._all_quantity_aliases():
             if qty == exclude:
                 continue
             val = _extract_param(lower, aliases, quantity=qty)
@@ -332,7 +387,7 @@ class NaturalLanguageUOLRouter:
         return found
 
     def _detect_target_quantity(self, lower: str) -> str | None:
-        for qty, aliases in _QUANTITY_ALIASES:
+        for qty, aliases in self._all_quantity_aliases():
             for alias in aliases:
                 pat = rf"\b(?:find|calculate|compute|what\s+is(?:\s+the)?|what'?s(?:\s+the)?|solve\s+for|get|determine)\s+(?:the\s+)?{re.escape(alias)}\b"
                 if re.search(pat, lower):
@@ -492,6 +547,11 @@ class NaturalLanguageUOLRouter:
             self.clear_session(session_id)
             return NLRouteResult(True, rule_ids=("session.clear",), explanation="Cleared stored session quantities.")
 
+        # 0. Live 1-shot formula teaching ("Learn formula: torque = force * lever_arm")
+        taught_spec = parse_teach_formula_prompt(prompt)
+        if taught_spec is not None:
+            return self.teach_formula(taught_spec[0], taught_spec[1])
+
         # 1. Temperature conversion chains (including multi-step F->K and K->F)
         temp_hit = self._route_temperature(lower)
         if temp_hit is not None:
@@ -592,5 +652,27 @@ class NaturalLanguageUOLRouter:
         graph_hit = self._route_dynamic_graph(lower, session_id=session_id)
         if graph_hit is not None:
             return graph_hit
+
+        # 5. Formal deductive logic, ordering chains & finite-domain constraint puzzles
+        logic_hit = solve_formal_logic_prompt(prompt)
+        if logic_hit.matched and logic_hit.proven is not None:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(f"logic.{logic_hit.kind}",),
+                output=logic_hit.answer if isinstance(logic_hit.answer, (bool, int, float)) else None,
+                explanation=logic_hit.explanation,
+            )
+
+        # 6. Native symbolic algebra & linear system solver (linear, quadratic, N x N systems)
+        alg_hit = solve_algebra_prompt(prompt)
+        if alg_hit.solved and alg_hit.verified:
+            first_val = next(iter(alg_hit.solutions.values()), None)
+            out_scalar = first_val if isinstance(first_val, (int, float)) else None
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(f"algebra.{alg_hit.kind}",),
+                output=out_scalar,
+                explanation=alg_hit.explanation,
+            )
 
         return NLRouteResult(False, explanation="no matching UOL rule for prompt")
