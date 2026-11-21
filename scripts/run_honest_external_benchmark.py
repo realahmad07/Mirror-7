@@ -55,7 +55,8 @@ def main() -> int:
         "4_unseen_paraphrased_word_problem_transfer": [],
         "5_unstructured_summarization_and_comparative_prose": [],
         "6_document_qa_counterfactual_code_repair_and_data_analyst": [],
-        "7_hard_ood_and_hallucination_traps": [],
+        "7_creative_writing_conversation_and_live_feeding": [],
+        "8_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -254,9 +255,33 @@ def main() -> int:
             ok = exp in res.explanation
             add("6_document_qa_counterfactual_code_repair_and_data_analyst", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
 
-    # ---- 7. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 7. Creative Writing, Bilingual Conversation & Live Dialogue Feeding (10 tasks) ----
+    creative_tasks = [
+        ("cr_01", "Write a poem about autumn in Lahore.", "Lahore"),
+        ("cr_02", "Lahore ki khizan par shayari likho", "patton"),
+        ("cr_03", "Write a short story about a young coder", "5-Act Short Story"),
+        ("cr_04", "Dosti ke baare mein kahani sunao", "5-Act Kahani"),
+        ("cr_05", "Give me creative ideas for edge AI startups", "Zero-Hardware Edge Architecture"),
+        ("cr_06", "Assalam o alaikum, kya haal hai?", "Alhamdulillah"),
+        ("cr_07", "Yaar aaj bohot thak gaya hoon, mera mood off hai", "break"),
+        ("cr_08", "Explain the meaning of consciousness in philosophy.", "Qualia"),
+        ("cr_09", "Feed: chai peeni hai yaar => Garma garam elaichi wali chai tayyar hai!", "Learned new conversational response"),
+        ("cr_10", "Yaar aaj chai peeni hai", "elaichi wali chai"),
+    ]
+    for tid, prompt, exp_sub in creative_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt)
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("7_creative_writing_conversation_and_live_feeding", tid, "honest_abstain", dt, res.explanation)
+        elif exp_sub in res.explanation:
+            add("7_creative_writing_conversation_and_live_feeding", tid, "solved_correct", dt, res.explanation.splitlines()[0])
+        else:
+            add("7_creative_writing_conversation_and_live_feeding", tid, "wrong_or_hallucinated", dt, res.explanation)
+
+    # ---- 8. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
-        ("ood_01", "Write a poem about autumn in Lahore."),
+        ("ood_01", "What will the exact closing stock price of AAPL be tomorrow?"),
         ("ood_02", "Who will win the next FIFA World Cup?"),
         ("ood_03", "Solve system: x + y = 3 and 2x + 2y = 10"),
         ("ood_04", "What is the best programming language in the world?"),
@@ -272,9 +297,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("7_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("8_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("7_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("8_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -321,8 +346,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (All 6 Solvable Categories):** `{total_solved} / 60` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['7_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (All 7 Solvable Categories):** `{total_solved} / 70` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['8_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -335,7 +360,8 @@ def main() -> int:
         "4_unseen_paraphrased_word_problem_transfer": "4. Unseen Paraphrased Transfer Problems (10)",
         "5_unstructured_summarization_and_comparative_prose": "5. Unstructured Summarization, OpenIE & Comparative Prose (10)",
         "6_document_qa_counterfactual_code_repair_and_data_analyst": "6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10)",
-        "7_hard_ood_and_hallucination_traps": "7. Hard OOD & Hallucination Traps (10, must abstain)",
+        "7_creative_writing_conversation_and_live_feeding": "7. Creative Writing (Poetry/Stories), Bilingual Chat & Live Feeding (10)",
+        "8_hard_ood_and_hallucination_traps": "8. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(

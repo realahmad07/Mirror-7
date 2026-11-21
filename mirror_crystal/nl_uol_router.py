@@ -13,6 +13,7 @@ from typing import Any, Mapping
 from .code_repair_engine import CounterexampleCodeRepairEngine
 from .compression_analogy_engine import AnalogicalTransferEngine
 from .counterfactual_engine import CounterfactualWhatIfEngine
+from .creative_conversation_engine import CreativeConversationEngine
 from .formal_logic_engine import solve_formal_logic_prompt
 from .native_realizer import NativeHybridRealizer
 from .operational_language import (
@@ -328,6 +329,7 @@ class NaturalLanguageUOLRouter:
         self.counterfactual_engine = CounterfactualWhatIfEngine()
         self.code_repair_engine = CounterexampleCodeRepairEngine()
         self.data_analyst = ZeroParamDataAnalyst()
+        self.creative_engine = CreativeConversationEngine()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -645,8 +647,8 @@ class NaturalLanguageUOLRouter:
         if sf_hit is not None:
             return sf_hit
 
-        # 3. Forward and inverse rule bindings
-        for binding in _BINDINGS:
+        # 3. Forward and inverse rule bindings (only when numeric inputs are present in the prompt)
+        for binding in (_BINDINGS if re.search(r"\d", lower) else ()):
             if not any(re.search(r"\b" + re.escape(kw) + r"\b", lower) for kw in binding.keywords):
                 continue
 
@@ -776,6 +778,15 @@ class NaturalLanguageUOLRouter:
                 rule_ids=(analogy_hit.schema_id,),
                 output=analogy_hit.output,
                 explanation=analogy_hit.explanation,
+            )
+
+        # 9. Parameter-Free Creative Writing, Bilingual Dialogue & Live-Fed Conversational Memory
+        creative_hit = self.creative_engine.route_creative_or_dialogue(prompt)
+        if creative_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(creative_hit.rule_id,),
+                explanation=creative_hit.response,
             )
 
         return NLRouteResult(False, explanation="no matching UOL rule for prompt")

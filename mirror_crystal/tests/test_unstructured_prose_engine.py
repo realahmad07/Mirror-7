@@ -208,3 +208,54 @@ def test_zero_parameter_tabular_data_analyst():
     assert d3.output == 140.0
     assert "R^2 = 1.0000" in d3.explanation
 
+
+def test_creative_poetry_story_empathy_and_live_dialogue_feeding(tmp_path):
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Poetry in English & Roman Urdu Shayari
+    p_en = router.route("Write a poem about autumn in Lahore.")
+    assert p_en.matched is True
+    assert "Lahore" in p_en.explanation
+    assert "leaves" in p_en.explanation
+
+    p_ur = router.route("Lahore ki khizan par shayari likho")
+    assert p_ur.matched is True
+    assert "Lahore" in p_ur.explanation
+    assert "patton" in p_ur.explanation
+
+    # 2. 5-Act Story in Roman Urdu & English
+    st_ur = router.route("Dosti ke baare mein kahani sunao")
+    assert st_ur.matched is True
+    assert "5-Act Kahani" in st_ur.explanation
+
+    # 3. Empathetic Roman-Urdu Conversation & Philosophy
+    emp = router.route("Yaar aaj bohot thak gaya hoon, mera mood off hai")
+    assert emp.matched is True
+    assert "break" in emp.explanation
+
+    phil = router.route("Explain the meaning of consciousness in philosophy.")
+    assert phil.matched is True
+    assert "Qualia" in phil.explanation
+
+    # 4. Live 1-shot conversational feeding ("Feed: <input> => <reply>")
+    f1 = router.route(
+        "Feed: chai peeni hai yaar => Garma garam elaichi wali chai tayyar hai, saath mein coding karte hain!"
+    )
+    assert f1.matched is True
+    ans1 = router.route("Yaar aaj chai peeni hai")
+    assert ans1.matched is True
+    assert "elaichi wali chai" in ans1.explanation
+
+    # 5. Bulk JSONL corpus file feeding
+    corpus_file = tmp_path / "custom_dialogue.jsonl"
+    corpus_file.write_text(
+        '{"prompt": "pakistan ka sab se khoobsurat pahari ilaqa konsa hai", "response": "Hunza aur Skardu apni kudrati khoobsurti aur paharon ke liye lajawab hain!"}\n',
+        encoding="utf-8",
+    )
+    fc = router.route(f"Feed file: {corpus_file}")
+    assert fc.matched is True
+    ans2 = router.route("Pakistan ka sab se khoobsurat pahari ilaqa konsa hai?")
+    assert ans2.matched is True
+    assert "Hunza aur Skardu" in ans2.explanation
+
+
