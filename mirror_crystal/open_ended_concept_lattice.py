@@ -30,6 +30,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
+import hashlib
 from pathlib import Path
 import re
 import sqlite3
@@ -83,7 +84,81 @@ _BROAD_AMBIGUOUS_SINGLETONS: frozenset[str] = frozenset({
     "car", "ship", "train", "road", "bridge", "wheel", "clock", "tool", "machine",
     "king", "queen", "empire", "church", "school", "science", "nature", "future",
     "past", "day", "year", "month", "week", "hour", "minute", "second", "apple",
+    "port", "ring", "field", "cell", "wave", "bond", "root", "code", "salt",
+    "acid", "base", "wind", "rain", "snow", "soil", "rock", "sand", "song",
+    "poem", "play", "hero", "myth", "folk", "skin", "bone", "lung", "foot",
+    "hand", "head", "face", "hair", "milk", "meat", "rice", "corn", "wine",
+    "beer", "zinc", "lead", "mars", "atom", "gene", "wire", "pipe", "pump",
+    "gear", "bell", "drum", "mask", "coin", "seal", "flag", "coat", "shoe",
+    "silk", "wool", "clay", "lime", "lava", "tide", "reef", "lake", "pond",
+    "mine", "mill", "arch", "dome", "wall", "gate", "park", "hall", "room",
+    "lamp", "lens", "soap", "glue", "dust", "fuel", "heat", "cold", "dark",
+    "body", "soul", "race", "class", "caste", "tribe", "clan", "court", "judge",
+    "crime", "prison", "army", "navy", "weapon", "sword", "gun", "bomb", "tank",
+    "plane", "radio", "phone", "video", "email", "blog", "wiki", "data", "file",
+    "byte", "node", "edge", "path", "tree", "list", "heap", "pool", "lock",
+    "flag", "type", "cast", "loop", "call", "fork", "pipe", "task", "job",
 })
+
+# High-salience short technical acronyms (<= 4 chars) allowed to match without rigid framing
+_TECH_ACRONYM_ALLOWLIST: frozenset[str] = frozenset({
+    "http", "cors", "csp", "xss", "csrf", "tls", "ssl", "tcp", "udp", "dns",
+    "bgp", "quic", "sql", "raft", "dna", "rna", "mrna", "cpu", "gpu", "simd",
+    "wasm", "json", "toml", "yaml", "html", "css", "jwt", "ssh", "vpn", "cdn",
+    "iam", "mfa", "pki", "rsa", "aes", "sha", "hmac", "sri", "sop", "uri",
+    "api", "rest", "grpc", "orm", "cli", "sdk", "ide", "git", "lsm", "ast",
+    "sat", "smt", "ols", "pid", "gdp", "roi", "ltv", "cac", "pdb", "zlib",
+    "gzip", "lzma", "dbm", "utf8", "ipv4", "ipv6",
+})
+
+# Bottleneck B1 fix: prune stop-trigrams appearing in > 300 concepts (~80% less fuzzy scan work at 10k+)
+_MAX_TRIGRAM_DF: int = 300
+
+
+def provenance_tier_rank(provenance: str) -> int:
+    """Monotonic provenance tier used to prevent lower-tier harvests from overwriting higher-tier nodes."""
+    p = (provenance or "").strip().casefold()
+    if p.startswith("mirror:concept_lattice:") or p.startswith("mirror:auto_compiled"):
+        return 5
+    if p.startswith("mirror:domain_agent_harvester"):
+        return 4
+    if p.startswith("browser:"):
+        return 3
+    if p.startswith("docs:") or p.startswith("wikipedia:"):
+        return 2
+    return 1
+
+
+def canonical_concept_key(name: str) -> str:
+    """Normalize punctuation, hyphens, whitespace, and trailing English plural 's' to block duplicates."""
+    clean = re.sub(r"\([^)]*\)", "", name or "").strip().casefold()
+    clean = re.sub(r"[^a-z0-9]+", " ", clean).strip()
+    if not clean:
+        return ""
+    tokens = clean.split()
+    norm_tokens: list[str] = []
+    for tok in tokens:
+        # Careful singularization avoiding 'physics', 'optics', 'economics', 'class', 'process', 'analysis'
+        if (
+            len(tok) >= 5
+            and tok.endswith("s")
+            and not tok.endswith(("ss", "us", "is", "ics", "sis", "ness", "ous"))
+        ):
+            if tok.endswith("ies") and len(tok) >= 6:
+                tok = tok[:-3] + "y"
+            elif tok.endswith(("ches", "shes", "xes", "zes")):
+                tok = tok[:-2]
+            else:
+                tok = tok[:-1]
+        norm_tokens.append(tok)
+    return " ".join(norm_tokens)
+
+
+def content_fingerprint(definition: str) -> str:
+    """64-bit normalized definition hash to catch cross-source near-duplicate paragraphs."""
+    norm = re.sub(r"[^a-z0-9]+", " ", (definition or "").casefold()).strip()
+    return hashlib.sha256(norm[:220].encode("utf-8")).hexdigest()[:16]
+
 
 # In-process snapshot cache keyed by (resolved_path_str, mtime_ns, size_bytes)
 # Eliminates repeated SQLite scans & trigram re-indexing on warm instantiations (< 0.1 ms).
@@ -251,7 +326,7 @@ def _has_word_boundary_match(text_low: str, phrase_low: str) -> int:
 class OpenEndedConceptLatticeEngine:
     """Sub-linear O(1) Inverted-Index Concept Lattice & Compositional Open-Ended Discourse Synthesizer."""
 
-    VERSION = "open-ended-concept-lattice-v2-1000plus"
+    VERSION = "open-ended-concept-lattice-v3-10k-public-beta"
 
     def __init__(self, *, vault_path: str | Path | None = None) -> None:
         if vault_path is not None:
@@ -283,6 +358,8 @@ class OpenEndedConceptLatticeEngine:
             # Ensure foundational seed concepts take precedence if overwritten with weaker auto-stubs
             for node in _SEED_CONCEPT_NODES:
                 self._index_node_in_memory(node)
+            # Bottleneck B1 fix: prune stop-trigrams with document frequency > _MAX_TRIGRAM_DF
+            self._prune_stop_trigrams()
             st = self.vault_path.stat()
             cache_key = (str(self.vault_path.resolve()), st.st_mtime_ns, st.st_size)
             _VAULT_SNAPSHOT_CACHE[cache_key] = (
@@ -291,6 +368,16 @@ class OpenEndedConceptLatticeEngine:
                 self._trigram_postings,
             )
             self._shared_cache_view = True
+
+    def _prune_stop_trigrams(self, *, max_df: int = _MAX_TRIGRAM_DF) -> int:
+        """Remove hyper-frequent trigrams (e.g. 'ing', 'ion', 'ati') to keep fuzzy lookup O(1) at 10k+ nodes."""
+        if len(self._nodes) < 500:
+            return 0
+        pruned = 0
+        for tg in [k for k, v in self._trigram_postings.items() if len(v) > max_df]:
+            del self._trigram_postings[tg]
+            pruned += 1
+        return pruned
 
     def _ensure_mutable_index(self) -> None:
         if self._shared_cache_view:
@@ -392,6 +479,241 @@ class OpenEndedConceptLatticeEngine:
                 _VAULT_SNAPSHOT_CACHE.pop(k, None)
         return len(rows_to_insert)
 
+    def register_nodes_no_overwrite(
+        self,
+        nodes: Iterable[ConceptNode],
+        *,
+        persist: bool = True,
+        allow_strict_tier_upgrade: bool = True,
+        vacuum: bool = False,
+    ) -> dict[str, int]:
+        """Zero-Overwrite, Zero-Duplication Admission Pipeline (Bottleneck B2 & B4 fix).
+
+        Guarantees:
+          1. Existing concept_ids are NEVER overwritten by equal-or-lower provenance tiers.
+          2. Plural/hyphen/punctuation canonical duplicates (e.g. 'neural networks' vs 'neural network')
+             are detected via `canonical_concept_key` and rejected before SQLite insertion.
+          3. Alias collisions and 64-bit normalized definition fingerprints block near-duplicates.
+          4. SQLite writes use `INSERT OR IGNORE` (plus explicit higher-tier-only upgrades) and
+             optional `VACUUM` + `ANALYZE` for compact market-launch disk footprint.
+        """
+        self._ensure_mutable_index()
+
+        existing_canonical: dict[str, str] = {}
+        existing_aliases: dict[str, str] = {}
+        existing_fps: set[str] = set()
+        for cid, nd in self._nodes.items():
+            ck = canonical_concept_key(cid)
+            if ck:
+                existing_canonical[ck] = cid
+            for al in nd.aliases:
+                ak = canonical_concept_key(al)
+                if ak and ak not in existing_aliases:
+                    existing_aliases[ak] = cid
+            existing_fps.add(content_fingerprint(nd.definition))
+
+        stats = {
+            "inserted_new": 0,
+            "upgraded_higher_tier": 0,
+            "skipped_existing_protected": 0,
+            "skipped_canonical_duplicate": 0,
+            "skipped_alias_duplicate": 0,
+            "skipped_content_duplicate": 0,
+            "overwrites_prevented": 0,
+        }
+        new_rows: list[tuple[str, str, str, str, str, str, str, str, str]] = []
+        upgrade_rows: list[tuple[str, str, str, str, str, str, str, str, str]] = []
+
+        for node in nodes:
+            cid = node.concept_id.strip().casefold()
+            if not cid or len(cid) < 3:
+                continue
+            ck = canonical_concept_key(cid)
+            fp = content_fingerprint(node.definition)
+            new_tier = provenance_tier_rank(node.provenance)
+
+            # Layer 1: Exact concept_id protection (NO overwrite unless strictly higher tier!)
+            if cid in self._nodes:
+                cur_tier = provenance_tier_rank(self._nodes[cid].provenance)
+                if allow_strict_tier_upgrade and new_tier > cur_tier:
+                    self._index_node_in_memory(node)
+                    upgrade_rows.append(
+                        (
+                            node.title,
+                            node.category,
+                            "|".join(node.aliases),
+                            node.definition,
+                            node.mechanism,
+                            node.applications,
+                            node.tradeoffs,
+                            node.provenance,
+                            cid,
+                        )
+                    )
+                    stats["upgraded_higher_tier"] += 1
+                else:
+                    stats["skipped_existing_protected"] += 1
+                    stats["overwrites_prevented"] += 1
+                continue
+
+            # Layer 2: Canonical plural/hyphen/punctuation duplicate guard
+            if ck and ck in existing_canonical:
+                stats["skipped_canonical_duplicate"] += 1
+                continue
+
+            # Layer 3: Existing alias collision guard
+            if ck and ck in existing_aliases:
+                stats["skipped_alias_duplicate"] += 1
+                continue
+
+            # Layer 4: 64-bit normalized definition content-hash near-duplicate guard
+            if fp in existing_fps:
+                stats["skipped_content_duplicate"] += 1
+                continue
+
+            # Verified unique, non-overwriting concept: admit!
+            self._index_node_in_memory(node)
+            if ck:
+                existing_canonical[ck] = cid
+            for al in node.aliases:
+                ak = canonical_concept_key(al)
+                if ak and ak not in existing_aliases:
+                    existing_aliases[ak] = cid
+            existing_fps.add(fp)
+            new_rows.append(
+                (
+                    cid,
+                    node.title,
+                    node.category,
+                    "|".join(node.aliases),
+                    node.definition,
+                    node.mechanism,
+                    node.applications,
+                    node.tradeoffs,
+                    node.provenance,
+                )
+            )
+            stats["inserted_new"] += 1
+
+        self._prune_stop_trigrams()
+
+        if persist and self.vault_path is not None and (new_rows or upgrade_rows or vacuum):
+            self.vault_path.parent.mkdir(parents=True, exist_ok=True)
+            with sqlite3.connect(str(self.vault_path)) as conn:
+                conn.execute("PRAGMA journal_mode=WAL")
+                conn.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS mirror_concept_lattice (
+                        concept_id TEXT PRIMARY KEY,
+                        title TEXT NOT NULL,
+                        category TEXT NOT NULL,
+                        aliases_csv TEXT NOT NULL,
+                        definition TEXT NOT NULL,
+                        mechanism TEXT NOT NULL,
+                        applications TEXT NOT NULL,
+                        tradeoffs TEXT NOT NULL,
+                        provenance TEXT NOT NULL
+                    )
+                    """
+                )
+                conn.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_mirror_concept_category ON mirror_concept_lattice(category)"
+                )
+                if new_rows:
+                    # Strictly INSERT OR IGNORE so existing rows can NEVER be overwritten!
+                    conn.executemany(
+                        """
+                        INSERT OR IGNORE INTO mirror_concept_lattice
+                        (concept_id, title, category, aliases_csv, definition, mechanism, applications, tradeoffs, provenance)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        new_rows,
+                    )
+                if upgrade_rows:
+                    conn.executemany(
+                        """
+                        UPDATE mirror_concept_lattice
+                        SET title=?, category=?, aliases_csv=?, definition=?, mechanism=?, applications=?, tradeoffs=?, provenance=?
+                        WHERE concept_id=?
+                        """,
+                        upgrade_rows,
+                    )
+                conn.commit()
+                if vacuum:
+                    conn.execute("ANALYZE")
+                    conn.execute("VACUUM")
+            resolved = str(self.vault_path.resolve())
+            for k in [key for key in _VAULT_SNAPSHOT_CACHE if key[0] == resolved]:
+                _VAULT_SNAPSHOT_CACHE.pop(k, None)
+        return stats
+
+    def deduplicate_vault(self, *, persist: bool = True, vacuum: bool = True) -> dict[str, int]:
+        """Audit and merge any legacy canonical/content duplicates in the vault, strictly retaining the
+        highest-provenance-tier ConceptNode and preserving merged surface strings as aliases."""
+        self._ensure_mutable_index()
+        by_ck: dict[str, list[ConceptNode]] = defaultdict(list)
+        for nd in self._nodes.values():
+            ck = canonical_concept_key(nd.concept_id) or nd.concept_id.casefold()
+            by_ck[ck].append(nd)
+
+        removed_ids: list[str] = []
+        updated_survivors: list[ConceptNode] = []
+        for ck, group in by_ck.items():
+            if len(group) <= 1:
+                continue
+            # Highest provenance tier wins; tie-break by richest definition length
+            group.sort(
+                key=lambda n: (-provenance_tier_rank(n.provenance), -len(n.definition), n.concept_id)
+            )
+            winner = group[0]
+            merged_aliases = list(winner.aliases)
+            for loser in group[1:]:
+                removed_ids.append(loser.concept_id.casefold())
+                for surf in (loser.concept_id, *loser.aliases):
+                    s_low = surf.strip().casefold()
+                    if s_low and s_low not in merged_aliases:
+                        merged_aliases.append(s_low)
+            survivor = ConceptNode(
+                concept_id=winner.concept_id,
+                title=winner.title,
+                category=winner.category,
+                aliases=tuple(dict.fromkeys(merged_aliases)),
+                definition=winner.definition,
+                mechanism=winner.mechanism,
+                applications=winner.applications,
+                tradeoffs=winner.tradeoffs,
+                provenance=winner.provenance,
+            )
+            updated_survivors.append(survivor)
+
+        if not removed_ids:
+            return {"canonical_duplicates_merged": 0, "remaining_nodes": len(self._nodes)}
+
+        for rid in removed_ids:
+            self._nodes.pop(rid, None)
+        for surv in updated_survivors:
+            self._index_node_in_memory(surv)
+
+        if persist and self.vault_path is not None and self.vault_path.exists():
+            with sqlite3.connect(str(self.vault_path)) as conn:
+                conn.executemany(
+                    "DELETE FROM mirror_concept_lattice WHERE concept_id = ?",
+                    [(rid,) for rid in removed_ids],
+                )
+                conn.executemany(
+                    "UPDATE mirror_concept_lattice SET aliases_csv = ? WHERE concept_id = ?",
+                    [("|".join(s.aliases), s.concept_id.casefold()) for s in updated_survivors],
+                )
+                conn.commit()
+                if vacuum:
+                    conn.execute("ANALYZE")
+                    conn.execute("VACUUM")
+            resolved = str(self.vault_path.resolve())
+            for k in [key for key in _VAULT_SNAPSHOT_CACHE if key[0] == resolved]:
+                _VAULT_SNAPSHOT_CACHE.pop(k, None)
+
+        return {"canonical_duplicates_merged": len(removed_ids), "remaining_nodes": len(self._nodes)}
+
     def load_from_vault(self, vault_path: str | Path | None = None) -> int:
         self._ensure_mutable_index()
         target = Path(vault_path) if vault_path is not None else self.vault_path
@@ -424,13 +746,24 @@ class OpenEndedConceptLatticeEngine:
         aliases: tuple[str, ...] | None = None,
         provenance: str = "mirror:auto_compiled_concept",
         persist: bool = True,
+        allow_overwrite: bool = False,
     ) -> dict[str, Any]:
         """Unsupervised Zero-Bloat Concept Compiler: distills raw multi-sentence text into
-        a 5-facet ConceptNode (~240-320 bytes) and evicts the raw text."""
+        a 5-facet ConceptNode (~240-320 bytes) and evicts the raw text without overwriting protected nodes."""
         cid = topic_name.strip().casefold()
         sentences = _split_sentences(raw_text)
         if not cid or not sentences:
             return {"ok": False, "reason": "empty topic or text"}
+
+        if not allow_overwrite and cid in self._nodes:
+            existing_tier = provenance_tier_rank(self._nodes[cid].provenance)
+            if existing_tier >= 4 and self._nodes[cid].provenance != provenance:
+                return {
+                    "ok": False,
+                    "protected": True,
+                    "concept_id": cid,
+                    "reason": f"Concept '{cid}' already exists under protected provenance '{self._nodes[cid].provenance}'. Overwrite blocked.",
+                }
 
         defn = sentences[0]
         mech = ""
@@ -468,7 +801,7 @@ class OpenEndedConceptLatticeEngine:
         }
 
     def _retrieve_concepts_sublinear(self, query: str) -> tuple[list[ConceptNode], int]:
-        """O(1) inverted token + trigram lookup followed by word-boundary alias & typo-tolerant match."""
+        """O(1) inverted token + DF-pruned trigram lookup followed by word-boundary alias & typo-tolerant match."""
         low = query.casefold()
         q_tokens = [w for w in re.findall(r"[a-z0-9]{3,}", low)]
 
@@ -480,11 +813,16 @@ class OpenEndedConceptLatticeEngine:
                 # Trigram fuzzy candidate lookup for typos like 'blokchain', 'kubernets'
                 tgs = _trigrams(tok)
                 hits_per_cid: dict[str, int] = defaultdict(int)
+                active_tgs = 0
                 for tg in tgs:
-                    for cid in self._trigram_postings.get(tg, ()):
-                        hits_per_cid[cid] += 1
+                    post = self._trigram_postings.get(tg)
+                    if post:
+                        active_tgs += 1
+                        for cid in post:
+                            hits_per_cid[cid] += 1
+                threshold = max(2, int(active_tgs * 0.55)) if active_tgs >= 2 else 3
                 for cid, cnt in hits_per_cid.items():
-                    if len(tgs) >= 3 and cnt >= max(3, int(len(tgs) * 0.6)):
+                    if cnt >= threshold:
                         candidate_ids.add(cid)
 
         # Evaluate candidate matches with exact word-boundary span tracking:
@@ -494,15 +832,18 @@ class OpenEndedConceptLatticeEngine:
             node = self._nodes[cid]
             best_pos = -1
             best_len = 0
-            best_al = ""
             for al in (node.concept_id, *node.aliases):
                 al_low = al.strip().casefold()
                 if len(al_low) < 3:
                     continue
                 idx = _has_word_boundary_match(low, al_low)
                 if idx >= 0 and len(al_low) > best_len:
-                    if al_low in _BROAD_AMBIGUOUS_SINGLETONS:
-                        # Only accept ultra-broad singleton words when explicitly framed as the prompt subject
+                    needs_framing = (
+                        al_low in _BROAD_AMBIGUOUS_SINGLETONS
+                        or (" " not in al_low and len(al_low) <= 4 and al_low not in _TECH_ACRONYM_ALLOWLIST)
+                    )
+                    if needs_framing:
+                        # Only accept broad or ultra-short singleton words when explicitly framed as the prompt subject
                         framed = bool(
                             re.search(
                                 rf"(?:\b(?:what\s+(?:is|are)|define|explain|tell\s+me\s+about|overview\s+of|how\s+does|how\s+do|benefits?\s+of|drawbacks?\s+of|risks?\s+of|compare|difference\s+between|versus|vs\.?|and|aur)\s+(?:the\s+|a\s+|an\s+)?{re.escape(al_low)}\b|\b{re.escape(al_low)}\s+(?:kya\s+hai|kia\s+hai|kia\s+h|kaam\s+kaise|kaam\s+kese|ke\s+baare\s+mein|vs\.?|versus|aur|work\s+together|works)\b)",
@@ -513,7 +854,6 @@ class OpenEndedConceptLatticeEngine:
                             continue
                     best_pos = idx
                     best_len = len(al_low)
-                    best_al = al_low
             if best_pos >= 0:
                 span_matches.append((best_pos, best_pos + best_len, best_len, True, node))
             else:
@@ -719,7 +1059,9 @@ class OpenEndedConceptLatticeEngine:
             ).casefold()
             unmatched_rare = [w for w in substantive if w not in covered_blob and w[:5] not in covered_blob]
             coverage = 1.0 - (len(unmatched_rare) / len(substantive))
-            if len(unmatched_rare) >= 3 and coverage < 0.45:
+            if (len(unmatched_rare) >= 3 and coverage < 0.50) or (
+                not is_cross_compare and not is_cross_synergy and len(unmatched_rare) >= 2 and coverage < 0.72
+            ):
                 return OpenEndedSynthesisResult(False)
 
         is_urdu = bool(re.search(r"\b(?:yaar|kya|kia|kaise|kese|krta|karta|nuqsan|fayda|faida|mein|hai|h|aur|taluq|samjhao|batao|farq|muqabla)\b", low))

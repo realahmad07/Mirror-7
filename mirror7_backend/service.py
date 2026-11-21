@@ -932,3 +932,98 @@ class BackendService:
         finally:
             mem.close()
 
+    # =========================================================================
+    # Market-Launch Open-Ended Concept Lattice API (10,000+ Concepts, O(1) CPU)
+    # =========================================================================
+    def _get_concept_lattice(self):
+        from mirror_crystal.open_ended_concept_lattice import OpenEndedConceptLatticeEngine
+        return OpenEndedConceptLatticeEngine()
+
+    def lattice_status(self) -> dict[str, Any]:
+        """Return live telemetry for Mirror 7's Sub-Linear O(1) Open-Ended Concept Lattice."""
+        lat = self._get_concept_lattice()
+        total = lat.concept_count()
+        dist = lat.domain_distribution()
+        pairs = (total * (total - 1)) // 2
+        return {
+            "ok": True,
+            "version": lat.VERSION,
+            "concept_nodes": total,
+            "domains_count": len(dist),
+            "combinatorial_cross_pairs": pairs,
+            "discourse_operator_combinations": pairs * 12,
+            "domain_breakdown": dist,
+            "uses_neural_parameters": False,
+            "uses_third_party_llm": False,
+        }
+
+    def lattice_domain_concepts(self, domain: str, *, limit: int = 25) -> dict[str, Any]:
+        """List concepts stored under a specific knowledge domain."""
+        lat = self._get_concept_lattice()
+        bounded_limit = max(1, min(int(limit), 200))
+        dist = lat.domain_distribution()
+        raw_dom = (domain or "").strip().casefold().replace(" ", "_").replace("-", "_")
+        matched_dom = next((d for d in dist if d == raw_dom or (raw_dom and raw_dom in d)), None)
+        if matched_dom is None:
+            return {
+                "ok": False,
+                "error": f"unknown domain: {domain}",
+                "available_domains": list(dist.keys()),
+            }
+        nodes = lat.search_by_category(matched_dom, limit=bounded_limit)
+        return {
+            "ok": True,
+            "domain": matched_dom,
+            "total_in_domain": dist[matched_dom],
+            "returned": len(nodes),
+            "concepts": [
+                {
+                    "concept_id": nd.concept_id,
+                    "title": nd.title,
+                    "aliases": list(nd.aliases),
+                    "definition": nd.definition,
+                    "provenance": nd.provenance,
+                }
+                for nd in nodes
+            ],
+        }
+
+    def lattice_query(self, prompt: str) -> dict[str, Any]:
+        """Execute an open-ended query, comparison, or cross-concept synthesis against the lattice."""
+        import time as _time
+        lat = self._get_concept_lattice()
+        t0 = _time.perf_counter()
+        res = lat.route_open_ended(prompt)
+        dt_ms = round((_time.perf_counter() - t0) * 1000.0, 3)
+        return {
+            "ok": True,
+            "matched": res.matched,
+            "abstained": not res.matched,
+            "concepts_used": list(res.concepts_used),
+            "intents_resolved": list(res.intents_resolved),
+            "language": res.language,
+            "candidates_scanned": res.candidates_scanned,
+            "latency_ms": dt_ms,
+            "response": res.response,
+            "uses_neural_parameters": False,
+        }
+
+    def lattice_compile(
+        self,
+        topic: str,
+        text: str,
+        *,
+        category: str = "general_knowledge",
+        allow_overwrite: bool = False,
+        persist: bool = True,
+    ) -> dict[str, Any]:
+        """Compile raw text into a zero-bloat 5-facet ConceptNode with No-Overwrite protection."""
+        lat = self._get_concept_lattice()
+        return lat.compile_text_to_concept_node(
+            topic,
+            text,
+            category=category,
+            persist=persist,
+            allow_overwrite=allow_overwrite,
+        )
+

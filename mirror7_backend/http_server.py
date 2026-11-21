@@ -193,6 +193,19 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         if path == "/api/crystal/lattice":
             self._send(200, {"ok": True, "nodes": service.get_visual_lattice_nodes()})
             return
+        if path == "/api/lattice/status":
+            self._send(200, service.lattice_status())
+            return
+        if path == "/api/lattice/domain":
+            parsed_qs = parse_qs(urlparse(self.path).query)
+            dom = parsed_qs.get("name", [""])[0] or parsed_qs.get("domain", [""])[0]
+            try:
+                lim = int(parsed_qs.get("limit", ["25"])[0])
+            except ValueError:
+                lim = 25
+            res = service.lattice_domain_concepts(dom, limit=lim)
+            self._send(200 if res.get("ok") else 404, res)
+            return
         if path == "/api/memory/gdpr/export":
             parsed_qs = parse_qs(urlparse(self.path).query)
             sess = parsed_qs.get("session_id", ["studio_web"])[0]
@@ -294,6 +307,35 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
                 prompt = str(payload.get("prompt", "") or payload.get("query", ""))
                 session_id = str(payload.get("session_id", "studio_stream"))
                 self._handle_sse_stream(prompt, session_id=session_id)
+                return
+
+            if parts == ["api", "lattice", "query"]:
+                prompt = str(payload.get("prompt", "") or payload.get("query", ""))
+                if not prompt.strip():
+                    self._send(400, {"ok": False, "error": "prompt is required"})
+                    return
+                res = service.lattice_query(prompt)
+                self._send(200, res)
+                return
+
+            if parts == ["api", "lattice", "compile"]:
+                topic = str(payload.get("topic", "") or payload.get("name", ""))
+                text = str(payload.get("text", "") or payload.get("content", ""))
+                category = str(payload.get("category", "general_knowledge"))
+                allow_overwrite = bool(payload.get("allow_overwrite", False))
+                persist = bool(payload.get("persist", True))
+                if not topic.strip() or not text.strip():
+                    self._send(400, {"ok": False, "error": "topic and text are required"})
+                    return
+                res = service.lattice_compile(
+                    topic,
+                    text,
+                    category=category,
+                    allow_overwrite=allow_overwrite,
+                    persist=persist,
+                )
+                status = 200 if res.get("ok") else (409 if res.get("protected") else 400)
+                self._send(status, res)
                 return
 
             if parts == ["api", "crystal", "ingest_path"]:

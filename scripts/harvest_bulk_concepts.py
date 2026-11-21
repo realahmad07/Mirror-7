@@ -32,8 +32,8 @@ def main() -> int:
     parser.add_argument(
         "--max-vital",
         type=int,
-        default=2200,
-        help="Max Wikipedia Vital Articles Level 3+4 titles to harvest",
+        default=12000,
+        help="Max Wikipedia Vital Articles Level 3+4+5 titles to harvest (skips existing canonical keys)",
     )
     parser.add_argument(
         "--offline",
@@ -48,18 +48,28 @@ def main() -> int:
         include_live_arxiv=not args.offline,
         include_python_docs=True,
         max_vital_wikipedia=args.max_vital,
+        vacuum=True,
     )
     jpath, mpath = save_harvest_artifacts(report, ROOT / "artifacts")
     print("=" * 72)
-    print("MIRROR 7 AUTOMATED BULK CONCEPT HARVEST COMPLETE")
+    print("MIRROR 7 PHASE-1 MARKET LAUNCH BULK HARVEST COMPLETE")
     print("=" * 72)
+    print(f"Existing Protected Nodes Before   : {report.existing_concepts_before:,}")
+    print(f"Net New Unique Nodes Inserted     : {report.inserted_new_concepts:,}")
+    print(f"Lower/Equal Overwrites Prevented  : {report.overwrites_prevented:,}")
+    print(f"Canonical Duplicates Blocked      : {report.canonical_duplicates_blocked:,}")
+    print(f"Alias Collisions Blocked          : {report.alias_duplicates_blocked:,}")
+    print(f"Content-Hash Duplicates Blocked   : {report.content_duplicates_blocked:,}")
+    print("-" * 72)
     print(f"Total Unique 5-Facet ConceptNodes : {report.total_unique_concepts:,}")
     print(f"Domains Covered                   : {report.total_domains}")
     print(f"Cross-Concept Combinatorial Pairs : {report.combinatorial_cross_pairs:,}")
     print(f"Open-Ended Discourse Combinations : {report.discourse_operator_combinations:,}")
-    print(f"Raw Payload Distilled             : {report.raw_bytes_fetched / 1_000_000:.2f} MB")
-    print(f"Distilled Vault Footprint         : {report.distilled_node_bytes / 1_000_000:.2f} MB")
+    print(f"Cumulative Raw Payload Distilled  : {report.raw_bytes_fetched / 1_000_000:.2f} MB")
+    print(f"Distilled Node Payload Footprint  : {report.distilled_node_bytes / 1_000_000:.2f} MB")
     print(f"Zero-Bloat Raw-Text Eviction      : {report.compression_eviction_pct:.2f}%")
+    print(f"Compacted .dcrystal Vault on Disk : {report.vault_disk_mb:.2f} MB")
+    print(f"Cold Load / Warm Init (ms)        : {report.cold_load_ms:.2f} ms / {report.warm_load_ms:.3f} ms")
     print(f"O(1) Median Lookup Latency (CPU)  : {report.median_lookup_ms:.3f} ms")
     print(f"Elapsed Time                      : {report.elapsed_seconds:.2f} s")
     print(f"Source Counts                     : {report.source_counts}")

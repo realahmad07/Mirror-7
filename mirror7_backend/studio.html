@@ -2595,6 +2595,16 @@ angle$
                 const tel = data.telemetry || {};
                 const dMap = data.active_domains || {};
                 const organs = data.capability_organs || [];
+                const lattice = data.open_ended_concept_lattice || {};
+                const latticeNodes = lattice.concept_nodes || 0;
+                const latticeDomains = lattice.domains_count || 0;
+                const latticePairs = lattice.combinatorial_cross_pairs || 0;
+                const latticeBreak = lattice.domain_breakdown || {};
+
+                let latticeDomChips = Object.entries(latticeBreak)
+                    .slice(0, 12)
+                    .map(([k, v]) => `<button onclick="inspectLatticeDomain('${escapeHtml(k)}')" class="px-2 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-xs text-[10px] text-cyan-300 cursor-pointer">${escapeHtml(k)} (${v.toLocaleString()})</button>`)
+                    .join(' ');
 
                 let domRows = '';
                 for (const [dom, info] of Object.entries(dMap)) {
@@ -2610,21 +2620,31 @@ angle$
                 body.innerHTML = `
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-center">
                         <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
+                            <div class="text-zinc-500 text-[10px]">Open-Ended Concepts</div>
+                            <div class="text-xl font-bold text-cyan-400">${latticeNodes.toLocaleString()}</div>
+                            <div class="text-[10px] text-zinc-400">${latticeDomains} Domains | 0 Params</div>
+                        </div>
+                        <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
+                            <div class="text-zinc-500 text-[10px]">Cross-Concept Pairs</div>
+                            <div class="text-xl font-bold text-emerald-400">${latticePairs.toLocaleString()}</div>
+                            <div class="text-[10px] text-zinc-400">${(latticePairs * 12).toLocaleString()} Discourse Combos</div>
+                        </div>
+                        <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
                             <div class="text-zinc-500 text-[10px]">Total Vault Rules</div>
-                            <div class="text-xl font-bold text-cyan-400">${(data.total_vault_rules || 0).toLocaleString()}</div>
-                        </div>
-                        <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
-                            <div class="text-zinc-500 text-[10px]">Total Queries</div>
-                            <div class="text-xl font-bold text-white">${tel.queries_total || 0}</div>
-                        </div>
-                        <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
-                            <div class="text-zinc-500 text-[10px]">Answered Exact</div>
-                            <div class="text-xl font-bold text-emerald-400">${tel.queries_answered || 0}</div>
+                            <div class="text-xl font-bold text-white">${(data.total_vault_rules || 0).toLocaleString()}</div>
+                            <div class="text-[10px] text-zinc-400">Answered Exact: ${tel.queries_answered || 0}</div>
                         </div>
                         <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
                             <div class="text-zinc-500 text-[10px]">Abstention Rate</div>
                             <div class="text-xl font-bold text-amber-400">${tel.abstention_rate_pct || 0}%</div>
+                            <div class="text-[10px] text-zinc-400">Queries: ${tel.queries_total || 0}</div>
                         </div>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
+                        <div class="text-xs font-bold text-cyan-400 mb-2">Interactive Open-Ended Concept Lattice Explorer (Click Any Domain):</div>
+                        <div class="flex flex-wrap gap-1.5 mb-2">${latticeDomChips}</div>
+                        <div id="lattice-domain-preview" class="text-[11px] text-zinc-400">Select a domain chip above to inspect live distilled 5-facet ConceptNodes from /api/lattice/domain.</div>
                     </div>
 
                     <div class="text-xs font-bold text-cyan-400 mb-2">Active Vertical Knowledge Domains:</div>
@@ -2647,24 +2667,45 @@ angle$
             }
         }
 
+        async function inspectLatticeDomain(domName) {
+            const box = document.getElementById('lattice-domain-preview');
+            if (!box) return;
+            box.innerText = `Loading concepts for ${domName}...`;
+            try {
+                const res = await fetch(`/api/lattice/domain?name=${encodeURIComponent(domName)}&limit=8`);
+                const data = await res.json();
+                if (!data.ok) {
+                    box.innerText = data.error || 'Domain not found';
+                    return;
+                }
+                const items = (data.concepts || [])
+                    .map(c => `<div class="py-1 border-b border-quantum-border/50"><span class="text-cyan-300 font-bold">${escapeHtml(c.title)}</span>: <span class="text-zinc-300">${escapeHtml(c.definition)}</span></div>`)
+                    .join('');
+                box.innerHTML = `<div class="text-emerald-400 font-bold mb-1">${escapeHtml(data.domain)} (${(data.total_in_domain || 0).toLocaleString()} total concepts — showing ${data.returned}):</div>${items}`;
+            } catch(e) {
+                box.innerText = `Error: ${e.message}`;
+            }
+        }
+
         async function refreshAbstentionBadge() {
             try {
                 const res = await fetch('/api/crystal/coverage');
                 const data = await res.json();
                 const tel = data.telemetry || {};
                 const total = data.total_vault_rules || 0;
+                const latticeNodes = (data.open_ended_concept_lattice && data.open_ended_concept_lattice.concept_nodes) || 0;
 
                 const badge = document.getElementById('abstention-badge');
                 if (badge) badge.innerText = `ABSTENTION: ${tel.abstention_rate_pct || 0}%`;
 
                 const vaultBadge = document.getElementById('vault-status-badge');
-                if (vaultBadge) vaultBadge.innerText = `VAULT: ${total.toLocaleString()} BLUEPRINTS`;
+                if (vaultBadge) vaultBadge.innerText = `VAULT: ${latticeNodes.toLocaleString()} CONCEPTS | ${total.toLocaleString()} BLUEPRINTS`;
 
                 const heroCounter = document.getElementById('hero-rule-counter');
-                if (heroCounter) heroCounter.innerHTML = `${total.toLocaleString()}<span class="text-indigo-400 text-sm font-mono ml-1 font-normal">rules</span>`;
+                if (heroCounter) heroCounter.innerHTML = `${latticeNodes.toLocaleString()}<span class="text-indigo-400 text-sm font-mono ml-1 font-normal">concepts</span>`;
 
                 const latticeBadge = document.getElementById('lattice-node-count-badge');
-                if (latticeBadge) latticeBadge.innerText = `${total.toLocaleString()} RULES`;
+                if (latticeBadge) latticeBadge.innerText = `${latticeNodes.toLocaleString()} CONCEPTS`;
             } catch(e) {}
         }
 

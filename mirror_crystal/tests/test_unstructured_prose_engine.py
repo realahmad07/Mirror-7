@@ -622,9 +622,45 @@ def test_bulk_harvested_3200plus_multisource_vault_and_offline_harvester(tmp_pat
 
     router = NaturalLanguageUOLRouter()
 
-    # 1. Production .dcrystal vault holds >= 1,000 (3,200+) multi-domain ConceptNodes
-    assert router.concept_lattice.concept_count() >= 1000
+    # 1. Production .dcrystal vault holds >= 10,000 (10,494) multi-domain ConceptNodes
+    assert router.concept_lattice.concept_count() >= 10000
     assert len(router.concept_lattice.domain_distribution()) >= 20
+
+    # 1b. Zero-Overwrite & 3-Layer Canonical Deduplication Guarantee
+    from mirror_crystal.open_ended_concept_lattice import ConceptNode, OpenEndedConceptLatticeEngine
+    iso_lat = OpenEndedConceptLatticeEngine(vault_path=tmp_path / "no_overwrite.dcrystal")
+    orig_def = iso_lat._nodes["blockchain"].definition
+    dedup_stats = iso_lat.register_nodes_no_overwrite(
+        [
+            ConceptNode(
+                concept_id="blockchain",
+                title="Weak Overwrite",
+                category="general_knowledge",
+                aliases=("blockchain",),
+                definition="Weak auto stub trying to overwrite seed blockchain.",
+                mechanism="None",
+                applications="None",
+                tradeoffs="None",
+                provenance="wikipedia:mediawiki_api:en",
+            ),
+            ConceptNode(
+                concept_id="blockchains",
+                title="Blockchains Plural Duplicate",
+                category="computer_science",
+                aliases=("blockchains",),
+                definition="Plural duplicate that canonical_concept_key must block.",
+                mechanism="Duplicate",
+                applications="Duplicate",
+                tradeoffs="Duplicate",
+                provenance="wikipedia:mediawiki_api:en",
+            ),
+        ],
+        persist=True,
+    )
+    assert dedup_stats["overwrites_prevented"] == 1
+    assert dedup_stats["skipped_canonical_duplicate"] == 1
+    assert dedup_stats["inserted_new"] == 0
+    assert iso_lat._nodes["blockchain"].definition == orig_def
 
     # 2. Vault telemetry & domain listing commands
     st_res = router.route("Concept lattice status")

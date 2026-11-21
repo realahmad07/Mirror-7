@@ -641,7 +641,7 @@ def main() -> int:
     lines = [
         "# Mirror 7 — Honest External-Style & Adversarial CPU Benchmark",
         "",
-        "This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen algebra & formal logic, GSM8K-style free-form word problems, 3,200+ multi-source harvested open-ended concepts, and hard OOD traps** without cherry-picking. Every task is scored strictly into three buckets: **Solved Correctly**, **Honest Abstention (Safe)**, or **Wrong / Hallucinated (Unsafe)**.",
+        "This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen algebra & formal logic, GSM8K-style free-form word problems, 10,000+ multi-source harvested open-ended concepts, and hard OOD traps** without cherry-picking. Every task is scored strictly into three buckets: **Solved Correctly**, **Honest Abstention (Safe)**, or **Wrong / Hallucinated (Unsafe)**.",
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
@@ -667,7 +667,7 @@ def main() -> int:
         "12_categorized_12domain_conversation_fda_clinvar_and_stoichiometry": "12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10)",
         "13_socratic_coach_document_composer_chembl_reactome_and_context7": "13. Multi-Turn Socratic Coach, Proposal/Email/Schema Composer, ChEMBL, Reactome, ClinicalTrials & Context7 (10)",
         "14_open_ended_concept_lattice_and_cross_concept_synthesis": "14. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesis (10)",
-        "15_bulk_harvested_3200plus_multisource_concept_vault": "15. Bulk-Harvested 3,200+ Multi-Source Concept Vault (Wikipedia, MDN, Python Docs, Curated, arXiv) (10)",
+        "15_bulk_harvested_3200plus_multisource_concept_vault": "15. Phase-1 Public Beta 10,000+ Multi-Source Concept Vault (Wikipedia, MDN, Python Docs, Curated, arXiv) (10)",
         "16_hard_ood_and_hallucination_traps": "16. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():

@@ -1,6 +1,6 @@
 # Mirror 7 — Honest External-Style & Adversarial CPU Benchmark
 
-This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen algebra & formal logic, GSM8K-style free-form word problems, 3,200+ multi-source harvested open-ended concepts, and hard OOD traps** without cherry-picking. Every task is scored strictly into three buckets: **Solved Correctly**, **Honest Abstention (Safe)**, or **Wrong / Hallucinated (Unsafe)**.
+This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen algebra & formal logic, GSM8K-style free-form word problems, 10,000+ multi-source harvested open-ended concepts, and hard OOD traps** without cherry-picking. Every task is scored strictly into three buckets: **Solved Correctly**, **Honest Abstention (Safe)**, or **Wrong / Hallucinated (Unsafe)**.
 
 - **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)
 - **Total Tasks:** `160`
@@ -10,22 +10,22 @@ This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen alge
 
 | Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |
 |---|---:|---:|---:|---:|
-| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 4.957 |
-| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 3.737 |
-| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 8.037 |
-| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 15.649 |
-| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 2.737 |
-| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 1.598 |
-| 7. Creative Writing (Poetry/Stories), Bilingual Chat & Blueprint Feeding (10) | 10/10 | 0/10 | 0/10 | 4.212 |
-| 8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10) | 10/10 | 0/10 | 0/10 | 1.623 |
-| 9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10) | 10/10 | 0/10 | 0/10 | 0.74 |
-| 10. 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Audit & Fault-Tree (10) | 10/10 | 0/10 | 0/10 | 0.154 |
-| 11. Antigravity Science Plugins: Chemistry (PubChem), Calculus, Quantum/arXiv & UniProt (10) | 10/10 | 0/10 | 0/10 | 0.276 |
-| 12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10) | 10/10 | 0/10 | 0/10 | 0.316 |
-| 13. Multi-Turn Socratic Coach, Proposal/Email/Schema Composer, ChEMBL, Reactome, ClinicalTrials & Context7 (10) | 10/10 | 0/10 | 0/10 | 1.598 |
-| 14. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesis (10) | 10/10 | 0/10 | 0/10 | 4.207 |
-| 15. Bulk-Harvested 3,200+ Multi-Source Concept Vault (Wikipedia, MDN, Python Docs, Curated, arXiv) (10) | 10/10 | 0/10 | 0/10 | 4.849 |
-| 16. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 72.49 |
+| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 3.556 |
+| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 3.328 |
+| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 6.611 |
+| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 11.387 |
+| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 1.877 |
+| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 1.125 |
+| 7. Creative Writing (Poetry/Stories), Bilingual Chat & Blueprint Feeding (10) | 10/10 | 0/10 | 0/10 | 3.322 |
+| 8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10) | 10/10 | 0/10 | 0/10 | 1.418 |
+| 9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10) | 10/10 | 0/10 | 0/10 | 0.452 |
+| 10. 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Audit & Fault-Tree (10) | 10/10 | 0/10 | 0/10 | 0.091 |
+| 11. Antigravity Science Plugins: Chemistry (PubChem), Calculus, Quantum/arXiv & UniProt (10) | 10/10 | 0/10 | 0/10 | 0.217 |
+| 12. 12-Domain Categorized Conversation, Cross-Domain Blending, Chemical Balancer, openFDA & ClinVar (10) | 10/10 | 0/10 | 0/10 | 0.304 |
+| 13. Multi-Turn Socratic Coach, Proposal/Email/Schema Composer, ChEMBL, Reactome, ClinicalTrials & Context7 (10) | 10/10 | 0/10 | 0/10 | 1.396 |
+| 14. Sub-Linear O(1) Open-Ended Concept Lattice & Cross-Concept Compositional Synthesis (10) | 10/10 | 0/10 | 0/10 | 4.569 |
+| 15. Phase-1 Public Beta 10,000+ Multi-Source Concept Vault (Wikipedia, MDN, Python Docs, Curated, arXiv) (10) | 10/10 | 0/10 | 0/10 | 5.114 |
+| 16. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 44.338 |
 
 ## Honest Interpretation
 

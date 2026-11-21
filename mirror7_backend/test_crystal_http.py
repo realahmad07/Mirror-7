@@ -408,3 +408,86 @@ def test_bottlenecks_9_to_13_http_endpoints(tmp_path: Path):
             service._memory_graph.close()
         if service.crystal_vault is not None and hasattr(service.crystal_vault, "close"):
             service.crystal_vault.close()
+
+
+def test_market_launch_concept_lattice_http_endpoints(tmp_path: Path):
+    from mirror_crystal.cross_session_memory import CrossSessionMemoryGraph
+    eng = MirrorCrystalEngine()
+    db_path = tmp_path / "test_lattice_http.sqlite"
+    service = BackendService(crystal_vault=eng, enable_crystal_auto_load=False)
+    service._memory_graph = CrossSessionMemoryGraph(db_path=db_path)
+    server = create_server(port=0, service=service)
+    t = threading.Thread(target=server.serve_forever, daemon=True)
+    t.start()
+    try:
+        # 1. GET /api/lattice/status
+        code_st, st_data, _ = make_request(server, "GET", "/api/lattice/status")
+        assert code_st == 200
+        assert st_data["ok"] is True
+        assert st_data["uses_neural_parameters"] is False
+        assert st_data["uses_third_party_llm"] is False
+        assert st_data["concept_nodes"] >= 1000
+        assert st_data["domains_count"] >= 20
+
+        # 2. GET /api/lattice/domain?name=physics&limit=5
+        code_dom, dom_data, _ = make_request(server, "GET", "/api/lattice/domain?name=physics&limit=5")
+        assert code_dom == 200
+        assert dom_data["ok"] is True
+        assert dom_data["domain"] == "physics"
+        assert len(dom_data["concepts"]) == 5
+
+        # 3. POST /api/lattice/query (Cross-Concept Head-to-Head Comparison)
+        code_q, q_data, _ = make_request(
+            server,
+            "POST",
+            "/api/lattice/query",
+            {"prompt": "Compare Docker and Kubernetes"},
+        )
+        assert code_q == 200
+        assert q_data["ok"] is True
+        assert q_data["matched"] is True
+        assert "Cross-Concept Comparison" in q_data["response"]
+
+        # 4. POST /api/lattice/compile — No-Overwrite Guard blocks overwriting protected seed node 'blockchain' (409)
+        try:
+            code_blk, blk_data, _ = make_request(
+                server,
+                "POST",
+                "/api/lattice/compile",
+                {
+                    "topic": "blockchain",
+                    "text": "Weak attempt to overwrite protected blockchain concept with noise.",
+                    "persist": False,
+                },
+            )
+        except urllib.error.HTTPError as exc:
+            code_blk = exc.code
+            blk_data = json.loads(exc.read().decode("utf-8"))
+        assert code_blk == 409
+        assert blk_data["ok"] is False
+        assert blk_data["protected"] is True
+
+        # 5. POST /api/lattice/compile — Compiling a brand-new ephemeral concept succeeds (200)
+        code_new, new_data, _ = make_request(
+            server,
+            "POST",
+            "/api/lattice/compile",
+            {
+                "topic": "MirrorLatticeProbeConcept",
+                "text": (
+                    "MirrorLatticeProbeConcept is a test concept verifying live zero-bloat compilation. "
+                    "It works through deterministic 5-facet extraction without neural weights."
+                ),
+                "category": "computer_science",
+                "persist": False,
+            },
+        )
+        assert code_new == 200
+        assert new_data["ok"] is True
+        assert new_data["concept_id"] == "mirrorlatticeprobeconcept"
+    finally:
+        server.shutdown()
+        if service._memory_graph is not None:
+            service._memory_graph.close()
+        if service.crystal_vault is not None and hasattr(service.crystal_vault, "close"):
+            service.crystal_vault.close()
