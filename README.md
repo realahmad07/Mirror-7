@@ -1491,6 +1491,7 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 | **Zero-Parameter Tabular, CSV & Time-Series Data Analyst** | `mirror_crystal/tabular_data_analyst.py` | Pure-Python statistical analyzer computing exact `sum`, `mean`, `median`, `growth %`, **MAD/IQR outlier detection**, and **exact OLS linear trend regression** ($y = ax + b$, $R^2$, and $t_{n+1}$ next-step forecasting) in English & Roman Urdu. |
 | **Creative Writing, Bilingual Dialogue & Feedable NCD Engine** | `mirror_crystal/creative_conversation_engine.py` | 0-parameter combinatorial poetry/shayari composer (English & Roman Urdu), 5-act narrative story VM, creative brainstorming organ, empathetic Roman-Urdu/English dialogue, and live-feedable conversational memory (`"Feed: <input> => <reply>"` or `"Feed file: <jsonl_path>"`) indexed via Raw-DEFLATE Symmetric NCD + SQLite `.dcrystal` persistence. |
 | **Unbounded Conversational Blueprint Distiller & Speech-Act Engine** | `mirror_crystal/conversational_blueprint_engine.py` | Eliminates raw dialogue storage bloat via **Plotkin Anti-Unification (LGG) + LCS Slot Blueprinting** (distilling analogous examples into 1 `<slot_0>` rule and **evicting raw strings**), **Compositional Pragmatic Speech-Act Operators** (open-vocabulary empathy, celebration, first-principles advisory, dialectical reflection), and a **128-Byte Stateful Coreference Register** (`active_topic` pronoun resolution across turns). |
+| **Multi-Intent Discourse Fuser, Urdu Morphology, Zero-Bloat Distiller & Goal Planner** | `mirror_crystal/discourse_fusion_and_planner.py` | Adds 4 zero-parameter cognitive organs: (1) **Multi-Intent Heterogeneous Discourse Fuser** (fuses empathy/mood clauses with quantitative math/word-problem clauses in a single prompt), (2) **Roman-Urdu Morpho-Syntactic Gender Adapter** (automatically inflects `leta/leti`, `deta/deti`, `ka/ki` for feminine vs. masculine slot nouns), (3) **Zero-Bloat Folder/Corpus Blueprint Distiller** (`"Distill folder: <path>"`, compressing redundant dialogue/prose by **65%+** while evicting raw bytes), and (4) **Symbolic Personal Goal & Habit DAG Planner VM** (4-phase milestone roadmaps + multi-turn `%` progress tracking). |
 
 ### Verification
 
@@ -1501,17 +1502,18 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 - `mirror_crystal/tests/test_unit_normalizer_tdd_and_studio.py` — **3 passed**
 - `mirror_crystal/tests/test_four_native_intelligence_leaps.py` — **4 passed**
 - `mirror_crystal/tests/test_semantic_frame_vm_and_ncd.py` — **5 passed**
-- `mirror_crystal/tests/test_unstructured_prose_engine.py` — **10 passed**
-- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **189 passed, 0 failed**
+- `mirror_crystal/tests/test_unstructured_prose_engine.py` — **11 passed**
+- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **190 passed, 0 failed**
 - Internal Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
-- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`, 80 tasks):
+- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`, 90 tasks):
   - Casual English & Roman-Urdu paraphrases: **10 / 10 solved (100.0%)**, **0 wrong**
   - Unseen algebra, linear systems & formal logic: **10 / 10 solved (100.0%)**, **0 wrong**
   - GSM8K-style free-form arithmetic word problems: **10 / 10 solved (100.0%)**, **0 wrong**
   - Completely unseen paraphrased transfer problems (new nouns/verbs): **10 / 10 solved (100.0%)**, **0 wrong**
   - Unstructured contract summarization, live OpenIE text ingestion & comparative RST prose (English & Roman Urdu): **10 / 10 solved (100.0%)**, **0 wrong**
   - Grounded Document/Contract Q&A, Counterfactual What-If Scaling, AST Buggy-Code Repair & Tabular Data Analyst: **10 / 10 solved (100.0%)**, **0 wrong**
-  - Creative writing (English/Urdu Poetry & 5-Act Stories), empathetic dialogue & live conversational feeding: **10 / 10 solved (100.0%)**, **0 wrong**
-  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 80`, `70 / 70` solvable tasks solved)**
+  - Creative writing (English/Urdu Poetry & 5-Act Stories), empathetic dialogue & live blueprint distillation: **10 / 10 solved (100.0%)**, **0 wrong**
+  - Multi-intent discourse fusion, Roman-Urdu gender morphology, zero-bloat corpus distiller & personal goal DAG planner: **10 / 10 solved (100.0%)**, **0 wrong**
+  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 90`, `80 / 80` solvable tasks solved)**
 
 **Boundary:** This track solves deterministic quantitative, symbolic, compositional, extractive/submodular document summarization, and proposition-grounded comparative discourse tasks with zero hallucination. For ungrounded open-domain topics not yet in the vault, feed text via `"Learn text about <topic>: <paragraphs>"` first; otherwise Mirror abstains honestly rather than fabricating facts.

@@ -276,10 +276,28 @@ class ConversationalBlueprintEngine:
         )
 
     def observe_and_distill(self, trigger: str, response: str) -> dict[str, Any]:
-        """Ingest a conversational example; if it anti-unifies with any pending example,
-        distill a generalized ConversationalBlueprint and EVICT both raw examples from memory!"""
+        """Ingest a conversational example; if an existing blueprint already covers it,
+        evict 100% of its raw bytes immediately (0 extra storage). Otherwise anti-unify
+        with any matching pending example to distill a new blueprint and evict both raw strings."""
         trig = trigger.strip()
         resp = response.strip()
+        raw_pair_bytes = len(trig.encode("utf-8")) + len(resp.encode("utf-8"))
+
+        # Check if an existing induced blueprint ALREADY covers this trigger pattern!
+        for existing_bp in self._blueprints:
+            if existing_bp.speech_act == "induced_slot_blueprint" and re.match(existing_bp.trigger_pattern, trig, flags=re.IGNORECASE):
+                self.total_raw_bytes_evicted += raw_pair_bytes
+                return {
+                    "distilled": True,
+                    "absorbed_into_existing": True,
+                    "blueprint_id": existing_bp.blueprint_id,
+                    "trigger_pattern": existing_bp.trigger_pattern,
+                    "response_template": existing_bp.response_template,
+                    "raw_bytes_evicted": raw_pair_bytes,
+                    "blueprint_bytes": 0,
+                    "pending_raw_count": len(self._pending_examples),
+                }
+
         for idx, (prev_trig, prev_resp) in enumerate(self._pending_examples):
             bp = induce_blueprint_from_pair(
                 prev_trig,
@@ -408,6 +426,10 @@ class ConversationalBlueprintEngine:
                     f"What drew your interest to {topic}?"
                 )
 
+        if is_urdu:
+            from .discourse_fusion_and_planner import RomanUrduMorphologyAdapter
+            resp = RomanUrduMorphologyAdapter.inflect_template(resp, topic)
+
         return BlueprintConversationalResult(
             matched=True,
             blueprint_id=f"bp.pragmatic.{act}",
@@ -439,6 +461,9 @@ class ConversationalBlueprintEngine:
                 state.last_speech_act = bp.speech_act
                 state.turn_count += 1
                 rendered = bp.response_template.format(**slots, topic=state.active_topic)
+                if bp.language in {"roman_urdu", "auto"}:
+                    from .discourse_fusion_and_planner import RomanUrduMorphologyAdapter
+                    rendered = RomanUrduMorphologyAdapter.inflect_template(rendered, state.active_topic)
                 bp_bytes = len(bp.trigger_pattern.encode("utf-8")) + len(bp.response_template.encode("utf-8"))
                 return BlueprintConversationalResult(
                     matched=True,

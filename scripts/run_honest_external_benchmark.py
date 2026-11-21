@@ -56,7 +56,8 @@ def main() -> int:
         "5_unstructured_summarization_and_comparative_prose": [],
         "6_document_qa_counterfactual_code_repair_and_data_analyst": [],
         "7_creative_writing_conversation_and_live_feeding": [],
-        "8_hard_ood_and_hallucination_traps": [],
+        "8_discourse_fusion_morphology_distiller_and_goal_planner": [],
+        "9_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -279,7 +280,47 @@ def main() -> int:
         else:
             add("7_creative_writing_conversation_and_live_feeding", tid, "wrong_or_hallucinated", dt, res.explanation)
 
-    # ---- 8. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 8. Multi-Intent Discourse Fusion, Roman-Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10 tasks) ----
+    sample_corpus = (
+        "hamza ko flutter seekhna hai => flutter seekhne ke liye rozana 2 ghantay code likho!\n"
+        "hamza ko golang seekhna hai => golang seekhne ke liye rozana 2 ghantay code likho!\n"
+        "hamza ko docker seekhna hai => docker seekhne ke liye rozana 2 ghantay code likho!\n"
+        "hamza ko kubernetes seekhna hai => kubernetes seekhne ke liye rozana 2 ghantay code likho!"
+    )
+    fusion_goal_tasks = [
+        (
+            "fg_01",
+            "Yaar aaj main bakery ki dukan chala kar bohot thak gaya hoon; Ali has 800 dollars and gives 500 dollars to his vendor. How many dollars does Ali have left?",
+            300.0,
+        ),
+        (
+            "fg_02",
+            "Yaar aaj main coding kar ke bohot thak gaya hoon; A baker makes 15 loaves of bread per hour. How many loaves does she make in 4 hours?",
+            60.0,
+        ),
+        ("fg_03", "Yaar aaj main parhai kar ke bohot thak gaya hoon", "nichor leti hai"),
+        ("fg_04", "Yaar aaj main karobar chala kar bohot thak gaya hoon", "nichor leta hai"),
+        ("fg_05", f"Distill corpus: {sample_corpus}", "storage saved!"),
+        ("fg_06", "hamza ko elixir seekhna hai", "elixir seekhne ke liye rozana 2 ghantay code likho!"),
+        ("fg_07", "Mujhe 40 din mein Python seekhna hai, plan banao", 40.0),
+        ("fg_08", "Goal progress: completed phase 3", 75.0),
+        ("fg_09", "Plan goal: master Distributed Systems in 8 weeks", 56.0),
+        ("fg_10", "Goal progress: completed phase 2", 50.0),
+    ]
+    for tid, prompt, exp in fusion_goal_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt, session_id="bench_goal_sess")
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("8_discourse_fusion_morphology_distiller_and_goal_planner", tid, "honest_abstain", dt, res.explanation)
+        elif isinstance(exp, float):
+            ok = _close(res.output, exp)
+            add("8_discourse_fusion_morphology_distiller_and_goal_planner", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+        else:
+            ok = exp.casefold() in res.explanation.casefold()
+            add("8_discourse_fusion_morphology_distiller_and_goal_planner", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+
+    # ---- 9. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
         ("ood_01", "What will the exact closing stock price of AAPL be tomorrow?"),
         ("ood_02", "Who will win the next FIFA World Cup?"),
@@ -297,9 +338,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("8_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("9_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("8_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("9_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -346,8 +387,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (All 7 Solvable Categories):** `{total_solved} / 70` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['8_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (All 8 Solvable Categories):** `{total_solved} / 80` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['9_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -360,8 +401,9 @@ def main() -> int:
         "4_unseen_paraphrased_word_problem_transfer": "4. Unseen Paraphrased Transfer Problems (10)",
         "5_unstructured_summarization_and_comparative_prose": "5. Unstructured Summarization, OpenIE & Comparative Prose (10)",
         "6_document_qa_counterfactual_code_repair_and_data_analyst": "6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10)",
-        "7_creative_writing_conversation_and_live_feeding": "7. Creative Writing (Poetry/Stories), Bilingual Chat & Live Feeding (10)",
-        "8_hard_ood_and_hallucination_traps": "8. Hard OOD & Hallucination Traps (10, must abstain)",
+        "7_creative_writing_conversation_and_live_feeding": "7. Creative Writing (Poetry/Stories), Bilingual Chat & Blueprint Feeding (10)",
+        "8_discourse_fusion_morphology_distiller_and_goal_planner": "8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10)",
+        "9_hard_ood_and_hallucination_traps": "9. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(

@@ -293,4 +293,58 @@ def test_conversational_blueprint_distillation_eviction_and_unbounded_multiturn(
     assert "underwater cinematography" in t3.explanation.casefold()
 
 
+def test_four_new_organs_fusion_morphology_distiller_and_goal_planner(tmp_path):
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Multi-Intent Heterogeneous Discourse Fusion (Empathy Blueprint + Quantitative Word Problem in 1 prompt!)
+    fused = router.route(
+        "Yaar aaj main bakery ki dukan chala kar bohot thak gaya hoon; Ali has 800 dollars and gives 500 dollars to his vendor. How many dollars does Ali have left?"
+    )
+    assert fused.matched is True
+    assert fused.output == 300.0
+    assert "Multi-Intent Fused Response" in fused.explanation
+    assert "bakery ki dukan" in fused.explanation.casefold()
+
+    # 2. Roman-Urdu Morpho-Syntactic Gender Agreement ('parhai' is Feminine -> 'nichor leti hai', 'karobar' is Masculine -> 'nichor leta hai')
+    fem = router.route("Yaar aaj main parhai kar ke bohot thak gaya hoon")
+    assert fem.matched is True
+    assert "nichor leti hai" in fem.explanation
+
+    masc = router.route("Yaar aaj main karobar chala kar bohot thak gaya hoon")
+    assert masc.matched is True
+    assert "nichor leta hai" in masc.explanation
+
+    # 3. Zero-Bloat Folder & Corpus Blueprint Distiller (60%+ storage savings!)
+    folder = tmp_path / "sample_books"
+    folder.mkdir()
+    (folder / "dialogues.txt").write_text(
+        "hamza ko flutter seekhna hai => flutter seekhne ke liye rozana 2 ghantay code likho aur widgets banao!\n"
+        "hamza ko golang seekhna hai => golang seekhne ke liye rozana 2 ghantay code likho aur widgets banao!\n"
+        "hamza ko docker seekhna hai => docker seekhne ke liye rozana 2 ghantay code likho aur widgets banao!\n"
+        "hamza ko kubernetes seekhna hai => kubernetes seekhne ke liye rozana 2 ghantay code likho aur widgets banao!\n",
+        encoding="utf-8",
+    )
+    dist_res = router.route(f"Distill folder: {folder}")
+    assert dist_res.matched is True
+    assert dist_res.output is not None and dist_res.output >= 50.0
+    assert "storage saved!" in dist_res.explanation
+
+    # Verify the distilled blueprint generalizes to an unseen topic from the distilled folder!
+    unseen_bp = router.route("hamza ko elixir seekhna hai")
+    assert unseen_bp.matched is True
+    assert "elixir seekhne ke liye rozana 2 ghantay code likho" in unseen_bp.explanation.casefold()
+
+    # 4. Personal Goal & Habit DAG Planner VM (English & Roman Urdu + multi-turn progress tracking)
+    g1 = router.route("Mujhe 40 din mein Python seekhna hai, plan banao", session_id="goal_sess")
+    assert g1.matched is True
+    assert g1.output == 40.0
+    assert "Din 1..10" in g1.explanation
+
+    g2 = router.route("Goal progress: completed phase 3", session_id="goal_sess")
+    assert g2.matched is True
+    assert g2.output == 75.0
+    assert "10 days remaining" in g2.explanation
+
+
+
 

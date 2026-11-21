@@ -14,6 +14,11 @@ from .code_repair_engine import CounterexampleCodeRepairEngine
 from .compression_analogy_engine import AnalogicalTransferEngine
 from .counterfactual_engine import CounterfactualWhatIfEngine
 from .creative_conversation_engine import CreativeConversationEngine
+from .discourse_fusion_and_planner import (
+    MultiIntentDiscourseFuser,
+    PersonalGoalPlannerVM,
+    ZeroBloatCorpusDistiller,
+)
 from .formal_logic_engine import solve_formal_logic_prompt
 from .native_realizer import NativeHybridRealizer
 from .operational_language import (
@@ -330,6 +335,12 @@ class NaturalLanguageUOLRouter:
         self.code_repair_engine = CounterexampleCodeRepairEngine()
         self.data_analyst = ZeroParamDataAnalyst()
         self.creative_engine = CreativeConversationEngine()
+        self.corpus_distiller = ZeroBloatCorpusDistiller(
+            self.creative_engine.blueprint_engine,
+            self.prose_engine,
+        )
+        self.goal_planner = PersonalGoalPlannerVM()
+        self.discourse_fuser = MultiIntentDiscourseFuser()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -597,6 +608,55 @@ class NaturalLanguageUOLRouter:
         taught_spec = parse_teach_formula_prompt(prompt)
         if taught_spec is not None:
             return self.teach_formula(taught_spec[0], taught_spec[1])
+
+        # 0a-1. Zero-Bloat Folder / Corpus Blueprint Distiller ("Distill folder: <path>" / "Distill corpus: <text>")
+        m_distill_path = re.match(r"^\s*distill\s+(?:folder|directory|file)\s*[:\-]\s*(.+)$", prompt.strip(), flags=re.IGNORECASE)
+        if m_distill_path:
+            drep = self.corpus_distiller.distill_path(m_distill_path.group(1))
+            return NLRouteResult(
+                matched=drep.ok,
+                rule_ids=("distiller.zero_bloat_path",),
+                output=drep.savings_pct if drep.ok else None,
+                unit="%",
+                explanation=drep.explanation,
+            )
+        m_distill_text = re.match(r"^\s*distill\s+corpus\s*[:\-]\s*(.+)$", prompt.strip(), flags=re.IGNORECASE | re.DOTALL)
+        if m_distill_text:
+            drep = self.corpus_distiller.distill_text_corpus(m_distill_text.group(1))
+            return NLRouteResult(
+                matched=drep.ok,
+                rule_ids=("distiller.zero_bloat_corpus",),
+                output=drep.savings_pct if drep.ok else None,
+                unit="%",
+                explanation=drep.explanation,
+            )
+
+        # 0a-2. Symbolic Personal Goal & Habit DAG Planner VM
+        goal_hit = self.goal_planner.route_goal_prompt(prompt, session_id=session_id or "default")
+        if goal_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=("planner.personal_goal_dag",),
+                output=goal_hit.output,
+                explanation=goal_hit.explanation,
+            )
+
+        # 0a-3. Multi-Intent Heterogeneous Discourse Fuser (Empathy/Conversation + Quantitative Solver in 1 prompt)
+        if re.search(r"\b(?:thak\s+gaya|preshan|tired|exhausted|stressed|mood\s+off)\b", lower) and len(re.findall(r"\d+(?:\.\d+)?", lower)) >= 2:
+            fused = self.discourse_fuser.try_fuse(
+                prompt,
+                lambda sub_q: self.route(sub_q, session_id=session_id),
+                self.creative_engine.blueprint_engine,
+                session_id=session_id or "default",
+            )
+            if fused is not None and fused.get("matched"):
+                return NLRouteResult(
+                    matched=True,
+                    rule_ids=tuple(fused["rule_ids"]),
+                    output=fused["output"],
+                    unit=str(fused.get("unit", "")),
+                    explanation=str(fused["explanation"]),
+                )
 
         # 0a. Live conversational blueprint distillation & feeding ("Feed: ... => ...", "Feed file: ...")
         if re.match(r"^\s*(?:feed|sikhao|distill|teach\s+reply|teach\s+dialogue|feed\s+file|feed\s+corpus)\s*[:\-]", prompt, flags=re.IGNORECASE):
