@@ -1485,6 +1485,7 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 | **Compositional Multi-Function Code Synthesis** | `mirror7_backend/native_code_generation.py` | Expands native TDD code builder to **25 verified programs** by composing verified helpers into compound algorithms (`sum_of_primes`, `count_palindromes`, `even_fibonacci`, `gcd_list`, `lcm_list`, `sum_of_factorials`). |
 | **Parameter-Free Semantic Frame VM** | `mirror_crystal/semantic_frame_vm.py` | Noun-agnostic, clause-by-clause symbolic virtual machine (`INIT -> ADD/SUB`, `UNIT_COST -> CHANGE_DUE`, `PERCENT_CHANGE`, `EQUAL_SPLIT`, `LEDGER_SUM`) lifting GSM8K-style free-form word problems from **2/10 -> 10/10** with **0 neural parameters** and explicit execution traces. |
 | **Raw-DEFLATE Skeleton-NCD & Analogical Transfer** | `mirror_crystal/compression_analogy_engine.py`, `docs/33-parameter-free-semantic-vm-and-skeleton-ncd.md` | Solves classical NCD bottlenecks via a 2-stage 4-gram + headerless raw-DEFLATE (`wbits=-15`) symmetric NCD funnel (`< 50 ms` over 1,343 blueprints) + Typed Structural Skeletonization (`<MONEY>`, `<PCT>`, `<RATE>`, `<TIME>`, `<QTY>`) for zero-parameter Analogical Program Transfer across unseen nouns. |
+| **Parameter-Free Unstructured Prose & Submodular-NCD Engine** | `mirror_crystal/unstructured_prose_engine.py`, `mirror_crystal/nl_uol_router.py` | Solves unstructured document/legal-contract summarization (English & Roman Urdu) via **Pairwise Raw-DEFLATE Symmetric NCD + LexRank PageRank centrality + Monotone Submodular Marginal-Compression Maximization** ($\Delta C(s \mid A) = C(A \cup \{s\}) - C(A)$) with obligation/condition/risk extraction, plus **Live 1-Shot OpenIE Text Ingestion** (`"Learn text about X: ..."`) and **Comparative RST Discourse Synthesis** (`"Mughal aur Ottoman governance ka muqabla karo"`, `"Compare TCP and UDP"`) with strict 0% hallucination. |
 
 ### Verification
 
@@ -1495,13 +1496,15 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 - `mirror_crystal/tests/test_unit_normalizer_tdd_and_studio.py` — **3 passed**
 - `mirror_crystal/tests/test_four_native_intelligence_leaps.py` — **4 passed**
 - `mirror_crystal/tests/test_semantic_frame_vm_and_ncd.py` — **5 passed**
-- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **179 passed, 0 failed**
+- `mirror_crystal/tests/test_unstructured_prose_engine.py` — **4 passed**
+- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **183 passed, 0 failed**
 - Internal Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
-- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`, 50 tasks):
+- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`, 60 tasks):
   - Casual English & Roman-Urdu paraphrases: **9 / 10 solved**, 1 honest abstain, **0 wrong**
   - Unseen algebra, linear systems & formal logic: **9 / 10 solved**, 1 honest abstain, **0 wrong**
   - GSM8K-style free-form arithmetic word problems: **10 / 10 solved** *(up from 2 / 10 after SemanticStateVM)*, **0 wrong**
   - Completely unseen paraphrased transfer problems (new nouns/verbs): **10 / 10 solved**, **0 wrong**
-  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 50`)**
+  - Unstructured contract summarization, live OpenIE text ingestion & comparative RST prose (English & Roman Urdu): **10 / 10 solved**, **0 wrong**
+  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 60`)**
 
-**Boundary:** This track solves deterministic quantitative, symbolic, and compositional operational tasks with zero hallucination. It does not replace a full conversational language model for open-ended prose.
+**Boundary:** This track solves deterministic quantitative, symbolic, compositional, extractive/submodular document summarization, and proposition-grounded comparative discourse tasks with zero hallucination. For ungrounded open-domain topics not yet in the vault, feed text via `"Learn text about <topic>: <paragraphs>"` first; otherwise Mirror abstains honestly rather than fabricating facts.

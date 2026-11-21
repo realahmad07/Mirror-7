@@ -29,6 +29,7 @@ from .uol_graph_planner import UOLGraphPlanner
 from .uol_inverse_deriver import derive_all_inverse_rules
 from .uol_rule_library import build_default_uol
 from .unit_normalizer import normalize_to_si, unit_pattern_for_quantity
+from .unstructured_prose_engine import UnstructuredProseEngine
 
 _NUM = r"(-?\d+(?:\.\d+)?)"
 
@@ -320,6 +321,7 @@ class NaturalLanguageUOLRouter:
         self.realizer = NativeHybridRealizer(default_style="step_by_step")
         self.semantic_vm = SemanticStateVM()
         self.analogy_engine = AnalogicalTransferEngine()
+        self.prose_engine = UnstructuredProseEngine()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -586,6 +588,15 @@ class NaturalLanguageUOLRouter:
         taught_spec = parse_teach_formula_prompt(prompt)
         if taught_spec is not None:
             return self.teach_formula(taught_spec[0], taught_spec[1])
+
+        # 0b. Parameter-Free Unstructured Prose Summarization, OpenIE Ingestion & Comparative RST Discourse
+        prose_hit = self.prose_engine.route_unstructured_prompt(prompt)
+        if prose_hit is not None:
+            return NLRouteResult(
+                matched=bool(prose_hit["matched"]),
+                rule_ids=tuple(prose_hit.get("rule_ids", ())),
+                explanation=str(prose_hit.get("explanation", "")),
+            )
 
         # 1. Temperature conversion chains (including multi-step F->K and K->F)
         temp_hit = self._route_temperature(lower)
