@@ -435,6 +435,56 @@ def test_four_frontier_organs_knapsack_testsynth_contradiction_and_faulttree():
     assert "EXPLAIN ANALYZE" in ft.explanation
 
 
+def test_antigravity_science_plugins_chemistry_calculus_arxiv_and_uniprot():
+    router = NaturalLanguageUOLRouter()
+
+    # 1. PubChem-Plugin Distilled Drug Blueprint & Lipinski Rule-of-5
+    pc = router.route("Check PubChem properties and Lipinski drug-likeness for Aspirin")
+    assert pc.matched is True
+    assert "CID 2244" in pc.explanation
+    assert "C9H8O4" in pc.explanation
+    assert "Lipinski Rule-of-5: PASS" in pc.explanation
+
+    # 2. Universal IUPAC Molar Mass with Nested Parentheses + Acid-Base pH
+    mm = router.route("Calculate molar mass of Ca(OH)2")
+    assert mm.matched is True
+    assert mm.output == 74.092
+
+    ph = router.route("Calculate pH for H+ concentration 0.001 M")
+    assert ph.matched is True
+    assert ph.output == 3.0
+
+    # 3. Symbolic Calculus (Derivative & Definite Integral)
+    diff = router.route("Differentiate 3x^3 - 5x^2 + 4x - 7 at x=2")
+    assert diff.matched is True
+    assert diff.output == 20.0
+    assert "9*x^2 - 10*x + 4" in diff.explanation
+
+    integ = router.route("Integrate 3x^2 + 2x from 0 to 4")
+    assert integ.matched is True
+    assert integ.output == 80.0
+
+    # 4. Relativistic Lorentz Factor & arXiv Quantum Entanglement
+    lor = router.route("Calculate Lorentz factor for velocity 0.8c")
+    assert lor.matched is True
+    assert round(float(lor.output), 4) == 1.6667
+
+    arx = router.route("Explain quantum entanglement according to arXiv literature")
+    assert arx.matched is True
+    assert "quant-ph/0702225v2" in arx.explanation
+
+    # 5. UniProtKB Distilled Protein Blueprint (P04637 / TP53) & Genomics Codon Translation
+    up = router.route("Lookup UniProt P04637 TP53 protein function")
+    assert up.matched is True
+    assert up.output == 393.0
+    assert "99.994% storage saved" in up.explanation
+
+    rna = router.route("Translate RNA of AUGGCCUAA")
+    assert rna.matched is True
+    assert "Met-Ala-Stop" in rna.explanation
+
+
+
 
 
 

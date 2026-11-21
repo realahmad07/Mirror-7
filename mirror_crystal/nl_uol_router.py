@@ -43,6 +43,7 @@ from .operational_language import (
     VariableSpec,
 )
 from .semantic_frame_vm import SemanticStateVM
+from .scientific_plugin_intelligence import ScientificPluginIntelligenceEngine
 from .symbolic_algebra_solver import solve_algebra_prompt
 from .tabular_data_analyst import ZeroParamDataAnalyst
 from .uol_formula_teacher import compile_formula_to_uol, parse_teach_formula_prompt
@@ -361,6 +362,7 @@ class NaturalLanguageUOLRouter:
         self.test_synthesizer = ASTUnitTestSynthesizer()
         self.contradiction_auditor = ContradictionAuditEngine()
         self.fault_diagnostician = FaultTreeDiagnostician()
+        self.scientific_engine = ScientificPluginIntelligenceEngine()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -741,6 +743,17 @@ class NaturalLanguageUOLRouter:
                 matched=True,
                 rule_ids=(diag_hit.fault_id,),
                 explanation=diag_hit.explanation,
+            )
+
+        # 0b-1d. Multi-Domain Scientific & Antigravity Plugin-Distilled Engine (Chemistry, Calculus, Quantum/arXiv, Genomics/UniProt)
+        sci_hit = self.scientific_engine.route_scientific_prompt(prompt)
+        if sci_hit.matched:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(sci_hit.rule_id,),
+                output=sci_hit.output,
+                unit=sci_hit.unit,
+                explanation=sci_hit.explanation,
             )
 
         # 0b-2. Self-Evolving Symbolic Law Discovery (Newton Finite-Difference & Exponential Inducer)

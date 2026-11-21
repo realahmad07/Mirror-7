@@ -59,7 +59,8 @@ def main() -> int:
         "8_discourse_fusion_morphology_distiller_and_goal_planner": [],
         "9_market_intelligence_law_decision_pipeline_and_auditor": [],
         "10_frontier_knapsack_testsynth_contradiction_and_faulttree": [],
-        "11_hard_ood_and_hallucination_traps": [],
+        "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": [],
+        "12_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -437,7 +438,33 @@ def main() -> int:
             ok = exp in res.explanation
             add("10_frontier_knapsack_testsynth_contradiction_and_faulttree", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
 
-    # ---- 11. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 11. Antigravity Science Plugins: Chemistry (PubChem), Symbolic Calculus, Quantum/arXiv & Genomics (UniProt) (10 tasks) ----
+    science_plugin_tasks = [
+        ("sc_01", "Check PubChem properties and Lipinski drug-likeness for Aspirin", "CID 2244"),
+        ("sc_02", "What is the PubChem molecular weight of Caffeine?", 194.19),
+        ("sc_03", "Calculate molar mass of Ca(OH)2", 74.092),
+        ("sc_04", "Calculate pH for H+ concentration 0.001 M", 3.0),
+        ("sc_05", "Differentiate 3x^3 - 5x^2 + 4x - 7 at x=2", 20.0),
+        ("sc_06", "Integrate 3x^2 + 2x from 0 to 4", 80.0),
+        ("sc_07", "Calculate 10 choose 3", 120.0),
+        ("sc_08", "Calculate Lorentz factor for velocity 0.8c", 1.666667),
+        ("sc_09", "Explain quantum entanglement according to arXiv literature", "quant-ph/0702225v2"),
+        ("sc_10", "Lookup UniProt P04637 TP53 protein function", 393.0),
+    ]
+    for tid, prompt, exp in science_plugin_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt)
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("11_science_plugins_chemistry_calculus_arxiv_and_uniprot", tid, "honest_abstain", dt, res.explanation)
+        elif isinstance(exp, float):
+            ok = _close(res.output, exp)
+            add("11_science_plugins_chemistry_calculus_arxiv_and_uniprot", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+        else:
+            ok = exp in res.explanation
+            add("11_science_plugins_chemistry_calculus_arxiv_and_uniprot", tid, "solved_correct" if ok else "wrong_or_hallucinated", dt, res.explanation.splitlines()[0])
+
+    # ---- 12. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
         ("ood_01", "What will the exact closing stock price of AAPL be tomorrow?"),
         ("ood_02", "Who will win the next FIFA World Cup?"),
@@ -455,9 +482,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("11_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("12_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("11_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("12_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -504,8 +531,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (All 10 Solvable Categories):** `{total_solved} / 100` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['11_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (All 11 Solvable Categories):** `{total_solved} / 110` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['12_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -522,7 +549,8 @@ def main() -> int:
         "8_discourse_fusion_morphology_distiller_and_goal_planner": "8. Multi-Intent Fusion, Urdu Morphology, Zero-Bloat Distiller & Goal Planner (10)",
         "9_market_intelligence_law_decision_pipeline_and_auditor": "9. Symbolic Law Discovery, Decision Matrix, Multi-Organ Pipeline & AST Auditor (10)",
         "10_frontier_knapsack_testsynth_contradiction_and_faulttree": "10. 0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Audit & Fault-Tree (10)",
-        "11_hard_ood_and_hallucination_traps": "11. Hard OOD & Hallucination Traps (10, must abstain)",
+        "11_science_plugins_chemistry_calculus_arxiv_and_uniprot": "11. Antigravity Science Plugins: Chemistry (PubChem), Calculus, Quantum/arXiv & UniProt (10)",
+        "12_hard_ood_and_hallucination_traps": "12. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(
