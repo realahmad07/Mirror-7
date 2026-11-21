@@ -362,7 +362,7 @@ class UnifiedCognitiveOrchestrator:
                     from mirror_crystal.nl_uol_router import NaturalLanguageUOLRouter
                     router = NaturalLanguageUOLRouter()
                     self._default_uol_router = router
-                routed = router.route(prompt)
+                routed = router.route(prompt, session_id=session_id)
                 if routed.matched:
                     task_uol_verified = True
                     sources_consulted.append("uol_auto_router")

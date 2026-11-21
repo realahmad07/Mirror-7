@@ -300,35 +300,75 @@ class NaturalLanguageUOLRouter:
                 self.uol = base
         self.graph_planner = UOLGraphPlanner(self.uol)
         self.realizer = NativeHybridRealizer(default_style="step_by_step")
+        self._session_quantities: dict[str, dict[str, float]] = {}
 
-    def _route_dynamic_graph(self, lower: str) -> NLRouteResult | None:
-        """Use UOLGraphPlanner to dynamically discover multi-step derivations (1-4 hops)."""
-        target_qty: str | None = None
-        for qty, aliases in _QUANTITY_ALIASES:
-            for alias in aliases:
-                pat = rf"\b(?:find|calculate|compute|what\s+is(?:\s+the)?|solve\s+for|get|determine)\s+(?:the\s+)?{re.escape(alias)}\b"
-                if re.search(pat, lower):
-                    target_qty = qty
-                    break
-            if target_qty is not None:
-                break
-        if target_qty is None:
-            return None
+    def get_session_quantities(self, session_id: str) -> dict[str, float]:
+        return dict(self._session_quantities.get(session_id, {}))
 
-        known: dict[str, float] = {}
+    def clear_session(self, session_id: str) -> None:
+        self._session_quantities.pop(session_id, None)
+
+    def _extract_all_quantities(self, lower: str, *, exclude: str | None = None) -> dict[str, float]:
+        found: dict[str, float] = {}
         for qty, aliases in _QUANTITY_ALIASES:
-            if qty == target_qty:
+            if qty == exclude:
                 continue
             val = _extract_param(lower, aliases)
             if val is not None:
-                known[qty] = val
+                found[qty] = val
+        return found
 
-        if not known:
+    def _detect_target_quantity(self, lower: str) -> str | None:
+        for qty, aliases in _QUANTITY_ALIASES:
+            for alias in aliases:
+                pat = rf"\b(?:find|calculate|compute|what\s+is(?:\s+the)?|what'?s(?:\s+the)?|solve\s+for|get|determine)\s+(?:the\s+)?{re.escape(alias)}\b"
+                if re.search(pat, lower):
+                    return qty
+        return None
+
+    def _route_dynamic_graph(self, lower: str, *, session_id: str | None = None) -> NLRouteResult | None:
+        """Use UOLGraphPlanner to dynamically discover multi-step derivations (1-4 hops),
+        optionally combining known quantities across multi-turn sessions."""
+        target_qty = self._detect_target_quantity(lower)
+        turn_known = self._extract_all_quantities(lower, exclude=target_qty)
+
+        if session_id is not None:
+            session_state = self._session_quantities.setdefault(session_id, {})
+            # If user explicitly updates a base input, store it in session state
+            session_state.update(turn_known)
+            combined_known = dict(session_state)
+            if target_qty is not None and target_qty in combined_known and turn_known:
+                # Recompute target if new inputs were supplied in this turn
+                combined_known.pop(target_qty, None)
+        else:
+            combined_known = turn_known
+
+        # Pure statement turn (e.g., "mass is 10 kg and acceleration is 5") — remember for next turn!
+        if target_qty is None:
+            if session_id is not None and turn_known and not lower.endswith("?"):
+                summary = ", ".join(f"{k}={v:g}" for k, v in sorted(turn_known.items()))
+                return NLRouteResult(
+                    matched=True,
+                    rule_ids=("session.quantity_memory",),
+                    inputs=turn_known,
+                    output=None,
+                    explanation=f"Stored session quantities: {summary}. Ask for any derived quantity next.",
+                )
             return None
 
-        plan = self.graph_planner.plan_and_execute(known, target_qty, max_hops=4)
-        if not plan.solved or plan.output is None or not plan.steps:
+        if not combined_known:
             return None
+
+        plan = self.graph_planner.plan_and_execute(combined_known, target_qty, max_hops=4)
+        if not plan.solved or plan.output is None:
+            return None
+
+        # Persist derived target (and intermediate quantities) into session memory for follow-up turns!
+        if session_id is not None:
+            session_state = self._session_quantities.setdefault(session_id, {})
+            for step in plan.steps:
+                session_state[step.output_quantity] = step.output_value
+            session_state[target_qty] = plan.output
 
         realized = self.realizer.realize_graph_plan(plan, style="step_by_step")
         steps_payload = tuple(
@@ -346,7 +386,7 @@ class NaturalLanguageUOLRouter:
         return NLRouteResult(
             matched=True,
             rule_ids=plan.rule_ids,
-            inputs=known,
+            inputs=combined_known,
             output=plan.output,
             unit=plan.unit,
             explanation=realized.text,
@@ -429,11 +469,15 @@ class NaturalLanguageUOLRouter:
                 )
         return None
 
-    def route(self, prompt: str) -> NLRouteResult:
+    def route(self, prompt: str, *, session_id: str | None = None) -> NLRouteResult:
         """Parse plain text and execute matching verified UOL rule(s) if all inputs are present."""
         if not isinstance(prompt, str) or not prompt.strip():
             return NLRouteResult(False, explanation="empty prompt")
         lower = prompt.strip().casefold()
+
+        if session_id is not None and re.search(r"\b(?:clear|reset)\s+(?:quantities|session|variables)\b", lower):
+            self.clear_session(session_id)
+            return NLRouteResult(True, rule_ids=("session.clear",), explanation="Cleared stored session quantities.")
 
         # 1. Temperature conversion chains (including multi-step F->K and K->F)
         temp_hit = self._route_temperature(lower)
@@ -472,6 +516,9 @@ class NaturalLanguageUOLRouter:
                         else:
                             inv_inputs[pname] = val
                     if missing:
+                        graph_hit = self._route_dynamic_graph(lower, session_id=session_id)
+                        if graph_hit is not None:
+                            return graph_hit
                         return NLRouteResult(
                             False,
                             rule_ids=(inv_rule_id,),
@@ -498,14 +545,12 @@ class NaturalLanguageUOLRouter:
             for pname, aliases in binding.param_aliases.items():
                 val = _extract_param(lower, aliases)
                 if val is None:
-                    # Default gravity = 9.81 only if explicitly omitted? No—never guess!
                     missing_fwd.append(pname)
                 else:
                     fwd_inputs[pname] = val
             if missing_fwd:
-                # Before abstaining, check if the dynamic unit-graph planner can derive
-                # the missing intermediate quantities from other given inputs!
-                graph_hit = self._route_dynamic_graph(lower)
+                # Check if dynamic unit-graph planner (including session memory) can derive it!
+                graph_hit = self._route_dynamic_graph(lower, session_id=session_id)
                 if graph_hit is not None:
                     return graph_hit
                 return NLRouteResult(
@@ -529,8 +574,8 @@ class NaturalLanguageUOLRouter:
                 explanation=f"Verified UOL rule {binding.rule_id}: {formatted}{unit_suffix}",
             )
 
-        # 4. Zero-shot multi-step unit-graph planner fallback
-        graph_hit = self._route_dynamic_graph(lower)
+        # 4. Zero-shot multi-step unit-graph planner & multi-turn session state fallback
+        graph_hit = self._route_dynamic_graph(lower, session_id=session_id)
         if graph_hit is not None:
             return graph_hit
 

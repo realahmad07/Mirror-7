@@ -213,9 +213,17 @@ class CapabilitySynthesizer:
             seen[key] = (expr, output_type, expr_depth)
             additions.append((expr, output_type, expr_depth))
 
-        # 1. Eligible UOL rules FIRST (prioritizes rule composition over raw primitives)
+        # 1. Eligible UOL rules FIRST (prioritizes rule composition over raw primitives),
+        # while reserving budget for primitive ops when the rule catalog is large.
         per_high_arity_cap = max(64, goal.candidate_budget // max(4, len(eligible_rules) * 2))
+        rule_phase_limit = (
+            budget[0] + int((goal.candidate_budget - budget[0]) * 0.6)
+            if len(eligible_rules) > 10
+            else goal.candidate_budget
+        )
         for rule in eligible_rules:
+            if budget[0] >= rule_phase_limit:
+                break
             choices = []
             for port in rule.inputs:
                 matching = [
@@ -235,6 +243,8 @@ class CapabilitySynthesizer:
                 if 1 + max((item[2] for item in selection), default=0) > depth:
                     continue
                 if len(rule.inputs) >= 3 and rule_tried >= per_high_arity_cap:
+                    break
+                if budget[0] >= rule_phase_limit:
                     break
                 if budget[0] >= goal.candidate_budget:
                     return additions, True

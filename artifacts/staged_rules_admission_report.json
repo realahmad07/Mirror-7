@@ -1,0 +1,23 @@
+{
+  "vault_path": "artifacts/mirror_uol_skills.dcrystal",
+  "pre_admission_sha256": "1406d4601f417184dbe89b1958c01c1557d8fc976d752fcab80197ad3a04931b",
+  "post_admission_sha256": "001d890288c523740db8efd7e821c15da43818e644d854e52cb689ed684ff6e5",
+  "vault_size_bytes": 4562944,
+  "sqlite_integrity": "ok",
+  "verified_uol_skills_preserved": 120,
+  "uol_conflicts": [],
+  "staged_blueprints_admitted": 1343,
+  "total_blueprints_in_vault": 1343,
+  "all_admitted_blueprints_unverified": true,
+  "admission_stats": {
+    "roadmap_997_input": 997,
+    "roadmap_997_selected": 997,
+    "source_supported_26_input": 26,
+    "source_supported_26_selected": 26,
+    "synthetic_10240_input": 10240,
+    "synthetic_families_unique": 320,
+    "synthetic_families_selected": 320,
+    "duplicates_skipped": 0,
+    "invalid_skipped": 0
+  }
+}

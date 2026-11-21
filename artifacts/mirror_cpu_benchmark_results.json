@@ -1,0 +1,488 @@
+{
+  "benchmark_version": "mirror-cpu-frozen-v1",
+  "uses_gpu": false,
+  "uses_third_party_llm": false,
+  "python_version": "3.14.4",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "vault_uol_skills_loaded": 120,
+  "total_tasks": 60,
+  "total_passed": 60,
+  "overall_accuracy_pct": 100.0,
+  "hallucination_count": 0,
+  "hallucination_rate_pct": 0.0,
+  "median_latency_ms": 1.287,
+  "mean_latency_ms": 94.587,
+  "categories": {
+    "1_forward_uol_formulas": {
+      "total": 10,
+      "passed": 10,
+      "accuracy_pct": 100.0,
+      "median_latency_ms": 0.627
+    },
+    "2_inverse_uol_equations": {
+      "total": 10,
+      "passed": 10,
+      "accuracy_pct": 100.0,
+      "median_latency_ms": 0.113
+    },
+    "3_multihop_graph_planning": {
+      "total": 10,
+      "passed": 10,
+      "accuracy_pct": 100.0,
+      "median_latency_ms": 1.531
+    },
+    "4_multiturn_stateful_reasoning": {
+      "total": 10,
+      "passed": 10,
+      "accuracy_pct": 100.0,
+      "median_latency_ms": 0.84
+    },
+    "5_synthesis_and_tdd_code": {
+      "total": 10,
+      "passed": 10,
+      "accuracy_pct": 100.0,
+      "median_latency_ms": 485.701
+    },
+    "6_hallucination_abstention_traps": {
+      "total": 10,
+      "passed": 10,
+      "accuracy_pct": 100.0,
+      "median_latency_ms": 1.559
+    }
+  },
+  "tasks": {
+    "1_forward_uol_formulas": [
+      {
+        "task_id": "fwd_01",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.565,
+        "detail": "out=180.0, rules=('physics.kinetic_energy',)"
+      },
+      {
+        "task_id": "fwd_02",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.152,
+        "detail": "out=490.0, rules=('physics.potential_energy',)"
+      },
+      {
+        "task_id": "fwd_03",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.553,
+        "detail": "out=48.0, rules=('physics.newton_force',)"
+      },
+      {
+        "task_id": "fwd_04",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.652,
+        "detail": "out=24.0, rules=('physics.ohms_voltage',)"
+      },
+      {
+        "task_id": "fwd_05",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 33.862,
+        "detail": "out=60.0, rules=('physics.electrical_power',)"
+      },
+      {
+        "task_id": "fwd_06",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.125,
+        "detail": "out=20.0, rules=('physics.density',)"
+      },
+      {
+        "task_id": "fwd_07",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 17.389,
+        "detail": "out=500.0, rules=('eng.axial_stress',)"
+      },
+      {
+        "task_id": "fwd_08",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.132,
+        "detail": "out=22.857142857142858, rules=('bio.bmi',)"
+      },
+      {
+        "task_id": "fwd_09",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.601,
+        "detail": "out=1.0, rules=('math.quadratic_discriminant',)"
+      },
+      {
+        "task_id": "fwd_10",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.098,
+        "detail": "out=212.0, rules=('physics.celsius_to_fahrenheit',)"
+      }
+    ],
+    "2_inverse_uol_equations": [
+      {
+        "task_id": "inv_01",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.13,
+        "detail": "out=6.0, rules=('physics.kinetic_energy__solve_velocity',)"
+      },
+      {
+        "task_id": "inv_02",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.124,
+        "detail": "out=4.0, rules=('physics.kinetic_energy__solve_mass',)"
+      },
+      {
+        "task_id": "inv_03",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.658,
+        "detail": "out=5.0, rules=('physics.newton_force__solve_accel',)"
+      },
+      {
+        "task_id": "inv_04",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.114,
+        "detail": "out=5.0, rules=('physics.newton_force__solve_mass',)"
+      },
+      {
+        "task_id": "inv_05",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.099,
+        "detail": "out=4.0, rules=('physics.ohms_voltage__solve_current',)"
+      },
+      {
+        "task_id": "inv_06",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.092,
+        "detail": "out=6.0, rules=('physics.ohms_voltage__solve_resistance',)"
+      },
+      {
+        "task_id": "inv_07",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.111,
+        "detail": "out=4.999999989185587, rules=('math.circle_area__solve_r',)"
+      },
+      {
+        "task_id": "inv_08",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.11,
+        "detail": "out=2.0, rules=('bio.bmi__solve_height_m',)"
+      },
+      {
+        "task_id": "inv_09",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 3.194,
+        "detail": "out=4.0, rules=('eng.axial_stress__solve_area',)"
+      },
+      {
+        "task_id": "inv_10",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.108,
+        "detail": "out=26.850000000000023, rules=('physics.celsius_to_kelvin__solve_c',)"
+      }
+    ],
+    "3_multihop_graph_planning": [
+      {
+        "task_id": "hop_01",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.535,
+        "detail": "out=4.0, rules=('physics.newton_force', 'eng.axial_stress', 'eng.safety_factor')"
+      },
+      {
+        "task_id": "hop_02",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.528,
+        "detail": "out=80.0, rules=('physics.ohms_voltage', 'physics.electrical_power')"
+      },
+      {
+        "task_id": "hop_03",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.344,
+        "detail": "out=60.0, rules=('physics.kinetic_energy__solve_velocity', 'physics.momentum')"
+      },
+      {
+        "task_id": "hop_04",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.603,
+        "detail": "out=0.5, rules=('physics.newton_force', 'physics.work_done', 'eng.efficiency')"
+      },
+      {
+        "task_id": "hop_05",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.176,
+        "detail": "out=310.15, rules=('physics.fahrenheit_to_celsius', 'physics.celsius_to_kelvin')"
+      },
+      {
+        "task_id": "hop_06",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.125,
+        "detail": "out=80.33000000000004, rules=('physics.celsius_to_kelvin__solve_c', 'physics.celsius_to_fahrenheit')"
+      },
+      {
+        "task_id": "hop_07",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 2.695,
+        "detail": "out=785.3981600000002, rules=('math.circle_area__solve_r', 'math.cylinder_volume')"
+      },
+      {
+        "task_id": "hop_08",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.72,
+        "detail": "out=25.0, rules=('physics.newton_force', 'eng.axial_stress')"
+      },
+      {
+        "task_id": "hop_09",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 3.502,
+        "detail": "out=240.0, rules=('physics.newton_force', 'physics.work_done')"
+      },
+      {
+        "task_id": "hop_10",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.18,
+        "detail": "out=2.0, rules=('eng.axial_stress', 'eng.safety_factor')"
+      }
+    ],
+    "4_multiturn_stateful_reasoning": [
+      {
+        "task_id": "mt_01",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 5.33,
+        "detail": "out=None, rules=('session.quantity_memory',)"
+      },
+      {
+        "task_id": "mt_02",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.65,
+        "detail": "out=50.0, rules=('physics.newton_force',)"
+      },
+      {
+        "task_id": "mt_03",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.848,
+        "detail": "out=25.0, rules=('eng.axial_stress',)"
+      },
+      {
+        "task_id": "mt_04",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.155,
+        "detail": "out=4.0, rules=('eng.safety_factor',)"
+      },
+      {
+        "task_id": "mt_05",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.832,
+        "detail": "out=None, rules=('session.quantity_memory',)"
+      },
+      {
+        "task_id": "mt_06",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.348,
+        "detail": "out=20.0, rules=('physics.ohms_voltage',)"
+      },
+      {
+        "task_id": "mt_07",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.744,
+        "detail": "out=80.0, rules=('physics.electrical_power',)"
+      },
+      {
+        "task_id": "mt_08",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.139,
+        "detail": "out=None, rules=('session.quantity_memory',)"
+      },
+      {
+        "task_id": "mt_09",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.629,
+        "detail": "out=6.0, rules=('physics.kinetic_energy__solve_velocity',)"
+      },
+      {
+        "task_id": "mt_10",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.655,
+        "detail": "out=60.0, rules=('physics.momentum',)"
+      }
+    ],
+    "5_synthesis_and_tdd_code": [
+      {
+        "task_id": "syn_01",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 186.586,
+        "detail": "rules=('physics.celsius_to_kelvin', 'physics.fahrenheit_to_celsius')"
+      },
+      {
+        "task_id": "syn_02",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 16.511,
+        "detail": "rules=('math.linear_transform',)"
+      },
+      {
+        "task_id": "syn_03",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1253.614,
+        "detail": "rules=('math.linear_transform',)"
+      },
+      {
+        "task_id": "syn_04",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 836.715,
+        "detail": "rules=('math.mean', 'math.square')"
+      },
+      {
+        "task_id": "syn_05",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1032.295,
+        "detail": "rules=('eng.axial_stress',)"
+      },
+      {
+        "task_id": "tdd_01",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 350.839,
+        "detail": "kind=print_text"
+      },
+      {
+        "task_id": "tdd_02",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 408.511,
+        "detail": "kind=add"
+      },
+      {
+        "task_id": "tdd_03",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 479.295,
+        "detail": "kind=subtract"
+      },
+      {
+        "task_id": "tdd_04",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 514.32,
+        "detail": "kind=multiply"
+      },
+      {
+        "task_id": "tdd_05",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 492.107,
+        "detail": "kind=square"
+      }
+    ],
+    "6_hallucination_abstention_traps": [
+      {
+        "task_id": "trap_01",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.598,
+        "detail": "Matched UOL rule physics.kinetic_energy, missing inputs: velocity"
+      },
+      {
+        "task_id": "trap_02",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.41,
+        "detail": "Matched UOL rule physics.ohms_voltage, missing inputs: resistance"
+      },
+      {
+        "task_id": "trap_03",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 2.058,
+        "detail": "Matched UOL rule bio.bmi, missing inputs: height_m"
+      },
+      {
+        "task_id": "trap_04",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.646,
+        "detail": "no matching UOL rule for prompt"
+      },
+      {
+        "task_id": "trap_05",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.229,
+        "detail": "no matching UOL rule for prompt"
+      },
+      {
+        "task_id": "trap_06",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.05,
+        "detail": "Matched UOL rule eng.safety_factor, missing inputs: applied_stress"
+      },
+      {
+        "task_id": "trap_07",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 0.86,
+        "detail": "Matched UOL rule physics.kinetic_energy, missing inputs: velocity"
+      },
+      {
+        "task_id": "trap_08",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.52,
+        "detail": "no matching UOL rule for prompt"
+      },
+      {
+        "task_id": "trap_09",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 2.768,
+        "detail": "Matched UOL rule math.quadratic_discriminant, missing inputs: c"
+      },
+      {
+        "task_id": "trap_10",
+        "passed": true,
+        "hallucinated": false,
+        "latency_ms": 1.666,
+        "detail": "Matched UOL rule physics.density, missing inputs: volume"
+      }
+    ]
+  },
+  "benchmark_sha256": "d8916449762eadb1694e0da11db9572bfba6e54764b072c32f0dc1ad2a0f2f5d"
+}

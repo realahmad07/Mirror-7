@@ -1,0 +1,23 @@
+# Mirror 7 — Frozen CPU Intelligence Benchmark Report (v1)
+
+- **Hardware / Mode:** CPU-only (`uses_gpu=False`, `uses_third_party_llm=False`)
+- **Persisted Verified UOL Skills Loaded:** `120` (`artifacts/mirror_uol_skills.dcrystal`)
+- **Overall Score:** **60 / 60 (100.0%)**
+- **Hallucination Rate (Abstention Traps):** **0.0%** (`0/10`)
+- **Median Task Latency:** **1.287 ms** (Mean: `94.587 ms`)
+- **Result Fingerprint (SHA-256):** `d8916449762eadb1694e0da11db9572bfba6e54764b072c32f0dc1ad2a0f2f5d`
+
+## Category Breakdown
+
+| Category | Passed | Accuracy | Median Latency (ms) |
+|---|---:|---:|---:|
+| 1. Forward UOL Formulas | 10 / 10 | **100.0%** | 0.627 |
+| 2. Bidirectional Inverse Equations | 10 / 10 | **100.0%** | 0.113 |
+| 3. Zero-Shot Multi-Hop Graph Planning (2–3 hops) | 10 / 10 | **100.0%** | 1.531 |
+| 4. Multi-Turn Stateful UOL Dialogue | 10 / 10 | **100.0%** | 0.84 |
+| 5. UOL Compositional Synthesis & TDD Code | 10 / 10 | **100.0%** | 485.701 |
+| 6. Hallucination & Missing-Input Abstention Traps | 10 / 10 | **100.0%** | 1.559 |
+
+## Scope & Boundary
+
+This frozen benchmark evaluates deterministic mathematical/scientific formula execution, symbolic inverse solving, zero-shot multi-hop quantity graph planning, multi-turn stateful reasoning, bounded UOL program synthesis, TDD-verified beginner Python generation, and honest abstention on pure CPU with zero external LLMs. It does not claim general open-ended prose fluency or AGI.
