@@ -1490,6 +1490,7 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 | **Counterexample-Guided AST Buggy-Code Repair Engine** | `mirror_crystal/code_repair_engine.py` | Autonomous 0-parameter Python bug repair: runs user-supplied buggy functions against specification test suites to isolate a failing counterexample, searches bounded safe AST mutations (constants, binary/comparison operators, `range(n) -> range(n + 1)`), and emits `ast.unparse` code only when 100% of tests pass. |
 | **Zero-Parameter Tabular, CSV & Time-Series Data Analyst** | `mirror_crystal/tabular_data_analyst.py` | Pure-Python statistical analyzer computing exact `sum`, `mean`, `median`, `growth %`, **MAD/IQR outlier detection**, and **exact OLS linear trend regression** ($y = ax + b$, $R^2$, and $t_{n+1}$ next-step forecasting) in English & Roman Urdu. |
 | **Creative Writing, Bilingual Dialogue & Feedable NCD Engine** | `mirror_crystal/creative_conversation_engine.py` | 0-parameter combinatorial poetry/shayari composer (English & Roman Urdu), 5-act narrative story VM, creative brainstorming organ, empathetic Roman-Urdu/English dialogue, and live-feedable conversational memory (`"Feed: <input> => <reply>"` or `"Feed file: <jsonl_path>"`) indexed via Raw-DEFLATE Symmetric NCD + SQLite `.dcrystal` persistence. |
+| **Unbounded Conversational Blueprint Distiller & Speech-Act Engine** | `mirror_crystal/conversational_blueprint_engine.py` | Eliminates raw dialogue storage bloat via **Plotkin Anti-Unification (LGG) + LCS Slot Blueprinting** (distilling analogous examples into 1 `<slot_0>` rule and **evicting raw strings**), **Compositional Pragmatic Speech-Act Operators** (open-vocabulary empathy, celebration, first-principles advisory, dialectical reflection), and a **128-Byte Stateful Coreference Register** (`active_topic` pronoun resolution across turns). |
 
 ### Verification
 
@@ -1500,8 +1501,8 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 - `mirror_crystal/tests/test_unit_normalizer_tdd_and_studio.py` — **3 passed**
 - `mirror_crystal/tests/test_four_native_intelligence_leaps.py` — **4 passed**
 - `mirror_crystal/tests/test_semantic_frame_vm_and_ncd.py` — **5 passed**
-- `mirror_crystal/tests/test_unstructured_prose_engine.py` — **9 passed**
-- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **188 passed, 0 failed**
+- `mirror_crystal/tests/test_unstructured_prose_engine.py` — **10 passed**
+- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **189 passed, 0 failed**
 - Internal Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
 - Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`, 80 tasks):
   - Casual English & Roman-Urdu paraphrases: **10 / 10 solved (100.0%)**, **0 wrong**

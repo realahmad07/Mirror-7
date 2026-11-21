@@ -98,7 +98,7 @@ class _RuleBinding:
 _BINDINGS: tuple[_RuleBinding, ...] = (
     _RuleBinding(
         "physics.kinetic_energy",
-        ("kinetic energy", "ke"),
+        ("kinetic energy",),
         {"mass": ("mass", "m"), "velocity": ("velocity", "speed", "v")},
         unit="J",
         inverse_targets={
@@ -108,7 +108,7 @@ _BINDINGS: tuple[_RuleBinding, ...] = (
     ),
     _RuleBinding(
         "physics.potential_energy",
-        ("potential energy", "gravitational energy", "pe"),
+        ("potential energy", "gravitational energy"),
         {"mass": ("mass", "m"), "gravity": ("gravity", "g"), "height": ("height", "h")},
         unit="J",
         inverse_targets={
@@ -598,6 +598,16 @@ class NaturalLanguageUOLRouter:
         if taught_spec is not None:
             return self.teach_formula(taught_spec[0], taught_spec[1])
 
+        # 0a. Live conversational blueprint distillation & feeding ("Feed: ... => ...", "Feed file: ...")
+        if re.match(r"^\s*(?:feed|sikhao|distill|teach\s+reply|teach\s+dialogue|feed\s+file|feed\s+corpus)\s*[:\-]", prompt, flags=re.IGNORECASE):
+            feed_hit = self.creative_engine.route_creative_or_dialogue(prompt, session_id=session_id or "default")
+            if feed_hit.matched:
+                return NLRouteResult(
+                    matched=True,
+                    rule_ids=(feed_hit.rule_id,),
+                    explanation=feed_hit.response,
+                )
+
         # 0b. Counterexample-Guided Autonomous AST Buggy-Code Repair
         repair_hit = self.code_repair_engine.repair_prompt(prompt)
         if repair_hit.matched:
@@ -780,8 +790,8 @@ class NaturalLanguageUOLRouter:
                 explanation=analogy_hit.explanation,
             )
 
-        # 9. Parameter-Free Creative Writing, Bilingual Dialogue & Live-Fed Conversational Memory
-        creative_hit = self.creative_engine.route_creative_or_dialogue(prompt)
+        # 9. Parameter-Free Creative Writing, Bilingual Dialogue & Unbounded Conversational Blueprints
+        creative_hit = self.creative_engine.route_creative_or_dialogue(prompt, session_id=session_id or "default")
         if creative_hit.matched:
             return NLRouteResult(
                 matched=True,

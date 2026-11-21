@@ -263,10 +263,10 @@ def main() -> int:
         ("cr_04", "Dosti ke baare mein kahani sunao", "5-Act Kahani"),
         ("cr_05", "Give me creative ideas for edge AI startups", "Zero-Hardware Edge Architecture"),
         ("cr_06", "Assalam o alaikum, kya haal hai?", "Alhamdulillah"),
-        ("cr_07", "Yaar aaj bohot thak gaya hoon, mera mood off hai", "break"),
-        ("cr_08", "Explain the meaning of consciousness in philosophy.", "Qualia"),
-        ("cr_09", "Feed: chai peeni hai yaar => Garma garam elaichi wali chai tayyar hai!", "Learned new conversational response"),
-        ("cr_10", "Yaar aaj chai peeni hai", "elaichi wali chai"),
+        ("cr_07", "Yaar aaj main bakery ki dukan chala kar bohot thak gaya hoon", "bakery ki dukan"),
+        ("cr_08", "Feed: mujhe python seekhna hai => python seekhne ke liye rozana 1 chota project banao!", "Learned new conversational response"),
+        ("cr_09", "Feed: mujhe rust seekhna hai => rust seekhne ke liye rozana 1 chota project banao!", "Distilled Generalized Blueprint Rule"),
+        ("cr_10", "mujhe quantum robotics seekhna hai", "quantum robotics seekhne ke liye rozana 1 chota project banao!"),
     ]
     for tid, prompt, exp_sub in creative_tasks:
         t0 = time.perf_counter()

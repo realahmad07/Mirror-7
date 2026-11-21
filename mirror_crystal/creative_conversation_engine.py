@@ -16,6 +16,7 @@ import sqlite3
 from typing import Any
 
 from .compression_analogy_engine import symmetric_raw_ncd
+from .conversational_blueprint_engine import ConversationalBlueprintEngine
 
 
 @dataclass(frozen=True)
@@ -141,6 +142,7 @@ class CreativeConversationEngine:
     def __init__(self, *, vault_path: str | Path | None = None) -> None:
         self.vault_path = Path(vault_path) if vault_path is not None else None
         self._fed_pairs: list[tuple[str, str, str]] = list(_SEED_DIALOGUE_PAIRS)
+        self.blueprint_engine = ConversationalBlueprintEngine()
         if self.vault_path is not None and self.vault_path.exists():
             self.load_from_vault(self.vault_path)
 
@@ -156,11 +158,32 @@ class CreativeConversationEngine:
         )
 
     def feed_pair(self, trigger_text: str, response_text: str, *, category: str = "user_fed_dialogue") -> dict[str, Any]:
-        """Store a new conversational or creative trigger -> response pair in RAM and SQLite .dcrystal."""
+        """Distill a generalized Blueprint Rule via Anti-Unification if possible (evicting raw strings
+        to save storage), or stage in buffer until a second analogous example arrives."""
         trig = trigger_text.strip()
         resp = response_text.strip()
         if not trig or not resp:
             return {"ok": False, "reason": "empty trigger or response"}
+
+        distilled = self.blueprint_engine.observe_and_distill(trig, resp)
+        if distilled["distilled"]:
+            # Evict any matching raw pair from _fed_pairs so raw data doesn't bloat memory!
+            self._fed_pairs = [
+                (t, c, r) for (t, c, r) in self._fed_pairs
+                if c != "user_fed_dialogue" or t == trig
+            ]
+            # Even the current trig is not needed in _fed_pairs because the induced blueprint covers it + all unseen slots!
+            self._fed_pairs = [(t, c, r) for (t, c, r) in self._fed_pairs if t != trig]
+            return {
+                "ok": True,
+                "distilled_blueprint": True,
+                "blueprint_id": distilled["blueprint_id"],
+                "trigger": trig,
+                "raw_bytes_evicted": distilled["raw_bytes_evicted"],
+                "blueprint_bytes": distilled["blueprint_bytes"],
+                "total_pairs": len(self._fed_pairs),
+            }
+
         self._fed_pairs.append((trig, category, resp))
         if self.vault_path is not None:
             self.vault_path.parent.mkdir(parents=True, exist_ok=True)
@@ -174,7 +197,7 @@ class CreativeConversationEngine:
                     (trig, category, resp),
                 )
                 conn.commit()
-        return {"ok": True, "trigger": trig, "category": category, "total_pairs": len(self._fed_pairs)}
+        return {"ok": True, "distilled_blueprint": False, "trigger": trig, "category": category, "total_pairs": len(self._fed_pairs)}
 
     def load_from_vault(self, vault_path: str | Path | None = None) -> int:
         target = Path(vault_path) if vault_path is not None else self.vault_path
@@ -337,19 +360,35 @@ class CreativeConversationEngine:
             response=text,
         )
 
-    def route_creative_or_dialogue(self, prompt: str, *, allow_creative_fallback: bool = True) -> CreativeResponse:
+    def route_creative_or_dialogue(
+        self,
+        prompt: str,
+        *,
+        session_id: str = "default",
+        allow_creative_fallback: bool = True,
+    ) -> CreativeResponse:
         text = prompt.strip()
         lower = text.casefold()
 
         # 1. Live conversational/creative feeding: "Feed: <trigger> => <response>" or "Sikhao: <trigger> => <response>"
         m_feed = re.match(
-            r"^\s*(?:feed|sikhao|teach\s+reply|teach\s+dialogue)\s*[:\-]\s*(.+?)\s*=>\s*(.+)$",
+            r"^\s*(?:feed|sikhao|distill|teach\s+reply|teach\s+dialogue)\s*[:\-]\s*(.+?)\s*=>\s*(.+)$",
             text,
             flags=re.IGNORECASE | re.DOTALL,
         )
         if m_feed:
             stats = self.feed_pair(m_feed.group(1), m_feed.group(2))
             if stats["ok"]:
+                if stats.get("distilled_blueprint"):
+                    return CreativeResponse(
+                        matched=True,
+                        kind="distilled_blueprint",
+                        rule_id=stats["blueprint_id"],
+                        response=(
+                            f"Distilled Generalized Blueprint Rule '{stats['blueprint_id']}' via Anti-Unification "
+                            f"and EVICTED {stats['raw_bytes_evicted']} bytes of raw dialogue data!"
+                        ),
+                    )
                 return CreativeResponse(
                     matched=True,
                     kind="fed_memory",
@@ -382,7 +421,19 @@ class CreativeConversationEngine:
         if re.search(r"\b(?:brainstorm|give\s+me\s+(?:\d+\s+)?(?:creative\s+|startup\s+)?ideas|ideas\s+for|ideas\s+batao)\b", lower):
             return self.compose_brainstorm(text)
 
-        # 5. Match against Fed & Seeded Dialogue Vault via Word Overlap + Raw-DEFLATE Symmetric NCD
+        # 5. Check Induced & Universal Parameterized Slot Blueprints first (extracts <slot_0> & updates 128-byte session state)
+        for bp in self.blueprint_engine._blueprints:
+            if re.match(bp.trigger_pattern, text, flags=re.IGNORECASE):
+                bp_hit = self.blueprint_engine.respond(text, session_id=session_id)
+                if bp_hit.matched:
+                    return CreativeResponse(
+                        matched=True,
+                        kind="conversational_blueprint",
+                        rule_id=bp_hit.blueprint_id,
+                        response=bp_hit.response,
+                    )
+
+        # 6. Match against Fed & Seeded Dialogue Vault via Word Overlap + Raw-DEFLATE Symmetric NCD
         q_words = _word_set(lower)
         q_bytes = lower.encode("utf-8")
         best_score = 0.0
@@ -411,6 +462,16 @@ class CreativeConversationEngine:
                 kind="dialogue",
                 rule_id=best_pair[1],
                 response=best_pair[2],
+            )
+
+        # 6. Unbounded Conversational Blueprints & Pragmatic Speech-Act Operators (O(1) rule memory, infinite topics)
+        bp_hit = self.blueprint_engine.respond(text, session_id=session_id)
+        if bp_hit.matched:
+            return CreativeResponse(
+                matched=True,
+                kind="conversational_blueprint",
+                rule_id=bp_hit.blueprint_id,
+                response=bp_hit.response,
             )
 
         return CreativeResponse(False)

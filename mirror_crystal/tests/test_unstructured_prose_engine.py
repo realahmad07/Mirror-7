@@ -259,3 +259,38 @@ def test_creative_poetry_story_empathy_and_live_dialogue_feeding(tmp_path):
     assert "Hunza aur Skardu" in ans2.explanation
 
 
+def test_conversational_blueprint_distillation_eviction_and_unbounded_multiturn():
+    router = NaturalLanguageUOLRouter()
+
+    # 1. Feed two analogous examples -> induces 1 generalized <slot_0> blueprint and EVICTS raw data!
+    e1 = router.route("Feed: mujhe python seekhna hai => python seekhne ke liye rozana 1 chota project banao!")
+    assert e1.matched is True
+
+    e2 = router.route("Feed: mujhe rust seekhna hai => rust seekhne ke liye rozana 1 chota project banao!")
+    assert e2.matched is True
+    assert "Distilled Generalized Blueprint Rule" in e2.explanation
+    assert "EVICTED" in e2.explanation
+    assert len(router.creative_engine.blueprint_engine._pending_examples) == 0
+
+    # Now test on a completely UNSEEN topic that was never fed or stored!
+    unseen = router.route("mujhe quantum robotics seekhna hai")
+    assert unseen.matched is True
+    assert "quantum robotics seekhne ke liye rozana 1 chota project banao!" in unseen.explanation.casefold()
+
+    # 2. Unbounded open-topic conversation + 128-byte multi-turn pronoun coreference ('us mein')
+    t1 = router.route("Yaar aaj main bakery ki dukan chala kar bohot thak gaya hoon", session_id="sess_bp")
+    assert t1.matched is True
+    assert "bakery ki dukan" in t1.explanation.casefold()
+
+    # Turn 2 uses pronoun 'Us' without repeating 'bakery ki dukan'
+    t2 = router.route("Us mein kamiyabi kaise mile gi?", session_id="sess_bp")
+    assert t2.matched is True
+    assert "bakery ki dukan" in t2.explanation.casefold()
+
+    # 3. Unbounded English advisory blueprint on arbitrary unseen topic
+    t3 = router.route("How can I master underwater cinematography?", session_id="sess_bp2")
+    assert t3.matched is True
+    assert "underwater cinematography" in t3.explanation.casefold()
+
+
+

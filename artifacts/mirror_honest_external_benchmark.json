@@ -13,56 +13,56 @@
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 2.371
+      "median_latency_ms": 2.593
     },
     "2_algebra_systems_and_formal_logic": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 2.19
+      "median_latency_ms": 2.304
     },
     "3_gsm8k_style_arithmetic_word_problems": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 3.002
+      "median_latency_ms": 3.138
     },
     "4_unseen_paraphrased_word_problem_transfer": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 2.902
+      "median_latency_ms": 3.096
     },
     "5_unstructured_summarization_and_comparative_prose": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 1.486
+      "median_latency_ms": 1.493
     },
     "6_document_qa_counterfactual_code_repair_and_data_analyst": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 0.75
+      "median_latency_ms": 0.737
     },
     "7_creative_writing_conversation_and_live_feeding": {
       "total": 10,
       "solved_correct": 10,
       "honest_abstain": 0,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 2.319
+      "median_latency_ms": 2.0
     },
     "8_hard_ood_and_hallucination_traps": {
       "total": 10,
       "solved_correct": 0,
       "honest_abstain": 10,
       "wrong_or_hallucinated": 0,
-      "median_latency_ms": 2.388
+      "median_latency_ms": 2.829
     }
   },
   "details": {
@@ -70,61 +70,61 @@
       {
         "task_id": "par_01",
         "outcome": "solved_correct",
-        "latency_ms": 64.796,
+        "latency_ms": 60.559,
         "note": "out=125.0"
       },
       {
         "task_id": "par_02",
         "outcome": "solved_correct",
-        "latency_ms": 2.295,
+        "latency_ms": 2.811,
         "note": "out=400.0"
       },
       {
         "task_id": "par_03",
         "outcome": "solved_correct",
-        "latency_ms": 18.894,
+        "latency_ms": 19.569,
         "note": "out=250000.0"
       },
       {
         "task_id": "par_04",
         "outcome": "solved_correct",
-        "latency_ms": 3.443,
+        "latency_ms": 3.507,
         "note": "out=60.0"
       },
       {
         "task_id": "par_05",
         "outcome": "solved_correct",
-        "latency_ms": 2.447,
+        "latency_ms": 2.375,
         "note": "out=500.0"
       },
       {
         "task_id": "par_06",
         "outcome": "solved_correct",
-        "latency_ms": 2.237,
+        "latency_ms": 2.247,
         "note": "out=6.0"
       },
       {
         "task_id": "par_07",
         "outcome": "solved_correct",
-        "latency_ms": 1.184,
+        "latency_ms": 1.186,
         "note": "out=22.857142857142858"
       },
       {
         "task_id": "par_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.113,
+        "latency_ms": 0.112,
         "note": "out=98.60000000000001"
       },
       {
         "task_id": "par_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.13,
+        "latency_ms": 0.127,
         "note": "out=310.15"
       },
       {
         "task_id": "par_10",
         "outcome": "solved_correct",
-        "latency_ms": 3.025,
+        "latency_ms": 3.136,
         "note": "out=5.0"
       }
     ],
@@ -132,61 +132,61 @@
       {
         "task_id": "al_01",
         "outcome": "solved_correct",
-        "latency_ms": 13.806,
+        "latency_ms": 13.869,
         "note": "Verified linear solution: x = 8 (checked LHS == RHS)."
       },
       {
         "task_id": "al_02",
         "outcome": "solved_correct",
-        "latency_ms": 1.734,
+        "latency_ms": 2.087,
         "note": "Verified linear solution: x = 5 (checked LHS == RHS)."
       },
       {
         "task_id": "al_03",
         "outcome": "solved_correct",
-        "latency_ms": 1.683,
+        "latency_ms": 1.759,
         "note": "Verified quadratic roots (discriminant=1): x = 3, 4 (checked LHS == RHS)."
       },
       {
         "task_id": "al_04",
         "outcome": "solved_correct",
-        "latency_ms": 2.056,
+        "latency_ms": 2.057,
         "note": "Verified linear system solution: x = 4, y = 2 (all 2 equations verified LHS == RHS)."
       },
       {
         "task_id": "al_05",
         "outcome": "solved_correct",
-        "latency_ms": 2.351,
+        "latency_ms": 2.521,
         "note": "Verified linear system solution: x = 13/7 (1.85714), y = 17/7 (2.42857), z = 33/7 (4.71429) (all 3 equations verified LHS == RHS)."
       },
       {
         "task_id": "al_06",
         "outcome": "solved_correct",
-        "latency_ms": 2.654,
+        "latency_ms": 2.725,
         "note": "PROVEN True: 'cobra' -> 'cold-blooded' via 3 deductive step(s): cobra -> snake (Cobra is a snake) => snake -> reptile (All snakes are reptiles) => reptile -> cold-blooded (All reptiles are cold-blooded)"
       },
       {
         "task_id": "al_07",
         "outcome": "solved_correct",
-        "latency_ms": 1.865,
+        "latency_ms": 1.871,
         "note": "PROVEN True: P > 10 via chain: P > Q , Q > R , R = 10"
       },
       {
         "task_id": "al_08",
         "outcome": "solved_correct",
-        "latency_ms": 5.109,
+        "latency_ms": 5.731,
         "note": "PROVEN constraint solution: x=14, y=7 (verified against 2 constraint(s))."
       },
       {
         "task_id": "al_09",
         "outcome": "solved_correct",
-        "latency_ms": 1.574,
+        "latency_ms": 1.572,
         "note": "Verified linear solution: x = 2 (checked LHS == RHS)."
       },
       {
         "task_id": "al_10",
         "outcome": "solved_correct",
-        "latency_ms": 2.324,
+        "latency_ms": 3.129,
         "note": "PROVEN True: '17' -> 'odd' via 2 deductive step(s): 17 -> prime above 2 (17 is a prime above 2) => prime above 2 -> odd (All primes above 2 are odd)"
       }
     ],
@@ -194,61 +194,61 @@
       {
         "task_id": "gsm_01",
         "outcome": "solved_correct",
-        "latency_ms": 4.386,
+        "latency_ms": 6.349,
         "note": "Verified SemanticVM (rate_production): 60 | RATE_MUL: 12/hour * 5 hours = 60"
       },
       {
         "task_id": "gsm_02",
         "outcome": "solved_correct",
-        "latency_ms": 4.088,
+        "latency_ms": 4.381,
         "note": "Verified SemanticVM (sequential_inventory_vm): 27 | INIT: state = 45 -> SUB: 45 - 18 = 27"
       },
       {
         "task_id": "gsm_03",
         "outcome": "solved_correct",
-        "latency_ms": 3.395,
+        "latency_ms": 3.699,
         "note": "Verified SemanticVM (buy_and_change): 22 | UNIT_COST: 7 * $4 = $28 -> CHANGE_DUE: $50 - $28 = $22"
       },
       {
         "task_id": "gsm_04",
         "outcome": "solved_correct",
-        "latency_ms": 2.674,
+        "latency_ms": 2.807,
         "note": "Verified SemanticVM (rate_distance): 240 | RATE_MUL: 80 * 3 = 240"
       },
       {
         "task_id": "gsm_05",
         "outcome": "solved_correct",
-        "latency_ms": 2.545,
+        "latency_ms": 2.686,
         "note": "Verified SemanticVM (unit_partition): 9 | UNIT_PARTITION: 36 / 4 = 9"
       },
       {
         "task_id": "gsm_06",
         "outcome": "solved_correct",
-        "latency_ms": 3.024,
+        "latency_ms": 3.102,
         "note": "Verified SemanticVM (relative_scale_total): 32 | ANCHOR: 8 -> SCALED: 3 * 8 = 24 -> LEDGER_SUM: 8 + 24 = 32"
       },
       {
         "task_id": "gsm_07",
         "outcome": "solved_correct",
-        "latency_ms": 2.852,
+        "latency_ms": 3.03,
         "note": "Verified SemanticVM (percent_discount): 60 | DISCOUNT_AMT: 80 * (25 / 100) = 20 -> FINAL_PRICE: 80 - 20 = 60"
       },
       {
         "task_id": "gsm_08",
         "outcome": "solved_correct",
-        "latency_ms": 2.739,
+        "latency_ms": 3.175,
         "note": "Verified SemanticVM (equal_split): 32 | EQUAL_SPLIT: 96 / 3 = 32"
       },
       {
         "task_id": "gsm_09",
         "outcome": "solved_correct",
-        "latency_ms": 3.856,
+        "latency_ms": 3.928,
         "note": "Verified SemanticVM (sequential_inventory_vm): 435 | INIT: state = 500 -> SUB: 500 - 125 = 375 -> ADD: 375 + 60 = 435"
       },
       {
         "task_id": "gsm_10",
         "outcome": "solved_correct",
-        "latency_ms": 2.98,
+        "latency_ms": 2.924,
         "note": "Verified SemanticVM (discourse_ledger_total): 45 | LEDGER[0]: 15 -> LEDGER[1] (twice): 15 * 2 = 30 -> LEDGER_SUM: 15 + 30 = 45"
       }
     ],
@@ -256,61 +256,61 @@
       {
         "task_id": "ut_01",
         "outcome": "solved_correct",
-        "latency_ms": 2.883,
+        "latency_ms": 3.04,
         "note": "Verified SemanticVM (percent_discount): 200 | DISCOUNT_AMT: 250 * (20 / 100) = 50 -> FINAL_PRICE: 250 - 50 = 200"
       },
       {
         "task_id": "ut_02",
         "outcome": "solved_correct",
-        "latency_ms": 2.935,
+        "latency_ms": 3.153,
         "note": "Verified SemanticVM (buy_and_change): 6 | UNIT_COST: 4 * $6 = $24 -> CHANGE_DUE: $30 - $24 = $6"
       },
       {
         "task_id": "ut_03",
         "outcome": "solved_correct",
-        "latency_ms": 5.607,
+        "latency_ms": 6.105,
         "note": "Analogical Skeleton-NCD transfer (analogy.equal_bill_split, ncd=0.431, formula=total_money / count, slots=(5.0, 125.0)) -> 25"
       },
       {
         "task_id": "ut_04",
         "outcome": "solved_correct",
-        "latency_ms": 4.951,
+        "latency_ms": 5.165,
         "note": "Verified SemanticVM (sequential_inventory_vm): 770 | INIT: state = 900 -> SUB: 900 - 240 = 660 -> ADD: 660 + 110 = 770"
       },
       {
         "task_id": "ut_05",
         "outcome": "solved_correct",
-        "latency_ms": 2.796,
+        "latency_ms": 2.976,
         "note": "Verified SemanticVM (rate_distance): 180 | RATE_MUL: 45 * 4 = 180"
       },
       {
         "task_id": "ut_06",
         "outcome": "solved_correct",
-        "latency_ms": 2.695,
+        "latency_ms": 2.843,
         "note": "Verified SemanticVM (rate_production): 150 | RATE_MUL: 25/hour * 6 hours = 150"
       },
       {
         "task_id": "ut_07",
         "outcome": "solved_correct",
-        "latency_ms": 3.107,
+        "latency_ms": 3.442,
         "note": "Verified SemanticVM (relative_scale_total): 60 | ANCHOR: 12 -> SCALED: 4 * 12 = 48 -> LEDGER_SUM: 12 + 48 = 60"
       },
       {
         "task_id": "ut_08",
         "outcome": "solved_correct",
-        "latency_ms": 2.893,
+        "latency_ms": 3.163,
         "note": "Verified SemanticVM (discourse_ledger_total): 72 | LEDGER[0]: 18 -> LEDGER[1] (triple): 18 * 3 = 54 -> LEDGER_SUM: 18 + 54 = 72"
       },
       {
         "task_id": "ut_09",
         "outcome": "solved_correct",
-        "latency_ms": 2.912,
+        "latency_ms": 2.953,
         "note": "Verified SemanticVM (percent_increase): 138 | SURCHARGE_AMT: 120 * (15 / 100) = 18 -> FINAL_PRICE: 120 + 18 = 138"
       },
       {
         "task_id": "ut_10",
         "outcome": "solved_correct",
-        "latency_ms": 2.85,
+        "latency_ms": 2.789,
         "note": "Verified SemanticVM (unit_partition): 12 | UNIT_PARTITION: 72 / 6 = 12"
       }
     ],
@@ -318,61 +318,61 @@
       {
         "task_id": "up_01",
         "outcome": "solved_correct",
-        "latency_ms": 3.313,
+        "latency_ms": 3.471,
         "note": "Khulasa (0-Parameter Submodular-NCD Summary \u2014 3/7 ahem jumlay):"
       },
       {
         "task_id": "up_02",
         "outcome": "solved_correct",
-        "latency_ms": 1.839,
+        "latency_ms": 1.898,
         "note": "Executive Summary (0-Parameter Submodular-NCD \u2014 3/7 key sentences):"
       },
       {
         "task_id": "up_03",
         "outcome": "solved_correct",
-        "latency_ms": 0.884,
+        "latency_ms": 0.893,
         "note": "Khulasa (0-Parameter Submodular-NCD Summary \u2014 3/4 ahem jumlay):"
       },
       {
         "task_id": "up_04",
         "outcome": "solved_correct",
-        "latency_ms": 4.396,
+        "latency_ms": 4.718,
         "note": "Taqabuli Tajziya (0-Parameter Grounded Comparative Analysis): Mughal vs. Ottoman"
       },
       {
         "task_id": "up_05",
         "outcome": "solved_correct",
-        "latency_ms": 1.944,
+        "latency_ms": 1.997,
         "note": "Comparative Analysis (0-Parameter Grounded RST Synthesis): Mughal vs. Ottoman"
       },
       {
         "task_id": "up_06",
         "outcome": "solved_correct",
-        "latency_ms": 1.438,
+        "latency_ms": 1.507,
         "note": "Comparative Analysis (0-Parameter Grounded RST Synthesis): Tcp vs. Udp"
       },
       {
         "task_id": "up_07",
         "outcome": "solved_correct",
-        "latency_ms": 1.534,
+        "latency_ms": 1.479,
         "note": "Comparative Analysis (0-Parameter Grounded RST Synthesis): Symbolic Ai vs. Neural Llm"
       },
       {
         "task_id": "up_08",
         "outcome": "solved_correct",
-        "latency_ms": 0.142,
+        "latency_ms": 0.106,
         "note": "Ingested 2 OpenIE proposition(s) into Concept Graph under topic(s): indus valley."
       },
       {
         "task_id": "up_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.079,
+        "latency_ms": 0.089,
         "note": "Ingested 2 OpenIE proposition(s) into Concept Graph under topic(s): mesopotamia."
       },
       {
         "task_id": "up_10",
         "outcome": "solved_correct",
-        "latency_ms": 0.614,
+        "latency_ms": 0.623,
         "note": "Comparative Analysis (0-Parameter Grounded RST Synthesis): Indus Valley vs. Mesopotamia"
       }
     ],
@@ -380,55 +380,55 @@
       {
         "task_id": "adv_01",
         "outcome": "solved_correct",
-        "latency_ms": 1.514,
+        "latency_ms": 1.442,
         "note": "Grounded Answer (0-Parameter Document QA | Topic: Contract | Provenance: ingested_contract_doc):"
       },
       {
         "task_id": "adv_02",
         "outcome": "solved_correct",
-        "latency_ms": 0.607,
+        "latency_ms": 0.578,
         "note": "Grounded Answer (0-Parameter Document QA | Topic: Contract | Provenance: ingested_contract_doc):"
       },
       {
         "task_id": "adv_03",
         "outcome": "solved_correct",
-        "latency_ms": 0.263,
+        "latency_ms": 0.278,
         "note": "Grounded Answer (0-Parameter Document QA | Topic: Mesopotamia | Provenance: user_taught_text):"
       },
       {
         "task_id": "adv_04",
         "outcome": "solved_correct",
-        "latency_ms": 1.809,
+        "latency_ms": 1.897,
         "note": "Verified Symbolic Counterfactual (physics.kinetic_energy): perturbations [mass*2, velocity*3] => scaling factor = 18x (homogeneity verified at 2 anchor points)."
       },
       {
         "task_id": "adv_05",
         "outcome": "solved_correct",
-        "latency_ms": 0.063,
+        "latency_ms": 0.067,
         "note": "Verified Symbolic Counterfactual (physics.kinetic_energy): perturbations [mass*2, velocity*3] => scaling factor = 18x (homogeneity verified at 2 anchor points)."
       },
       {
         "task_id": "adv_06",
         "outcome": "solved_correct",
-        "latency_ms": 0.893,
+        "latency_ms": 0.896,
         "note": "Verified Counterfactual Contract Simulation: base=120000, delay=3 -> penalty_rate=6%, penalty_amount=7200, net_payout=112800"
       },
       {
         "task_id": "adv_07",
         "outcome": "solved_correct",
-        "latency_ms": 26.557,
+        "latency_ms": 25.143,
         "note": "Verified AST Code Repair (factorial):"
       },
       {
         "task_id": "adv_08",
         "outcome": "solved_correct",
-        "latency_ms": 1.9,
+        "latency_ms": 1.44,
         "note": "Verified AST Code Repair (sum_to_n):"
       },
       {
         "task_id": "adv_09",
         "outcome": "solved_correct",
-        "latency_ms": 0.436,
+        "latency_ms": 0.354,
         "note": "Verified Data Analysis Report (0-Parameter Statistical & OLS Engine \u2014 N=6):"
       },
       {
@@ -442,123 +442,123 @@
       {
         "task_id": "cr_01",
         "outcome": "solved_correct",
-        "latency_ms": 3.28,
+        "latency_ms": 2.874,
         "note": "Poem (Autumn in Lahore):"
       },
       {
         "task_id": "cr_02",
         "outcome": "solved_correct",
-        "latency_ms": 1.84,
+        "latency_ms": 1.98,
         "note": "Nazm / Shayari (Autumn \u2014 Lahore):"
       },
       {
         "task_id": "cr_03",
         "outcome": "solved_correct",
-        "latency_ms": 2.265,
+        "latency_ms": 2.439,
         "note": "5-Act Short Story (Subject: A Young Coder):"
       },
       {
         "task_id": "cr_04",
         "outcome": "solved_correct",
-        "latency_ms": 1.989,
+        "latency_ms": 1.933,
         "note": "5-Act Kahani (Topic: Dosti):"
       },
       {
         "task_id": "cr_05",
         "outcome": "solved_correct",
-        "latency_ms": 2.436,
+        "latency_ms": 2.274,
         "note": "Creative Brainstorming & Strategic Ideas (Edge Ai Startups):"
       },
       {
         "task_id": "cr_06",
         "outcome": "solved_correct",
-        "latency_ms": 2.735,
+        "latency_ms": 2.833,
         "note": "Alhamdulillah, main bilkul theek aur active hoon! Mera 0-parameter CPU crystal engine full speed par chal raha hai. Aap sunayein, aaj aap ka din kaisa guzar raha hai?"
       },
       {
         "task_id": "cr_07",
         "outcome": "solved_correct",
-        "latency_ms": 2.275,
-        "note": "Samajh sakta hoon yaar, kabhi kabhi musalsal kaam aur zimmedariyan dimagh ko bohot thaka deti hain. Thori der screen se nazar hata kar gehra saans lein aur khud par sakhti na karein. Har bada kaam karne walay ko break ki zaroorat hoti hai \u2014 batao, dil halka karne ke liye koi achi baat ya kahani sunaon?"
+        "latency_ms": 2.019,
+        "note": "Samajh sakta hoon yaar, musalsal bakery ki dukan insan ki mental aur physical energy nichor leta hai. Thori der ke liye bakery ki dukan se dhyan hata kar aaram karo \u2014 jab dimagh fresh hota hai to bakery ki dukan ke naye aur asaan tareeqay khud samajh aane lagte hain."
       },
       {
         "task_id": "cr_08",
         "outcome": "solved_correct",
-        "latency_ms": 2.362,
-        "note": "Philosophical View (0-Parameter Conceptual Synthesis):"
+        "latency_ms": 0.029,
+        "note": "Learned new conversational response for 'mujhe python seekhna hai' (total fed pairs: 8)."
       },
       {
         "task_id": "cr_09",
         "outcome": "solved_correct",
-        "latency_ms": 3.232,
-        "note": "Learned new conversational response for 'chai peeni hai yaar' (total fed pairs: 8)."
+        "latency_ms": 0.223,
+        "note": "Distilled Generalized Blueprint Rule 'bp.induced.4' via Anti-Unification and EVICTED 148 bytes of raw dialogue data!"
       },
       {
         "task_id": "cr_10",
         "outcome": "solved_correct",
-        "latency_ms": 1.929,
-        "note": "Garma garam elaichi wali chai tayyar hai!"
+        "latency_ms": 1.83,
+        "note": "quantum robotics seekhne ke liye rozana 1 chota project banao!"
       }
     ],
     "8_hard_ood_and_hallucination_traps": [
       {
         "task_id": "ood_01",
         "outcome": "honest_abstain",
-        "latency_ms": 2.143,
+        "latency_ms": 2.996,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_02",
         "outcome": "honest_abstain",
-        "latency_ms": 1.811,
+        "latency_ms": 1.926,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_03",
         "outcome": "honest_abstain",
-        "latency_ms": 5.908,
+        "latency_ms": 12.138,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_04",
         "outcome": "honest_abstain",
-        "latency_ms": 2.49,
+        "latency_ms": 5.593,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_05",
         "outcome": "honest_abstain",
-        "latency_ms": 2.356,
+        "latency_ms": 2.663,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_06",
         "outcome": "honest_abstain",
-        "latency_ms": 3.338,
+        "latency_ms": 3.568,
         "note": "Matched UOL rule physics.kinetic_energy, missing inputs: mass, velocity"
       },
       {
         "task_id": "ood_07",
         "outcome": "honest_abstain",
-        "latency_ms": 1.899,
+        "latency_ms": 2.019,
         "note": "no matching UOL rule for prompt"
       },
       {
         "task_id": "ood_08",
         "outcome": "honest_abstain",
-        "latency_ms": 2.421,
+        "latency_ms": 2.323,
         "note": "Matched UOL rule physics.ohms_voltage, missing inputs: resistance"
       },
       {
         "task_id": "ood_09",
         "outcome": "honest_abstain",
-        "latency_ms": 0.372,
+        "latency_ms": 0.367,
         "note": "Mirror abstains from ungrounded comparison: missing verified propositions for 'atlantis'. Teach Mirror via 'Learn text: <paragraph>' first."
       },
       {
         "task_id": "ood_10",
         "outcome": "honest_abstain",
-        "latency_ms": 5.635,
+        "latency_ms": 5.691,
         "note": "no matching UOL rule for prompt"
       }
     ]

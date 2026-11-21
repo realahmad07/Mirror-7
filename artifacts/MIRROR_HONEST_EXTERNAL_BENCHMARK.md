@@ -10,14 +10,14 @@ This benchmark intentionally tests **paraphrased/Roman-Urdu queries, unseen alge
 
 | Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |
 |---|---:|---:|---:|---:|
-| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 2.371 |
-| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 2.19 |
-| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 3.002 |
-| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 2.902 |
-| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 1.486 |
-| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 0.75 |
-| 7. Creative Writing (Poetry/Stories), Bilingual Chat & Live Feeding (10) | 10/10 | 0/10 | 0/10 | 2.319 |
-| 8. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 2.388 |
+| 1. Casual English & Roman-Urdu Paraphrases (10) | 10/10 | 0/10 | 0/10 | 2.593 |
+| 2. Unseen Algebra, Systems & Formal Logic (10) | 10/10 | 0/10 | 0/10 | 2.304 |
+| 3. GSM8K-Style Free-Form Word Problems (10) | 10/10 | 0/10 | 0/10 | 3.138 |
+| 4. Unseen Paraphrased Transfer Problems (10) | 10/10 | 0/10 | 0/10 | 3.096 |
+| 5. Unstructured Summarization, OpenIE & Comparative Prose (10) | 10/10 | 0/10 | 0/10 | 1.493 |
+| 6. Grounded Doc QA, Counterfactual What-If, AST Code Repair & Data Analyst (10) | 10/10 | 0/10 | 0/10 | 0.737 |
+| 7. Creative Writing (Poetry/Stories), Bilingual Chat & Live Feeding (10) | 10/10 | 0/10 | 0/10 | 2.0 |
+| 8. Hard OOD & Hallucination Traps (10, must abstain) | 0/10 | 10/10 | 0/10 | 2.829 |
 
 ## Honest Interpretation
 
