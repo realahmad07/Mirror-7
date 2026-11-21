@@ -36,9 +36,12 @@ class ExecutionStatus(str, Enum):
     BLOCKED = "blocked"
 
 
+import sys
+
+
 @dataclass(frozen=True)
 class ExecutionPolicy:
-    timeout_seconds: float = 3.0
+    timeout_seconds: float = 8.0 if sys.platform == "win32" else 3.0
     max_steps: int = 32
     max_input_bytes: int = 65536
     max_output_bytes: int = 65536

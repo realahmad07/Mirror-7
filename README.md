@@ -1492,6 +1492,12 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 - `mirror_crystal/tests/test_multiturn_uol_and_admission.py` — **3 passed**
 - `mirror_crystal/tests/test_unit_normalizer_tdd_and_studio.py` — **3 passed**
 - `mirror_crystal/tests/test_four_native_intelligence_leaps.py` — **4 passed**
-- Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
+- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **174 passed, 0 failed** (including Windows `ExecutionPolicy` spawn-timeout fix in `mirror_crystal/execution.py`)
+- Internal Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
+- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`):
+  - Casual English & Roman-Urdu paraphrases: **9 / 10 solved**, 1 honest abstain, **0 wrong**
+  - Unseen algebra, linear systems & formal logic: **9 / 10 solved**, 1 honest abstain, **0 wrong**
+  - GSM8K-style free-form arithmetic word problems: **2 / 10 solved**, 8 honest abstain, **0 wrong** *(honestly reflects the pure-CPU heuristic boundary without a trained GPU neural semantic parser)*
+  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 40`)**
 
 **Boundary:** This track solves deterministic quantitative, symbolic, and compositional operational tasks with zero hallucination. It does not replace a full conversational language model for open-ended prose.

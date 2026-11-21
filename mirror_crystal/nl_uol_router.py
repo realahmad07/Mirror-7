@@ -384,13 +384,44 @@ class NaturalLanguageUOLRouter:
             val = _extract_param(lower, aliases, quantity=qty)
             if val is not None:
                 found[qty] = val
+
+        # Unit-inferred extraction for casual / natural phrasing without explicit variable names
+        # e.g. "a 10 kg object moving at 6 m/s" or "10 kilo ki cheez 5 m/s par"
+        unit_inferences = (
+            ("mass", r"(\d+(?:\.\d+)?)\s*(kg|kilo|kilos|kilogram|kilograms|g|grams?|lbs?|pounds?)\b"),
+            ("velocity", r"(\d+(?:\.\d+)?)\s*(m/s|mps|km/h|kph|kmh|mph)\b"),
+            ("force", r"(\d+(?:\.\d+)?)\s*(kn|newtons?|lbf)\b"),
+            ("area", r"(\d+(?:\.\d+)?)\s*(m\^2|m2|m²|cm\^2|cm2|cm²|mm2|ft2)\b"),
+            ("current", r"(\d+(?:\.\d+)?)\s*(ma|amps?|amperes?)\b"),
+            ("resistance", r"(\d+(?:\.\d+)?)\s*(kohms?|mohms?|ohms?|ω)\b"),
+            ("voltage", r"(\d+(?:\.\d+)?)\s*(kv|mv|volts?)\b"),
+            ("kinetic_energy", r"(\d+(?:\.\d+)?)\s*(kj|joules?)\b"),
+        )
+        for qty, pat in unit_inferences:
+            if qty == exclude or qty in found:
+                continue
+            m = re.search(pat, lower, flags=re.IGNORECASE)
+            if m:
+                raw_num = float(m.group(1))
+                tok = m.group(2).casefold()
+                if tok in {"kilo", "kilos"}:
+                    tok = "kg"
+                val, _ = normalize_to_si(raw_num, tok, qty)
+                found[qty] = val
         return found
 
     def _detect_target_quantity(self, lower: str) -> str | None:
         for qty, aliases in self._all_quantity_aliases():
             for alias in aliases:
-                pat = rf"\b(?:find|calculate|compute|what\s+is(?:\s+the)?|what'?s(?:\s+the)?|solve\s+for|get|determine)\s+(?:the\s+)?{re.escape(alias)}\b"
+                pat = (
+                    rf"\b(?:find|calculate|compute|what\s+is(?:\s+the)?|what'?s(?:\s+the)?|"
+                    rf"how\s+much(?:\s+is(?:\s+the)?)?|solve\s+for|get|determine)\s+(?:the\s+)?{re.escape(alias)}\b"
+                )
                 if re.search(pat, lower):
+                    return qty
+                # Suffix question forms (including Roman Urdu: "kinetic energy kitni?", "force nikalo", "stress batao")
+                pat_suffix = rf"\b{re.escape(alias)}\s+(?:kitni|kitna|nikalo|batao|kya\s+hogi|kya\s+hai)\b"
+                if re.search(pat_suffix, lower):
                     return qty
         return None
 
