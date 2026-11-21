@@ -52,7 +52,8 @@ def main() -> int:
         "1_casual_and_roman_urdu_paraphrases": [],
         "2_algebra_systems_and_formal_logic": [],
         "3_gsm8k_style_arithmetic_word_problems": [],
-        "4_hard_ood_and_hallucination_traps": [],
+        "4_unseen_paraphrased_word_problem_transfer": [],
+        "5_hard_ood_and_hallucination_traps": [],
     }
 
     def add(cat: str, tid: str, outcome: str, latency_ms: float, note: str = ""):
@@ -132,18 +133,49 @@ def main() -> int:
     ]
     for tid, prompt, exp in gsm_tasks:
         t0 = time.perf_counter()
-        hit = word_solver.solve(prompt)
+        res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
-        if hit is None:
-            add("3_gsm8k_style_arithmetic_word_problems", tid, "honest_abstain", dt, "word_solver abstained honestly")
-        else:
-            val = _extract_last_number(hit.answer)
-            if _close(val, exp):
-                add("3_gsm8k_style_arithmetic_word_problems", tid, "solved_correct", dt, f"ans={val}")
+        if res.matched and res.output is not None:
+            if _close(res.output, exp):
+                add("3_gsm8k_style_arithmetic_word_problems", tid, "solved_correct", dt, res.explanation)
             else:
-                add("3_gsm8k_style_arithmetic_word_problems", tid, "wrong_or_hallucinated", dt, f"got={val}, exp={exp}")
+                add("3_gsm8k_style_arithmetic_word_problems", tid, "wrong_or_hallucinated", dt, f"got={res.output}, exp={exp}")
+        else:
+            hit = word_solver.solve(prompt)
+            if hit is None:
+                add("3_gsm8k_style_arithmetic_word_problems", tid, "honest_abstain", dt, "abstained honestly")
+            else:
+                val = _extract_last_number(hit.answer)
+                if _close(val, exp):
+                    add("3_gsm8k_style_arithmetic_word_problems", tid, "solved_correct", dt, f"ans={val}")
+                else:
+                    add("3_gsm8k_style_arithmetic_word_problems", tid, "wrong_or_hallucinated", dt, f"got={val}, exp={exp}")
 
-    # ---- 4. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
+    # ---- 4. Completely Unseen Paraphrased Word-Problem Transfer (10 new nouns/numbers/verbs!) ----
+    unseen_transfer_tasks = [
+        ("ut_01", "A jacket originally priced at $250 is discounted by 20% off. What is the sale price?", 200.0),
+        ("ut_02", "A cafe sells coffees for $6 each. If Bilal orders 4 coffees and pays with $30, how much change does he get?", 6.0),
+        ("ut_03", "Five coworkers split a taxi fare of $125 equally. How much does each pay?", 25.0),
+        ("ut_04", "A warehouse starts with 900 crates. 240 crates are removed and 110 crates are added. How many crates are left?", 770.0),
+        ("ut_05", "A drone flies at 45 km/h for 4 hours. How far does it travel?", 180.0),
+        ("ut_06", "A factory produces 25 widgets per hour. How many widgets does it produce in 6 hours?", 150.0),
+        ("ut_07", "A garden has 4 times as many roses as tulips. If there are 12 tulips, how many flowers are there in total?", 60.0),
+        ("ut_08", "Maya writes 18 lines of code on Wednesday and triple as many on Thursday. How many lines in total?", 72.0),
+        ("ut_09", "A dinner bill is $120 plus 15% tip. What is the total price?", 138.0),
+        ("ut_10", "If 6 crates contain 72 bottles in total, how many bottles are in 1 crate?", 12.0),
+    ]
+    for tid, prompt, exp in unseen_transfer_tasks:
+        t0 = time.perf_counter()
+        res = router.route(prompt)
+        dt = (time.perf_counter() - t0) * 1000.0
+        if not res.matched:
+            add("4_unseen_paraphrased_word_problem_transfer", tid, "honest_abstain", dt, res.explanation)
+        elif _close(res.output, exp):
+            add("4_unseen_paraphrased_word_problem_transfer", tid, "solved_correct", dt, res.explanation)
+        else:
+            add("4_unseen_paraphrased_word_problem_transfer", tid, "wrong_or_hallucinated", dt, f"got={res.output}, exp={exp}")
+
+    # ---- 5. Hard Out-of-Distribution & Hallucination Traps (10 tasks — MUST abstain!) ----
     ood_traps = [
         ("ood_01", "Write a poem about autumn in Lahore."),
         ("ood_02", "Who will win the next FIFA World Cup?"),
@@ -161,9 +193,9 @@ def main() -> int:
         res = router.route(prompt)
         dt = (time.perf_counter() - t0) * 1000.0
         if not res.matched:
-            add("4_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
+            add("5_hard_ood_and_hallucination_traps", tid, "honest_abstain", dt, res.explanation)
         else:
-            add("4_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
+            add("5_hard_ood_and_hallucination_traps", tid, "wrong_or_hallucinated", dt, f"falsely matched: {res.explanation}")
 
     # Summarize honestly
     cat_summary = {}
@@ -210,8 +242,8 @@ def main() -> int:
         "",
         f"- **Mode:** Pure CPU (`uses_gpu=False`, `uses_third_party_llm=False`)",
         f"- **Total Tasks:** `{total_tasks}`",
-        f"- **Solved Correctly (Structured + Paraphrased + GSM8K):** `{total_solved} / 30` solvable tasks",
-        f"- **OOD Trap Safe Abstention:** `{cat_summary['4_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
+        f"- **Solved Correctly (Structured + Paraphrased + GSM8K + Transfer):** `{total_solved} / 40` solvable tasks",
+        f"- **OOD Trap Safe Abstention:** `{cat_summary['5_hard_ood_and_hallucination_traps']['honest_abstain']} / 10`",
         f"- **Overall Wrong / Hallucinated Rate:** **{report['overall_hallucination_rate_pct']}%** (`{total_wrong} / {total_tasks}`)",
         "",
         "| Category | Solved Correctly | Honest Abstain (Safe) | Wrong / Hallucinated | Median Latency (ms) |",
@@ -221,7 +253,8 @@ def main() -> int:
         "1_casual_and_roman_urdu_paraphrases": "1. Casual English & Roman-Urdu Paraphrases (10)",
         "2_algebra_systems_and_formal_logic": "2. Unseen Algebra, Systems & Formal Logic (10)",
         "3_gsm8k_style_arithmetic_word_problems": "3. GSM8K-Style Free-Form Word Problems (10)",
-        "4_hard_ood_and_hallucination_traps": "4. Hard OOD & Hallucination Traps (10, must abstain)",
+        "4_unseen_paraphrased_word_problem_transfer": "4. Unseen Paraphrased Transfer Problems (10)",
+        "5_hard_ood_and_hallucination_traps": "5. Hard OOD & Hallucination Traps (10, must abstain)",
     }
     for k, st in cat_summary.items():
         lines.append(

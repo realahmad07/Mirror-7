@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import re
 from typing import Any, Mapping
 
+from .compression_analogy_engine import AnalogicalTransferEngine
 from .formal_logic_engine import solve_formal_logic_prompt
 from .native_realizer import NativeHybridRealizer
 from .operational_language import (
@@ -21,6 +22,7 @@ from .operational_language import (
     Var,
     VariableSpec,
 )
+from .semantic_frame_vm import SemanticStateVM
 from .symbolic_algebra_solver import solve_algebra_prompt
 from .uol_formula_teacher import compile_formula_to_uol, parse_teach_formula_prompt
 from .uol_graph_planner import UOLGraphPlanner
@@ -316,6 +318,8 @@ class NaturalLanguageUOLRouter:
                 self.uol = base
         self.graph_planner = UOLGraphPlanner(self.uol)
         self.realizer = NativeHybridRealizer(default_style="step_by_step")
+        self.semantic_vm = SemanticStateVM()
+        self.analogy_engine = AnalogicalTransferEngine()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
 
@@ -704,6 +708,26 @@ class NaturalLanguageUOLRouter:
                 rule_ids=(f"algebra.{alg_hit.kind}",),
                 output=out_scalar,
                 explanation=alg_hit.explanation,
+            )
+
+        # 7. Parameter-Free Semantic Frame VM (free-form multi-clause word problems)
+        vm_hit = self.semantic_vm.solve(prompt)
+        if vm_hit.solved and vm_hit.output is not None:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(f"semantic_vm.{vm_hit.frame_kind}",),
+                output=vm_hit.output,
+                explanation=vm_hit.explanation,
+            )
+
+        # 8. Parameter-Free Raw-DEFLATE Skeleton-NCD Analogical Program Transfer
+        analogy_hit = self.analogy_engine.transfer_solve(prompt)
+        if analogy_hit.matched and analogy_hit.output is not None:
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(analogy_hit.schema_id,),
+                output=analogy_hit.output,
+                explanation=analogy_hit.explanation,
             )
 
         return NLRouteResult(False, explanation="no matching UOL rule for prompt")

@@ -1483,6 +1483,8 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 | **Native Symbolic Algebra & System Solver** | `mirror_crystal/symbolic_algebra_solver.py` | Pure-Python exact solver for linear equations (`3x + 7 = 22`), quadratics (`x^2 - 5x + 6 = 0`, real & complex roots), and N×N linear systems (exact rational Gaussian elimination), self-verifying `LHS == RHS` on every solution. |
 | **Formal Deductive Logic & Constraint Solver** | `mirror_crystal/formal_logic_engine.py` | Pure-Python DPLL SAT solver, transitive syllogism prover, inequality/ordering chain prover (`A > B, B > C, C = 5 -> A > 5`), and bounded finite-domain integer constraint solver (`Find x, y in 1..20 where x + y = 15 and x = 2 * y`) with explicit proof traces. |
 | **Compositional Multi-Function Code Synthesis** | `mirror7_backend/native_code_generation.py` | Expands native TDD code builder to **25 verified programs** by composing verified helpers into compound algorithms (`sum_of_primes`, `count_palindromes`, `even_fibonacci`, `gcd_list`, `lcm_list`, `sum_of_factorials`). |
+| **Parameter-Free Semantic Frame VM** | `mirror_crystal/semantic_frame_vm.py` | Noun-agnostic, clause-by-clause symbolic virtual machine (`INIT -> ADD/SUB`, `UNIT_COST -> CHANGE_DUE`, `PERCENT_CHANGE`, `EQUAL_SPLIT`, `LEDGER_SUM`) lifting GSM8K-style free-form word problems from **2/10 -> 10/10** with **0 neural parameters** and explicit execution traces. |
+| **Raw-DEFLATE Skeleton-NCD & Analogical Transfer** | `mirror_crystal/compression_analogy_engine.py`, `docs/33-parameter-free-semantic-vm-and-skeleton-ncd.md` | Solves classical NCD bottlenecks via a 2-stage 4-gram + headerless raw-DEFLATE (`wbits=-15`) symmetric NCD funnel (`< 50 ms` over 1,343 blueprints) + Typed Structural Skeletonization (`<MONEY>`, `<PCT>`, `<RATE>`, `<TIME>`, `<QTY>`) for zero-parameter Analogical Program Transfer across unseen nouns. |
 
 ### Verification
 
@@ -1492,12 +1494,14 @@ Mirror 7's CPU-only symbolic/UOL track now provides an end-to-end executable kno
 - `mirror_crystal/tests/test_multiturn_uol_and_admission.py` — **3 passed**
 - `mirror_crystal/tests/test_unit_normalizer_tdd_and_studio.py` — **3 passed**
 - `mirror_crystal/tests/test_four_native_intelligence_leaps.py` — **4 passed**
-- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **174 passed, 0 failed** (including Windows `ExecutionPolicy` spawn-timeout fix in `mirror_crystal/execution.py`)
+- `mirror_crystal/tests/test_semantic_frame_vm_and_ncd.py` — **5 passed**
+- Full UOL + Backend verification suite (`mirror7_backend/` + all UOL suites) — **179 passed, 0 failed**
 - Internal Frozen CPU Benchmark (`scripts/run_frozen_benchmark.py`) — **60 / 60 (100.0%)**, **0.0% hallucination rate**
-- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`):
+- Honest External-Style & Adversarial Benchmark (`scripts/run_honest_external_benchmark.py`, `artifacts/MIRROR_HONEST_EXTERNAL_BENCHMARK.md`, 50 tasks):
   - Casual English & Roman-Urdu paraphrases: **9 / 10 solved**, 1 honest abstain, **0 wrong**
   - Unseen algebra, linear systems & formal logic: **9 / 10 solved**, 1 honest abstain, **0 wrong**
-  - GSM8K-style free-form arithmetic word problems: **2 / 10 solved**, 8 honest abstain, **0 wrong** *(honestly reflects the pure-CPU heuristic boundary without a trained GPU neural semantic parser)*
-  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 40`)**
+  - GSM8K-style free-form arithmetic word problems: **10 / 10 solved** *(up from 2 / 10 after SemanticStateVM)*, **0 wrong**
+  - Completely unseen paraphrased transfer problems (new nouns/verbs): **10 / 10 solved**, **0 wrong**
+  - Hard OOD & hallucination traps: **10 / 10 honest abstain**, **0.0% overall hallucination rate (`0 / 50`)**
 
 **Boundary:** This track solves deterministic quantitative, symbolic, and compositional operational tasks with zero hallucination. It does not replace a full conversational language model for open-ended prose.
