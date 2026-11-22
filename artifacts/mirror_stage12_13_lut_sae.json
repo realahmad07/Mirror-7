@@ -1,0 +1,2065 @@
+{
+  "atomic2020_commonsense_chains": [
+    {
+      "HinderedBy": "open_window_or_low_heat",
+      "intent": "Indirect request: close the window or raise the heating.",
+      "state": "room_is_cold",
+      "triggers": [
+        "freezing",
+        "so cold",
+        "too cold",
+        "chilly",
+        "thand",
+        "sardi",
+        "thanda"
+      ],
+      "xNeed": "thermal_comfort",
+      "xWant": "close_window_or_turn_on_heater"
+    },
+    {
+      "HinderedBy": "closed_window_or_ac_off",
+      "intent": "Indirect request: open a window or turn on air conditioning.",
+      "state": "room_is_hot",
+      "triggers": [
+        "boiling",
+        "stuffy",
+        "too hot",
+        "so hot",
+        "garmi",
+        "ghutan"
+      ],
+      "xNeed": "cooling_airflow",
+      "xWant": "open_window_or_turn_on_cooling"
+    },
+    {
+      "HinderedBy": "no_charger_connected",
+      "intent": "Indirect request: provide a charger or power outlet.",
+      "state": "device_low_power",
+      "triggers": [
+        "battery is at",
+        "battery low",
+        "phone is dying",
+        "battery khatam",
+        "1%",
+        "2%"
+      ],
+      "xNeed": "electrical_charge",
+      "xWant": "borrow_or_plug_in_charger"
+    },
+    {
+      "HinderedBy": "lack_of_food",
+      "intent": "Indirect request: get or offer food.",
+      "state": "speaker_hungry",
+      "triggers": [
+        "haven't eaten",
+        "starving",
+        "bhook",
+        "bhuka",
+        "skip lunch",
+        "empty stomach"
+      ],
+      "xNeed": "nutrition",
+      "xWant": "eat_a_meal"
+    },
+    {
+      "HinderedBy": "direct_interrogation",
+      "intent": "Subtextual deflection: speaker is concealing tension beneath polite phrasing.",
+      "state": "defensive_evasion",
+      "triggers": [
+        "calm tides",
+        "safe harbor",
+        "quiet waters",
+        "weather holds"
+      ],
+      "xNeed": "conceal_hidden_artifact",
+      "xWant": "deflect_suspicion_politely"
+    }
+  ],
+  "pdcst_kneser_ney": {
+    "contexts": {
+      "<s>": {
+        "a": 1,
+        "active": 1,
+        "append-only": 1,
+        "beneath": 1,
+        "chandni": 1,
+        "he": 1,
+        "lamport": 1,
+        "shaam": 1,
+        "she": 1,
+        "silence": 1,
+        "the": 3
+      },
+      "<s> a": {
+        "brass": 1
+      },
+      "<s> a brass": {
+        "sky": 1
+      },
+      "<s> active": {
+        "inference": 1
+      },
+      "<s> active inference": {
+        "minimizes": 1
+      },
+      "<s> append-only": {
+        "journal": 1
+      },
+      "<s> append-only journal": {
+        "replay": 1
+      },
+      "<s> beneath": {
+        "the": 1
+      },
+      "<s> beneath the": {
+        "measured": 1
+      },
+      "<s> chandni": {
+        "ki": 1
+      },
+      "<s> chandni ki": {
+        "khamoshi": 1
+      },
+      "<s> he": {
+        "studied": 1
+      },
+      "<s> he studied": {
+        "her": 1
+      },
+      "<s> lamport": {
+        "timestamps": 1
+      },
+      "<s> lamport timestamps": {
+        "guarantee": 1
+      },
+      "<s> shaam": {
+        "ki": 1
+      },
+      "<s> shaam ki": {
+        "khamoshi": 1
+      },
+      "<s> she": {
+        "spoke": 1
+      },
+      "<s> she spoke": {
+        "of": 1
+      },
+      "<s> silence": {
+        "settled": 1
+      },
+      "<s> silence settled": {
+        "between": 1
+      },
+      "<s> the": {
+        "detective": 2,
+        "lantern": 1
+      },
+      "<s> the detective": {
+        "paused": 1,
+        "watched": 1
+      },
+      "<s> the lantern": {
+        "swung": 1
+      },
+      "a": {
+        "brass": 1,
+        "guarded": 1
+      },
+      "a brass": {
+        "sky": 1
+      },
+      "a brass sky": {
+        "never": 1
+      },
+      "a guarded": {
+        "secret": 1
+      },
+      "a guarded secret": {
+        "</s>": 1
+      },
+      "aahista": {
+        "lafzon": 2
+      },
+      "aahista lafzon": {
+        "mein": 2
+      },
+      "aahista lafzon mein": {
+        "dhal": 1,
+        "dhalti": 1
+      },
+      "accusation": {
+        "</s>": 1
+      },
+      "active": {
+        "inference": 1
+      },
+      "active inference": {
+        "minimizes": 1
+      },
+      "active inference minimizes": {
+        "expected": 1
+      },
+      "against": {
+        "the": 1
+      },
+      "against the": {
+        "glass": 1
+      },
+      "against the glass": {
+        "</s>": 1
+      },
+      "and": {
+        "idempotent": 1
+      },
+      "and idempotent": {
+        "offline": 1
+      },
+      "and idempotent offline": {
+        "sync": 1
+      },
+      "any": {
+        "unspoken": 1
+      },
+      "any unspoken": {
+        "accusation": 1
+      },
+      "any unspoken accusation": {
+        "</s>": 1
+      },
+      "append-only": {
+        "journal": 1
+      },
+      "append-only journal": {
+        "replay": 1
+      },
+      "append-only journal replay": {
+        "restores": 1
+      },
+      "asphalt": {
+        "gleam": 1
+      },
+      "asphalt gleam": {
+        "beneath": 1
+      },
+      "asphalt gleam beneath": {
+        "sodium": 1
+      },
+      "astrolabe": {
+        "</s>": 1
+      },
+      "beneath": {
+        "sodium": 2,
+        "the": 1
+      },
+      "beneath sodium": {
+        "lamps": 1,
+        "streetlights": 1
+      },
+      "beneath sodium lamps": {
+        "measuring": 1
+      },
+      "beneath sodium streetlights": {
+        "</s>": 1
+      },
+      "beneath the": {
+        "measured": 1
+      },
+      "beneath the measured": {
+        "politeness": 1
+      },
+      "between": {
+        "them": 1
+      },
+      "between them": {
+        "heavier": 1
+      },
+      "between them heavier": {
+        "than": 1
+      },
+      "brass": {
+        "astrolabe": 1,
+        "sky": 1
+      },
+      "brass astrolabe": {
+        "</s>": 1
+      },
+      "brass sky": {
+        "never": 1
+      },
+      "brass sky never": {
+        "promises": 1
+      },
+      "calm": {
+        "tides": 1
+      },
+      "calm tides": {
+        "while": 1
+      },
+      "calm tides while": {
+        "keeping": 1
+      },
+      "carefully": {
+        "knowing": 1
+      },
+      "carefully knowing": {
+        "the": 1
+      },
+      "carefully knowing the": {
+        "manifest": 1
+      },
+      "chandni": {
+        "ki": 1
+      },
+      "chandni ki": {
+        "khamoshi": 1
+      },
+      "chandni ki khamoshi": {
+        "mein": 1
+      },
+      "committed": {
+        "entity": 1
+      },
+      "committed entity": {
+        "without": 1
+      },
+      "committed entity without": {
+        "corruption": 1
+      },
+      "commutative": {
+        "and": 1
+      },
+      "commutative and": {
+        "idempotent": 1
+      },
+      "commutative and idempotent": {
+        "offline": 1
+      },
+      "convergence": {
+        "</s>": 1
+      },
+      "corruption": {
+        "</s>": 1
+      },
+      "detective": {
+        "paused": 1,
+        "watched": 1
+      },
+      "detective paused": {
+        "beneath": 1
+      },
+      "detective paused beneath": {
+        "sodium": 1
+      },
+      "detective watched": {
+        "the": 1
+      },
+      "detective watched the": {
+        "wet": 1
+      },
+      "dhal": {
+        "jaati": 1
+      },
+      "dhal jaati": {
+        "hain": 1
+      },
+      "dhal jaati hain": {
+        "</s>": 1
+      },
+      "dhalti": {
+        "hain": 1
+      },
+      "dhalti hain": {
+        "</s>": 1
+      },
+      "energy": {
+        "over": 1
+      },
+      "energy over": {
+        "module": 1
+      },
+      "energy over module": {
+        "reference": 1
+      },
+      "entity": {
+        "without": 1
+      },
+      "entity without": {
+        "corruption": 1
+      },
+      "entity without corruption": {
+        "</s>": 1
+      },
+      "every": {
+        "committed": 1,
+        "silence": 1
+      },
+      "every committed": {
+        "entity": 1
+      },
+      "every committed entity": {
+        "without": 1
+      },
+      "every silence": {
+        "in": 1
+      },
+      "every silence in": {
+        "the": 1
+      },
+      "expected": {
+        "free": 1
+      },
+      "expected free": {
+        "energy": 1
+      },
+      "expected free energy": {
+        "over": 1
+      },
+      "face": {
+        "carefully": 1
+      },
+      "face carefully": {
+        "knowing": 1
+      },
+      "face carefully knowing": {
+        "the": 1
+      },
+      "frames": {
+        "</s>": 1
+      },
+      "free": {
+        "energy": 1
+      },
+      "free energy": {
+        "over": 1
+      },
+      "free energy over": {
+        "module": 1
+      },
+      "gently": {
+        "while": 1
+      },
+      "gently while": {
+        "the": 1
+      },
+      "gently while the": {
+        "rain": 1
+      },
+      "glass": {
+        "</s>": 1
+      },
+      "gleam": {
+        "beneath": 1
+      },
+      "gleam beneath": {
+        "sodium": 1
+      },
+      "gleam beneath sodium": {
+        "streetlights": 1
+      },
+      "guarantee": {
+        "commutative": 1
+      },
+      "guarantee commutative": {
+        "and": 1
+      },
+      "guarantee commutative and": {
+        "idempotent": 1
+      },
+      "guarded": {
+        "secret": 1
+      },
+      "guarded secret": {
+        "</s>": 1
+      },
+      "had": {
+        "missing": 1
+      },
+      "had missing": {
+        "pages": 1
+      },
+      "had missing pages": {
+        "</s>": 1
+      },
+      "hain": {
+        "</s>": 2
+      },
+      "hand": {
+        "near": 1
+      },
+      "hand near": {
+        "the": 1
+      },
+      "hand near the": {
+        "brass": 1
+      },
+      "harbor": {
+        "when": 1
+      },
+      "harbor when": {
+        "the": 1
+      },
+      "harbor when the": {
+        "tide": 1
+      },
+      "he": {
+        "studied": 1
+      },
+      "he studied": {
+        "her": 1
+      },
+      "he studied her": {
+        "face": 1
+      },
+      "heavier": {
+        "than": 1
+      },
+      "heavier than": {
+        "any": 1
+      },
+      "heavier than any": {
+        "unspoken": 1
+      },
+      "her": {
+        "face": 1,
+        "hand": 1
+      },
+      "her face": {
+        "carefully": 1
+      },
+      "her face carefully": {
+        "knowing": 1
+      },
+      "her hand": {
+        "near": 1
+      },
+      "her hand near": {
+        "the": 1
+      },
+      "idempotent": {
+        "offline": 1
+      },
+      "idempotent offline": {
+        "sync": 1
+      },
+      "idempotent offline sync": {
+        "convergence": 1
+      },
+      "in": {
+        "the": 1
+      },
+      "in the": {
+        "room": 1
+      },
+      "in the room": {
+        "</s>": 1
+      },
+      "inference": {
+        "minimizes": 1
+      },
+      "inference minimizes": {
+        "expected": 1
+      },
+      "inference minimizes expected": {
+        "free": 1
+      },
+      "jaati": {
+        "hain": 1
+      },
+      "jaati hain": {
+        "</s>": 1
+      },
+      "journal": {
+        "replay": 1
+      },
+      "journal replay": {
+        "restores": 1
+      },
+      "journal replay restores": {
+        "every": 1
+      },
+      "keeping": {
+        "her": 1
+      },
+      "keeping her": {
+        "hand": 1
+      },
+      "keeping her hand": {
+        "near": 1
+      },
+      "khamoshi": {
+        "mein": 2
+      },
+      "khamoshi mein": {
+        "purani": 2
+      },
+      "khamoshi mein purani": {
+        "yaadein": 2
+      },
+      "ki": {
+        "khamoshi": 2
+      },
+      "ki khamoshi": {
+        "mein": 2
+      },
+      "ki khamoshi mein": {
+        "purani": 2
+      },
+      "knowing": {
+        "the": 1
+      },
+      "knowing the": {
+        "manifest": 1
+      },
+      "knowing the manifest": {
+        "still": 1
+      },
+      "lafzon": {
+        "mein": 2
+      },
+      "lafzon mein": {
+        "dhal": 1,
+        "dhalti": 1
+      },
+      "lafzon mein dhal": {
+        "jaati": 1
+      },
+      "lafzon mein dhalti": {
+        "hain": 1
+      },
+      "lamport": {
+        "timestamps": 1
+      },
+      "lamport timestamps": {
+        "guarantee": 1
+      },
+      "lamport timestamps guarantee": {
+        "commutative": 1
+      },
+      "lamps": {
+        "measuring": 1
+      },
+      "lamps measuring": {
+        "every": 1
+      },
+      "lamps measuring every": {
+        "silence": 1
+      },
+      "lantern": {
+        "swung": 1
+      },
+      "lantern swung": {
+        "gently": 1
+      },
+      "lantern swung gently": {
+        "while": 1
+      },
+      "lay": {
+        "the": 1
+      },
+      "lay the": {
+        "quiet": 1
+      },
+      "lay the quiet": {
+        "tension": 1
+      },
+      "manifest": {
+        "still": 1
+      },
+      "manifest still": {
+        "had": 1
+      },
+      "manifest still had": {
+        "missing": 1
+      },
+      "measured": {
+        "politeness": 1
+      },
+      "measured politeness": {
+        "lay": 1
+      },
+      "measured politeness lay": {
+        "the": 1
+      },
+      "measuring": {
+        "every": 1
+      },
+      "measuring every": {
+        "silence": 1
+      },
+      "measuring every silence": {
+        "in": 1
+      },
+      "mein": {
+        "dhal": 1,
+        "dhalti": 1,
+        "purani": 2
+      },
+      "mein dhal": {
+        "jaati": 1
+      },
+      "mein dhal jaati": {
+        "hain": 1
+      },
+      "mein dhalti": {
+        "hain": 1
+      },
+      "mein dhalti hain": {
+        "</s>": 1
+      },
+      "mein purani": {
+        "yaadein": 2
+      },
+      "mein purani yaadein": {
+        "aahista": 2
+      },
+      "minimizes": {
+        "expected": 1
+      },
+      "minimizes expected": {
+        "free": 1
+      },
+      "minimizes expected free": {
+        "energy": 1
+      },
+      "missing": {
+        "pages": 1
+      },
+      "missing pages": {
+        "</s>": 1
+      },
+      "module": {
+        "reference": 1
+      },
+      "module reference": {
+        "frames": 1
+      },
+      "module reference frames": {
+        "</s>": 1
+      },
+      "near": {
+        "the": 1
+      },
+      "near the": {
+        "brass": 1
+      },
+      "near the brass": {
+        "astrolabe": 1
+      },
+      "never": {
+        "promises": 1
+      },
+      "never promises": {
+        "safe": 1
+      },
+      "never promises safe": {
+        "harbor": 1
+      },
+      "of": {
+        "a": 1,
+        "calm": 1
+      },
+      "of a": {
+        "guarded": 1
+      },
+      "of a guarded": {
+        "secret": 1
+      },
+      "of calm": {
+        "tides": 1
+      },
+      "of calm tides": {
+        "while": 1
+      },
+      "offline": {
+        "sync": 1
+      },
+      "offline sync": {
+        "convergence": 1
+      },
+      "offline sync convergence": {
+        "</s>": 1
+      },
+      "over": {
+        "module": 1
+      },
+      "over module": {
+        "reference": 1
+      },
+      "over module reference": {
+        "frames": 1
+      },
+      "pages": {
+        "</s>": 1
+      },
+      "paused": {
+        "beneath": 1
+      },
+      "paused beneath": {
+        "sodium": 1
+      },
+      "paused beneath sodium": {
+        "lamps": 1
+      },
+      "politeness": {
+        "lay": 1
+      },
+      "politeness lay": {
+        "the": 1
+      },
+      "politeness lay the": {
+        "quiet": 1
+      },
+      "promises": {
+        "safe": 1
+      },
+      "promises safe": {
+        "harbor": 1
+      },
+      "promises safe harbor": {
+        "when": 1
+      },
+      "purani": {
+        "yaadein": 2
+      },
+      "purani yaadein": {
+        "aahista": 2
+      },
+      "purani yaadein aahista": {
+        "lafzon": 2
+      },
+      "quiet": {
+        "tension": 1
+      },
+      "quiet tension": {
+        "of": 1
+      },
+      "quiet tension of": {
+        "a": 1
+      },
+      "rain": {
+        "tapped": 1
+      },
+      "rain tapped": {
+        "against": 1
+      },
+      "rain tapped against": {
+        "the": 1
+      },
+      "reference": {
+        "frames": 1
+      },
+      "reference frames": {
+        "</s>": 1
+      },
+      "replay": {
+        "restores": 1
+      },
+      "replay restores": {
+        "every": 1
+      },
+      "replay restores every": {
+        "committed": 1
+      },
+      "restores": {
+        "every": 1
+      },
+      "restores every": {
+        "committed": 1
+      },
+      "restores every committed": {
+        "entity": 1
+      },
+      "room": {
+        "</s>": 1
+      },
+      "safe": {
+        "harbor": 1
+      },
+      "safe harbor": {
+        "when": 1
+      },
+      "safe harbor when": {
+        "the": 1
+      },
+      "secret": {
+        "</s>": 1
+      },
+      "settled": {
+        "between": 1
+      },
+      "settled between": {
+        "them": 1
+      },
+      "settled between them": {
+        "heavier": 1
+      },
+      "shaam": {
+        "ki": 1
+      },
+      "shaam ki": {
+        "khamoshi": 1
+      },
+      "shaam ki khamoshi": {
+        "mein": 1
+      },
+      "she": {
+        "spoke": 1
+      },
+      "she spoke": {
+        "of": 1
+      },
+      "she spoke of": {
+        "calm": 1
+      },
+      "silence": {
+        "in": 1,
+        "settled": 1
+      },
+      "silence in": {
+        "the": 1
+      },
+      "silence in the": {
+        "room": 1
+      },
+      "silence settled": {
+        "between": 1
+      },
+      "silence settled between": {
+        "them": 1
+      },
+      "sky": {
+        "never": 1
+      },
+      "sky never": {
+        "promises": 1
+      },
+      "sky never promises": {
+        "safe": 1
+      },
+      "sodium": {
+        "lamps": 1,
+        "streetlights": 1
+      },
+      "sodium lamps": {
+        "measuring": 1
+      },
+      "sodium lamps measuring": {
+        "every": 1
+      },
+      "sodium streetlights": {
+        "</s>": 1
+      },
+      "spoke": {
+        "of": 1
+      },
+      "spoke of": {
+        "calm": 1
+      },
+      "spoke of calm": {
+        "tides": 1
+      },
+      "still": {
+        "had": 1
+      },
+      "still had": {
+        "missing": 1
+      },
+      "still had missing": {
+        "pages": 1
+      },
+      "streetlights": {
+        "</s>": 1
+      },
+      "studied": {
+        "her": 1
+      },
+      "studied her": {
+        "face": 1
+      },
+      "studied her face": {
+        "carefully": 1
+      },
+      "swung": {
+        "gently": 1
+      },
+      "swung gently": {
+        "while": 1
+      },
+      "swung gently while": {
+        "the": 1
+      },
+      "sync": {
+        "convergence": 1
+      },
+      "sync convergence": {
+        "</s>": 1
+      },
+      "tapped": {
+        "against": 1
+      },
+      "tapped against": {
+        "the": 1
+      },
+      "tapped against the": {
+        "glass": 1
+      },
+      "tension": {
+        "of": 1
+      },
+      "tension of": {
+        "a": 1
+      },
+      "tension of a": {
+        "guarded": 1
+      },
+      "than": {
+        "any": 1
+      },
+      "than any": {
+        "unspoken": 1
+      },
+      "than any unspoken": {
+        "accusation": 1
+      },
+      "the": {
+        "brass": 1,
+        "detective": 2,
+        "glass": 1,
+        "lantern": 1,
+        "manifest": 1,
+        "measured": 1,
+        "quiet": 1,
+        "rain": 1,
+        "room": 1,
+        "tide": 1,
+        "wet": 1
+      },
+      "the brass": {
+        "astrolabe": 1
+      },
+      "the brass astrolabe": {
+        "</s>": 1
+      },
+      "the detective": {
+        "paused": 1,
+        "watched": 1
+      },
+      "the detective paused": {
+        "beneath": 1
+      },
+      "the detective watched": {
+        "the": 1
+      },
+      "the glass": {
+        "</s>": 1
+      },
+      "the lantern": {
+        "swung": 1
+      },
+      "the lantern swung": {
+        "gently": 1
+      },
+      "the manifest": {
+        "still": 1
+      },
+      "the manifest still": {
+        "had": 1
+      },
+      "the measured": {
+        "politeness": 1
+      },
+      "the measured politeness": {
+        "lay": 1
+      },
+      "the quiet": {
+        "tension": 1
+      },
+      "the quiet tension": {
+        "of": 1
+      },
+      "the rain": {
+        "tapped": 1
+      },
+      "the rain tapped": {
+        "against": 1
+      },
+      "the room": {
+        "</s>": 1
+      },
+      "the tide": {
+        "turns": 1
+      },
+      "the tide turns": {
+        "unexpectedly": 1
+      },
+      "the wet": {
+        "asphalt": 1
+      },
+      "the wet asphalt": {
+        "gleam": 1
+      },
+      "them": {
+        "heavier": 1
+      },
+      "them heavier": {
+        "than": 1
+      },
+      "them heavier than": {
+        "any": 1
+      },
+      "tide": {
+        "turns": 1
+      },
+      "tide turns": {
+        "unexpectedly": 1
+      },
+      "tide turns unexpectedly": {
+        "</s>": 1
+      },
+      "tides": {
+        "while": 1
+      },
+      "tides while": {
+        "keeping": 1
+      },
+      "tides while keeping": {
+        "her": 1
+      },
+      "timestamps": {
+        "guarantee": 1
+      },
+      "timestamps guarantee": {
+        "commutative": 1
+      },
+      "timestamps guarantee commutative": {
+        "and": 1
+      },
+      "turns": {
+        "unexpectedly": 1
+      },
+      "turns unexpectedly": {
+        "</s>": 1
+      },
+      "unexpectedly": {
+        "</s>": 1
+      },
+      "unspoken": {
+        "accusation": 1
+      },
+      "unspoken accusation": {
+        "</s>": 1
+      },
+      "watched": {
+        "the": 1
+      },
+      "watched the": {
+        "wet": 1
+      },
+      "watched the wet": {
+        "asphalt": 1
+      },
+      "wet": {
+        "asphalt": 1
+      },
+      "wet asphalt": {
+        "gleam": 1
+      },
+      "wet asphalt gleam": {
+        "beneath": 1
+      },
+      "when": {
+        "the": 1
+      },
+      "when the": {
+        "tide": 1
+      },
+      "when the tide": {
+        "turns": 1
+      },
+      "while": {
+        "keeping": 1,
+        "the": 1
+      },
+      "while keeping": {
+        "her": 1
+      },
+      "while keeping her": {
+        "hand": 1
+      },
+      "while the": {
+        "rain": 1
+      },
+      "while the rain": {
+        "tapped": 1
+      },
+      "without": {
+        "corruption": 1
+      },
+      "without corruption": {
+        "</s>": 1
+      },
+      "yaadein": {
+        "aahista": 2
+      },
+      "yaadein aahista": {
+        "lafzon": 2
+      },
+      "yaadein aahista lafzon": {
+        "mein": 2
+      }
+    },
+    "discount_q16": 49152,
+    "max_order": 4,
+    "preceding_counts": {
+      "</s>": 12,
+      "a": 2,
+      "aahista": 1,
+      "accusation": 1,
+      "active": 1,
+      "against": 1,
+      "and": 1,
+      "any": 1,
+      "append-only": 1,
+      "asphalt": 1,
+      "astrolabe": 1,
+      "beneath": 3,
+      "between": 1,
+      "brass": 2,
+      "calm": 1,
+      "carefully": 1,
+      "chandni": 1,
+      "committed": 1,
+      "commutative": 1,
+      "convergence": 1,
+      "corruption": 1,
+      "detective": 1,
+      "dhal": 1,
+      "dhalti": 1,
+      "energy": 1,
+      "entity": 1,
+      "every": 2,
+      "expected": 1,
+      "face": 1,
+      "frames": 1,
+      "free": 1,
+      "gently": 1,
+      "glass": 1,
+      "gleam": 1,
+      "guarantee": 1,
+      "guarded": 1,
+      "had": 1,
+      "hain": 2,
+      "hand": 1,
+      "harbor": 1,
+      "he": 1,
+      "heavier": 1,
+      "her": 2,
+      "idempotent": 1,
+      "in": 1,
+      "inference": 1,
+      "jaati": 1,
+      "journal": 1,
+      "keeping": 1,
+      "khamoshi": 1,
+      "ki": 2,
+      "knowing": 1,
+      "lafzon": 1,
+      "lamport": 1,
+      "lamps": 1,
+      "lantern": 1,
+      "lay": 1,
+      "manifest": 1,
+      "measured": 1,
+      "measuring": 1,
+      "mein": 2,
+      "minimizes": 1,
+      "missing": 1,
+      "module": 1,
+      "near": 1,
+      "never": 1,
+      "of": 2,
+      "offline": 1,
+      "over": 1,
+      "pages": 1,
+      "paused": 1,
+      "politeness": 1,
+      "promises": 1,
+      "purani": 1,
+      "quiet": 1,
+      "rain": 1,
+      "reference": 1,
+      "replay": 1,
+      "restores": 1,
+      "room": 1,
+      "safe": 1,
+      "secret": 1,
+      "settled": 1,
+      "shaam": 1,
+      "she": 1,
+      "silence": 2,
+      "sky": 1,
+      "sodium": 1,
+      "spoke": 1,
+      "still": 1,
+      "streetlights": 1,
+      "studied": 1,
+      "swung": 1,
+      "sync": 1,
+      "tapped": 1,
+      "tension": 1,
+      "than": 1,
+      "the": 10,
+      "them": 1,
+      "tide": 1,
+      "tides": 1,
+      "timestamps": 1,
+      "turns": 1,
+      "unexpectedly": 1,
+      "unspoken": 1,
+      "watched": 1,
+      "wet": 1,
+      "when": 1,
+      "while": 2,
+      "without": 1,
+      "yaadein": 1
+    },
+    "total_bigrams": 143
+  },
+  "sae_steering_bank": {
+    "dim": 32,
+    "features": [
+      {
+        "cadence_clauses": [
+          "append-only WAL journal",
+          "idempotent Lamport CRDT merge",
+          "streak analytics engine"
+        ],
+        "category": "architecture",
+        "description": "Local-first embedded WAL + Lamport CRDT sync + streak analytics",
+        "direction_int8": [
+          90,
+          80,
+          60,
+          -40,
+          70,
+          50,
+          -30,
+          85,
+          90,
+          80,
+          60,
+          -40,
+          70,
+          50,
+          -30,
+          85,
+          90,
+          80,
+          60,
+          -40,
+          70,
+          50,
+          -30,
+          85,
+          90,
+          80,
+          60,
+          -40,
+          70,
+          50,
+          -30,
+          85
+        ],
+        "feature_id": "arch_local_first_crdt",
+        "lexical_anchors": [
+          "local",
+          "offline",
+          "habit",
+          "streak",
+          "collaborative",
+          "sync",
+          "crdt",
+          "reminder"
+        ]
+      },
+      {
+        "cadence_clauses": [
+          "zero-sum ledger conservation",
+          "deterministic settlement solver",
+          "audit checksum"
+        ],
+        "category": "architecture",
+        "description": "Conservation-verified double-entry financial expense ledger",
+        "direction_int8": [
+          -40,
+          95,
+          85,
+          70,
+          -50,
+          60,
+          40,
+          -20,
+          -40,
+          95,
+          85,
+          70,
+          -50,
+          60,
+          40,
+          -20,
+          -40,
+          95,
+          85,
+          70,
+          -50,
+          60,
+          40,
+          -20,
+          -40,
+          95,
+          85,
+          70,
+          -50,
+          60,
+          40,
+          -20
+        ],
+        "feature_id": "arch_double_entry_ledger",
+        "lexical_anchors": [
+          "expense",
+          "budget",
+          "ledger",
+          "invoice",
+          "split",
+          "receipt",
+          "balance",
+          "finance"
+        ]
+      },
+      {
+        "cadence_clauses": [
+          "acyclic dependency topological sort",
+          "status transition guard",
+          "priority queue"
+        ],
+        "category": "architecture",
+        "description": "Dependency-DAG Kanban task scheduler with audit trail",
+        "direction_int8": [
+          30,
+          -50,
+          90,
+          85,
+          75,
+          -40,
+          65,
+          50,
+          30,
+          -50,
+          90,
+          85,
+          75,
+          -40,
+          65,
+          50,
+          30,
+          -50,
+          90,
+          85,
+          75,
+          -40,
+          65,
+          50,
+          30,
+          -50,
+          90,
+          85,
+          75,
+          -40,
+          65,
+          50
+        ],
+        "feature_id": "arch_dag_workflow_board",
+        "lexical_anchors": [
+          "kanban",
+          "task",
+          "dependency",
+          "sprint",
+          "issue",
+          "board",
+          "workflow",
+          "audit"
+        ]
+      },
+      {
+        "cadence_clauses": [
+          "as though silence itself kept the ledger",
+          "beneath a brass sky that promised no easy harbor",
+          "with the careful calm of someone folding an unread letter",
+          "where salt and lamplight blurred the edges of what went unsaid"
+        ],
+        "category": "style",
+        "description": "Restrained literary prose with quiet atmospheric subtext and metaphor",
+        "direction_int8": [
+          -70,
+          40,
+          -60,
+          80,
+          -30,
+          90,
+          -50,
+          65,
+          -70,
+          40,
+          -60,
+          80,
+          -30,
+          90,
+          -50,
+          65,
+          -70,
+          40,
+          -60,
+          80,
+          -30,
+          90,
+          -50,
+          65,
+          -70,
+          40,
+          -60,
+          80,
+          -30,
+          90,
+          -50,
+          65
+        ],
+        "feature_id": "style_melancholic_understatement",
+        "lexical_anchors": [
+          "melancholic",
+          "understatement",
+          "grief",
+          "quiet",
+          "rain",
+          "harbor",
+          "memory",
+          "loss"
+        ]
+      },
+      {
+        "cadence_clauses": [
+          "with measured politeness that left every lock untouched",
+          "weighing each syllable as if the cabin walls were listening",
+          "choosing the language of calm tides over the cargo ledger",
+          "letting a half-smile stand where an explanation belonged"
+        ],
+        "category": "style",
+        "description": "Guarded polite dialogue masking tension and concealed knowledge",
+        "direction_int8": [
+          50,
+          -80,
+          75,
+          -60,
+          90,
+          -45,
+          85,
+          -35,
+          50,
+          -80,
+          75,
+          -60,
+          90,
+          -45,
+          85,
+          -35,
+          50,
+          -80,
+          75,
+          -60,
+          90,
+          -45,
+          85,
+          -35,
+          50,
+          -80,
+          75,
+          -60,
+          90,
+          -45,
+          85,
+          -35
+        ],
+        "feature_id": "style_defensive_subtext",
+        "lexical_anchors": [
+          "defensive",
+          "subtext",
+          "secret",
+          "confront",
+          "astrolabe",
+          "chart",
+          "polite",
+          "evade"
+        ]
+      },
+      {
+        "cadence_clauses": [
+          "under sodium streetlights that turned wet asphalt into cracked glass",
+          "the kind of alibi that held together only until someone leaned on it",
+          "while the city hummed like an engine overdue for a breakdown"
+        ],
+        "category": "style",
+        "description": "Sharp hardboiled imagery, rain-slick shadows, clipped rhythm",
+        "direction_int8": [
+          -90,
+          -60,
+          85,
+          70,
+          -80,
+          55,
+          95,
+          -45,
+          -90,
+          -60,
+          85,
+          70,
+          -80,
+          55,
+          95,
+          -45,
+          -90,
+          -60,
+          85,
+          70,
+          -80,
+          55,
+          95,
+          -45,
+          -90,
+          -60,
+          85,
+          70,
+          -80,
+          55,
+          95,
+          -45
+        ],
+        "feature_id": "style_literary_noir",
+        "lexical_anchors": [
+          "noir",
+          "detective",
+          "alley",
+          "neon",
+          "shadow",
+          "rain",
+          "cigarette",
+          "mystery"
+        ]
+      },
+      {
+        "cadence_clauses": [
+          "jaise shaam ki khamoshi mein koi purani yaad saans le rahi ho",
+          "aur lafzon ke darmiyan woh sach thehra rahe jo kaha nahi gaya",
+          "chandni ke neeche waqt bhi aahista qadam rakhta hai"
+        ],
+        "category": "style",
+        "description": "Lyrical Roman-Urdu poetic cadence with classical imagery",
+        "direction_int8": [
+          85,
+          65,
+          -75,
+          90,
+          55,
+          -80,
+          45,
+          70,
+          85,
+          65,
+          -75,
+          90,
+          55,
+          -80,
+          45,
+          70,
+          85,
+          65,
+          -75,
+          90,
+          55,
+          -80,
+          45,
+          70,
+          85,
+          65,
+          -75,
+          90,
+          55,
+          -80,
+          45,
+          70
+        ],
+        "feature_id": "style_roman_urdu_ghazal",
+        "lexical_anchors": [
+          "ghazal",
+          "urdu",
+          "shaam",
+          "khamoshi",
+          "dil",
+          "yaad",
+          "safar",
+          "chand"
+        ]
+      },
+      {
+        "cadence_clauses": [
+          "with the utmost deference to circumstance and quiet propriety",
+          "as I entrust these observations to paper before the fog thickens",
+          "remaining ever mindful of what discretion obliges us to omit"
+        ],
+        "category": "style",
+        "description": "Formal 19th-century letter register with measured syntax",
+        "direction_int8": [
+          40,
+          85,
+          50,
+          -70,
+          65,
+          80,
+          -60,
+          90,
+          40,
+          85,
+          50,
+          -70,
+          65,
+          80,
+          -60,
+          90,
+          40,
+          85,
+          50,
+          -70,
+          65,
+          80,
+          -60,
+          90,
+          40,
+          85,
+          50,
+          -70,
+          65,
+          80,
+          -60,
+          90
+        ],
+        "feature_id": "style_victorian_epistolary",
+        "lexical_anchors": [
+          "victorian",
+          "letter",
+          "epistolary",
+          "gentleman",
+          "correspondence",
+          "estate"
+        ]
+      }
+    ],
+    "lut_router": {
+      "bias_q16": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "in_features": 32,
+      "kernel_mode": "tmac_g4",
+      "neg_nibbles_hex": [
+        "0202020202020202",
+        "0109010901090109",
+        "0804080408040804",
+        "0a0a0a0a0a0a0a0a",
+        "0309030903090309",
+        "0505050505050505",
+        "0402040204020402",
+        "0804080408040804"
+      ],
+      "out_features": 8,
+      "pos_nibbles_hex": [
+        "0d0d0d0d0d0d0d0d",
+        "0e060e060e060e06",
+        "070b070b070b070b",
+        "0505050505050505",
+        "0c060c060c060c06",
+        "0a0a0a0a0a0a0a0a",
+        "0b0d0b0d0b0d0b0d",
+        "070b070b070b070b"
+      ],
+      "tl2_codes_hex": [
+        "14081a1814081a18140811",
+        "1814021a1812080818140b",
+        "1a181808081a14141a180f",
+        "140614061406140614060b",
+        "121402181800080812140b",
+        "061406140614061406140f",
+        "08081a14141a1818080811",
+        "1a181808081a14141a180f"
+      ],
+      "weight_scale_q16": 65536
+    }
+  },
+  "schema_version": "mirror7_stage12_13_lut_sae_v1",
+  "source": "mirror7_canonical_discrete_priors_v1",
+  "summary": {
+    "atomic_chains": 5,
+    "lut_layers": 3,
+    "pdcst_bigrams": 143,
+    "sae_features": 8,
+    "total_lut_packed_bytes": 352
+  },
+  "transcompiled_lut_layers": {
+    "stage12_arch_motif_proj": {
+      "bit_exact_verified": true,
+      "compression_ratio": 16.0,
+      "fp32_original_bytes": 2048,
+      "kernel": {
+        "bias_q16": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "in_features": 32,
+        "kernel_mode": "tmac_g4",
+        "neg_nibbles_hex": [
+          "0a0b0b0e08020104",
+          "030e030800020103",
+          "020a030203030305",
+          "060300020a050101",
+          "04000a06000e0200",
+          "040c0c0a01050a04",
+          "0800080508090001",
+          "0504090904090608",
+          "080a02010f050c0e",
+          "0600000003030701",
+          "0104070605000a03",
+          "04050d0000020806",
+          "0a08000000050908",
+          "0c030108030f0007",
+          "0c00090100090304",
+          "01040f0808080501"
+        ],
+        "out_features": 16,
+        "pos_nibbles_hex": [
+          "04040401000c0208",
+          "040104020c0c0c0c",
+          "05040c0d000c0400",
+          "010c0801040a020a",
+          "010904010b00090e",
+          "0a0101040e080400",
+          "0702050a0402070a",
+          "0a0300000a060907",
+          "03040d04000a0001",
+          "0907000b080c0006",
+          "0a0a08000a0e0408",
+          "0b0a0203020d0508",
+          "040707010f080407",
+          "03080e0600000008",
+          "030d060a01000c0b",
+          "0c0b000403030a0c"
+        ],
+        "tl2_codes_hex": [
+          "13000206020c0a180f0d0f",
+          "1207000f100c1118150211",
+          "1404021814020418120a0c",
+          "020111160b0402140f1310",
+          "05101006021910000b1711",
+          "0711120113120813130c0c",
+          "1a151607060e02051a1310",
+          "061a03040c150608021a0b",
+          "1103141815010014040609",
+          "021a0e0d1102071800130e",
+          "0f17061201130f1a130010",
+          "081406021116161817030f",
+          "131814110e19081315180b",
+          "0800071a190004000d010f",
+          "080f08080f110404121a0f",
+          "151a060016181305060b11"
+        ],
+        "weight_scale_q16": 49721
+      },
+      "layer_name": "stage12_arch_motif_proj",
+      "packed_bytes": 128,
+      "zero_sparsity_q16": 16000
+    },
+    "stage13_style_manifold_proj": {
+      "bit_exact_verified": true,
+      "compression_ratio": 16.0,
+      "fp32_original_bytes": 2048,
+      "kernel": {
+        "bias_q16": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "in_features": 32,
+        "kernel_mode": "tmac_g4",
+        "neg_nibbles_hex": [
+          "0a0b06000705000d",
+          "05020008000d0c0a",
+          "0207040c02090004",
+          "0800040a0c000801",
+          "00020f0500000e0a",
+          "00030e0b010a0605",
+          "02000c0800000102",
+          "0f0d050501010808",
+          "0208030104000102",
+          "00020c0e09060407",
+          "0f0c0603080a040b",
+          "0700050300050600",
+          "02020c0000020d06",
+          "050005020600050c",
+          "0c0a00020e0f0409",
+          "09080a0b00050c0d"
+        ],
+        "out_features": 16,
+        "pos_nibbles_hex": [
+          "0400080108020402",
+          "0208070301020304",
+          "050803000d020d01",
+          "0709010403050108",
+          "060c000a070d0005",
+          "0a0c01040a050102",
+          "0c070305080f0c05",
+          "00020a08060a0401",
+          "0c030c040900000d",
+          "0c01030102010100",
+          "0001010c05050904",
+          "080d0a0c0f020009",
+          "010d030f0f0d0008",
+          "080f0a05080f0a03",
+          "0300070801000306",
+          "00050100050a0302"
+        ],
+        "tl2_codes_hex": [
+          "13000a120e01060b161309",
+          "06041911110f040208030b",
+          "1401180b0406080517110c",
+          "1a0f190a131812100e0910",
+          "19040800061a171901060b",
+          "10021a001212190602130c",
+          "131a1702170c191a15080e",
+          "0012001403140517160f0a",
+          "131a011815100f0d0c0711",
+          "160816020212130905010c",
+          "000f12091211140605020b",
+          "00110814121a080b011010",
+          "0b071a021a1a1a1803030f",
+          "031a08141404181a061a09",
+          "080313110a08000008130b",
+          "0c0f1403090f0514081209"
+        ],
+        "weight_scale_q16": 49078
+      },
+      "layer_name": "stage13_style_manifold_proj",
+      "packed_bytes": 128,
+      "zero_sparsity_q16": 14720
+    },
+    "stage5b_pragmatic_intent_proj": {
+      "bit_exact_verified": true,
+      "compression_ratio": 16.0,
+      "fp32_original_bytes": 1536,
+      "kernel": {
+        "bias_q16": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "in_features": 32,
+        "kernel_mode": "tmac_g4",
+        "neg_nibbles_hex": [
+          "01090201020a0407",
+          "030103080500080b",
+          "0c0100050d020703",
+          "0c0e0d0003000802",
+          "060c020405060e0a",
+          "0409040004020d05",
+          "00070d0b0700000c",
+          "030302010300050c",
+          "0a03010c01080802",
+          "08070d050002030a",
+          "000401020a03050a",
+          "0101010a01020a01"
+        ],
+        "out_features": 12,
+        "pos_nibbles_hex": [
+          "06040d0e05040108",
+          "00060802000e0204",
+          "000409000209080c",
+          "0201000e000e070d",
+          "0903000308010104",
+          "0806090c0a090208",
+          "0f08020408060403",
+          "0404000a04070202",
+          "000808010a04030c",
+          "070800020a0c0805",
+          "0e02000401080800",
+          "0a0e0e010809000c"
+        ],
+        "tl2_codes_hex": [
+          "180a141818080e0605010f",
+          "0913051510090c1a10000b",
+          "0409171603131215000211",
+          "0706000119020d1a1a0611",
+          "021a090c080a180902030b",
+          "041414131617181506090f",
+          "1a02060212000f11161909",
+          "12010e0c0f021711061609",
+          "0a00071605121007110311",
+          "1a0006010616101809080b",
+          "1917030d1307011503050a",
+          "0f14081a0b0919150a0911"
+        ],
+        "weight_scale_q16": 46520
+      },
+      "layer_name": "stage5b_pragmatic_intent_proj",
+      "packed_bytes": 96,
+      "zero_sparsity_q16": 17066
+    }
+  },
+  "zero_float_matmul_guaranteed": true
+}

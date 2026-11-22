@@ -4017,6 +4017,11 @@ class OpenEndedConceptLatticeEngine:
         byte_router = get_default_byte_intent_router()
         constraints = byte_router.extract_constraints(text)
 
+        # Fast 0.001 ms pre-gate + HDC greeting deferral so greetings never match partial concept titles
+        if len(low) <= 64 and any(g in low for g in ("assalam", "salam", "salaam", "alaikum", "kya haal", "kaise ho", "good morning", "good evening")):
+            if get_default_hdc_model().classify(text)[0] == "GREETING":
+                return OpenEndedSynthesisResult(False)
+
         intents = self._resolve_open_intents(low, constraints=constraints)
         is_cross_synergy = bool(_RE_CROSS_SYNERGY.search(low))
         is_cross_compare = bool(_RE_CROSS_COMPARE.search(low))

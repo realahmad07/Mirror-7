@@ -86,7 +86,25 @@ class UnifiedCognitiveOrchestrator:
         )
 
     @staticmethod
+    def _is_unified_13stage_command(prompt: str) -> bool:
+        low = prompt.strip().casefold()
+        return low.startswith(
+            (
+                "synthesize architecture:",
+                "architect app:",
+                "synthesize narrative:",
+                "canon scene:",
+                "analyze subtext:",
+                "pragmatic meaning:",
+                "do-calculus:",
+                "intervene do(",
+            )
+        )
+
+    @staticmethod
     def _is_code_request(prompt: str) -> bool:
+        if UnifiedCognitiveOrchestrator._is_unified_13stage_command(prompt):
+            return False
         from mirror_crystal.byte_intent_router import get_default_byte_intent_router
 
         return get_default_byte_intent_router().is_code_request(prompt)

@@ -367,6 +367,135 @@ class NaturalLanguageUOLRouter:
         self.concept_lattice = OpenEndedConceptLatticeEngine()
         self._session_quantities: dict[str, dict[str, float]] = {}
         self._dynamic_quantity_aliases: list[tuple[str, tuple[str, ...]]] = []
+        # Lazy Unified 5-Organ Engines (Stages 1-13) — 0 ms startup / hot-path overhead
+        self._organ1_pragmatics: Any | None = None
+        self._organ1_active_inf: Any | None = None
+        self._organ2_twin_do: Any | None = None
+        self._organ4_architect: Any | None = None
+        self._organ5_realizer: Any | None = None
+
+    def _route_unified_13stage_organs(self, prompt: str) -> NLRouteResult | None:
+        """Fast O(1)-prefix dispatch for Unified 5-Organ (Stages 1-13) commands."""
+        stripped = prompt.strip()
+        low = stripped.casefold()
+
+        # Stage 12: Multi-File State-Lens Architecture Synthesis
+        m_arch = re.match(r"^(?:synthesize\s+architecture|architect\s+app)\s*[:\-]\s*(.+)$", stripped, flags=re.IGNORECASE | re.DOTALL)
+        if m_arch:
+            if self._organ4_architect is None:
+                from .multifile_cegis_architect import MultiFileCEGISArchitect
+                self._organ4_architect = MultiFileCEGISArchitect()
+            build = self._organ4_architect.synthesize_architecture(m_arch.group(1).strip())
+            mod_list = ", ".join(sorted(build.modules.keys()))
+            assump_lines = "; ".join(f"{k}={v}" for k, v in list(build.spec.assumptions.items())[:4])
+            explanation = (
+                f"Stage 12 Multi-File CEGIS Architecture ({build.spec.app_name}): "
+                f"{build.module_count} modules ({mod_list}), {build.total_lines} lines total, "
+                f"CMP consensus={build.spec.cmp_vote.consensus_reached}, "
+                f"Tsetlin gate={build.tsetlin_gate.clauses_passed}/{build.tsetlin_gate.clauses_checked}, "
+                f"sandbox_verified={build.sandbox_verified} ({build.sandbox_output.strip()}). "
+                f"Active Inference G(pi)={build.spec.expected_free_energy_q16} defaults: {assump_lines}."
+            )
+            return NLRouteResult(
+                matched=True,
+                rule_ids=("stage12.multifile_cegis_architect", f"stage12.domain.{build.spec.domain_family}"),
+                output=build.total_lines,
+                unit="lines",
+                explanation=explanation,
+                steps=(
+                    {
+                        "app_name": build.spec.app_name,
+                        "module_count": build.module_count,
+                        "total_lines": build.total_lines,
+                        "sandbox_verified": build.sandbox_verified,
+                        "sae_motifs": list(build.sae_motifs_used),
+                    },
+                ),
+            )
+
+        # Stage 13: Canon-Locked & SAE-Steered Narrative Synthesis
+        m_narr = re.match(r"^(?:synthesize\s+narrative|canon\s+scene)\s*[:\-]\s*(.+)$", stripped, flags=re.IGNORECASE | re.DOTALL)
+        if m_narr:
+            if self._organ5_realizer is None:
+                from .ternary_lut_realizer import LTAGKneserNeyRealizer
+                self._organ5_realizer = LTAGKneserNeyRealizer()
+            if self._organ1_pragmatics is None:
+                from .cortical_active_inference import TropicalRSAPragmaticEngine
+                self._organ1_pragmatics = TropicalRSAPragmaticEngine()
+            from .cortical_active_inference import CharacterReferenceFrame
+            from .quotient_egraph_resonator import TwinEGraphDoCalculus
+
+            scene_text = m_narr.group(1).strip()
+            speaker = CharacterReferenceFrame(char_id="amina", voice_steering_id="style_melancholic_understatement")
+            speaker.observe_fact("brass_astrolabe")
+            speaker.appraise_event(desirability_q16=-18_000, expected_q16=10_000)
+            listener = CharacterReferenceFrame(char_id="tariq")
+            world = TwinEGraphDoCalculus()
+            prag = self._organ1_pragmatics.infer(scene_text)
+            res = self._organ5_realizer.realize_narrative_turn(
+                scene_prompt=scene_text,
+                speaker=speaker,
+                listener=listener,
+                world_gate=world,
+                pragmatic=prag,
+                recalled_memory_clue="brass_astrolabe",
+                mode="canon",
+            )
+            return NLRouteResult(
+                matched=True,
+                rule_ids=("stage13.ltag_sae_narrative", *res.style_features_used),
+                output=res.kneser_ney_score_q16,
+                unit="q16",
+                explanation=res.text,
+            )
+
+        # Stage 5B: Tropical-RSA Pragmatic Subtext & 2-Hop ATOMIC2020 Analysis
+        m_prag = re.match(r"^(?:analyze\s+subtext|pragmatic\s+meaning)\s*[:\-]\s*(.+)$", stripped, flags=re.IGNORECASE | re.DOTALL)
+        if m_prag:
+            if self._organ1_pragmatics is None:
+                from .cortical_active_inference import TropicalRSAPragmaticEngine
+                self._organ1_pragmatics = TropicalRSAPragmaticEngine()
+            inf = self._organ1_pragmatics.infer(m_prag.group(1).strip())
+            return NLRouteResult(
+                matched=True,
+                rule_ids=(f"stage5b.tropical_rsa.{inf.phenomenon}",),
+                output=inf.speaker_surprisal_q16,
+                unit="q16",
+                explanation=inf.explanation,
+            )
+
+        # Stage 7: Twin-E-Graph Counterfactual do-Calculus ("Do-calculus: rain->wet, wet->slippery | do(wet=false)")
+        if low.startswith("do-calculus:") or low.startswith("intervene do("):
+            from .quotient_egraph_resonator import TwinEGraphDoCalculus
+
+            body = stripped.split(":", 1)[1].strip() if ":" in stripped else stripped
+            parts = body.split("|")
+            rules_part = parts[0] if len(parts) > 1 else ""
+            do_part = parts[-1]
+            twin = TwinEGraphDoCalculus()
+            for idx, seg in enumerate(re.split(r"[,;]", rules_part)):
+                seg = seg.strip()
+                if "->" in seg:
+                    lhs, rhs = [s.strip().casefold() for s in seg.split("->", 1)]
+                    ants = [a.strip() for a in lhs.split("&") if a.strip()]
+                    if ants and rhs:
+                        twin.add_causal_rule(f"r{idx}", ants, rhs)
+                        if idx == 0:
+                            for a in ants:
+                                twin.assert_world_fact(a, True)
+            interventions: dict[str, bool] = {}
+            for m_do in re.finditer(r"do\(\s*([a-zA-Z0-9_]+)\s*=\s*(true|false|1|0)\s*\)", do_part, flags=re.IGNORECASE):
+                interventions[m_do.group(1).casefold()] = m_do.group(2).casefold() in {"true", "1"}
+            if interventions:
+                rep = twin.do_intervene(interventions, world="truth")
+                return NLRouteResult(
+                    matched=True,
+                    rule_ids=("stage7.twin_egraph_do_calculus",),
+                    output=len(rep.changed_propositions),
+                    explanation=rep.explanation,
+                )
+
+        return None
 
     def _all_quantity_aliases(self) -> tuple[tuple[str, tuple[str, ...]], ...]:
         return tuple(self._dynamic_quantity_aliases) + _QUANTITY_ALIASES
@@ -632,6 +761,11 @@ class NaturalLanguageUOLRouter:
         taught_spec = parse_teach_formula_prompt(prompt)
         if taught_spec is not None:
             return self.teach_formula(taught_spec[0], taught_spec[1])
+
+        # 0a-0. Unified 5-Organ (Stages 1-13) explicit command dispatch (O(1) prefix check)
+        unified_hit = self._route_unified_13stage_organs(prompt)
+        if unified_hit is not None:
+            return unified_hit
 
         # 0a-1. Zero-Bloat Folder / Corpus Blueprint Distiller ("Distill folder: <path>" / "Distill corpus: <text>")
         m_distill_path = re.match(r"^\s*distill\s+(?:folder|directory|file)\s*[:\-]\s*(.+)$", prompt.strip(), flags=re.IGNORECASE)

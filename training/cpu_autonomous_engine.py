@@ -70,6 +70,9 @@ class TernaryBitLinear(nn.Module):
         nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5))
         self.register_buffer("frozen_ternary_int8", torch.empty(0, dtype=torch.int8), persistent=False)
         self.register_buffer("frozen_scale", torch.tensor(1.0, dtype=torch.float32), persistent=False)
+        self._lut_kernel: Any | None = None
+        self.use_lut_inference: bool = True
+        self.last_inference_backend: str = "ste_float_train"
 
     @staticmethod
     def quantize_ternary_ste(w: torch.Tensor, eps: float = 1e-6) -> tuple[torch.Tensor, torch.Tensor]:
@@ -81,12 +84,26 @@ class TernaryBitLinear(nn.Module):
         return w_ste, scale
 
     @torch.no_grad()
-    def freeze_for_cpu_inference(self) -> dict[str, float]:
-        """Freeze master FP32 weights into compact int8 {-1, 0, +1} + scalar scale."""
+    def freeze_for_cpu_inference(self, kernel_mode: str = "tmac_g4") -> dict[str, float]:
+        """Freeze master FP32 weights into compact int8 {-1, 0, +1} + 0-float-matmul T-MAC/TL2 LUT."""
         scale = self.weight.abs().mean().clamp(min=self.eps)
         q = (self.weight / scale).round().clamp(-1.0, 1.0).to(torch.int8)
         self.frozen_ternary_int8 = q
         self.frozen_scale = scale.detach().to(torch.float32)
+        from mirror_crystal.ternary_lut_realizer import Q16, TernaryLUTLinearKernel
+
+        scale_q16 = max(1, int(round(float(self.frozen_scale.item()) * Q16)))
+        bias_q16 = (
+            [int(round(float(b) * Q16)) for b in self.bias.detach().cpu().tolist()]
+            if self.bias is not None
+            else None
+        )
+        self._lut_kernel = TernaryLUTLinearKernel(
+            q.detach().cpu().tolist(),
+            weight_scale_q16=scale_q16,
+            bias_q16=bias_q16,
+            kernel_mode=kernel_mode,
+        )
         fp32_bytes = self.weight.numel() * 4
         packed_2bit_bytes = math.ceil(self.weight.numel() / 4) + 4
         return {
@@ -95,12 +112,29 @@ class TernaryBitLinear(nn.Module):
             "packed_2bit_bytes": float(packed_2bit_bytes),
             "compression_vs_fp32": round(fp32_bytes / max(1, packed_2bit_bytes), 2),
             "zero_sparsity_fraction": round(float((q == 0).float().mean().item()), 4),
+            "lut_packed_bytes": float(self._lut_kernel.packed_bytes()),
+            "zero_float_matmul_ready": 1.0,
         }
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         if not self.training and self.frozen_ternary_int8.numel() == self.weight.numel():
+            if self.use_lut_inference and self._lut_kernel is not None and x.device.type == "cpu":
+                # Strict 0-float-matmul T-MAC/TL2 integer LUT execution path (Stages 12-L1 & 13-L1)
+                from mirror_crystal.ternary_lut_realizer import Q16
+
+                orig_shape = x.shape[:-1]
+                flat = x.detach().reshape(-1, self.in_features).to(torch.float32).tolist()
+                out_rows: list[list[float]] = []
+                for row in flat:
+                    row_q16 = [int(round(v * Q16)) for v in row]
+                    y_q16 = self._lut_kernel.forward_q16(row_q16)
+                    out_rows.append([v / float(Q16) for v in y_q16])
+                self.last_inference_backend = f"zero_float_matmul_lut:{self._lut_kernel.kernel_mode}"
+                return torch.tensor(out_rows, dtype=x.dtype, device=x.device).reshape(*orig_shape, self.out_features)
+            self.last_inference_backend = "frozen_float_fallback"
             w_eff = self.frozen_ternary_int8.to(dtype=x.dtype) * self.frozen_scale.to(dtype=x.dtype)
             return F.linear(x, w_eff, self.bias)
+        self.last_inference_backend = "ste_float_train"
         w_ste, scale = self.quantize_ternary_ste(self.weight, eps=self.eps)
         return F.linear(x, w_ste * scale, self.bias)
 
