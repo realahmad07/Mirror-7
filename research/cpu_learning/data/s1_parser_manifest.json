@@ -1,0 +1,296 @@
+{
+  "demos_per_action": 6,
+  "per_seed": {
+    "101": {
+      "seed": 101,
+      "splits": {
+        "s0_temporal_frozen": {
+          "case_count": 60,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "da1c749c3e2eddc98f2ab5fb665f989c846b41a4cb5b91f7ecadb10599474664"
+        },
+        "s0_train_instructions": {
+          "case_count": 24,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "bcf8ffab4e8c43cf2ca89342550888ef1fccbc3a4b3d8f8bdb3408ac724cafe7"
+        },
+        "s0_unseen_entities_and_compositions": {
+          "case_count": 360,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "f44dcce970d5e4614b89b1d98ca55af64d04da7f0def7dce804717cd310ba49a"
+        },
+        "s1_genuinely_ambiguous": {
+          "case_count": 16,
+          "expected_ambiguous_count": 16,
+          "expected_unparseable_count": 0,
+          "sha256": "5c537660178c9b65d42191f527c9d505a328e239a010c9a1179abc433fb9668e"
+        },
+        "s1_partial_mask_occluded": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "ccf2f5a69acc49b16350f062d559f95885a5f8daff7e8de865d0a8459d3b1c6c"
+        },
+        "s1_state_typed_disambiguation": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "0b56b4d847cb2250a237915064aaa909473bb972708eade8d6af0f872ab9202e"
+        },
+        "s1_unparseable_ood": {
+          "case_count": 10,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 10,
+          "sha256": "19c42ea3673504626f34e976bc35c9cdf2bf06253e86f22e9e818343ee7f13d7"
+        },
+        "s1_unseen_paraphrases": {
+          "case_count": 28,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "0a636ea90bf46e86e21b374a519309c3762a188ea255695527192a8218be9adf"
+        }
+      },
+      "total_cases": 530
+    },
+    "202": {
+      "seed": 202,
+      "splits": {
+        "s0_temporal_frozen": {
+          "case_count": 60,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "c36ce8fefcb646e5984e271b00e9e303af0f1350c503eb7558b5c08d74043beb"
+        },
+        "s0_train_instructions": {
+          "case_count": 24,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "278a9dc0a7503642cde81aa5fa294a8ce9192d04b5567c4035e86c377de2e5ca"
+        },
+        "s0_unseen_entities_and_compositions": {
+          "case_count": 360,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "aaf4e78a28bcb6a9aa41fd467d01476f47b9b187745b53c0ccfb1afbc7b21244"
+        },
+        "s1_genuinely_ambiguous": {
+          "case_count": 16,
+          "expected_ambiguous_count": 16,
+          "expected_unparseable_count": 0,
+          "sha256": "83b66b7c395e5662c187dd862604d487fef781fe6f5e13f57988e381974ce56a"
+        },
+        "s1_partial_mask_occluded": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "17988338c15538952992f43624e082560211516334d10b04ef22ca2f7d5bc4fe"
+        },
+        "s1_state_typed_disambiguation": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "b8aced4f26860d6dd6605a21200418a2c142135f41d4d736130fc4041f4d7d94"
+        },
+        "s1_unparseable_ood": {
+          "case_count": 10,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 10,
+          "sha256": "fd436f1404cd4a011f3e8127df3924efce1f625752e97f0e947880d0820de092"
+        },
+        "s1_unseen_paraphrases": {
+          "case_count": 28,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "66f5b7882e709aed077de4d5b2b46c1f3b2d1d2988158c7af00667a83e353c6d"
+        }
+      },
+      "total_cases": 530
+    },
+    "303": {
+      "seed": 303,
+      "splits": {
+        "s0_temporal_frozen": {
+          "case_count": 60,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "86eccb4086f41e3e8260b479096b6ab63070e368e9e33a01e477a2f821c481a7"
+        },
+        "s0_train_instructions": {
+          "case_count": 24,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "702fc6352617cb982c4e3e951535f0bb0fc95e35309acfc5e13708c6d458bdaa"
+        },
+        "s0_unseen_entities_and_compositions": {
+          "case_count": 360,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "b85e892bf8864ffc91bc0658ce03e272e9cb5620ef251fac7a49110d7dc4127d"
+        },
+        "s1_genuinely_ambiguous": {
+          "case_count": 16,
+          "expected_ambiguous_count": 16,
+          "expected_unparseable_count": 0,
+          "sha256": "3a83923bac01a6c962a60ea02770ee793c1947dc73143ed5703161f48aca9daa"
+        },
+        "s1_partial_mask_occluded": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "a6b6c9a843686c193307d159a74a7ff5e4230500567abb4363090d16eb198bbe"
+        },
+        "s1_state_typed_disambiguation": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "ac5034a677674e4bb5fab0557a260f117dfa86f5b282bc4ce06e526f87f9de4b"
+        },
+        "s1_unparseable_ood": {
+          "case_count": 10,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 10,
+          "sha256": "4fc31f772e50ecd0ea042459ea56ee356331993f0a892008be5bb3b2603c5181"
+        },
+        "s1_unseen_paraphrases": {
+          "case_count": 28,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "834f3d019ae0ff82da5c3574a56c12c103a98e78774eaac8f4875efcb8a61195"
+        }
+      },
+      "total_cases": 530
+    },
+    "404": {
+      "seed": 404,
+      "splits": {
+        "s0_temporal_frozen": {
+          "case_count": 60,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "fdbae28748d96aa8680e86ac6870a5bdbe8316e5a759eab6bbee80e0af17fb3f"
+        },
+        "s0_train_instructions": {
+          "case_count": 24,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "396ba123c65044e5d92838f97438b6abc0aeb849617eac7731e1cb6a41b1c49f"
+        },
+        "s0_unseen_entities_and_compositions": {
+          "case_count": 360,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "9a94a685cb5c11657a754b4df05d7f2ea6a85e155d18c346b4a707875db06cd7"
+        },
+        "s1_genuinely_ambiguous": {
+          "case_count": 16,
+          "expected_ambiguous_count": 16,
+          "expected_unparseable_count": 0,
+          "sha256": "1ff0f54743b46a02226959df0ffc439bd4167dfc1da7b9cca3088e14a637f344"
+        },
+        "s1_partial_mask_occluded": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "1c7fafdd8270bb0fe9a807512afc8f104679e5cf22324c20b9c1a4e3ff7e672b"
+        },
+        "s1_state_typed_disambiguation": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "476d84ea11b6745a06721842f87a0e63bf266a8627bc6daa4e212930aa90e9db"
+        },
+        "s1_unparseable_ood": {
+          "case_count": 10,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 10,
+          "sha256": "1fd66c5102bbde362a1fb85f7abb9fb2d8e41233321ea7f71726a7a0d905ea91"
+        },
+        "s1_unseen_paraphrases": {
+          "case_count": 28,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "56b3aa8224ff1ba63babf64fc94283c5ddc398c1df0e1ddaadb29642a074bcda"
+        }
+      },
+      "total_cases": 530
+    },
+    "505": {
+      "seed": 505,
+      "splits": {
+        "s0_temporal_frozen": {
+          "case_count": 60,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "5faff5dc7cff893021466762626f4066c93adfc3c184317f94707894cc9e14bc"
+        },
+        "s0_train_instructions": {
+          "case_count": 24,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "bf782f21d47dcc13a0e5addbd77c15a0139cd8aca7de38de8ba8732f9e0e6446"
+        },
+        "s0_unseen_entities_and_compositions": {
+          "case_count": 360,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "065a8b8826cc1714856a003bd32f03d9ab0058e2cc06260c2a65513755c0e204"
+        },
+        "s1_genuinely_ambiguous": {
+          "case_count": 16,
+          "expected_ambiguous_count": 16,
+          "expected_unparseable_count": 0,
+          "sha256": "c3ae9f5231f741bdd7e55a916657a7d7cee4d71b1eeba0afa35fe663bdd897bd"
+        },
+        "s1_partial_mask_occluded": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "81f03c9d695e37700034442ad5706c6faacc40d0e99dd556b28dedf8caeb8951"
+        },
+        "s1_state_typed_disambiguation": {
+          "case_count": 16,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "4bafff3d7fb8013463df206ae7370a7bf43ec25a64686da9879c77ddaf58cd45"
+        },
+        "s1_unparseable_ood": {
+          "case_count": 10,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 10,
+          "sha256": "9f330946fdc812aa1c2c8a5668d9dcb4fc434bfb967254f33572a2d7041028dc"
+        },
+        "s1_unseen_paraphrases": {
+          "case_count": 28,
+          "expected_ambiguous_count": 0,
+          "expected_unparseable_count": 0,
+          "sha256": "63b7ffc7b6e92b3fac99a88371c6dd78b2cf2f18724d6b236dad3d1c78b21131"
+        }
+      },
+      "total_cases": 530
+    }
+  },
+  "s0_generator_version": "s0-relworld-v1.0",
+  "s0_temporal_generator_version": "s0-temporal-v2.0",
+  "s1_parser_generator_version": "s1-parser-bench-v1.0",
+  "schema_version": "s1-parser-manifest-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "split_order": [
+    "s0_train_instructions",
+    "s0_unseen_entities_and_compositions",
+    "s0_temporal_frozen",
+    "s1_unseen_paraphrases",
+    "s1_state_typed_disambiguation",
+    "s1_partial_mask_occluded",
+    "s1_genuinely_ambiguous",
+    "s1_unparseable_ood"
+  ]
+}

@@ -1,0 +1,6320 @@
+{
+  "ast_isolation_audit": {
+    "passed": true,
+    "scanned_non_evaluator_files": 14,
+    "scanned_s1_learner_files": 5,
+    "violations": []
+  },
+  "demos_per_action": 6,
+  "environment": {
+    "cpu_count": 8,
+    "git_branch": "research/cpu-native-learning-s0",
+    "git_commit": "323161c7dd84cdf476e2164361fe29030d149ac0",
+    "machine": "AMD64",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "python_version": "3.14.4",
+    "pythonhashseed": "0",
+    "ram_total_gb": 15.77
+  },
+  "ledger_audit": {
+    "compressed_payload_bits": {
+      "ci95_half": 1143.53084,
+      "ci95_high": 144876.33084,
+      "ci95_low": 142589.26916,
+      "max": 145216.0,
+      "mean": 143732.8,
+      "min": 142896.0,
+      "n": 5,
+      "per_seed": [
+        145216.0,
+        143040.0,
+        143832.0,
+        142896.0,
+        143680.0
+      ],
+      "se": 411.868717,
+      "std": 920.966449
+    },
+    "ingest_episodes_per_sec": {
+      "ci95_half": 14.391763,
+      "ci95_high": 83.165763,
+      "ci95_low": 54.382237,
+      "max": 83.97,
+      "mean": 68.774,
+      "min": 57.07,
+      "n": 5,
+      "per_seed": [
+        73.81,
+        71.85,
+        57.17,
+        57.07,
+        83.97
+      ],
+      "se": 5.183522,
+      "std": 11.590707
+    },
+    "ledger_schema_version": "s1-ledger-v1",
+    "per_seed": [
+      {
+        "all_test_time_events_frozen": true,
+        "asymmetric_newly_revealed_not_added": 6,
+        "asymmetric_occluded_facts_preserved": 8,
+        "audit_summary": {
+          "audited_tasks_count": 176,
+          "exact_key_hits": 8,
+          "frozen_accesses": 176,
+          "total_accesses": 176,
+          "unique_episodes_touched": 9
+        },
+        "canary_exact_hit_rate": 1.0,
+        "canary_tasks_audited": 8,
+        "duplicate_rejected": true,
+        "freeze_write_blocked": true,
+        "hook_event_count_matches": true,
+        "ingest_episodes_per_sec": 73.81,
+        "ingest_seconds": 0.32514,
+        "ingested_train_episodes": 24,
+        "partial_mask_checks_passed": 8,
+        "partial_mask_checks_total": 8,
+        "post_reload_integrity_ok": true,
+        "pre_reload_integrity_ok": true,
+        "reload_exact_equal": true,
+        "revision_chain_ok": true,
+        "seed": 101,
+        "sql_delete_blocked": true,
+        "sql_update_blocked": true,
+        "storage_audit": {
+          "chain_head_sha256": "664d80c10043cc5b6c2529801818aee0ea63e683fc990539c009297d84ba5c1b",
+          "compressed_payload_bits": 145216,
+          "episode_count": 33,
+          "raw_instruction_bits": 8088,
+          "raw_payload_bits": 1780584,
+          "sparse_delta_compressed_bits": 3728,
+          "sparse_delta_raw_bits": 42624,
+          "sqlite_file_bytes": 282624
+        },
+        "total_ledger_records": 33,
+        "unseen_exact_hit_rate": 0.0,
+        "unseen_tasks_audited": 168
+      },
+      {
+        "all_test_time_events_frozen": true,
+        "asymmetric_newly_revealed_not_added": 2,
+        "asymmetric_occluded_facts_preserved": 8,
+        "audit_summary": {
+          "audited_tasks_count": 176,
+          "exact_key_hits": 8,
+          "frozen_accesses": 176,
+          "total_accesses": 176,
+          "unique_episodes_touched": 9
+        },
+        "canary_exact_hit_rate": 1.0,
+        "canary_tasks_audited": 8,
+        "duplicate_rejected": true,
+        "freeze_write_blocked": true,
+        "hook_event_count_matches": true,
+        "ingest_episodes_per_sec": 71.85,
+        "ingest_seconds": 0.334047,
+        "ingested_train_episodes": 24,
+        "partial_mask_checks_passed": 8,
+        "partial_mask_checks_total": 8,
+        "post_reload_integrity_ok": true,
+        "pre_reload_integrity_ok": true,
+        "reload_exact_equal": true,
+        "revision_chain_ok": true,
+        "seed": 202,
+        "sql_delete_blocked": true,
+        "sql_update_blocked": true,
+        "storage_audit": {
+          "chain_head_sha256": "0c173da17e9ea548a0b6b2837ca3758125f73ad0b69e1dbce97d750f8cc51d52",
+          "compressed_payload_bits": 143040,
+          "episode_count": 33,
+          "raw_instruction_bits": 8040,
+          "raw_payload_bits": 1780952,
+          "sparse_delta_compressed_bits": 3720,
+          "sparse_delta_raw_bits": 42440,
+          "sqlite_file_bytes": 282624
+        },
+        "total_ledger_records": 33,
+        "unseen_exact_hit_rate": 0.0,
+        "unseen_tasks_audited": 168
+      },
+      {
+        "all_test_time_events_frozen": true,
+        "asymmetric_newly_revealed_not_added": 8,
+        "asymmetric_occluded_facts_preserved": 4,
+        "audit_summary": {
+          "audited_tasks_count": 176,
+          "exact_key_hits": 8,
+          "frozen_accesses": 176,
+          "total_accesses": 176,
+          "unique_episodes_touched": 9
+        },
+        "canary_exact_hit_rate": 1.0,
+        "canary_tasks_audited": 8,
+        "duplicate_rejected": true,
+        "freeze_write_blocked": true,
+        "hook_event_count_matches": true,
+        "ingest_episodes_per_sec": 57.17,
+        "ingest_seconds": 0.419819,
+        "ingested_train_episodes": 24,
+        "partial_mask_checks_passed": 8,
+        "partial_mask_checks_total": 8,
+        "post_reload_integrity_ok": true,
+        "pre_reload_integrity_ok": true,
+        "reload_exact_equal": true,
+        "revision_chain_ok": true,
+        "seed": 303,
+        "sql_delete_blocked": true,
+        "sql_update_blocked": true,
+        "storage_audit": {
+          "chain_head_sha256": "8d0c4f256378ac58d0a458bbe810c43aa8e1f93c6c4d94c3db10224d0a092ff0",
+          "compressed_payload_bits": 143832,
+          "episode_count": 33,
+          "raw_instruction_bits": 8192,
+          "raw_payload_bits": 1779864,
+          "sparse_delta_compressed_bits": 3800,
+          "sparse_delta_raw_bits": 42608,
+          "sqlite_file_bytes": 282624
+        },
+        "total_ledger_records": 33,
+        "unseen_exact_hit_rate": 0.0,
+        "unseen_tasks_audited": 168
+      },
+      {
+        "all_test_time_events_frozen": true,
+        "asymmetric_newly_revealed_not_added": 6,
+        "asymmetric_occluded_facts_preserved": 2,
+        "audit_summary": {
+          "audited_tasks_count": 176,
+          "exact_key_hits": 8,
+          "frozen_accesses": 176,
+          "total_accesses": 176,
+          "unique_episodes_touched": 9
+        },
+        "canary_exact_hit_rate": 1.0,
+        "canary_tasks_audited": 8,
+        "duplicate_rejected": true,
+        "freeze_write_blocked": true,
+        "hook_event_count_matches": true,
+        "ingest_episodes_per_sec": 57.07,
+        "ingest_seconds": 0.420524,
+        "ingested_train_episodes": 24,
+        "partial_mask_checks_passed": 8,
+        "partial_mask_checks_total": 8,
+        "post_reload_integrity_ok": true,
+        "pre_reload_integrity_ok": true,
+        "reload_exact_equal": true,
+        "revision_chain_ok": true,
+        "seed": 404,
+        "sql_delete_blocked": true,
+        "sql_update_blocked": true,
+        "storage_audit": {
+          "chain_head_sha256": "a753f890d4add574018e6dd872e022803cc6a99c02c049cb03351a9bedb2441f",
+          "compressed_payload_bits": 142896,
+          "episode_count": 33,
+          "raw_instruction_bits": 8088,
+          "raw_payload_bits": 1773488,
+          "sparse_delta_compressed_bits": 3776,
+          "sparse_delta_raw_bits": 42672,
+          "sqlite_file_bytes": 282624
+        },
+        "total_ledger_records": 33,
+        "unseen_exact_hit_rate": 0.0,
+        "unseen_tasks_audited": 168
+      },
+      {
+        "all_test_time_events_frozen": true,
+        "asymmetric_newly_revealed_not_added": 4,
+        "asymmetric_occluded_facts_preserved": 2,
+        "audit_summary": {
+          "audited_tasks_count": 176,
+          "exact_key_hits": 8,
+          "frozen_accesses": 176,
+          "total_accesses": 176,
+          "unique_episodes_touched": 9
+        },
+        "canary_exact_hit_rate": 1.0,
+        "canary_tasks_audited": 8,
+        "duplicate_rejected": true,
+        "freeze_write_blocked": true,
+        "hook_event_count_matches": true,
+        "ingest_episodes_per_sec": 83.97,
+        "ingest_seconds": 0.285826,
+        "ingested_train_episodes": 24,
+        "partial_mask_checks_passed": 8,
+        "partial_mask_checks_total": 8,
+        "post_reload_integrity_ok": true,
+        "pre_reload_integrity_ok": true,
+        "reload_exact_equal": true,
+        "revision_chain_ok": true,
+        "seed": 505,
+        "sql_delete_blocked": true,
+        "sql_update_blocked": true,
+        "storage_audit": {
+          "chain_head_sha256": "ab50557426f1825e9c268a9d9a5bdb8ad460d6730b2a2c2bb5f6b986db551b27",
+          "compressed_payload_bits": 143680,
+          "episode_count": 33,
+          "raw_instruction_bits": 8128,
+          "raw_payload_bits": 1775744,
+          "sparse_delta_compressed_bits": 3776,
+          "sparse_delta_raw_bits": 42608,
+          "sqlite_file_bytes": 282624
+        },
+        "total_ledger_records": 33,
+        "unseen_exact_hit_rate": 0.0,
+        "unseen_tasks_audited": 168
+      }
+    ],
+    "raw_payload_bits": {
+      "ci95_half": 4129.053133,
+      "ci95_high": 1782255.453133,
+      "ci95_low": 1773997.346867,
+      "max": 1780952.0,
+      "mean": 1778126.4,
+      "min": 1773488.0,
+      "n": 5,
+      "per_seed": [
+        1780584.0,
+        1780952.0,
+        1779864.0,
+        1773488.0,
+        1775744.0
+      ],
+      "se": 1487.172673,
+      "std": 3325.419192
+    },
+    "schema_version": "s1-ledger-audit-v1",
+    "seeds": [
+      101,
+      202,
+      303,
+      404,
+      505
+    ]
+  },
+  "ledger_schema_version": "s1-ledger-v1",
+  "parser_cases_per_seed": 530,
+  "parsers": {
+    "existing_mirror_bilingual_ccg": {
+      "failed_examples_seed0": [
+        {
+          "case_id": "s0_train_train_s101_move_00",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "clara_1",
+            "destination": "shelf_1",
+            "object": "lamp_1",
+            "source": "table_1"
+          },
+          "instruction": "clara_1 move lamp_1 from table_1 to shelf_1",
+          "pred_abstained": false,
+          "pred_candidate_count": 1,
+          "pred_is_ambiguous": false,
+          "pred_top_action": "move",
+          "pred_top_roles": {
+            "actor": "clara_1",
+            "target": "lamp_1 from table_1 to shelf_1"
+          },
+          "split_id": "s0_train_instructions"
+        },
+        {
+          "case_id": "s0_train_train_s101_move_01",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "bob_5",
+            "destination": "shelf_5",
+            "object": "book_5",
+            "source": "table_5"
+          },
+          "instruction": "bob_5 move book_5 from table_5 to shelf_5",
+          "pred_abstained": false,
+          "pred_candidate_count": 1,
+          "pred_is_ambiguous": false,
+          "pred_top_action": "move",
+          "pred_top_roles": {
+            "actor": "bob_5",
+            "target": "book_5 from table_5 to shelf_5"
+          },
+          "split_id": "s0_train_instructions"
+        },
+        {
+          "case_id": "s0_train_train_s101_move_02",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "alice_6",
+            "destination": "crate_6",
+            "object": "cup_6",
+            "source": "counter_6"
+          },
+          "instruction": "alice_6 move cup_6 from counter_6 to crate_6",
+          "pred_abstained": false,
+          "pred_candidate_count": 1,
+          "pred_is_ambiguous": false,
+          "pred_top_action": "move",
+          "pred_top_roles": {
+            "actor": "alice_6",
+            "target": "cup_6 from counter_6 to crate_6"
+          },
+          "split_id": "s0_train_instructions"
+        },
+        {
+          "case_id": "s0_train_train_s101_move_03",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "bob_8",
+            "destination": "table_8",
+            "object": "bell_8",
+            "source": "drawer_8"
+          },
+          "instruction": "bob_8 move bell_8 from drawer_8 to table_8",
+          "pred_abstained": false,
+          "pred_candidate_count": 1,
+          "pred_is_ambiguous": false,
+          "pred_top_action": "move",
+          "pred_top_roles": {
+            "actor": "bob_8",
+            "target": "bell_8 from drawer_8 to table_8"
+          },
+          "split_id": "s0_train_instructions"
+        },
+        {
+          "case_id": "s0_train_train_s101_move_04",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "clara_2",
+            "destination": "shelf_2",
+            "object": "coin_2",
+            "source": "counter_2"
+          },
+          "instruction": "clara_2 move coin_2 from counter_2 to shelf_2",
+          "pred_abstained": false,
+          "pred_candidate_count": 1,
+          "pred_is_ambiguous": false,
+          "pred_top_action": "move",
+          "pred_top_roles": {
+            "actor": "clara_2",
+            "target": "coin_2 from counter_2 to shelf_2"
+          },
+          "split_id": "s0_train_instructions"
+        },
+        {
+          "case_id": "s0_train_train_s101_move_05",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "bob_3",
+            "destination": "drawer_3",
+            "object": "cup_3",
+            "source": "table_3"
+          },
+          "instruction": "bob_3 move cup_3 from table_3 to drawer_3",
+          "pred_abstained": false,
+          "pred_candidate_count": 1,
+          "pred_is_ambiguous": false,
+          "pred_top_action": "move",
+          "pred_top_roles": {
+            "actor": "bob_3",
+            "target": "cup_3 from table_3 to drawer_3"
+          },
+          "split_id": "s0_train_instructions"
+        },
+        {
+          "case_id": "s0_train_train_s101_give_00",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "give",
+          "gold_roles": {
+            "actor": "david_5",
+            "object": "orb_5",
+            "recipient": "alice_5"
+          },
+          "instruction": "david_5 give orb_5 to alice_5",
+          "pred_abstained": false,
+          "pred_candidate_count": 1,
+          "pred_is_ambiguous": false,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "david_5",
+            "target": "orb_5 to alice_5"
+          },
+          "split_id": "s0_train_instructions"
+        },
+        {
+          "case_id": "s0_train_train_s101_give_01",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "give",
+          "gold_roles": {
+            "actor": "bob_8",
+            "object": "lamp_8",
+            "recipient": "david_8"
+          },
+          "instruction": "bob_8 give lamp_8 to david_8",
+          "pred_abstained": false,
+          "pred_candidate_count": 1,
+          "pred_is_ambiguous": false,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "bob_8",
+            "target": "lamp_8 to david_8"
+          },
+          "split_id": "s0_train_instructions"
+        }
+      ],
+      "parse_seconds": {
+        "ci95_half": 0.106595,
+        "ci95_high": 0.347151,
+        "ci95_low": 0.133961,
+        "max": 0.384328,
+        "mean": 0.240556,
+        "min": 0.172638,
+        "n": 5,
+        "per_seed": [
+          0.172638,
+          0.187002,
+          0.384328,
+          0.20617,
+          0.252643
+        ],
+        "se": 0.038393,
+        "std": 0.085848
+      },
+      "parser_version": "mirror7-ccg-v1",
+      "parses_per_sec_single_core": {
+        "ci95_half": 832.886327,
+        "ci95_high": 3223.234327,
+        "ci95_low": 1557.461673,
+        "max": 3070.01,
+        "mean": 2390.348,
+        "min": 1379.03,
+        "n": 5,
+        "per_seed": [
+          3070.01,
+          2834.19,
+          1379.03,
+          2570.69,
+          2097.82
+        ],
+        "se": 299.98301,
+        "std": 670.782401
+      },
+      "per_split": {
+        "s0_temporal_frozen": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.5,
+            "ci95_low": 0.5,
+            "max": 0.5,
+            "mean": 0.5,
+            "min": 0.5,
+            "n": 5,
+            "per_seed": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.266667,
+            "ci95_low": 0.266667,
+            "max": 0.266667,
+            "mean": 0.266667,
+            "min": 0.266667,
+            "n": 5,
+            "per_seed": [
+              0.266667,
+              0.266667,
+              0.266667,
+              0.266667,
+              0.266667
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.266667,
+            "ci95_low": 0.266667,
+            "max": 0.266667,
+            "mean": 0.266667,
+            "min": 0.266667,
+            "n": 5,
+            "per_seed": [
+              0.266667,
+              0.266667,
+              0.266667,
+              0.266667,
+              0.266667
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.301639,
+            "ci95_low": 0.301639,
+            "max": 0.301639,
+            "mean": 0.301639,
+            "min": 0.301639,
+            "n": 5,
+            "per_seed": [
+              0.301639,
+              0.301639,
+              0.301639,
+              0.301639,
+              0.301639
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.266667,
+            "ci95_low": 0.266667,
+            "max": 0.266667,
+            "mean": 0.266667,
+            "min": 0.266667,
+            "n": 5,
+            "per_seed": [
+              0.266667,
+              0.266667,
+              0.266667,
+              0.266667,
+              0.266667
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.266667,
+            "ci95_low": 0.266667,
+            "max": 0.266667,
+            "mean": 0.266667,
+            "min": 0.266667,
+            "n": 5,
+            "per_seed": [
+              0.266667,
+              0.266667,
+              0.266667,
+              0.266667,
+              0.266667
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s0_train_instructions": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.5,
+            "ci95_low": 0.5,
+            "max": 0.5,
+            "mean": 0.5,
+            "min": 0.5,
+            "n": 5,
+            "per_seed": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.5,
+            "ci95_low": 0.5,
+            "max": 0.5,
+            "mean": 0.5,
+            "min": 0.5,
+            "n": 5,
+            "per_seed": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.631579,
+            "ci95_low": 0.631579,
+            "max": 0.631579,
+            "mean": 0.631579,
+            "min": 0.631579,
+            "n": 5,
+            "per_seed": [
+              0.631579,
+              0.631579,
+              0.631579,
+              0.631579,
+              0.631579
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.5,
+            "ci95_low": 0.5,
+            "max": 0.5,
+            "mean": 0.5,
+            "min": 0.5,
+            "n": 5,
+            "per_seed": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.5,
+            "ci95_low": 0.5,
+            "max": 0.5,
+            "mean": 0.5,
+            "min": 0.5,
+            "n": 5,
+            "per_seed": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s0_unseen_entities_and_compositions": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.45,
+            "ci95_low": 0.45,
+            "max": 0.45,
+            "mean": 0.45,
+            "min": 0.45,
+            "n": 5,
+            "per_seed": [
+              0.45,
+              0.45,
+              0.45,
+              0.45,
+              0.45
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.208333,
+            "ci95_low": 0.208333,
+            "max": 0.208333,
+            "mean": 0.208333,
+            "min": 0.208333,
+            "n": 5,
+            "per_seed": [
+              0.208333,
+              0.208333,
+              0.208333,
+              0.208333,
+              0.208333
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.208333,
+            "ci95_low": 0.208333,
+            "max": 0.208333,
+            "mean": 0.208333,
+            "min": 0.208333,
+            "n": 5,
+            "per_seed": [
+              0.208333,
+              0.208333,
+              0.208333,
+              0.208333,
+              0.208333
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.261589,
+            "ci95_low": 0.261589,
+            "max": 0.261589,
+            "mean": 0.261589,
+            "min": 0.261589,
+            "n": 5,
+            "per_seed": [
+              0.261589,
+              0.261589,
+              0.261589,
+              0.261589,
+              0.261589
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.208333,
+            "ci95_low": 0.208333,
+            "max": 0.208333,
+            "mean": 0.208333,
+            "min": 0.208333,
+            "n": 5,
+            "per_seed": [
+              0.208333,
+              0.208333,
+              0.208333,
+              0.208333,
+              0.208333
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.208333,
+            "ci95_low": 0.208333,
+            "max": 0.208333,
+            "mean": 0.208333,
+            "min": 0.208333,
+            "n": 5,
+            "per_seed": [
+              0.208333,
+              0.208333,
+              0.208333,
+              0.208333,
+              0.208333
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_genuinely_ambiguous": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.25,
+            "ci95_low": 0.25,
+            "max": 0.25,
+            "mean": 0.25,
+            "min": 0.25,
+            "n": 5,
+            "per_seed": [
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.25,
+            "ci95_low": 0.25,
+            "max": 0.25,
+            "mean": 0.25,
+            "min": 0.25,
+            "n": 5,
+            "per_seed": [
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.75,
+            "ci95_low": 0.75,
+            "max": 0.75,
+            "mean": 0.75,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.333333,
+            "ci95_low": 0.333333,
+            "max": 0.333333,
+            "mean": 0.333333,
+            "min": 0.333333,
+            "n": 5,
+            "per_seed": [
+              0.333333,
+              0.333333,
+              0.333333,
+              0.333333,
+              0.333333
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_partial_mask_occluded": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.25,
+            "ci95_low": 0.25,
+            "max": 0.25,
+            "mean": 0.25,
+            "min": 0.25,
+            "n": 5,
+            "per_seed": [
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.105263,
+            "ci95_low": 0.105263,
+            "max": 0.105263,
+            "mean": 0.105263,
+            "min": 0.105263,
+            "n": 5,
+            "per_seed": [
+              0.105263,
+              0.105263,
+              0.105263,
+              0.105263,
+              0.105263
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_state_typed_disambiguation": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.380952,
+            "ci95_low": 0.380952,
+            "max": 0.380952,
+            "mean": 0.380952,
+            "min": 0.380952,
+            "n": 5,
+            "per_seed": [
+              0.380952,
+              0.380952,
+              0.380952,
+              0.380952,
+              0.380952
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_unparseable_ood": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.6,
+            "ci95_low": 0.6,
+            "max": 0.6,
+            "mean": 0.6,
+            "min": 0.6,
+            "n": 5,
+            "per_seed": [
+              0.6,
+              0.6,
+              0.6,
+              0.6,
+              0.6
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.4,
+            "ci95_low": 0.4,
+            "max": 0.4,
+            "mean": 0.4,
+            "min": 0.4,
+            "n": 5,
+            "per_seed": [
+              0.4,
+              0.4,
+              0.4,
+              0.4,
+              0.4
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.6,
+            "ci95_low": 0.6,
+            "max": 0.6,
+            "mean": 0.6,
+            "min": 0.6,
+            "n": 5,
+            "per_seed": [
+              0.6,
+              0.6,
+              0.6,
+              0.6,
+              0.6
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_unseen_paraphrases": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.107143,
+            "ci95_low": 0.107143,
+            "max": 0.107143,
+            "mean": 0.107143,
+            "min": 0.107143,
+            "n": 5,
+            "per_seed": [
+              0.107143,
+              0.107143,
+              0.107143,
+              0.107143,
+              0.107143
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.087591,
+            "ci95_low": 0.087591,
+            "max": 0.087591,
+            "mean": 0.087591,
+            "min": 0.087591,
+            "n": 5,
+            "per_seed": [
+              0.087591,
+              0.087591,
+              0.087591,
+              0.087591,
+              0.087591
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        }
+      },
+      "tracemalloc_peak_kb": {
+        "ci95_half": 0.204291,
+        "ci95_high": 16.866291,
+        "ci95_low": 16.457709,
+        "max": 16.83,
+        "mean": 16.662,
+        "min": 16.4,
+        "n": 5,
+        "per_seed": [
+          16.76,
+          16.69,
+          16.83,
+          16.4,
+          16.63
+        ],
+        "se": 0.07358,
+        "std": 0.16453
+      },
+      "unseen_unambiguous_exact_byte_span_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.189583,
+        "ci95_low": 0.189583,
+        "max": 0.189583,
+        "mean": 0.189583,
+        "min": 0.189583,
+        "n": 5,
+        "per_seed": [
+          0.189583,
+          0.189583,
+          0.189583,
+          0.189583,
+          0.189583
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_exact_role_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.189583,
+        "ci95_low": 0.189583,
+        "max": 0.189583,
+        "mean": 0.189583,
+        "min": 0.189583,
+        "n": 5,
+        "per_seed": [
+          0.189583,
+          0.189583,
+          0.189583,
+          0.189583,
+          0.189583
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_role_slot_f1": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.256007,
+        "ci95_low": 0.256007,
+        "max": 0.256007,
+        "mean": 0.256007,
+        "min": 0.256007,
+        "n": 5,
+        "per_seed": [
+          0.256007,
+          0.256007,
+          0.256007,
+          0.256007,
+          0.256007
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_unambig_exact_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.189583,
+        "ci95_low": 0.189583,
+        "max": 0.189583,
+        "mean": 0.189583,
+        "min": 0.189583,
+        "n": 5,
+        "per_seed": [
+          0.189583,
+          0.189583,
+          0.189583,
+          0.189583,
+          0.189583
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "s1_typed_frame_parser_full": {
+      "failed_examples_seed0": [],
+      "parse_seconds": {
+        "ci95_half": 0.095364,
+        "ci95_high": 0.19615,
+        "ci95_low": 0.005422,
+        "max": 0.235061,
+        "mean": 0.100786,
+        "min": 0.055207,
+        "n": 5,
+        "per_seed": [
+          0.056355,
+          0.062313,
+          0.235061,
+          0.055207,
+          0.094995
+        ],
+        "se": 0.034348,
+        "std": 0.076803
+      },
+      "parser_version": "s1-typed-frame-v1",
+      "parses_per_sec_single_core": {
+        "ci95_half": 3893.086367,
+        "ci95_high": 10961.954367,
+        "ci95_low": 3175.781633,
+        "max": 9600.28,
+        "mean": 7068.868,
+        "min": 2254.74,
+        "n": 5,
+        "per_seed": [
+          9404.68,
+          8505.38,
+          2254.74,
+          9600.28,
+          5579.26
+        ],
+        "se": 1402.18386,
+        "std": 3135.378427
+      },
+      "per_split": {
+        "s0_temporal_frozen": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s0_train_instructions": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s0_unseen_entities_and_compositions": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_genuinely_ambiguous": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.064928,
+            "ci95_high": 0.864928,
+            "ci95_low": 0.735072,
+            "max": 0.875,
+            "mean": 0.8,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.875,
+              0.8125,
+              0.75,
+              0.8125
+            ],
+            "se": 0.023385,
+            "std": 0.052291
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.064928,
+            "ci95_high": 0.864928,
+            "ci95_low": 0.735072,
+            "max": 0.875,
+            "mean": 0.8,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.875,
+              0.8125,
+              0.75,
+              0.8125
+            ],
+            "se": 0.023385,
+            "std": 0.052291
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 2.25,
+            "ci95_low": 2.25,
+            "max": 2.25,
+            "mean": 2.25,
+            "min": 2.25,
+            "n": 5,
+            "per_seed": [
+              2.25,
+              2.25,
+              2.25,
+              2.25,
+              2.25
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.021642,
+            "ci95_high": 0.954976,
+            "ci95_low": 0.911691,
+            "max": 0.958333,
+            "mean": 0.933333,
+            "min": 0.916667,
+            "n": 5,
+            "per_seed": [
+              0.916667,
+              0.958333,
+              0.9375,
+              0.916667,
+              0.9375
+            ],
+            "se": 0.007795,
+            "std": 0.01743
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_partial_mask_occluded": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_state_typed_disambiguation": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_unparseable_ood": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_unseen_paraphrases": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        }
+      },
+      "tracemalloc_peak_kb": {
+        "ci95_half": 0.087182,
+        "ci95_high": 5.553182,
+        "ci95_low": 5.378818,
+        "max": 5.55,
+        "mean": 5.466,
+        "min": 5.36,
+        "n": 5,
+        "per_seed": [
+          5.45,
+          5.5,
+          5.47,
+          5.36,
+          5.55
+        ],
+        "se": 0.031401,
+        "std": 0.070214
+      },
+      "unseen_unambiguous_exact_byte_span_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_exact_role_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_role_slot_f1": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_unambig_exact_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "s1_typed_frame_parser_no_types": {
+      "failed_examples_seed0": [
+        {
+          "case_id": "s1_typed_s101_01_ditransitive_do_io",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "give",
+          "gold_roles": {
+            "actor": "amara_6",
+            "object": "tablet_6",
+            "recipient": "lyra_6"
+          },
+          "instruction": "amara_6 gives tablet_6 lyra_6",
+          "pred_abstained": false,
+          "pred_candidate_count": 2,
+          "pred_is_ambiguous": true,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "amara_6",
+            "object": "lyra_6",
+            "recipient": "tablet_6"
+          },
+          "split_id": "s1_state_typed_disambiguation"
+        },
+        {
+          "case_id": "s1_typed_s101_03_polysemous_transfer_surface",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "marcus_3",
+            "destination": "mantel_3",
+            "object": "amulet_3",
+            "source": "plinth_3"
+          },
+          "instruction": "marcus_3 transfers amulet_3 to mantel_3",
+          "pred_abstained": false,
+          "pred_candidate_count": 2,
+          "pred_is_ambiguous": true,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "marcus_3",
+            "object": "amulet_3",
+            "recipient": "mantel_3"
+          },
+          "split_id": "s1_state_typed_disambiguation"
+        },
+        {
+          "case_id": "s1_typed_s101_05_ditransitive_do_io",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "give",
+          "gold_roles": {
+            "actor": "amara_4",
+            "object": "tablet_4",
+            "recipient": "devon_4"
+          },
+          "instruction": "amara_4 gives tablet_4 devon_4",
+          "pred_abstained": false,
+          "pred_candidate_count": 2,
+          "pred_is_ambiguous": true,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "amara_4",
+            "object": "devon_4",
+            "recipient": "tablet_4"
+          },
+          "split_id": "s1_state_typed_disambiguation"
+        },
+        {
+          "case_id": "s1_typed_s101_07_polysemous_transfer_surface",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "farah_5",
+            "destination": "mantel_5",
+            "object": "tablet_5",
+            "source": "hearth_5"
+          },
+          "instruction": "farah_5 transfers tablet_5 to mantel_5",
+          "pred_abstained": false,
+          "pred_candidate_count": 2,
+          "pred_is_ambiguous": true,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "farah_5",
+            "object": "tablet_5",
+            "recipient": "mantel_5"
+          },
+          "split_id": "s1_state_typed_disambiguation"
+        },
+        {
+          "case_id": "s1_typed_s101_09_ditransitive_do_io",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "give",
+          "gold_roles": {
+            "actor": "soren_9",
+            "object": "tablet_9",
+            "recipient": "farah_9"
+          },
+          "instruction": "soren_9 gives tablet_9 farah_9",
+          "pred_abstained": false,
+          "pred_candidate_count": 2,
+          "pred_is_ambiguous": true,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "soren_9",
+            "object": "farah_9",
+            "recipient": "tablet_9"
+          },
+          "split_id": "s1_state_typed_disambiguation"
+        },
+        {
+          "case_id": "s1_typed_s101_11_polysemous_transfer_surface",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "amara_7",
+            "destination": "plinth_7",
+            "object": "amulet_7",
+            "source": "mantel_7"
+          },
+          "instruction": "amara_7 transfers amulet_7 to plinth_7",
+          "pred_abstained": false,
+          "pred_candidate_count": 2,
+          "pred_is_ambiguous": true,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "amara_7",
+            "object": "amulet_7",
+            "recipient": "plinth_7"
+          },
+          "split_id": "s1_state_typed_disambiguation"
+        },
+        {
+          "case_id": "s1_typed_s101_13_ditransitive_do_io",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "give",
+          "gold_roles": {
+            "actor": "marcus_8",
+            "object": "tablet_8",
+            "recipient": "lyra_8"
+          },
+          "instruction": "marcus_8 gives tablet_8 lyra_8",
+          "pred_abstained": false,
+          "pred_candidate_count": 2,
+          "pred_is_ambiguous": true,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "marcus_8",
+            "object": "lyra_8",
+            "recipient": "tablet_8"
+          },
+          "split_id": "s1_state_typed_disambiguation"
+        },
+        {
+          "case_id": "s1_typed_s101_15_polysemous_transfer_surface",
+          "expected_ambiguous": false,
+          "expected_unparseable": false,
+          "gold_action_id": "move",
+          "gold_roles": {
+            "actor": "marcus_7",
+            "destination": "podium_7",
+            "object": "tablet_7",
+            "source": "mantel_7"
+          },
+          "instruction": "marcus_7 transfers tablet_7 to podium_7",
+          "pred_abstained": false,
+          "pred_candidate_count": 2,
+          "pred_is_ambiguous": true,
+          "pred_top_action": "give",
+          "pred_top_roles": {
+            "actor": "marcus_7",
+            "object": "tablet_7",
+            "recipient": "podium_7"
+          },
+          "split_id": "s1_state_typed_disambiguation"
+        }
+      ],
+      "parse_seconds": {
+        "ci95_half": 0.074135,
+        "ci95_high": 0.16572,
+        "ci95_low": 0.017449,
+        "max": 0.195965,
+        "mean": 0.091584,
+        "min": 0.04464,
+        "n": 5,
+        "per_seed": [
+          0.04464,
+          0.068094,
+          0.195965,
+          0.078634,
+          0.070589
+        ],
+        "se": 0.026702,
+        "std": 0.059706
+      },
+      "parser_version": "s1-typed-frame-v1",
+      "parses_per_sec_single_core": {
+        "ci95_half": 4052.85444,
+        "ci95_high": 11374.65844,
+        "ci95_low": 3268.94956,
+        "max": 11872.73,
+        "mean": 7321.804,
+        "min": 2704.56,
+        "n": 5,
+        "per_seed": [
+          11872.73,
+          7783.39,
+          2704.56,
+          6740.07,
+          7508.27
+        ],
+        "se": 1459.727976,
+        "std": 3264.050982
+      },
+      "per_split": {
+        "s0_temporal_frozen": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s0_train_instructions": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s0_unseen_entities_and_compositions": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_genuinely_ambiguous": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.75,
+            "ci95_low": 0.75,
+            "max": 0.75,
+            "mean": 0.75,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.75,
+            "ci95_low": 0.75,
+            "max": 0.75,
+            "mean": 0.75,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.75,
+            "ci95_low": 0.75,
+            "max": 0.75,
+            "mean": 0.75,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.75,
+            "ci95_low": 1.75,
+            "max": 1.75,
+            "mean": 1.75,
+            "min": 1.75,
+            "n": 5,
+            "per_seed": [
+              1.75,
+              1.75,
+              1.75,
+              1.75,
+              1.75
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.956522,
+            "ci95_low": 0.956522,
+            "max": 0.956522,
+            "mean": 0.956522,
+            "min": 0.956522,
+            "n": 5,
+            "per_seed": [
+              0.956522,
+              0.956522,
+              0.956522,
+              0.956522,
+              0.956522
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.75,
+            "ci95_low": 0.75,
+            "max": 0.75,
+            "mean": 0.75,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_partial_mask_occluded": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_state_typed_disambiguation": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.75,
+            "ci95_low": 0.75,
+            "max": 0.75,
+            "mean": 0.75,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.5,
+            "ci95_low": 0.5,
+            "max": 0.5,
+            "mean": 0.5,
+            "min": 0.5,
+            "n": 5,
+            "per_seed": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.5,
+            "ci95_low": 0.5,
+            "max": 0.5,
+            "mean": 0.5,
+            "min": 0.5,
+            "n": 5,
+            "per_seed": [
+              0.5,
+              0.5,
+              0.5,
+              0.5,
+              0.5
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 2.0,
+            "ci95_low": 2.0,
+            "max": 2.0,
+            "mean": 2.0,
+            "min": 2.0,
+            "n": 5,
+            "per_seed": [
+              2.0,
+              2.0,
+              2.0,
+              2.0,
+              2.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.72,
+            "ci95_low": 0.72,
+            "max": 0.72,
+            "mean": 0.72,
+            "min": 0.72,
+            "n": 5,
+            "per_seed": [
+              0.72,
+              0.72,
+              0.72,
+              0.72,
+              0.72
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.75,
+            "ci95_low": 0.75,
+            "max": 0.75,
+            "mean": 0.75,
+            "min": 0.75,
+            "n": 5,
+            "per_seed": [
+              0.75,
+              0.75,
+              0.75,
+              0.75,
+              0.75
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_unparseable_ood": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "s1_unseen_paraphrases": {
+          "abstention_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "action_id_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_flag_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ambiguity_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_byte_span_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "exact_role_alignment_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "mean_candidate_count": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "ood_abstention_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "role_slot_f1": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "top_k_candidate_recall": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "unambiguous_exact_role_accuracy": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "valid_utf8_span_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 1.0,
+            "ci95_low": 1.0,
+            "max": 1.0,
+            "mean": 1.0,
+            "min": 1.0,
+            "n": 5,
+            "per_seed": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        }
+      },
+      "tracemalloc_peak_kb": {
+        "ci95_half": 0.123232,
+        "ci95_high": 5.653232,
+        "ci95_low": 5.406768,
+        "max": 5.63,
+        "mean": 5.53,
+        "min": 5.37,
+        "n": 5,
+        "per_seed": [
+          5.51,
+          5.56,
+          5.63,
+          5.37,
+          5.58
+        ],
+        "se": 0.044385,
+        "std": 0.099247
+      },
+      "unseen_unambiguous_exact_byte_span_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.983333,
+        "ci95_low": 0.983333,
+        "max": 0.983333,
+        "mean": 0.983333,
+        "min": 0.983333,
+        "n": 5,
+        "per_seed": [
+          0.983333,
+          0.983333,
+          0.983333,
+          0.983333,
+          0.983333
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_exact_role_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.983333,
+        "ci95_low": 0.983333,
+        "max": 0.983333,
+        "mean": 0.983333,
+        "min": 0.983333,
+        "n": 5,
+        "per_seed": [
+          0.983333,
+          0.983333,
+          0.983333,
+          0.983333,
+          0.983333
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_role_slot_f1": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.990358,
+        "ci95_low": 0.990358,
+        "max": 0.990358,
+        "mean": 0.990358,
+        "min": 0.990358,
+        "n": 5,
+        "per_seed": [
+          0.990358,
+          0.990358,
+          0.990358,
+          0.990358,
+          0.990358
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "unseen_unambiguous_unambig_exact_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.966667,
+        "ci95_low": 0.966667,
+        "max": 0.966667,
+        "mean": 0.966667,
+        "min": 0.966667,
+        "n": 5,
+        "per_seed": [
+          0.966667,
+          0.966667,
+          0.966667,
+          0.966667,
+          0.966667
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    }
+  },
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s1_experiments",
+  "s0_generator_version": "s0-relworld-v1.0",
+  "s0_temporal_generator_version": "s0-temporal-v2.0",
+  "s1_gate": {
+    "checks": {
+      "ast_strict_learner_isolation": true,
+      "cpu_budget_within_limit": true,
+      "deterministic_s1_manifest_replay": true,
+      "five_distinct_fixed_seeds_present": true,
+      "ledger_append_only_triggers_and_freeze_verified": true,
+      "ledger_disk_reload_and_hash_chain_verified": true,
+      "partial_observation_mask_unobserved_not_false_verified": true,
+      "s0_committed_manifests_intact": true,
+      "s1_parser_ambiguity_preservation_ci95_low_ge_95pct": true,
+      "s1_parser_beats_existing_ccg_by_ge_70pp": true,
+      "s1_parser_exact_byte_spans_ci95_low_ge_99pct": true,
+      "s1_parser_ood_abstention_100pct": true,
+      "s1_parser_s0_unseen_ci95_low_ge_99pct": true,
+      "s1_parser_state_typing_ablation_gain_ge_50pp": true,
+      "s1_parser_unseen_paraphrase_ci95_low_ge_95pct": true,
+      "test_time_memory_audit_hooks_verified": true
+    },
+    "passed": true
+  },
+  "s1_parser_generator_version": "s1-parser-bench-v1.0",
+  "schema_version": "s1-summary-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S1",
+  "total_elapsed_seconds": 15.5725
+}

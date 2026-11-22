@@ -1,0 +1,63 @@
+{
+  "cpu_budget_seconds_max": 30.0,
+  "demos_per_action": 6,
+  "ledger_schema_version": "s1-ledger-v1",
+  "parser_split_case_counts_seed0": {
+    "s0_temporal_frozen": 60,
+    "s0_train_instructions": 24,
+    "s0_unseen_entities_and_compositions": 360,
+    "s1_genuinely_ambiguous": 16,
+    "s1_partial_mask_occluded": 16,
+    "s1_state_typed_disambiguation": 16,
+    "s1_unparseable_ood": 10,
+    "s1_unseen_paraphrases": 28
+  },
+  "parser_splits": [
+    "s0_train_instructions",
+    "s0_unseen_entities_and_compositions",
+    "s0_temporal_frozen",
+    "s1_unseen_paraphrases",
+    "s1_state_typed_disambiguation",
+    "s1_partial_mask_occluded",
+    "s1_genuinely_ambiguous",
+    "s1_unparseable_ood"
+  ],
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s1_experiments",
+  "s0_generator_version": "s0-relworld-v1.0",
+  "s0_temporal_generator_version": "s0-temporal-v2.0",
+  "s1_acceptance_gates": {
+    "ast_strict_learner_isolation": true,
+    "cpu_budget_within_limit": true,
+    "deterministic_s1_manifest_replay": true,
+    "five_distinct_fixed_seeds_present": true,
+    "ledger_append_only_triggers_and_freeze_verified": true,
+    "ledger_disk_reload_and_hash_chain_verified": true,
+    "partial_observation_mask_unobserved_not_false_verified": true,
+    "s0_committed_manifests_intact": true,
+    "s1_parser_ambiguity_preservation_ci95_low_min": 0.95,
+    "s1_parser_beats_existing_ccg_margin_min": 0.7,
+    "s1_parser_exact_byte_spans_ci95_low_min": 0.99,
+    "s1_parser_ood_abstention_ci95_low_min": 1.0,
+    "s1_parser_s0_unseen_ci95_low_min": 0.99,
+    "s1_parser_state_typing_ablation_gain_min": 0.5,
+    "s1_parser_unseen_paraphrase_ci95_low_min": 0.95,
+    "test_time_memory_audit_hooks_verified": true
+  },
+  "s1_parser_generator_version": "s1-parser-bench-v1.0",
+  "schema_version": "s1-preregistration-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S1",
+  "unambiguous_eval_splits": [
+    "s0_unseen_entities_and_compositions",
+    "s0_temporal_frozen",
+    "s1_unseen_paraphrases",
+    "s1_state_typed_disambiguation",
+    "s1_partial_mask_occluded"
+  ]
+}
