@@ -2026,6 +2026,7 @@ angle$
             stream.scrollTop = stream.scrollHeight;
 
             const consentLog = document.getElementById('chat-consent-log')?.checked || false;
+            const reqT0 = performance.now();
 
             try {
                 const res = await fetch('/api/crystal/ask', {
@@ -2034,6 +2035,15 @@ angle$
                     body: JSON.stringify({prompt: q, session_id: 'studio_web', consent_log: consentLog})
                 });
                 const data = await res.json();
+                const resolvedLatencyMs = (typeof data.latency_ms === 'number' && !Number.isNaN(data.latency_ms))
+                    ? data.latency_ms.toFixed(2)
+                    : (performance.now() - reqT0).toFixed(2);
+                const resolvedRuleLabel = (data.matched_rule_id !== null && data.matched_rule_id !== undefined)
+                    ? `#BP-RULE-${data.matched_rule_id}`
+                    : ((data.uol_route && Array.isArray(data.uol_route.rule_ids) && data.uol_route.rule_ids.length)
+                        ? data.uol_route.rule_ids.join(' → ')
+                        : 'DYNAMIC_SYNTHESIS');
+
                 refreshAbstentionBadge();
                 if (typeof notifyConstellationQuery === 'function') {
                     notifyConstellationQuery(q, data.domain || 'general_reasoning');
@@ -2042,9 +2052,9 @@ angle$
                 collapseStatus.innerText = data.abstained ? "HONEST_ABSTAIN_VERIFIED" : "GROUND_STATE_COLLAPSED";
                 collapseStatus.className = data.abstained ? "text-amber-400" : "text-emerald-400";
 
-                document.getElementById('coherence-metric').innerText = `CPU Latency: ${data.latency_ms} ms`;
+                document.getElementById('coherence-metric').innerText = `CPU Latency: ${resolvedLatencyMs} ms`;
                 document.getElementById('bit-overlap-score').innerText = `Bit-Score: ${(data.confidence || 1.0).toFixed(3)}`;
-                document.getElementById('matched-rule-id').innerText = data.matched_rule_id !== null ? `#BP-RULE-${data.matched_rule_id}` : 'DYNAMIC_SYNTHESIS';
+                document.getElementById('matched-rule-id').innerText = resolvedRuleLabel;
                 document.getElementById('epistemic-tier-label').innerText = data.epistemic_tier || 'verified_exact';
 
                 let tierBadgeColor = data.abstained ? 'text-rose-400 border-rose-500/40' : 'text-emerald-400 border-emerald-500/40';
@@ -2073,9 +2083,9 @@ angle$
                 assistantMsg.className = 'border-l-2 border-emerald-400 pl-3 py-2.5 text-zinc-200 bg-white/[0.02] flex flex-col gap-2';
                 assistantMsg.innerHTML = `
                     <div class="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
-                        <span class="px-1.5 py-0.5 border border-cyan-500/40 text-cyan-400 rounded-xs">⚡ ${data.latency_ms} ms</span>
-                        <span class="px-1.5 py-0.5 border ${tierBadgeColor} rounded-xs font-bold uppercase">${data.epistemic_tier}</span>
-                        <span>mode: ${data.mode}</span>
+                        <span class="px-1.5 py-0.5 border border-cyan-500/40 text-cyan-400 rounded-xs">⚡ ${resolvedLatencyMs} ms</span>
+                        <span class="px-1.5 py-0.5 border ${tierBadgeColor} rounded-xs font-bold uppercase">${data.epistemic_tier || 'verified_exact'}</span>
+                        <span>mode: ${data.mode || 'crystal_synthesis'}</span>
                     </div>
                     <div class="font-sans text-sm text-white leading-relaxed md-rendered">${renderMarkdown(data.answer)}</div>
                     ${data.uol_route && data.uol_route.matched ? `

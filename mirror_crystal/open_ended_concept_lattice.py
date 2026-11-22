@@ -221,7 +221,10 @@ _RE_DEFER_OOD = re.compile(
 )
 _RE_HAS_DIGIT = re.compile(r"\b\d+(?:\.\d+)?\b")
 _RE_DIGIT_ALLOWLIST = re.compile(
-    r"\b(?:oauth2|http/2|http/3|http-3|http/1\.1|tls\s+1\.3|web3|sha-256|sha-3|aes-256|x\.509|type\s+2\s+diabetes|fido2|crispr-cas9|layer\s+2|rfc\s+2104|python\s+3|ipv6|ipv4|utf-8|5g|3d|2d|b\+?\s*tree)\b"
+    r"\b(?:oauth\s*2|http/?[123](?:\.[01])?|http-3|tls\s*1\.[23]|web3|sha[-\s]?(?:1|224|256|384|512|3)|aes[-\s]?(?:128|192|256)|"
+    r"x\.509|type\s+2\s+diabetes|fido2|crispr-cas9|layer\s+2|rfc[-\s]?\d+|cwe[-\s]?\d+|cve[-\s]?\d+(?:-\d+)?|capec[-\s]?\d+|"
+    r"owasp|a\d{2}:20\d{2}|iso[-\s]?\d+|ieee[-\s]?\d+|fips[-\s]?\d+|nist\s+(?:sp|ai\s+rmf)|ai\s+rmf\s+1\.0|pkcs|ed25519|x25519|pbkdf2|"
+    r"python\s+3|ipv6|ipv4|utf-8|5g|3d|2d|b\+?\s*tree)\b"
 )
 _RE_DEFER_QUANT = re.compile(
     r"\b(?:what\s+is\s+(?:the\s+)?(?:voltage|current|resistance|force|velocity|speed|mass|acceleration|momentum|kinetic\s+energy|potential\s+energy|electrical\s+power|density|axial\s+stress|stress|safety\s+factor|bmi|molarity|circle\s+area|cylinder\s+volume|triangle\s+area|sale\s+price|total\s+price|net\s+payout)\b|find\s+(?:velocity|mass|acceleration|current|resistance|radius|height|area|force|stress|safety\s+factor|momentum|work|efficiency|kelvin)|calculate\s+|solve\s+|differentiate\s+|integrate\s+|balance\s+(?:chemical\s+)?equation|check\s+(?:pubchem|openfda|clinvar|contradiction)|lookup\s+(?:uniprot|chembl)|explain\s+(?:reactome|clinicaltrials|quantum\s+entanglement\s+according\s+to\s+arxiv)|show\s+context7|diagnose\s+root\s+cause|optimize\s+budget|generate\s+(?:edge-case\s+)?unit\s+tests|generate\s+json\s+schema|audit\s+(?:security|complexity)|discover\s+(?:law|formula)|clean\s+outliers|predict\s+next\s+value|find\s+outliers|fix\s+this\s+(?:python\s+code|function)|write\s+(?:a\s+poem|a\s+short\s+story|an\s+upwork\s+proposal|python\s+code))\b"
