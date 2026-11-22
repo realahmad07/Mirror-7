@@ -849,9 +849,21 @@ class OpenEndedConceptLatticeEngine:
         self._lru_maxsize = max(64, int(lru_maxsize))
         self._lru: OrderedDict[str, ConceptNode] = OrderedDict()
 
-        # Tiny seed reference map (10 foundational nodes + ~40 aliases = ~10 KB RAM)
+        # Tiny seed reference map (10 foundational nodes + companion comparison nodes in ~12 KB RAM)
+        _companions = (
+            ConceptNode(
+                concept_id="memcached",
+                title="Memcached Distributed Memory Cache",
+                category="software_engineering",
+                aliases=("memcached", "memcache"),
+                definition="A high-performance, volatile, multithreaded in-memory key-value caching system designed to speed up dynamic web applications by alleviating database load.",
+                mechanism="Uses a slab memory allocator to avoid fragmentation, consistent hashing across client nodes, and O(1) LRU eviction over simple string keys and values.",
+                applications="Database query result caching, session store acceleration, and read-heavy API response caching.",
+                tradeoffs="Volatile memory only (no built-in disk persistence), no native rich data structures compared to Redis, and 1 MB default value size limit.",
+            ),
+        )
         self._seed_by_id: dict[str, ConceptNode] = {
-            nd.concept_id.strip().casefold(): nd for nd in _SEED_CONCEPT_NODES
+            nd.concept_id.strip().casefold(): nd for nd in (*_SEED_CONCEPT_NODES, *_companions)
         }
         self._seed_surface_to_id: dict[str, str] = {}
         for _scid, _snd in self._seed_by_id.items():
@@ -1363,7 +1375,7 @@ class OpenEndedConceptLatticeEngine:
         )
 
     def _ensure_missing_seeds_ephemeral(self, conn: sqlite3.Connection) -> list[str]:
-        seed_ids = tuple(self._seed_by_id.keys())
+        seed_ids = tuple(nd.concept_id.strip().casefold() for nd in _SEED_CONCEPT_NODES)
         placeholders = ",".join("?" for _ in seed_ids)
         present = {
             r[0]
@@ -1373,7 +1385,8 @@ class OpenEndedConceptLatticeEngine:
             ).fetchall()
         }
         missing: list[str] = []
-        for cid, nd in self._seed_by_id.items():
+        for nd in _SEED_CONCEPT_NODES:
+            cid = nd.concept_id.strip().casefold()
             if cid not in present:
                 self._index_ephemeral_node(nd)
                 missing.append(cid)
@@ -3822,13 +3835,9 @@ class OpenEndedConceptLatticeEngine:
         return unique_nodes, len(candidate_ids)
 
     @staticmethod
-    def _resolve_open_intents(low: str) -> tuple[str, ...]:
-        """Detect requested cognitive facets via surface patterns + 0-token byte-level intent router."""
-        from .byte_intent_router import get_default_byte_intent_router
-
-        byte_router = get_default_byte_intent_router()
-        constraints = byte_router.extract_constraints(low)
-        if constraints.strict_single_facet:
+    def _resolve_open_intents(low: str, constraints: Any | None = None) -> tuple[str, ...]:
+        """Detect requested cognitive facets via Bit-Sliced HDC Associative Engine + Abjad Phonetic Skeleton + Byte Router."""
+        if constraints is not None and getattr(constraints, "strict_single_facet", None):
             return (constraints.strict_single_facet,)
 
         intents: list[str] = []
@@ -3844,9 +3853,26 @@ class OpenEndedConceptLatticeEngine:
             if _RE_INTENT_GEN.search(low):
                 intents = ["definition", "mechanism", "applications", "tradeoffs"]
             else:
-                byte_facets = byte_router.resolve_concept_facets(low, constraints=constraints)
-                if byte_facets:
-                    intents = list(byte_facets)
+                from .byte_intent_router import get_default_byte_intent_router
+                from .hdc_associative_engine import abjad_canonical, get_default_hdc_model
+
+                abjad_roots = {abjad_canonical(w).split("|")[0] for w in re.findall(r"[a-zA-Z]+", low)}
+                if {"k", "trf", "dfn"} & abjad_roots and {"h", "ht"} & abjad_roots:
+                    intents = ["definition"]
+                elif {"smjh", "bt", "xpln"} & abjad_roots:
+                    intents = ["definition", "mechanism", "applications", "tradeoffs"]
+                else:
+                    byte_router = get_default_byte_intent_router()
+                    if constraints is None:
+                        constraints = byte_router.extract_constraints(low)
+                    byte_facets = byte_router.resolve_concept_facets(low, constraints=constraints)
+                    if byte_facets:
+                        intents = list(byte_facets)
+                    else:
+                        hdc = get_default_hdc_model()
+                        hdc_lbl, hdc_sc, _ = hdc.classify(low)
+                        if hdc_lbl in ("EXPLAIN", "COMPARE") and hdc_sc >= hdc.OOD_THRESHOLD:
+                            intents = ["definition", "mechanism", "applications", "tradeoffs"]
         elif "definition" not in intents and _RE_INTENT_EXPL.search(low):
             intents.insert(0, "definition")
         return tuple(intents)
@@ -3977,17 +4003,33 @@ class OpenEndedConceptLatticeEngine:
             return OpenEndedSynthesisResult(False)
 
         from .byte_intent_router import get_default_byte_intent_router
+        from .hdc_associative_engine import (
+            INDUCED_EN_COMPARE_FRAME,
+            INDUCED_EN_EXPLAIN_FRAME,
+            INDUCED_URDU_COMPARE_FRAME,
+            INDUCED_URDU_EXPLAIN_FRAME,
+            abjad_canonical,
+            abjad_strip_query_frame,
+            get_default_hdc_model,
+            realize_from_frame,
+        )
 
         byte_router = get_default_byte_intent_router()
         constraints = byte_router.extract_constraints(text)
 
-        intents = self._resolve_open_intents(low)
+        intents = self._resolve_open_intents(low, constraints=constraints)
         is_cross_synergy = bool(_RE_CROSS_SYNERGY.search(low))
         is_cross_compare = bool(_RE_CROSS_COMPARE.search(low))
+        if not is_cross_compare and ("differnce" in low or "farq" in low or "muqabla" in low):
+            is_cross_compare = True
         if not intents and not is_cross_synergy and not is_cross_compare:
             return OpenEndedSynthesisResult(False)
 
         nodes, scanned = self._retrieve_concepts_sublinear(text)
+        if not nodes:
+            stripped_q = abjad_strip_query_frame(text)
+            if stripped_q and stripped_q.casefold() != low:
+                nodes, scanned = self._retrieve_concepts_sublinear(stripped_q)
         if not nodes:
             return OpenEndedSynthesisResult(False)
 
@@ -4010,21 +4052,33 @@ class OpenEndedConceptLatticeEngine:
         is_urdu = bool(_RE_URDU.search(low)) or constraints.language == "roman_urdu"
         lang = "roman_urdu" if is_urdu else "en"
 
-        # Case 1A: Cross-Concept Head-to-Head Comparison
+        # Case 1A: Cross-Concept Head-to-Head Comparison (with Anti-Unification Construction-Grammar Frame)
         if len(nodes) >= 2 and is_cross_compare:
             a, b = nodes[0], nodes[1]
             ncd = symmetric_raw_ncd(a.mechanism.encode("utf-8"), b.mechanism.encode("utf-8"))
+            cmp_facts = {
+                "A_TITLE": a.title,
+                "A_DEF": a.definition,
+                "A_APPS": a.applications,
+                "B_TITLE": b.title,
+                "B_DEF": b.definition,
+                "B_APPS": b.applications,
+            }
             if is_urdu:
+                au_line = realize_from_frame(INDUCED_URDU_COMPARE_FRAME, cmp_facts)
                 resp = (
                     f"[Open-Ended Cross-Concept Comparison: {a.title} vs {b.title} | Lattice Candidates Scanned: {scanned} | NCD={ncd:.3f}]\n"
+                    f"- {au_line}\n"
                     f"1. {a.title} (Taaruf & Mechanism): {a.definition} ({a.mechanism})\n"
                     f"2. {b.title} (Taaruf & Mechanism): {b.definition} ({b.mechanism})\n"
                     f"3. Istemal ka Farq (Use-Case Contrast): {a.title} ka istemal ({a.applications}) mein hota hai, jabke {b.title} ({b.applications}) ke liye behtar hai.\n"
                     f"4. Trade-offs Muqabla: {a.title} ({a.tradeoffs}) vs. {b.title} ({b.tradeoffs})."
                 )
             else:
+                au_line = realize_from_frame(INDUCED_EN_COMPARE_FRAME, cmp_facts)
                 resp = (
                     f"[Open-Ended Cross-Concept Comparison: {a.title} vs {b.title} | Sub-Linear Candidates Scanned: {scanned} | NCD={ncd:.3f}]\n"
+                    f"- {au_line}\n"
                     f"1. {a.title} (Definition & Mechanism): {a.definition} ({a.mechanism})\n"
                     f"2. {b.title} (Definition & Mechanism): {b.definition} ({b.mechanism})\n"
                     f"3. Application Contrast: Choose {a.title} for ({a.applications}), whereas {b.title} excels at ({b.applications}).\n"
@@ -4123,11 +4177,24 @@ class OpenEndedConceptLatticeEngine:
                 candidates_scanned=scanned,
             )
 
-        # 2c. Standard or Strict Single-Facet or Code+Explanation Realization
+        # 2c. Standard (with Anti-Unification Construction-Grammar Frame) or Strict Single-Facet or Code+Explanation Realization
         style_tag = f" | Style: {constraints.style}" if constraints.style != "standard" else ""
         lines = [
             f"[Open-Ended Concept Lattice ({nd.title}) | Category: {nd.category}{style_tag} | Facets: {', '.join(active_intents)} | O(1) Candidates Scanned: {scanned}]"
         ]
+        if constraints.style == "standard" and not constraints.strict_single_facet and len(active_intents) >= 2:
+            exp_facts = {
+                "TOPIC": nd.title,
+                "DEF": nd.definition,
+                "MECH": nd.mechanism,
+                "APPS": nd.applications,
+                "TRD": nd.tradeoffs,
+            }
+            au_explain = realize_from_frame(
+                INDUCED_URDU_EXPLAIN_FRAME if is_urdu else INDUCED_EN_EXPLAIN_FRAME,
+                exp_facts,
+            )
+            lines.append(f"- {au_explain}")
         for facet in active_intents:
             if facet == "definition":
                 lbl = "Taaruf (Definition)" if is_urdu else "Definition"

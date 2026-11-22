@@ -395,9 +395,9 @@ class ByteLevelIntentRouter:
         self.facet_clf = SparseByteLinearClassifier(
             ("definition", "mechanism", "applications", "tradeoffs", "general")
         )
-        self.route_clf.fit(_ROUTE_TRAINING_CORPUS, epochs=7, lr=0.48)
-        self.lang_clf.fit(_LANG_TRAINING_CORPUS, epochs=6, lr=0.45)
-        self.facet_clf.fit(_FACET_TRAINING_CORPUS, epochs=6, lr=0.45)
+        self.route_clf.fit(_ROUTE_TRAINING_CORPUS, epochs=3, lr=0.48)
+        self.lang_clf.fit(_LANG_TRAINING_CORPUS, epochs=3, lr=0.45)
+        self.facet_clf.fit(_FACET_TRAINING_CORPUS, epochs=3, lr=0.45)
 
     def learn_online(
         self,
@@ -597,6 +597,25 @@ class ByteLevelIntentRouter:
             return False
 
         if self._RE_CODE_SURFACE.search(low):
+            return True
+
+        # 3rd Mathematical Paradigm: Bit-Sliced Vertical HDC + Abjad Phonetic Associative Engine
+        # Handles typos ("pyhton", "prnt"), lowercase slots, and range/filter/map/reduce compositions ("1 se 6 tak odd numbers ke squares ka sum print kro")
+        from .hdc_associative_engine import abjad_canonical, get_default_hdc_model
+
+        hdc = get_default_hdc_model()
+        hdc_label, hdc_score, hdc_margin = hdc.classify(text)
+        abjad_tokens = {abjad_canonical(w).split("|")[0] for w in re.findall(r"[a-zA-Z]+", low)}
+        has_abjad_code_cue = bool(
+            abjad_tokens & {"pthn", "cd", "prgrm", "scrpt", "fnctn", "prnt", "prnts", "prntng", "lp", "lst"}
+        )
+        has_range_print_cue = bool(
+            re.search(r"\b\d+\s+(?:se|to)\s+\d+(?:\s+tak)?\b", low)
+            and ({"prnt", "jm", "sm", "mx", "mn", "dgn", "sqr", "sqrs", "cb", "cbs"} & abjad_tokens)
+        )
+        if has_range_print_cue:
+            return True
+        if hdc_label in ("CODE_GEN", "CODE_PRINT") and hdc_score >= hdc.OOD_THRESHOLD and hdc_margin >= 40 and has_abjad_code_cue:
             return True
 
         # Byte-level classifier check for novel Roman-Urdu/English code requests

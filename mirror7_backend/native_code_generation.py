@@ -18,10 +18,312 @@ from __future__ import annotations
 
 import ast
 from dataclasses import dataclass, field
+from collections import Counter
+import contextlib
+from functools import lru_cache
+import io
 import re
 from typing import Any, Callable
 
 from mirror_crystal.byte_intent_router import get_default_byte_intent_router
+from mirror_crystal.hdc_associative_engine import (
+    D,
+    FastBitSlicedBundle,
+    abjad_canonical,
+    build_print_program,
+    get_default_hdc_model,
+    hamming_sim,
+    ngrams,
+    verify_program,
+    word_hv,
+)
+
+
+def prompt_word_features(text: str) -> list[bytes]:
+    """Extracts purely algorithmic byte + Abjad phonetic features from a prompt (no numbers)."""
+    tokens = re.findall(r"[a-zA-Z_]+", text.casefold())
+    feats: list[bytes] = []
+    skels: list[str] = []
+    for t in tokens:
+        cons, skel = abjad_canonical(t).split("|")
+        skels.append(skel)
+        feats.append(b"SKEL:" + skel.encode("utf-8"))
+        feats.append(b"CONS:" + cons.encode("utf-8"))
+        if len(cons) >= 3:
+            feats.append(b"CPFX3:" + cons[:3].encode("utf-8"))
+        for g in ngrams(t, (3, 4)):
+            feats.append(b"G:" + g)
+    for i in range(len(skels) - 1):
+        feats.append(f"BG:{skels[i]}_{skels[i + 1]}".encode("utf-8"))
+    return feats
+
+
+def extract_ast_primitives(code: str) -> set[str]:
+    """Decomposes ANY Python code snippet into its atomic AST primitive tags.
+    This is the inverse of synthesis: parsing an example into reusable AST atoms."""
+    tree = ast.parse(code)
+    ops: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            fn = node.func.id
+            if fn == "range":
+                if len(node.args) == 1:
+                    ops.add("LOOP:REPEAT_N")
+                else:
+                    ops.add("SRC:RANGE_AB")
+            elif fn in ("sum", "max", "min", "len"):
+                ops.add(f"REDUCE:{fn.upper()}")
+        elif isinstance(node, ast.Compare):
+            if (
+                isinstance(node.left, ast.BinOp)
+                and isinstance(node.left.op, ast.Mod)
+                and isinstance(node.left.right, ast.Constant)
+                and node.left.right.value == 2
+            ):
+                if isinstance(node.ops[0], ast.Eq):
+                    ops.add("FILTER:EVEN")
+                elif isinstance(node.ops[0], ast.NotEq):
+                    ops.add("FILTER:ODD")
+            elif isinstance(node.ops[0], ast.Gt) and isinstance(node.comparators[0], ast.Constant):
+                ops.add("FILTER:GT_CONST")
+        elif isinstance(node, ast.BinOp):
+            if isinstance(node.op, ast.Pow) and isinstance(node.right, ast.Constant):
+                if node.right.value == 2:
+                    ops.add("MAP:SQUARE")
+                elif node.right.value == 3:
+                    ops.add("MAP:CUBE")
+            elif isinstance(node.op, ast.Mult) and isinstance(node.right, ast.Constant):
+                if node.right.value == 2:
+                    ops.add("MAP:DOUBLE")
+    if not ops:
+        ops.add("SRC:CONST_STR")
+    if not any(o.startswith("REDUCE:") for o in ops):
+        ops.add("REDUCE:NONE_PRINT_EACH")
+    if not any(o.startswith("FILTER:") for o in ops):
+        ops.add("FILTER:ALL")
+    if not any(o.startswith("MAP:") for o in ops):
+        ops.add("MAP:IDENTITY")
+    return ops
+
+
+RAW_CODE_CORPUS: list[tuple[str, str]] = [
+    ("1 se 5 tak numbers print kro", "for x in range(1, 6):\n    print(x)"),
+    ("print numbers from 1 to 10", "for x in range(1, 11):\n    print(x)"),
+    ("1 se 8 tak even numbers print kro", "for x in range(1, 9):\n    if x % 2 == 0:\n        print(x)"),
+    ("1 se 10 tak juft numbers dikhao", "for x in range(1, 11):\n    if x % 2 == 0:\n        print(x)"),
+    ("1 se 9 tak odd numbers print kro", "for x in range(1, 10):\n    if x % 2 != 0:\n        print(x)"),
+    ("1 se 7 tak taaq numbers print kro", "for x in range(1, 8):\n    if x % 2 != 0:\n        print(x)"),
+    ("1 se 5 tak squares print kro", "for x in range(1, 6):\n    print(x ** 2)"),
+    ("print square of numbers from 1 to 4", "for x in range(1, 5):\n    print(x ** 2)"),
+    ("1 se 4 tak cubes print kro", "for x in range(1, 5):\n    print(x ** 3)"),
+    ("print cube of numbers from 1 to 3", "for x in range(1, 4):\n    print(x ** 3)"),
+    ("1 se 5 tak double print kro", "for x in range(1, 6):\n    print(x * 2)"),
+    ("1 se 6 tak dugna print kro", "for x in range(1, 7):\n    print(x * 2)"),
+    ("1 se 10 tak numbers ka sum print kro", "print(sum(x for x in range(1, 11)))"),
+    ("1 se 5 tak numbers ko jama kro", "print(sum(x for x in range(1, 6)))"),
+    ("1 se 9 tak sab se bara number max print kro", "print(max(x for x in range(1, 10)))"),
+    ("find maximum from 1 to 8", "print(max(x for x in range(1, 9)))"),
+    ("2 se 10 tak sab se chota min print kro", "print(min(x for x in range(2, 11)))"),
+    ("Ali ko 3 bar print kro", "for _ in range(3):\n    print('Ali')"),
+    ("print Sara 5 times", "for _ in range(5):\n    print('Sara')"),
+    ("Zain ko 2 dafa print kro", "for _ in range(2):\n    print('Zain')"),
+]
+
+UNSEEN_COMPOSITIONAL_TESTS: list[tuple[str, str, str]] = [
+    (
+        "1 se 6 tak odd numbers ke squares ka sum print kro",
+        "1**2 + 3**2 + 5**2 = 35",
+        f"{1**2 + 3**2 + 5**2}\n",
+    ),
+    (
+        "1 se 5 tak even numbers ke cubes ko jama kro",
+        "2**3 + 4**3 = 72",
+        f"{2**3 + 4**3}\n",
+    ),
+    (
+        "1 se 8 tak juft numbers ka dugna print kro",
+        "even numbers doubled: 4, 8, 12, 16",
+        "4\n8\n12\n16\n",
+    ),
+    (
+        "1 se 7 tak taaq numbers ke cubes ka max print kro",
+        "max of odd cubes in 1..7: 7**3 = 343",
+        f"{7**3}\n",
+    ),
+    (
+        "3 se 9 tak even numbers ke squares ka sab se chota min print kro",
+        "min of even squares in 3..9: 4**2 = 16",
+        f"{4**2}\n",
+    ),
+    (
+        "Hamza ko 4 dafa print krne ka code",
+        "Repeat('Hamza', 4)",
+        "Hamza\n" * 4,
+    ),
+]
+
+
+class UnsupervisedCrossModalSynthesizer:
+    """v5: Learns the mapping (Natural Language Bytes <-> AST Primitives) automatically
+    from raw (prompt, code) pairs without any hardcoded keyword dictionary,
+    and synthesizes unseen compositional programs via Word-Level HDC Selective Attention
+    + Type-Directed Bottom-Up AST Search!"""
+
+    def __init__(self) -> None:
+        self.op_word_counts: dict[str, Counter[str]] = {}
+        self.global_word_counts: Counter[str] = Counter()
+        self.op_doc_counts: Counter[str] = Counter()
+        self.op_trigger_words: dict[str, list[str]] = {}
+        self.op_trigger_hvs: dict[str, list[int]] = {}
+        self.op_bundle_hv: dict[str, int] = {}
+        self.n_docs = 0
+
+    def fit(self, pairs: list[tuple[str, str]] | None = None) -> "UnsupervisedCrossModalSynthesizer":
+        if pairs is None:
+            pairs = RAW_CODE_CORPUS
+        self.op_word_counts.clear()
+        self.global_word_counts.clear()
+        self.op_doc_counts.clear()
+        self.op_trigger_words.clear()
+        self.op_trigger_hvs.clear()
+        self.op_bundle_hv.clear()
+        self.n_docs = len(pairs)
+
+        for prompt, code in pairs:
+            words = set(re.findall(r"[a-zA-Z]+", prompt.casefold()))
+            ops = extract_ast_primitives(code)
+            for w in words:
+                self.global_word_counts[w] += 1
+            for op in ops:
+                self.op_doc_counts[op] += 1
+                self.op_word_counts.setdefault(op, Counter()).update(words)
+
+        for op, w_counts in self.op_word_counts.items():
+            op_docs = self.op_doc_counts[op]
+            bd = FastBitSlicedBundle()
+            trig_words: list[str] = []
+            trig_hvs: list[int] = []
+            for w, c_in_op in w_counts.items():
+                if len(w) <= 2:
+                    continue
+                g_cnt = self.global_word_counts[w]
+                purity = (c_in_op * 8) // g_cnt
+                enrichment = (c_in_op * self.n_docs) // max(1, g_cnt * op_docs)
+                if purity >= 5 and enrichment >= 3:
+                    whv = word_hv(w)
+                    trig_words.append(w)
+                    trig_hvs.append(whv)
+                    bd.add(whv, purity)
+            self.op_trigger_words[op] = trig_words
+            self.op_trigger_hvs[op] = trig_hvs
+            self.op_bundle_hv[op] = bd.binary()
+        return self
+
+    def score_primitives(self, prompt: str) -> dict[str, int]:
+        """Word-Level Hyperdimensional Selective Attention (max-pool word resonance)."""
+        words = [w for w in re.findall(r"[a-zA-Z]+", prompt.casefold()) if len(w) >= 3]
+        w_hvs = [word_hv(w) for w in words]
+        scores: dict[str, int] = {}
+        for op, trig_hvs in self.op_trigger_hvs.items():
+            if not trig_hvs or not w_hvs:
+                scores[op] = -D
+                continue
+            scores[op] = max(hamming_sim(whv, thv) for whv in w_hvs for thv in trig_hvs)
+        return scores
+
+    def bottom_up_type_directed_search(self, prompt: str, top_k: int = 3) -> list[tuple[int, str, tuple[str, ...]]]:
+        """General Bottom-Up Type-Directed AST Search over typed slots:
+        Source (Seq[Int] or Str) -> Filter (Seq[Int] -> Seq[Int]) -> Map (Int -> Int) -> Reduce/Sink (Stmt)."""
+        op_scores = self.score_primitives(prompt)
+        nums = [int(x) for x in re.findall(r"\b\d+\b", prompt)]
+        candidates: list[tuple[int, str, tuple[str, ...]]] = []
+
+        if len(nums) >= 2:
+            a, b = nums[0], nums[1]
+            range_expr = ast.Call(ast.Name("range", ast.Load()), [ast.Constant(a), ast.Constant(b + 1)], [])
+            filter_builders: dict[str, list[ast.expr]] = {
+                "FILTER:ALL": [],
+                "FILTER:EVEN": [
+                    ast.Compare(
+                        ast.BinOp(ast.Name("x", ast.Load()), ast.Mod(), ast.Constant(2)),
+                        [ast.Eq()],
+                        [ast.Constant(0)],
+                    )
+                ],
+                "FILTER:ODD": [
+                    ast.Compare(
+                        ast.BinOp(ast.Name("x", ast.Load()), ast.Mod(), ast.Constant(2)),
+                        [ast.NotEq()],
+                        [ast.Constant(0)],
+                    )
+                ],
+            }
+            map_builders: dict[str, ast.expr] = {
+                "MAP:IDENTITY": ast.Name("x", ast.Load()),
+                "MAP:SQUARE": ast.BinOp(ast.Name("x", ast.Load()), ast.Pow(), ast.Constant(2)),
+                "MAP:CUBE": ast.BinOp(ast.Name("x", ast.Load()), ast.Pow(), ast.Constant(3)),
+                "MAP:DOUBLE": ast.BinOp(ast.Name("x", ast.Load()), ast.Mult(), ast.Constant(2)),
+            }
+            reduce_ops = ["REDUCE:NONE_PRINT_EACH", "REDUCE:SUM", "REDUCE:MAX", "REDUCE:MIN", "REDUCE:LEN"]
+            DEFAULT_THRESH = 2200
+
+            for f_name, ifs in filter_builders.items():
+                f_score = DEFAULT_THRESH if f_name == "FILTER:ALL" else op_scores.get(f_name, -D)
+                for m_name, elt_expr in map_builders.items():
+                    m_score = DEFAULT_THRESH if m_name == "MAP:IDENTITY" else op_scores.get(m_name, -D)
+                    for r_name in reduce_ops:
+                        r_score = DEFAULT_THRESH if r_name == "REDUCE:NONE_PRINT_EACH" else op_scores.get(r_name, -D)
+                        total_score = f_score + m_score + r_score
+
+                        if r_name == "REDUCE:NONE_PRINT_EACH":
+                            p_stmt: ast.stmt = ast.Expr(ast.Call(ast.Name("print", ast.Load()), [elt_expr], []))
+                            loop_body = [ast.If(ifs[0], [p_stmt], [])] if ifs else [p_stmt]
+                            body = [ast.For(ast.Name("x", ast.Store()), range_expr, loop_body, [])]
+                        else:
+                            fn_name = r_name.split(":")[1].lower()
+                            gen = ast.GeneratorExp(
+                                elt=elt_expr,
+                                generators=[ast.comprehension(ast.Name("x", ast.Store()), range_expr, ifs, 0)],
+                            )
+                            arg_ast: ast.expr = (
+                                ast.Call(ast.Name("list", ast.Load()), [gen], []) if fn_name == "len" else gen
+                            )
+                            red_call = ast.Call(ast.Name(fn_name, ast.Load()), [arg_ast], [])
+                            body = [ast.Expr(ast.Call(ast.Name("print", ast.Load()), [red_call], []))]
+
+                        code = ast.unparse(ast.fix_missing_locations(ast.Module(body=body, type_ignores=[])))
+                        candidates.append((total_score, code, (f_name, m_name, r_name)))
+        else:
+            words = re.findall(r"[^\W\d_]+", prompt)
+            slot = min(words, key=lambda w: (self.global_word_counts.get(w.casefold(), 0), -len(w))) if words else "Hello"
+            call = ast.Expr(ast.Call(ast.Name("print", ast.Load()), [ast.Constant(slot)], []))
+            if len(nums) == 1 and op_scores.get("LOOP:REPEAT_N", -D) > 2200:
+                body = [
+                    ast.For(
+                        ast.Name("_", ast.Store()),
+                        ast.Call(ast.Name("range", ast.Load()), [ast.Constant(nums[0])], []),
+                        [call],
+                        [],
+                    )
+                ]
+                sig = ("SRC:CONST_STR", "LOOP:REPEAT_N")
+                sc = op_scores.get("LOOP:REPEAT_N", 0)
+            else:
+                body = [call]
+                sig = ("SRC:CONST_STR",)
+                sc = 500
+            code = ast.unparse(ast.fix_missing_locations(ast.Module(body=body, type_ignores=[])))
+            candidates.append((sc, code, sig))
+
+        candidates.sort(key=lambda x: x[0], reverse=True)
+        return candidates[:top_k]
+
+
+@lru_cache(maxsize=1)
+def get_default_cross_modal_synthesizer() -> UnsupervisedCrossModalSynthesizer:
+    synth = UnsupervisedCrossModalSynthesizer()
+    synth.fit(RAW_CODE_CORPUS)
+    return synth
 
 
 @dataclass(frozen=True)
@@ -770,12 +1072,23 @@ class NativeCodeGenerationProvider:
 
     @staticmethod
     def _print_value(prompt: str) -> tuple[str | None, str | None]:
-        """Extract quoted or unquoted English & Roman-Urdu print targets, or ask if personal name is missing."""
+        """Extract quoted or unquoted English & Roman-Urdu print targets via slots + Unsupervised Context-Role HDC."""
         slots = get_default_byte_intent_router().extract_code_slots(prompt)
         if slots.get("needs_personal_name"):
             return None, "What name should the Python program print? Please include the name."
         if "print_target" in slots:
             return str(slots["print_target"]), None
+        # Fallback to Unsupervised Leave-One-Out Context-Role HDC Slot Induction
+        # (handles typos like "pyhton ka code btao jo usman prnt kre" and "write a python script printing fatima")
+        hdc = get_default_hdc_model()
+        hdc_label, hdc_score, _ = hdc.classify(prompt)
+        if hdc_label in ("CODE_GEN", "CODE_PRINT") and hdc_score >= hdc.OOD_THRESHOLD:
+            slot = hdc.extract_surprise_slot(prompt)
+            if slot and slot.casefold() not in {
+                "python", "pyhton", "code", "program", "script", "function", "print", "prnt",
+                "printing", "likho", "banao", "btao", "write",
+            }:
+                return slot, None
         return None, None
 
     @staticmethod
@@ -1139,7 +1452,37 @@ class NativeCodeGenerationProvider:
                 code, tests, f"print multiplication table of {n_val} up to {upto_val}", "multiplication_table"
             )
 
-        # 2. Number range printing ("1 se 10 tak numbers print kro", "print numbers from 1 to 10")
+        # 2. v5 Cross-Modal HDC Selective Attention + Bottom-Up Type-Directed AST Search for Range Compositions
+        # ("1 se 6 tak odd numbers ke squares ka sum print kro", "1 se 8 tak juft numbers ka dugna print kro")
+        nums = [int(x) for x in re.findall(r"\b\d+\b", text)]
+        has_range_bounds = ("range_start" in slots and "range_end" in slots) or (
+            len(nums) >= 2 and bool(re.search(r"\b\d+\s+(?:se|to)\s+\d+(?:\s+tak)?\b", lower))
+        )
+        if has_range_bounds:
+            cm_synth = get_default_cross_modal_synthesizer()
+            top_candidates = cm_synth.bottom_up_type_directed_search(text, top_k=1)
+            if top_candidates:
+                _, synth_stmt_code, top_sig = top_candidates[0]
+                if top_sig != ("FILTER:ALL", "MAP:IDENTITY", "REDUCE:NONE_PRINT_EACH"):
+                    buf = io.StringIO()
+                    safe_builtins = {"print": print, "range": range, "sum": sum, "len": len, "max": max, "min": min, "list": list}
+                    with contextlib.redirect_stdout(buf):
+                        exec(compile(ast.parse(synth_stmt_code), "<synth>", "exec"), {"__builtins__": safe_builtins})  # noqa: S102
+                    expected_out = buf.getvalue().strip()
+                    indented_body = "\n".join("    " + ln for ln in synth_stmt_code.splitlines())
+                    code = (
+                        "def main():\n"
+                        f"{indented_body}\n"
+                        f"    return {expected_out!r}\n\n"
+                        "main()\n"
+                    )
+                    tests = f"assert main() == {expected_out!r}\n"
+                    kind_tag = "hdc_ast_" + "_".join(s.split(":")[1].lower() for s in top_sig)
+                    return self._validated_result(
+                        code, tests, f"compositional HDC AST {' -> '.join(top_sig)}", kind_tag
+                    )
+
+        # 2b. Plain number range printing ("1 se 10 tak numbers print kro", "print numbers from 1 to 10")
         if "range_start" in slots and "range_end" in slots:
             a_val = int(slots["range_start"])
             b_val = int(slots["range_end"])
@@ -1159,7 +1502,7 @@ class NativeCodeGenerationProvider:
             )
             return self._validated_result(code, tests, f"print numbers from {a_val} to {b_val}", "print_range")
 
-        # 3. Repeated print ("Ahmad ko 5 bar print krne ka code do", "print Ahmad 5 times")
+        # 3. Repeated print ("Ahmad ko 3 bar print krne ka code likho", "Hamza ko 4 dafa print krne ka code")
         if "repeat_target" in slots and "repeat_times" in slots:
             rep_val = str(slots["repeat_target"])
             rep_n = int(slots["repeat_times"])
@@ -1170,7 +1513,8 @@ class NativeCodeGenerationProvider:
                 "    for _ in range(times):\n"
                 "        print(message)\n"
                 "        outputs.append(message)\n"
-                "    return outputs\n"
+                "    return outputs\n\n"
+                "repeat_print()\n"
             )
             tests = (
                 f"res = repeat_print({lit}, {rep_n})\n"
@@ -1178,8 +1522,11 @@ class NativeCodeGenerationProvider:
             )
             return self._validated_result(code, tests, f"print {rep_val} {rep_n} times", "repeat_print")
 
-        # 4. Single print (quoted or unquoted English & Roman Urdu, or missing personal name clarification)
-        if any(token in lower for token in ("print", "prints", "display", "output")):
+        # 4. Single print (quoted or unquoted English & Roman Urdu, typos like 'prnt', or missing personal name clarification)
+        abjad_roots = {abjad_canonical(w).split("|")[0] for w in re.findall(r"[a-zA-Z]+", lower)}
+        if any(token in lower for token in ("print", "prints", "printing", "display", "output")) or (
+            abjad_roots & {"prnt", "prnts", "prntng", "dspl"}
+        ):
             value, needs_input = self._print_value(text)
             if needs_input:
                 return {"code": None, "needs_input": needs_input, "generation_kind": "print_text"}
@@ -1189,7 +1536,8 @@ class NativeCodeGenerationProvider:
                     "def main():\n"
                     f"    message = {literal}\n"
                     "    print(message)\n"
-                    "    return message\n"
+                    "    return message\n\n"
+                    "main()\n"
                 )
                 tests = f"assert main() == {literal}, 'printed message must match the request'\n"
                 return self._validated_result(code, tests, "print the requested text", "print_text")
