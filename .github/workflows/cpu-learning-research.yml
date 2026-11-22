@@ -1,4 +1,4 @@
-name: Mirror 7 | CPU-Native Learning Research (S0-S1)
+name: Mirror 7 | CPU-Native Learning Research (S0-S2)
 
 on:
   push:
@@ -9,12 +9,14 @@ on:
       - "research/cpu_learning/**"
       - "docs/39-cpu-native-learning-research-s0-audit-and-baseline.md"
       - "docs/40-cpu-native-learning-research-s1-state-frames-and-ledger.md"
+      - "docs/41-cpu-native-learning-research-s2-itl-operator-induction.md"
       - ".github/workflows/cpu-learning-research.yml"
   pull_request:
     paths:
       - "research/cpu_learning/**"
       - "docs/39-cpu-native-learning-research-s0-audit-and-baseline.md"
       - "docs/40-cpu-native-learning-research-s1-state-frames-and-ledger.md"
+      - "docs/41-cpu-native-learning-research-s2-itl-operator-induction.md"
       - ".github/workflows/cpu-learning-research.yml"
   workflow_dispatch: {}
 
@@ -45,15 +47,17 @@ jobs:
       - name: Compile research package
         run: python -m compileall -q research/cpu_learning
 
-      - name: Run S0 unit, isolation, edge-case, and canary tests
+      - name: Run S0, S1 & S2 unit, isolation, domain-agnosticism, and canary tests
         run: python -m pytest -v research/cpu_learning/tests
 
-      - name: Verify committed S0 & S1 pre-registered manifests match generators bit-for-bit
+      - name: Verify committed S0, S1 & S2 pre-registered manifests match generators bit-for-bit
         run: |
           python -m research.cpu_learning.evaluation.run_experiments --verify-manifests
           python -m research.cpu_learning.evaluation.run_s1_experiments --verify-manifests
+          python -m research.cpu_learning.evaluation.run_s2_experiments --verify-manifests
 
-      - name: Verify reproducible 5-seed S0 & S1 benchmark gates
+      - name: Verify reproducible 5-seed S0, S1 & S2 benchmark gates
         run: |
           python -m research.cpu_learning.evaluation.run_experiments
           python -m research.cpu_learning.evaluation.run_s1_experiments
+          python -m research.cpu_learning.evaluation.run_s2_experiments

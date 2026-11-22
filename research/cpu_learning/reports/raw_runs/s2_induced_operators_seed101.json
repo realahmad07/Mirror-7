@@ -1,0 +1,425 @@
+{
+  "give": {
+    "action_id": "give",
+    "add_facts": [
+      [
+        "?object",
+        "owned_by",
+        "?recipient"
+      ]
+    ],
+    "attribute_edits": [],
+    "attribute_guards": [
+      {
+        "attribute": "portable",
+        "expected_value": true,
+        "role": "object"
+      }
+    ],
+    "card_id": "op_give_v1",
+    "conditional_fact_guards": [],
+    "confidence": 1.0,
+    "delete_facts": [
+      [
+        "?object",
+        "owned_by",
+        "?actor"
+      ]
+    ],
+    "indirect_fact_guards": [
+      {
+        "predicate": "is_locked",
+        "role": "object",
+        "value": "false",
+        "via_predicate": "located_on",
+        "when_neighbor_type": "container"
+      },
+      {
+        "predicate": "is_open",
+        "role": "object",
+        "value": "true",
+        "via_predicate": "located_on",
+        "when_neighbor_type": "container"
+      }
+    ],
+    "inequality_guards": [
+      {
+        "role_a": "actor",
+        "role_b": "recipient"
+      }
+    ],
+    "parent_version": null,
+    "preserved_invariants": [
+      "preserve_unmentioned_attributes",
+      "preserve_unmentioned_facts",
+      "preserve_unobserved_under_mask",
+      "preserve_unrelated_entities"
+    ],
+    "provenance": {
+      "episode_ids": [
+        "train_s101_give_00",
+        "train_s101_give_01",
+        "train_s101_give_02",
+        "train_s101_give_03",
+        "train_s101_give_04",
+        "train_s101_give_05"
+      ],
+      "record_hashes": [
+        "03fb4470964d8118522a8c36ade523345396c9ac61de7de99c2dfaf8ed5f32c6",
+        "70e101049d2de10119f6cda2103ebc776043035e4ed1e7c28ae932add4ca2b7a",
+        "7616f3c93dceb109ac3cb8aef9787c13c65dac6f5a643faa9408690d0d3b7a11",
+        "a1d329d98ed322bd4e53ba9377844f0f92622923d1a92b05a92950720a4c9905",
+        "f6d654c3466be7f3c5ea0d7174d068dd45d1e6c6394d570289e50e9842862de3",
+        "f984c8f5a622c22e9685c18d9ae21752954a48c726251d79517c0bee239ca0ac"
+      ]
+    },
+    "required_facts": [
+      [
+        "?object",
+        "owned_by",
+        "?actor"
+      ]
+    ],
+    "required_types": {
+      "actor": [
+        "agent"
+      ],
+      "object": [
+        "object"
+      ],
+      "recipient": [
+        "agent"
+      ]
+    },
+    "role_variables": [
+      "actor",
+      "object",
+      "recipient"
+    ],
+    "schema_version": "s2-operator-card-v1",
+    "scope": "general_relational",
+    "support_counts": {
+      "negative": 2,
+      "positive": 4
+    },
+    "version": 1
+  },
+  "lock": {
+    "action_id": "lock",
+    "add_facts": [
+      [
+        "?target",
+        "is_locked",
+        "true"
+      ]
+    ],
+    "attribute_edits": [
+      {
+        "attribute": "status",
+        "new_value": "locked",
+        "role": "target"
+      }
+    ],
+    "attribute_guards": [],
+    "card_id": "op_lock_v1",
+    "conditional_fact_guards": [],
+    "confidence": 1.0,
+    "delete_facts": [
+      [
+        "?target",
+        "is_locked",
+        "false"
+      ]
+    ],
+    "indirect_fact_guards": [],
+    "inequality_guards": [],
+    "parent_version": null,
+    "preserved_invariants": [
+      "preserve_unmentioned_attributes",
+      "preserve_unmentioned_facts",
+      "preserve_unobserved_under_mask",
+      "preserve_unrelated_entities"
+    ],
+    "provenance": {
+      "episode_ids": [
+        "train_s101_lock_00",
+        "train_s101_lock_01",
+        "train_s101_lock_02",
+        "train_s101_lock_03",
+        "train_s101_lock_04",
+        "train_s101_lock_05"
+      ],
+      "record_hashes": [
+        "3563d06035a03a4c2f5674ba9814c90c2617b9fe578db18d69c1bbe647c8dc27",
+        "992a507b66723e0dd9428352c232089fdfacc383075147735c02aa1427e3e845",
+        "b30282620d314710d580cdf473ea15e66657ca95c56f181817ad18dd14f89132",
+        "c1a4216a7d13ee5d4a3f23ac0b5fb8c8e68fe750016cffa62f5d80b5fac8309e",
+        "cd76d8cbee705c4d1ead3446caf80fc9ae3afbd4b390f9196b8400ef18c4a99f",
+        "d700b0a61bbaca7c5d37a94108efb6ed9e2e6c54035a2ccbffde8933fd1c2bcd"
+      ]
+    },
+    "required_facts": [
+      [
+        "?target",
+        "accessible",
+        "true"
+      ],
+      [
+        "?target",
+        "is_locked",
+        "false"
+      ],
+      [
+        "?target",
+        "is_open",
+        "false"
+      ]
+    ],
+    "required_types": {
+      "actor": [
+        "agent"
+      ],
+      "target": [
+        "container"
+      ]
+    },
+    "role_variables": [
+      "actor",
+      "target"
+    ],
+    "schema_version": "s2-operator-card-v1",
+    "scope": "general_relational",
+    "support_counts": {
+      "negative": 2,
+      "positive": 4
+    },
+    "version": 1
+  },
+  "move": {
+    "action_id": "move",
+    "add_facts": [
+      [
+        "?object",
+        "located_on",
+        "?destination"
+      ]
+    ],
+    "attribute_edits": [],
+    "attribute_guards": [
+      {
+        "attribute": "portable",
+        "expected_value": true,
+        "role": "object"
+      }
+    ],
+    "card_id": "op_move_v1",
+    "conditional_fact_guards": [
+      {
+        "predicate": "is_locked",
+        "role": "destination",
+        "value": "false",
+        "when_entity_type": "container"
+      },
+      {
+        "predicate": "is_open",
+        "role": "destination",
+        "value": "true",
+        "when_entity_type": "container"
+      },
+      {
+        "predicate": "is_locked",
+        "role": "source",
+        "value": "false",
+        "when_entity_type": "container"
+      },
+      {
+        "predicate": "is_open",
+        "role": "source",
+        "value": "true",
+        "when_entity_type": "container"
+      }
+    ],
+    "confidence": 1.0,
+    "delete_facts": [
+      [
+        "?object",
+        "located_on",
+        "?source"
+      ]
+    ],
+    "indirect_fact_guards": [],
+    "inequality_guards": [
+      {
+        "role_a": "source",
+        "role_b": "destination"
+      }
+    ],
+    "parent_version": null,
+    "preserved_invariants": [
+      "preserve_unmentioned_attributes",
+      "preserve_unmentioned_facts",
+      "preserve_unobserved_under_mask",
+      "preserve_unrelated_entities"
+    ],
+    "provenance": {
+      "episode_ids": [
+        "train_s101_move_00",
+        "train_s101_move_01",
+        "train_s101_move_02",
+        "train_s101_move_03",
+        "train_s101_move_04",
+        "train_s101_move_05"
+      ],
+      "record_hashes": [
+        "38c50fd4f77d3ab73599c8f132e83a411e19c7ad887792410c637830471b7e34",
+        "9d36d5ba08095cce2fd6206a099dbbf8f1d23feca98eb7c4df10f2ea066d83f5",
+        "c18a279e89d54b091ba85b34b7dac1066c41d0301ae0b7547cf4c919b06be120",
+        "c1af55428b3dcee02b774d7c4e74a3e4bf721b85c5fbd8d74efd2be8b5d72213",
+        "e8934c46a773c067412ce396ed0528668b7340cd2288d5ada87ba4209eff9573",
+        "f3827f3e8fb6b83a6cf12848d068f534b73c7f58e94f406f1a0ceef50b79dec6"
+      ]
+    },
+    "required_facts": [
+      [
+        "?destination",
+        "accessible",
+        "true"
+      ],
+      [
+        "?object",
+        "located_on",
+        "?source"
+      ],
+      [
+        "?object",
+        "owned_by",
+        "?actor"
+      ],
+      [
+        "?source",
+        "accessible",
+        "true"
+      ]
+    ],
+    "required_types": {
+      "actor": [
+        "agent"
+      ],
+      "destination": [
+        "container",
+        "surface"
+      ],
+      "object": [
+        "object"
+      ],
+      "source": [
+        "container",
+        "surface"
+      ]
+    },
+    "role_variables": [
+      "actor",
+      "destination",
+      "object",
+      "source"
+    ],
+    "schema_version": "s2-operator-card-v1",
+    "scope": "general_relational",
+    "support_counts": {
+      "negative": 2,
+      "positive": 4
+    },
+    "version": 1
+  },
+  "open": {
+    "action_id": "open",
+    "add_facts": [
+      [
+        "?target",
+        "is_open",
+        "true"
+      ]
+    ],
+    "attribute_edits": [
+      {
+        "attribute": "status",
+        "new_value": "open",
+        "role": "target"
+      }
+    ],
+    "attribute_guards": [],
+    "card_id": "op_open_v1",
+    "conditional_fact_guards": [],
+    "confidence": 1.0,
+    "delete_facts": [
+      [
+        "?target",
+        "is_open",
+        "false"
+      ]
+    ],
+    "indirect_fact_guards": [],
+    "inequality_guards": [],
+    "parent_version": null,
+    "preserved_invariants": [
+      "preserve_unmentioned_attributes",
+      "preserve_unmentioned_facts",
+      "preserve_unobserved_under_mask",
+      "preserve_unrelated_entities"
+    ],
+    "provenance": {
+      "episode_ids": [
+        "train_s101_open_00",
+        "train_s101_open_01",
+        "train_s101_open_02",
+        "train_s101_open_03",
+        "train_s101_open_04",
+        "train_s101_open_05"
+      ],
+      "record_hashes": [
+        "06642d0dede84d705b96aa7516ebf70737ac02e3144364ca30ee3061bb12e2de",
+        "589a42556bc1029cf30ff8bb3670572bea9cafab615ebd018eb173b439484e52",
+        "76a490754be52b62f343ae1bcc8f66dc33c88f87496ba57f5cc94c8317ca70f1",
+        "89c74676cde0622ad51343580a163d6d89de9a29842ea5bc3cd7e0bab401bb1c",
+        "a1631b4f66a0481c8e0d83c10d5968fb49f5283d8fe42794ba1185185c7484f0",
+        "d1e12b6b9b9043aa187fdaed267878c2360a0a8a4ef05d3b383ba96d56c118af"
+      ]
+    },
+    "required_facts": [
+      [
+        "?target",
+        "accessible",
+        "true"
+      ],
+      [
+        "?target",
+        "is_locked",
+        "false"
+      ],
+      [
+        "?target",
+        "is_open",
+        "false"
+      ]
+    ],
+    "required_types": {
+      "actor": [
+        "agent"
+      ],
+      "target": [
+        "container"
+      ]
+    },
+    "role_variables": [
+      "actor",
+      "target"
+    ],
+    "schema_version": "s2-operator-card-v1",
+    "scope": "general_relational",
+    "support_counts": {
+      "negative": 2,
+      "positive": 4
+    },
+    "version": 1
+  }
+}

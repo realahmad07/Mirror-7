@@ -1,0 +1,52 @@
+{
+  "canary_splits": [
+    "canary_exact_memorization"
+  ],
+  "cpu_budget_seconds_per_seed_max": 30.0,
+  "demos_per_action": 6,
+  "operator_card_schema_version": "s2-operator-card-v1",
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s2_experiments",
+  "s0_generator_version": "s0-relworld-v1.0",
+  "s0_temporal_generator_version": "s0-temporal-v2.0",
+  "s2_acceptance_gates_lower_ci95_or_strict": {
+    "all_solvers_frozen_before_temporal": true,
+    "ast_strict_learner_isolation_and_zero_hardcoded_literals": true,
+    "cpu_budget_within_limit": true,
+    "demos_per_action_max": 8,
+    "five_distinct_fixed_seeds_present": true,
+    "itl_beats_episode_lookup_margin_min": 0.2,
+    "itl_beats_shard_hdc_no_itl_margin_min": 0.5,
+    "itl_collateral_rate_ci95_high_max": 0.02,
+    "itl_contrast_ablation_improves_guard_recall": true,
+    "itl_depth4_ci95_low_min": 0.95,
+    "itl_depth6_ci95_low_min": 0.9,
+    "itl_mdl_strictly_compresses_training_data": true,
+    "itl_operator_recovery_precision_ci95_low_min": 0.9,
+    "itl_operator_recovery_recall_ci95_low_min": 0.9,
+    "itl_overall_unseen_ci95_low_min": 0.95,
+    "itl_temporal_frozen_ci95_low_min": 0.95,
+    "itl_zero_test_time_retrieval_and_canary_excluded": true,
+    "s0_and_s1_committed_manifests_intact": true,
+    "s1_s2_raw_utf8_e2e_ci95_low_min": 0.95
+  },
+  "schema_version": "s2-preregistration-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S2",
+  "unseen_eval_splits": [
+    "heldout_unseen_names",
+    "heldout_role_swaps",
+    "heldout_guard_contrasts",
+    "heldout_repeated_idempotent",
+    "heldout_order_reversal",
+    "heldout_comp_depth2",
+    "heldout_comp_depth4",
+    "heldout_comp_depth6",
+    "heldout_temporal_frozen"
+  ]
+}
