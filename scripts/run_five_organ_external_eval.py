@@ -62,15 +62,21 @@ def download_verified(url: str, destination: Path, sha256: str | None = None) ->
     return data, digest
 
 
-def hf_rows(dataset: str, max_rows: int = 200) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def hf_rows(
+    dataset: str,
+    max_rows: int = 200,
+    *,
+    config_hint: str | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     base = "https://datasets-server.huggingface.co"
     q = urllib.parse.urlencode({"dataset": dataset})
     split_payload = json.loads(http_get(f"{base}/splits?{q}").decode("utf-8"))
     splits = split_payload.get("splits", [])
     candidates = [
         s for s in splits
-        if "test" in str(s.get("split", "")).casefold()
-        or "cloze" in str(s.get("split", "")).casefold()
+        if ("test" in str(s.get("split", "")).casefold()
+            or "cloze" in str(s.get("split", "")).casefold())
+        and (config_hint is None or str(s.get("config", "")) == config_hint)
     ]
     if not candidates:
         raise RuntimeError(f"No test/cloze split exposed for {dataset}")
@@ -124,6 +130,61 @@ def flatten_session(session: Any) -> str:
         elif turn:
             parts.append(str(turn))
     return " ".join(parts).strip()
+
+
+def evaluate_organ1_babi_parser(babi_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    from mirror_crystal.cortical_active_inference import BilingualCCGHDCParser
+
+    parser = BilingualCCGHDCParser()
+    context_facts = actor_correct = location_cases = location_correct = 0
+    sampled_fact_examples: list[dict[str, Any]] = []
+    for row in babi_rows:
+        story = row.get("story", {})
+        if not isinstance(story, dict):
+            continue
+        texts = story.get("text") or []
+        types = story.get("type") or []
+        for text, kind in zip(texts, types):
+            if int(kind) != 0:
+                continue
+            parsed = parser.parse_clause(str(text))
+            tokens = re.findall(r"[A-Za-z]+", str(text).casefold())
+            if not tokens:
+                continue
+            context_facts += 1
+            expected_actor = tokens[0]
+            actor_ok = parsed.who == expected_actor
+            actor_correct += int(actor_ok)
+            match = re.match(
+                r"^([a-z]+)\\s+(?:moved|went|journeyed|travelled|travelled back)\\s+(?:to|into)\\s+the?\\s*([a-z]+)[.!]?$",
+                str(text).strip().casefold(),
+            )
+            if match:
+                location_cases += 1
+                destination = match.group(2)
+                target_ok = destination in parsed.targ
+                location_correct += int(target_ok)
+                if len(sampled_fact_examples) < 8:
+                    sampled_fact_examples.append({
+                        "text": str(text),
+                        "parsed_actor": parsed.who,
+                        "parsed_action": parsed.act,
+                        "parsed_target": parsed.targ,
+                        "expected_actor": expected_actor,
+                        "expected_destination": destination,
+                        "passed": bool(actor_ok and target_ok),
+                    })
+    return {
+        "babi_test_records": len(babi_rows),
+        "context_facts_parsed": context_facts,
+        "actor_exact_matches": actor_correct,
+        "actor_accuracy": round(actor_correct / max(1, context_facts), 4),
+        "location_facts": location_cases,
+        "location_target_matches": location_correct,
+        "location_target_accuracy": round(location_correct / max(1, location_cases), 4),
+        "sampled_examples": sampled_fact_examples,
+        "metric_note": "Gold actor and destination labels are checked on bAbI test facts; this is a narrow parser probe, not full QA accuracy.",
+    }
 
 
 def evaluate_organ1_story_parser(story_rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -348,7 +409,7 @@ def get_story_fields(row: dict[str, Any]) -> tuple[list[str], str, str, int] | N
 
 
 def evaluate_organ5_storycloze(story_rows: list[dict[str, Any]]) -> dict[str, Any]:
-    from mirror_crystal.ternary_lut_realizer import LTAGKneserNeyRealizer, PDCSTModifiedKneserNey
+    from mirror_crystal.ternary_lut_realizer import LTAGKneserNeyRealizer
 
     realizer = LTAGKneserNeyRealizer()
     # Keep the organ's shipped eight-sentence prior; do not train on external evaluation stories.
@@ -428,16 +489,23 @@ def main() -> int:
         "test_id_range": [11, 510],
     }
 
+    babi_rows, babi_meta = hf_rows("facebook/babi_qa", max_rows=100, config_hint="en-qa1")
+    report["datasets"]["babi_qa"] = {
+        **babi_meta,
+        "license": "CC-BY-3.0",
+        "task": "qa1 single-supporting-fact test split",
+    }
     story_rows, story_meta = hf_rows(ROCSTORIES_DATASET, max_rows=300)
     report["datasets"]["rocstories_cloze"] = {
         **story_meta,
         "license": "dataset card reports other/unspecified; used for evaluation only, not redistributed",
     }
 
-    # Organ 1: parse held-out human-authored story sentences.
+    # Organ 1: gold-label parser probe on bAbI context facts plus coverage on StoryCloze.
     story_sample = deterministic_sample(story_rows, 80, "organ1-parser")
     organ1 = evaluate_organ1_story_parser(story_sample)
     causal_edges = organ1.pop("_causal_edges")
+    organ1["babi_gold_role_probe"] = evaluate_organ1_babi_parser(deterministic_sample(babi_rows, 50, "babi-qa1"))
     report["organs"]["1_cortical_parser"] = organ1
 
     # Organ 2: equality-saturation compositions + story-derived causal intervention.
