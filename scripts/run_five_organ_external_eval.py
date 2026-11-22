@@ -156,7 +156,7 @@ def evaluate_organ1_babi_parser(babi_rows: list[dict[str, Any]]) -> dict[str, An
             actor_ok = parsed.who == expected_actor
             actor_correct += int(actor_ok)
             match = re.match(
-                r"^([a-z]+)\\s+(?:moved|went|journeyed|travelled|travelled back)\\s+(?:to|into)\\s+the?\\s*([a-z]+)[.!]?$",
+                r"^([a-z]+)\s+(?:moved|went|journeyed|travelled|travelled back)\s+(?:to|into)\s+the?\s*([a-z]+)[.!]?$",
                 str(text).strip().casefold(),
             )
             if match:
@@ -367,7 +367,11 @@ def evaluate_organ4_mbpp(mbpp_rows: list[dict[str, Any]], sample_size: int) -> d
         generated += 1
         imports = row.get("test_imports") or []
         tests = row.get("test_list") or []
-        external_tests = "\n".join([str(x) for x in imports + tests])
+        if isinstance(imports, str):
+            imports = [imports]
+        if isinstance(tests, str):
+            tests = [tests]
+        external_tests = "\n".join([str(x) for x in list(imports) + list(tests)])
         ok, output = ZeroTrustSandboxJudge.verify_code_and_test(str(candidate["code"]), external_tests)
         if ok:
             passed += 1
