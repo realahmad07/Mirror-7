@@ -20,6 +20,7 @@ import random
 import re
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -48,8 +49,14 @@ def http_get(url: str, timeout: int = 90) -> bytes:
         url,
         headers={"User-Agent": "Mirror7-External-Eval/1.0", "Accept": "*/*"},
     )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return response.read()
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return response.read()
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", "replace")
+        raise RuntimeError(
+            f"HTTP {exc.code} while fetching {url}: {body[:1200]}"
+        ) from exc
 
 
 def download_verified(url: str, destination: Path, sha256: str | None = None) -> tuple[bytes, str]:
@@ -88,17 +95,31 @@ def hf_rows(
         )
     )
     chosen = candidates[0]
-    params = urllib.parse.urlencode(
-        {
-            "dataset": dataset,
-            "config": chosen["config"],
-            "split": chosen["split"],
-            "offset": 0,
-            "length": min(500, max_rows),
-        }
-    )
-    payload = json.loads(http_get(f"{base}/rows?{params}").decode("utf-8"))
-    rows = [entry["row"] for entry in payload.get("rows", []) if isinstance(entry, dict) and isinstance(entry.get("row"), dict)]
+    rows: list[dict[str, Any]] = []
+    total_rows_available: int | None = None
+    while len(rows) < max_rows:
+        page_length = min(100, max_rows - len(rows))
+        params = urllib.parse.urlencode(
+            {
+                "dataset": dataset,
+                "config": chosen["config"],
+                "split": chosen["split"],
+                "offset": len(rows),
+                "length": page_length,
+            }
+        )
+        payload = json.loads(http_get(f"{base}/rows?{params}").decode("utf-8"))
+        page = [
+            entry["row"] for entry in payload.get("rows", [])
+            if isinstance(entry, dict) and isinstance(entry.get("row"), dict)
+        ]
+        if not page:
+            break
+        rows.extend(page)
+        if total_rows_available is None and payload.get("num_rows_total") is not None:
+            total_rows_available = int(payload["num_rows_total"])
+        if len(page) < page_length:
+            break
     if not rows:
         raise RuntimeError(f"No rows returned for {dataset}/{chosen['config']}/{chosen['split']}")
     meta = {
@@ -106,6 +127,7 @@ def hf_rows(
         "config": chosen["config"],
         "split": chosen["split"],
         "num_rows_returned": len(rows),
+        "num_rows_total": total_rows_available,
     }
     return rows, meta
 
