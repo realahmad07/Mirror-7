@@ -50,7 +50,17 @@ class Entity:
             raise ValueError("entity_id must be a non-empty string")
         if not self.entity_type or not isinstance(self.entity_type, str):
             raise ValueError("entity_type must be a non-empty string")
-        sorted_attrs = tuple(sorted((str(k), v) for k, v in self.attributes))
+        seen_keys: set[str] = set()
+        normalized: list[tuple[str, Any]] = []
+        for k, v in self.attributes:
+            sk = str(k)
+            if sk == "type":
+                raise ValueError("attribute key 'type' is reserved for entity_type")
+            if sk in seen_keys:
+                raise ValueError(f"Duplicate attribute key {sk!r} on entity {self.entity_id!r}")
+            seen_keys.add(sk)
+            normalized.append((sk, v))
+        sorted_attrs = tuple(sorted(normalized, key=lambda pair: pair[0]))
         object.__setattr__(self, "attributes", sorted_attrs)
 
     def attr_dict(self) -> dict[str, Any]:
@@ -65,6 +75,15 @@ class Entity:
     def with_attr(self, key: str, value: Any) -> Entity:
         updated = dict(self.attributes)
         updated[str(key)] = value
+        return Entity(
+            entity_id=self.entity_id,
+            entity_type=self.entity_type,
+            attributes=tuple(sorted(updated.items())),
+        )
+
+    def without_attr(self, key: str) -> Entity:
+        updated = dict(self.attributes)
+        updated.pop(str(key), None)
         return Entity(
             entity_id=self.entity_id,
             entity_type=self.entity_type,
@@ -104,6 +123,8 @@ class ObservationMask:
     def is_fact_observed(self, fact: Fact) -> bool:
         if self.fully_observed:
             return True
+        if not self.observed_entities and not self.observed_predicates:
+            return False
         subj, pred, _ = fact
         ent_ok = (not self.observed_entities) or (subj in self.observed_entities)
         pred_ok = (not self.observed_predicates) or (pred in self.observed_predicates)
@@ -133,7 +154,17 @@ class StateGraph:
     facts: frozenset[Fact]
 
     def __post_init__(self) -> None:
-        sorted_entities = tuple(sorted(self.entities, key=lambda pair: pair[0]))
+        seen_ids: set[str] = set()
+        normalized_ents: list[tuple[str, Entity]] = []
+        for eid, ent in self.entities:
+            seid = str(eid)
+            if seid != ent.entity_id:
+                raise ValueError(f"Entity key {seid!r} does not match entity_id {ent.entity_id!r}")
+            if seid in seen_ids:
+                raise ValueError(f"Duplicate entity_id {seid!r} in StateGraph")
+            seen_ids.add(seid)
+            normalized_ents.append((seid, ent))
+        sorted_entities = tuple(sorted(normalized_ents, key=lambda pair: pair[0]))
         object.__setattr__(self, "entities", sorted_entities)
         normalized_facts = frozenset((str(s), str(p), str(o)) for s, p, o in self.facts)
         object.__setattr__(self, "facts", normalized_facts)
@@ -185,7 +216,10 @@ class StateGraph:
         ent_dict = self.entity_map()
         for eid, attr_name, new_val in attribute_edits:
             if eid in ent_dict:
-                ent_dict[eid] = ent_dict[eid].with_attr(attr_name, new_val)
+                if new_val is None:
+                    ent_dict[eid] = ent_dict[eid].without_attr(attr_name)
+                else:
+                    ent_dict[eid] = ent_dict[eid].with_attr(attr_name, new_val)
         return StateGraph.create(ent_dict, new_facts)
 
     def to_dict(self) -> dict[str, Any]:
@@ -229,8 +263,16 @@ class SparseDelta:
     preserved_fact_count: int = 0
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "added_facts", tuple(sorted(self.added_facts)))
-        object.__setattr__(self, "deleted_facts", tuple(sorted(self.deleted_facts)))
+        object.__setattr__(
+            self,
+            "added_facts",
+            tuple(sorted({(str(s), str(p), str(o)) for s, p, o in self.added_facts})),
+        )
+        object.__setattr__(
+            self,
+            "deleted_facts",
+            tuple(sorted({(str(s), str(p), str(o)) for s, p, o in self.deleted_facts})),
+        )
         object.__setattr__(
             self,
             "attribute_edits",
@@ -335,15 +377,23 @@ class ActionInvocation:
     def __post_init__(self) -> None:
         if not self.action_id:
             raise ValueError("action_id must be non-empty")
-        object.__setattr__(
-            self,
-            "roles",
-            tuple(sorted((str(k), str(v)) for k, v in self.roles)),
-        )
+        seen_roles: set[str] = set()
+        norm_roles: list[tuple[str, str]] = []
+        for k, v in self.roles:
+            sk = str(k)
+            if sk in seen_roles:
+                raise ValueError(f"Duplicate role key {sk!r} in ActionInvocation")
+            seen_roles.add(sk)
+            norm_roles.append((sk, str(v)))
+        object.__setattr__(self, "roles", tuple(sorted(norm_roles)))
         raw = bytes(self.raw_instruction_bytes)
         object.__setattr__(self, "raw_instruction_bytes", raw)
+        seen_spans: set[str] = set()
         spans = tuple(sorted((str(k), int(s), int(e)) for k, s, e in self.byte_spans))
         for key, start, end in spans:
+            if key in seen_spans:
+                raise ValueError(f"Duplicate byte span key {key!r} in ActionInvocation")
+            seen_spans.add(key)
             if not (0 <= start <= end <= len(raw)):
                 raise ValueError(
                     f"Invalid byte span for {key!r}: ({start}, {end}) vs len={len(raw)}"

@@ -51,6 +51,8 @@ class HiddenOracleBaseline(BaseS0Solver):
         for aid, schema in HIDDEN_OPERATOR_SCHEMAS.items():
             out[aid] = {
                 "required_facts": sorted(schema.required_facts),
+                "required_types": sorted(schema.required_types),
+                "required_attr_guards": sorted(schema.required_attr_guards),
                 "add_facts": sorted(schema.add_facts),
                 "delete_facts": sorted(schema.delete_facts),
                 "attribute_edits": sorted(schema.attribute_edits),

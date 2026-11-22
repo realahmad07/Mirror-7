@@ -113,14 +113,20 @@ def verify_pool_disjointness() -> dict[str, Any]:
     }
 
 
-def _find_span(raw_bytes: bytes, token: str, start_from: int = 0) -> tuple[int, int]:
-    needle = token.encode("utf-8")
-    idx = raw_bytes.find(needle, start_from)
-    if idx < 0:
-        idx = raw_bytes.find(needle)
-    if idx < 0:
-        raise ValueError(f"Token {token!r} not found in raw instruction {raw_bytes!r}")
-    return (idx, idx + len(needle))
+def _assemble_instruction(
+    segments: Sequence[tuple[str | None, str]],
+) -> tuple[bytes, tuple[tuple[str, int, int], ...]]:
+    """Assemble UTF-8 instruction bytes and exact byte spans without substring search collisions."""
+    chunks: list[bytes] = []
+    spans: list[tuple[str, int, int]] = []
+    offset = 0
+    for tag, piece in segments:
+        encoded = piece.encode("utf-8")
+        if tag is not None:
+            spans.append((tag, offset, offset + len(encoded)))
+        chunks.append(encoded)
+        offset += len(encoded)
+    return (b"".join(chunks), tuple(spans))
 
 
 def build_action_invocation(
@@ -129,64 +135,40 @@ def build_action_invocation(
     *,
     template_variant: int = 0,
 ) -> ActionInvocation:
-    """Create a typed ActionInvocation with raw UTF-8 instruction bytes and verified byte spans."""
+    """Create a typed ActionInvocation with raw UTF-8 instruction bytes and exact byte spans."""
     if action_id == "move":
         a, o, s, d = roles["actor"], roles["object"], roles["source"], roles["destination"]
-        templates = (
-            f"{a} move {o} from {s} to {d}",
-            f"Have {a} move {o} out of {s} onto {d}",
+        variants: tuple[tuple[tuple[str | None, str], ...], ...] = (
+            (("actor", a), (None, " "), ("action", "move"), (None, " "), ("object", o), (None, " from "), ("source", s), (None, " to "), ("destination", d)),
+            ((None, "Have "), ("actor", a), (None, " "), ("action", "move"), (None, " "), ("object", o), (None, " out of "), ("source", s), (None, " onto "), ("destination", d)),
         )
-        text = templates[template_variant % len(templates)]
-        verb = "move"
     elif action_id == "give":
         a, o, r = roles["actor"], roles["object"], roles["recipient"]
-        templates = (
-            f"{a} give {o} to {r}",
-            f"Have {a} give {o} over to {r}",
+        variants = (
+            (("actor", a), (None, " "), ("action", "give"), (None, " "), ("object", o), (None, " to "), ("recipient", r)),
+            ((None, "Have "), ("actor", a), (None, " "), ("action", "give"), (None, " "), ("object", o), (None, " over to "), ("recipient", r)),
         )
-        text = templates[template_variant % len(templates)]
-        verb = "give"
     elif action_id == "open":
         a, t = roles["actor"], roles["target"]
-        templates = (
-            f"{a} open {t}",
-            f"Have {a} open the {t}",
+        variants = (
+            (("actor", a), (None, " "), ("action", "open"), (None, " "), ("target", t)),
+            ((None, "Have "), ("actor", a), (None, " "), ("action", "open"), (None, " the "), ("target", t)),
         )
-        text = templates[template_variant % len(templates)]
-        verb = "open"
     elif action_id == "lock":
         a, t = roles["actor"], roles["target"]
-        templates = (
-            f"{a} lock {t}",
-            f"Have {a} lock the {t}",
+        variants = (
+            (("actor", a), (None, " "), ("action", "lock"), (None, " "), ("target", t)),
+            ((None, "Have "), ("actor", a), (None, " "), ("action", "lock"), (None, " the "), ("target", t)),
         )
-        text = templates[template_variant % len(templates)]
-        verb = "lock"
     else:
         raise ValueError(f"Unsupported action_id: {action_id!r}")
 
-    raw = text.encode("utf-8")
-    spans: list[tuple[str, int, int]] = []
-    act_s, act_e = _find_span(raw, verb)
-    spans.append(("action", act_s, act_e))
-    cursor = 0
-    role_order = {
-        "move": ("actor", "object", "source", "destination"),
-        "give": ("actor", "object", "recipient"),
-        "open": ("actor", "target"),
-        "lock": ("actor", "target"),
-    }[action_id]
-    for rk in role_order:
-        val = roles[rk]
-        s_idx, e_idx = _find_span(raw, val, cursor)
-        spans.append((rk, s_idx, e_idx))
-        cursor = e_idx
-
+    raw, spans = _assemble_instruction(variants[template_variant % len(variants)])
     return ActionInvocation(
         action_id=action_id,
         roles=tuple(sorted((k, v) for k, v in roles.items())),
         raw_instruction_bytes=raw,
-        byte_spans=tuple(spans),
+        byte_spans=spans,
     )
 
 
@@ -226,11 +208,11 @@ def _make_base_world(
     entities: dict[str, Entity] = {}
     facts: set[Fact] = set()
 
-    for idx, aid in enumerate(ids["agents"]):
+    for aid in ids["agents"]:
         entities[aid] = Entity(
             entity_id=aid,
             entity_type="agent",
-            attributes=(("role_badge", pool.colors[idx % len(pool.colors)]), ("status", "active")),
+            attributes=(("role_badge", rng.choice(pool.colors)), ("status", "active")),
         )
 
     for idx, sid in enumerate(ids["surfaces"]):
@@ -327,6 +309,9 @@ def generate_training_episodes(
 
         for idx in range(demos_per_action):
             is_positive = idx < n_pos
+            # Vary distractor object[2] portability so the boolean domain {True, False}
+            # appears in training worlds while keeping the acted object[0] portable=True.
+            distractor_port = (True, True, (idx % 2 == 0))
             if action_id == "move":
                 if is_positive:
                     c_open = idx >= 2
@@ -334,6 +319,7 @@ def generate_training_episodes(
                         TRAIN_POOL,
                         rng,
                         container_states=((c_open, False, True), (False, False, True), (False, True, True)),
+                        obj_portable=distractor_port,
                     )
                     actor = ids["agents"][0]
                     obj = ids["objects"][0]
@@ -350,7 +336,10 @@ def generate_training_episodes(
                     neg_i = idx - n_pos
                     if neg_i == 0:
                         world, ids = _make_base_world(
-                            TRAIN_POOL, rng, surface_accessible=(True, False, True)
+                            TRAIN_POOL,
+                            rng,
+                            surface_accessible=(True, False, True),
+                            obj_portable=distractor_port,
                         )
                         roles = {
                             "actor": ids["agents"][0],
@@ -360,7 +349,10 @@ def generate_training_episodes(
                         }
                     else:
                         world, ids = _make_base_world(
-                            TRAIN_POOL, rng, container_states=((False, False, True), (False, False, True), (False, False, True))
+                            TRAIN_POOL,
+                            rng,
+                            container_states=((False, False, True), (False, False, True), (False, False, True)),
+                            obj_portable=distractor_port,
                         )
                         roles = {
                             "actor": ids["agents"][0],
@@ -371,7 +363,20 @@ def generate_training_episodes(
 
             elif action_id == "give":
                 if is_positive:
-                    world, ids = _make_base_world(TRAIN_POOL, rng)
+                    # Demo idx == 3 places the object inside an OPEN container to contrast
+                    # cleanly with neg_i == 1 (object inside a CLOSED container).
+                    c_open = idx == 3
+                    world, ids = _make_base_world(
+                        TRAIN_POOL,
+                        rng,
+                        container_states=((c_open, False, True), (False, False, True), (False, True, True)),
+                        obj_portable=distractor_port,
+                    )
+                    if c_open:
+                        world = world.with_changes(
+                            delete_facts=((ids["objects"][0], "located_on", ids["surfaces"][0]),),
+                            add_facts=((ids["objects"][0], "located_on", ids["containers"][0]),),
+                        )
                     roles = {
                         "actor": ids["agents"][0],
                         "object": ids["objects"][0],
@@ -379,7 +384,9 @@ def generate_training_episodes(
                     }
                 else:
                     neg_i = idx - n_pos
-                    world, ids = _make_base_world(TRAIN_POOL, rng)
+                    world, ids = _make_base_world(
+                        TRAIN_POOL, rng, obj_portable=distractor_port
+                    )
                     if neg_i == 0:
                         roles = {
                             "actor": ids["agents"][1],
@@ -400,36 +407,54 @@ def generate_training_episodes(
             elif action_id == "open":
                 if is_positive:
                     world, ids = _make_base_world(
-                        TRAIN_POOL, rng, container_states=((False, False, True), (False, True, True), (True, False, True))
+                        TRAIN_POOL,
+                        rng,
+                        container_states=((False, False, True), (False, True, True), (True, False, True)),
+                        obj_portable=distractor_port,
                     )
                     roles = {"actor": ids["agents"][0], "target": ids["containers"][0]}
                 else:
                     neg_i = idx - n_pos
                     if neg_i == 0:
                         world, ids = _make_base_world(
-                            TRAIN_POOL, rng, container_states=((False, True, True), (False, False, True), (True, False, True))
+                            TRAIN_POOL,
+                            rng,
+                            container_states=((False, True, True), (False, False, True), (True, False, True)),
+                            obj_portable=distractor_port,
                         )
                     else:
                         world, ids = _make_base_world(
-                            TRAIN_POOL, rng, container_states=((True, False, True), (False, False, True), (False, True, True))
+                            TRAIN_POOL,
+                            rng,
+                            container_states=((True, False, True), (False, False, True), (False, True, True)),
+                            obj_portable=distractor_port,
                         )
                     roles = {"actor": ids["agents"][0], "target": ids["containers"][0]}
 
             else:  # lock
                 if is_positive:
                     world, ids = _make_base_world(
-                        TRAIN_POOL, rng, container_states=((False, False, True), (True, False, True), (False, True, True))
+                        TRAIN_POOL,
+                        rng,
+                        container_states=((False, False, True), (True, False, True), (False, True, True)),
+                        obj_portable=distractor_port,
                     )
                     roles = {"actor": ids["agents"][0], "target": ids["containers"][0]}
                 else:
                     neg_i = idx - n_pos
                     if neg_i == 0:
                         world, ids = _make_base_world(
-                            TRAIN_POOL, rng, container_states=((True, False, True), (False, False, True), (False, True, True))
+                            TRAIN_POOL,
+                            rng,
+                            container_states=((True, False, True), (False, False, True), (False, True, True)),
+                            obj_portable=distractor_port,
                         )
                     else:
                         world, ids = _make_base_world(
-                            TRAIN_POOL, rng, container_states=((False, True, True), (False, False, True), (True, False, True))
+                            TRAIN_POOL,
+                            rng,
+                            container_states=((False, True, True), (False, False, True), (True, False, True)),
+                            obj_portable=distractor_port,
                         )
                     roles = {"actor": ids["agents"][0], "target": ids["containers"][0]}
 
@@ -447,7 +472,7 @@ def generate_training_episodes(
                 observation_mask=mask,
                 after_state=res.after_state,
                 sparse_delta=res.delta,
-                context=(("demo_index", idx), ("expected_transition_kind", "effect" if is_positive else "blocked")),
+                context=(("demo_index", idx), ("domain", "relational_world_v1")),
                 observation_source="hidden_relational_simulator_v1",
                 split_id="train",
                 generator_id="gen_train_v1",

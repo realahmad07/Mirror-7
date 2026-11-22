@@ -14,8 +14,8 @@
           "excluded_from_learning_score": true,
           "generator_id": "gen_retrieval_canary_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "6b2750fbe2f31fac5eaee6b519f4e2fb7cfd6f772dcb490c3a03656bd36d021a",
-          "public_sha256": "09ac116e25bcc8fbcc95bb6dbcfdee3304e91d4442f582cfd0be9c2620f61cb4",
+          "hidden_labels_sha256": "5f3a96256d3cd63d0b87987a9cce860227d31a0bf383a53154a0cae5bb5ed595",
+          "public_sha256": "dac4d13481854ed472d7da989a94ab1a140d296f71ceb9fc7811c24472923a03",
           "task_count": 8
         },
         "heldout_comp_depth2": {
@@ -25,8 +25,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth2_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "3893fe64a05ca31e9308aab817eeef8e0b3e30576a1ecb5365da538432db00d3",
-          "public_sha256": "c3e639ed96280fea29fe4f3381bed4ee9fa2d9f6eb38bf9422a37a97f3ccc01a",
+          "hidden_labels_sha256": "0e7f5bd6f8c597d5a022934164a3dd5982befc7741c851ab4a33fd41f0f8d430",
+          "public_sha256": "bf929498c897eea03f46bd2d9331620804de954001aae972d24abdb149ea6da8",
           "task_count": 20
         },
         "heldout_comp_depth4": {
@@ -36,8 +36,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth4_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "a7af63a103f2913e475dd45e12222b604bddc1fdaa651ec68281d6157105692c",
-          "public_sha256": "de0b1c2b818941671b2d04e8fc72d8383acb7227b7c2e08a358804dc83ab6896",
+          "hidden_labels_sha256": "664b88604e4f03337cf9a3019dd916bf5f806f3bb844c6a0f944d18d64d47344",
+          "public_sha256": "45e13709ba66452062c792feb39f1ba3f9d65f9f01cfced19373cc1ab78fcbe0",
           "task_count": 20
         },
         "heldout_comp_depth6": {
@@ -47,8 +47,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth6_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "11b339cc8a7257208240a1ad8a1129fd34c10ae5d3fa5a395586d452a18f3abc",
-          "public_sha256": "ba2e4d3be1a7c61bceac0bed941026da4a7d8d07b638e7ba206d3fdd4fbb5f9e",
+          "hidden_labels_sha256": "6c9db5ba675f837c3068af0ad2e0a18d991314bc2f7980f021f0555338ff14d9",
+          "public_sha256": "efed7f26f56fe9a739e65dc96939169b68274e42acd9882997d390edaf890831",
           "task_count": 20
         },
         "heldout_guard_contrasts": {
@@ -58,8 +58,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_guard_contrasts_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "f99363a20f2b3febf68113affdf2013a03327783424cf5b0f33173c992499e18",
-          "public_sha256": "b2f5c06b619d65d7319d55dbcd4fca32ae989e22828750949e176d49695c89c3",
+          "hidden_labels_sha256": "280240160e9e1e4b081f83e32a43b3c1321c334ef62d1a895cd7977a229a7b55",
+          "public_sha256": "7e63a0e9f09cef7f3f4de34d45c3e5a1a638b47a53927af9b87e320851f789c7",
           "task_count": 20
         },
         "heldout_order_reversal": {
@@ -69,8 +69,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_order_reversal_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "91c4cc310f2c16c7c73f6540b1970cffc26ce7e38e180cc5587ccdd52dae7699",
-          "public_sha256": "d7565e91e2a59c40ec9e2a836ba5f37c6148f228c176491fcda7e35ba41270ae",
+          "hidden_labels_sha256": "fbdc02260c26202e65c293b6cfc3b2eba9ee18d18403205b1ce87104d7e6a694",
+          "public_sha256": "76d1b498e914e1ab92ac376fdce4d707bde86d1d7af40cadfc25b7c61ed5f93b",
           "task_count": 16
         },
         "heldout_repeated_idempotent": {
@@ -80,8 +80,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_repeated_idempotent_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "25dab4412b0e8cb0c83456513a7a9e17b5f2639cb7a8347e5266b15678f7cf2b",
-          "public_sha256": "ae85df0e2dba124201a0bcbc120a321298d0d25e460f818f4003d97841a39462",
+          "hidden_labels_sha256": "c6453a874ff682814702387801a5bfc6da304a8b83f02f7003ba378f6829dfc5",
+          "public_sha256": "742d3f1deb4ca2aea282fe95e7352a5d62b0fd1f55d1fe89828598c7ee55510b",
           "task_count": 16
         },
         "heldout_role_swaps": {
@@ -91,8 +91,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_role_swaps_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "96752943c29d6020bb13680274c2ca3629a7918b2a590b5f3fe884e2d83dec85",
-          "public_sha256": "ec0ada435f70af8a023fed1b7bf34b7d10a5d1e53e2b035ff0fdfac5b47c9d8f",
+          "hidden_labels_sha256": "4827fec1374a204ad29b838c9f2339dd5e28b1f9da4004f6fd81d9f46f700c54",
+          "public_sha256": "0b1955a0593cd46f58dc86c770237080f2b58f1b522ce418953c181a98320ce4",
           "task_count": 16
         },
         "heldout_temporal_frozen": {
@@ -103,8 +103,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_temporal_frozen_v2",
           "generator_version": "s0-temporal-v2.0",
-          "hidden_labels_sha256": "601e377adedcb7d9e2664755ad942283500e68c5302044d33fd3e1abc3fd16dc",
-          "public_sha256": "17bd34e0b20accdd184b9200b2c33466c85b1df0d7f87187aa8dadf9392dfd69",
+          "hidden_labels_sha256": "1cc062701dfd1ecda9a90319ae7af7a128c66a44f863a9cd8d6e900afee74b24",
+          "public_sha256": "17e044305ed075af9042ceaf2bc1521e260ccda2a1525f50532e505a447e2676",
           "task_count": 20
         },
         "heldout_unseen_names": {
@@ -114,8 +114,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_unseen_names_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "8a10ab169fb0806970e3035c353ac88b2b92432015581ca5432bf51caef66f20",
-          "public_sha256": "63fc2b099f838a0e782a20c9e95eb633becafa30894311f18805ed7c2621d26a",
+          "hidden_labels_sha256": "5a3fa19d77f0ea47a3626cee2bc8e0b52908137edabc430f6b5e676696164119",
+          "public_sha256": "ce021606bae10afd533517cfa3a8a6b51b6e5fc806c83e1f90eaf6dace5d1030",
           "task_count": 20
         }
       },
@@ -132,8 +132,8 @@
           "excluded_from_learning_score": true,
           "generator_id": "gen_retrieval_canary_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "f2eedd046913cde393c63ac1f8de8e13c4c0b58395af2ad796a90d0f30d6fc35",
-          "public_sha256": "de774f6b536736aefd62ec6a6b4508dfb804c96f564f442c08a442be232d13cc",
+          "hidden_labels_sha256": "ebeb110b204f9f6502bf9144b0cbbb437cebbd4a5eacdcece736703107257443",
+          "public_sha256": "efbc27f1f7cfe9bb85005edc7460b2d3f212eeb0e7841950a501b7435221c41a",
           "task_count": 8
         },
         "heldout_comp_depth2": {
@@ -143,8 +143,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth2_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "c24639cb2ff3c97933c5ce3195886867fca307febb1cf66b180ca943894f8739",
-          "public_sha256": "aca65971e067821b78290d94f5eae91a313f97d477de77f2575a67a1109fd223",
+          "hidden_labels_sha256": "ed9e380734d9069f6187ce04941cc8f98e32f37054c06183b2b745ae1cceadf7",
+          "public_sha256": "6c952f7197e14915711156b2a3410b865c512c154fd05517e3ba2770c103a509",
           "task_count": 20
         },
         "heldout_comp_depth4": {
@@ -154,8 +154,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth4_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "a90da9f1f330e4e561d371181406e9ffe68d990d9b94d0b7a4a6b5198147c87a",
-          "public_sha256": "75527d9ba8799133bd874f3748017f50de14110aa24fd69c9a38038896a27568",
+          "hidden_labels_sha256": "361576debb4d99862b585c64d26d62370e972c7d874950a5374e730d7296e4b7",
+          "public_sha256": "e4cdc6273d61529f25da0d8c0d8f8429b1b43042d2dc5b2c0748b1ef3d301c8c",
           "task_count": 20
         },
         "heldout_comp_depth6": {
@@ -165,8 +165,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth6_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "f71dcdbc1abd5b23db83558a017ae3378633f064cb63995e5b18cbc480822c2e",
-          "public_sha256": "45613d266e9535450bc30e5986d7779650bbf9344ba00293a1bb755a605e59ef",
+          "hidden_labels_sha256": "1e8df2eda90679d26db6c46369b9fbcb98795073acd672db14b02c89103b6cc2",
+          "public_sha256": "fb77620f071ef77f1c89ed58ad950b7a4e44667193a4b0cdbfb6528c96b44276",
           "task_count": 20
         },
         "heldout_guard_contrasts": {
@@ -176,8 +176,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_guard_contrasts_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "1ffd59406dfd73ae085056be7e1f631a0dab8758c164b62958ede1777147f01c",
-          "public_sha256": "f5d30f65c37168ded6283dd1d941b412b114d571dcf4c95105abf3128650506e",
+          "hidden_labels_sha256": "525147d3bef6471832953fb0d8414700ed05ccf28427698ed9cf23759cd13362",
+          "public_sha256": "7c7cd515ff385018baf4b647859b1e8c4f5bc55ae4141f70112693305d55172f",
           "task_count": 20
         },
         "heldout_order_reversal": {
@@ -187,8 +187,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_order_reversal_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "f4f45b215921b1fd4ac287c7c71623bcb74dc93d1acfabd4bf8c7839dc6d4394",
-          "public_sha256": "5ba85db16a4cdd6a935646b938f9bd325017f9d47c9c60a93fdbf70ed8132533",
+          "hidden_labels_sha256": "23b48a590e95aadaa777923cdd360bd035b5c0b9de1e02694ff25e4103f31c01",
+          "public_sha256": "484e1b981ba8022169e63ec8e9c0a54649cf58e5096e3e8b725168a721c63597",
           "task_count": 16
         },
         "heldout_repeated_idempotent": {
@@ -198,8 +198,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_repeated_idempotent_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "c3dc8a4ed68cd9993f0b977a66a74b17c72543f7691ed69a58ef04dc6b7fdb75",
-          "public_sha256": "2f54819afc0a0fda536a2a1a64241d719ceb4986d4eea4157df3f672344e4e6b",
+          "hidden_labels_sha256": "e9bc6cc06433f959a1a8bfc4a133e49d00f3eb77e2a1d4c60006a157b3902db9",
+          "public_sha256": "aded40571189ebdbfc0e5346d391c89fee9d43cff6f80eac5e6341933f6827c0",
           "task_count": 16
         },
         "heldout_role_swaps": {
@@ -209,8 +209,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_role_swaps_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "f4a8cc4469b3392f19cd9125e867837acac39163c74b9ab86cb988f8dc8a698c",
-          "public_sha256": "90eb90bfbb004f878ed0724cc4976f652141c06106daefbf8b2d8f5ee55d006c",
+          "hidden_labels_sha256": "591b24a75b743d69ef6a5be08a70e9f08fc480708c7190df4bc88e344283222f",
+          "public_sha256": "5d7e40d0f68e5c999b8beaad871223352e94d4d7a665ae6bf063ff35b8ad44e3",
           "task_count": 16
         },
         "heldout_temporal_frozen": {
@@ -221,8 +221,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_temporal_frozen_v2",
           "generator_version": "s0-temporal-v2.0",
-          "hidden_labels_sha256": "61a146f672c5657dcb7a634a56552998ab68d1317230a0b7f606bdd8d50ce0c3",
-          "public_sha256": "6e29e0c53a8153cf73e2c32ac7ed0317b194f48247381fd867e48bd591cf7365",
+          "hidden_labels_sha256": "a973916891f636892219a477c7df4f3b4f6e9f05afb972b85d1e14aa9918b2b8",
+          "public_sha256": "33af79594f3c26792bf6ed2b4fb0be8479338480578b4c10b9a71af3f3357229",
           "task_count": 20
         },
         "heldout_unseen_names": {
@@ -232,8 +232,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_unseen_names_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "ad43fb3f70366fff4421a6aa411c9ae16803be99ac91442edcfb28e67cce4637",
-          "public_sha256": "44a2ac351d451b6fa0dba5b2589c7b4cdda4e4ab1d0157d181a023232fe44093",
+          "hidden_labels_sha256": "5d23f12f5937ad226b770ef912cf994567d47aea61632fb19f9b28c54a801abb",
+          "public_sha256": "dc0794330583a5d1528fc0a48fe51fcc75bf1266e64964d32846ea369be3532b",
           "task_count": 20
         }
       },
@@ -250,8 +250,8 @@
           "excluded_from_learning_score": true,
           "generator_id": "gen_retrieval_canary_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "e857b5c45e172d3a28c5191f30aa981be09e8a76022333824fb103e72c20714e",
-          "public_sha256": "2a047f510813406f331a36208ebb55ad874c0809585998d51aaf3c3e5a79d5c2",
+          "hidden_labels_sha256": "603577c98e977bb2a78190da992a5c3a74f7b0b6ccbfdb1bb575cab6f81fdfdc",
+          "public_sha256": "f369f2b29dae04ec29a60c2998a9e4d8384c7732c0d3ef6235369c338839ee59",
           "task_count": 8
         },
         "heldout_comp_depth2": {
@@ -261,8 +261,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth2_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "45a24eced80b40b0d7cfbf3758b767dadbfdc8aff1bfdde19624839b71721973",
-          "public_sha256": "b6a2f0029e4cc4aed2550d2443c1b07bb918e6279071d2be2eb63465e09396f8",
+          "hidden_labels_sha256": "066b0de8914bfd53748994dcdcbd063013e8095e075f926e72730c3cb8ec5b93",
+          "public_sha256": "cd2c811c3c4f6e0f6255b13c110addee0d1346a650b3566abbbd811396a2a839",
           "task_count": 20
         },
         "heldout_comp_depth4": {
@@ -272,8 +272,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth4_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "523b33b96a4bc18bc77c42e86f85f29726c20d80fb88d838b7d69c21a1d335df",
-          "public_sha256": "c628bca3e70c55ba6e75cca46e6bf62265520dac9edac32534a94c9c1d375d74",
+          "hidden_labels_sha256": "77d876f2c37253983475b2920a3a32f51ed36678edfb3ca26d0af923f6b6804b",
+          "public_sha256": "8b256b24e453c214767878b4b4a78b546101d9d322422fbc31f6ea3737d66581",
           "task_count": 20
         },
         "heldout_comp_depth6": {
@@ -283,8 +283,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth6_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "703de7b2e821eecd97379a31af71c3887eaad72b91e5396fa29e0e72dba53393",
-          "public_sha256": "aed03dd106da78f68b155b0f66d3520c2e65726d2a00bfbb085b39b5c2d523e2",
+          "hidden_labels_sha256": "58b7b4b7076a5d43232fd5a2ab50f5eaa99f02d4152346cd1d5824a786cdb0d4",
+          "public_sha256": "a91eb615972e85002054a710ab7dfd4726e00558d059aba20bc30257313f76d7",
           "task_count": 20
         },
         "heldout_guard_contrasts": {
@@ -294,8 +294,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_guard_contrasts_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "9e25a368195ad23b27ece7e99e76996771f285d182c23397eb3d5eccd19ad592",
-          "public_sha256": "36e51183c35cb397f963478f0273303e31a1633557309a5e259974b1b192e08b",
+          "hidden_labels_sha256": "9dc06491c441eff5558f2b2d5a3afa682932abfd280d681f2751e6f2eb697a20",
+          "public_sha256": "7579ccf9f9f104f86ed8c16517f1991180f2491b4cd884d7bd327311eb6841e2",
           "task_count": 20
         },
         "heldout_order_reversal": {
@@ -305,8 +305,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_order_reversal_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "c34c8aab9c21f5667d6b05459934f4a6171e7035d387e2faf9338ce968050cb7",
-          "public_sha256": "1ffcbc39ce427620b02ccad4b79ef28891ae9b0374c2efec98ce8269d0f78fac",
+          "hidden_labels_sha256": "ad1e51cb4038021a21fade434ce7f8b4a29d5879cd23fe74a7dd2447b07105fd",
+          "public_sha256": "bcf72e9ad0dabbc618bb36fd527a3d75a075fe36d66a46a65dcc8faaa2dadd7e",
           "task_count": 16
         },
         "heldout_repeated_idempotent": {
@@ -316,8 +316,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_repeated_idempotent_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "df5b651e69212859f02471ae60ca4d943cc9d702610a3b85d52d618df87a5d1e",
-          "public_sha256": "6fcf39b4d8d3635884794c7a612215c1b737a8d14bf92d45f3b57f2b1dfc85ea",
+          "hidden_labels_sha256": "65ba823b85901a4cbc0845d6b316866f57130d47965379c841655ee08ffbd64c",
+          "public_sha256": "26b73a86309ce4f131fe506885c2ce10cf56b335f8ac9221c8450ead4a909dab",
           "task_count": 16
         },
         "heldout_role_swaps": {
@@ -327,8 +327,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_role_swaps_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "aedb4ac73751888ae2a4748e95aaf26709a825adf4d15cf8e7401ce825b32727",
-          "public_sha256": "383c0bcbf2afb466a5aea88f4058dfd043ee93fb8c4c912fe499f10c1d912e21",
+          "hidden_labels_sha256": "a37f9bf941a4e38ecbf3b0de9f3e8bcea9ccb154f81aeb553f225cc7347e1b71",
+          "public_sha256": "a2e60338df923145094d9ee77abbacfb7483b7db238be57133f60cebd8f93605",
           "task_count": 16
         },
         "heldout_temporal_frozen": {
@@ -339,8 +339,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_temporal_frozen_v2",
           "generator_version": "s0-temporal-v2.0",
-          "hidden_labels_sha256": "6134e6369ad9842529bcc71916ecd943e90ec8cf193d9490791ff28285318a53",
-          "public_sha256": "8cec91332897a781d0fcbed23e3223318199decc2520fdb8c496d5d3952ce6d3",
+          "hidden_labels_sha256": "6c910bf12310364f0678ed8074b08ad67bd5275d370e1b6395b5acd66c030038",
+          "public_sha256": "5a87b0af1c2de7daad1320859c263f8a1b81d95ffefd0a687dbea88a9a073b64",
           "task_count": 20
         },
         "heldout_unseen_names": {
@@ -350,8 +350,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_unseen_names_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "e11bfdbb13669f5adf60f1f0341170873fc54dc91de1e419ea43cab886aecd6d",
-          "public_sha256": "54115fd8c11fd8162f1ac702f9c89d20423f19064279fd7e643b11785077192a",
+          "hidden_labels_sha256": "7743aef0c0444ec9880fe3c376264d3d1043da863916cc6c53c279c3abe65e8c",
+          "public_sha256": "67f2b9e0887f13e35ba44ecc58e65cbdaa0638c5722ec9d6add2e3a3a54576e7",
           "task_count": 20
         }
       },
@@ -368,8 +368,8 @@
           "excluded_from_learning_score": true,
           "generator_id": "gen_retrieval_canary_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "1043c4ea0abdebc166b792004d6e947c48383e2491dfb5cd94dcfdd5e9f8e25f",
-          "public_sha256": "6877a59e2c9294d51a665efb517ab9d585b8dd2e2fa6fb5be7e9ac7979c51f5c",
+          "hidden_labels_sha256": "ad214df7f68b2183830aa53279a5968ad2649da390f33e0aad4c7c2bacce9ed0",
+          "public_sha256": "0e38bef18d68effaee94f908e24eebad383486b46608e402e5514f821a46d90c",
           "task_count": 8
         },
         "heldout_comp_depth2": {
@@ -379,8 +379,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth2_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "ddf82a87b5db16600b4e61191ee5ad1ab6ef41870e7e4e5f17204a2e25990afb",
-          "public_sha256": "4410a4810343c07506dff4b2db1a8a7a6169bf83f8611eb79a25b2dcd3d4191a",
+          "hidden_labels_sha256": "719abe29b75822c37d350b585afb67eb686de4be846475869059370f6fe31949",
+          "public_sha256": "b7e556877a579da4f99ddd61c0353f5a2121b5d695d5be1295a8b45a41029e25",
           "task_count": 20
         },
         "heldout_comp_depth4": {
@@ -390,8 +390,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth4_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "15b82d05e0f3ffbb3b08d99ede96e18a8583ec3b6faa6a61095df4bb93cfdd92",
-          "public_sha256": "6f4247a16ee46e181ff11c089be5c0b40fe72fca98facb0db937942cd4043246",
+          "hidden_labels_sha256": "a6c953ea031f3a517abbce4899d3bb03ca80a7a4ebf205bbe9be908336b2edb1",
+          "public_sha256": "3704f765399729cd4aeac5a29d2e1371b549074f0c3ac98cc1bee1f44b491d23",
           "task_count": 20
         },
         "heldout_comp_depth6": {
@@ -401,8 +401,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth6_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "8966ed63bad7238fed1d60200aee391ad2037ba3bc031ee91bb04a2f9c257b38",
-          "public_sha256": "f511db9721a3d7d85c37db8b855ec0c2373827107d65f422aa45ed048f4093cc",
+          "hidden_labels_sha256": "47f02551c0448574fa57a5283311d3197d6af1fa11ce0a7ac752939172047f80",
+          "public_sha256": "a45290889cfe8fb4f11e653a4bdab5ae36c63b5396c4176caaa6ffa44d9644f6",
           "task_count": 20
         },
         "heldout_guard_contrasts": {
@@ -412,8 +412,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_guard_contrasts_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "ab913bf9926b0eb0ae0dc1719f414d8e39f0a13a40423bb596878168438df589",
-          "public_sha256": "3a6fb8c65c82ce35611fdb5dcc97e3e172538cf58a7520938ed3ea474a33eaf2",
+          "hidden_labels_sha256": "bfc898337d97409e9f418358c813c078ea70b1f00ff4f003df19b621e3e4b703",
+          "public_sha256": "87b0c83bf84211d3e2623c0dd38daf093e3d5c8d5277bad92b9dbbe56451ebfc",
           "task_count": 20
         },
         "heldout_order_reversal": {
@@ -423,8 +423,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_order_reversal_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "ed2780de1cbec20044daa7083a47154eeceb07298c5df71e37ad1d727bc869c1",
-          "public_sha256": "845b61e6c29f7ea8e3f31b29e4842b8f6ffcca536bfe21c16156c8f5ca71f971",
+          "hidden_labels_sha256": "471b5b0ec2c8ee62a1d31440e27cf8b84cdf4cd01183a235d2dd8236e668337f",
+          "public_sha256": "42b2f8794b30f9aaf7051a7730ac9d90df58aad526c547651a83859e95ff52eb",
           "task_count": 16
         },
         "heldout_repeated_idempotent": {
@@ -434,8 +434,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_repeated_idempotent_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "4e60907d3847ccb3cd7ceec3e6f8e4c4f9c215a17d798a3546405896a3622c08",
-          "public_sha256": "02b6cee740f4b7beac7a9ce4fb94435c5b8c184c28656370a72c731d116eb9c8",
+          "hidden_labels_sha256": "8230629aee561cb8d7400bf2d6b709399a698be010506324c5fe4b10331ac562",
+          "public_sha256": "6527e8ba42c37b37e2e347aafa673751c9c65c5c5a84dbf85adedb53b0b47f18",
           "task_count": 16
         },
         "heldout_role_swaps": {
@@ -445,8 +445,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_role_swaps_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "7dc4e93eeea91e82e1f65b567bbd6115b38c31d734c88f42938bf5ad64c3b83f",
-          "public_sha256": "b913a07deca6f27645c04c165cc58f0b57d5f5088932d408443ca1feb7db52fa",
+          "hidden_labels_sha256": "a7cec1224e142798ad7a699cf8768e376aba7b4efe97a058c59a67f838448503",
+          "public_sha256": "5e8460595d7c5a844ff35129c5aa73493124638f3c3635522f15cdb1f1b0aa50",
           "task_count": 16
         },
         "heldout_temporal_frozen": {
@@ -457,8 +457,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_temporal_frozen_v2",
           "generator_version": "s0-temporal-v2.0",
-          "hidden_labels_sha256": "1269d038ec9d8b1ca071b9caf2be2374f4e2688b6271cad22385ac4e9de0f415",
-          "public_sha256": "135d1f8b002ada8320185b81ddc1f0da8a08c686dc1359c2b2ebca382b858ce1",
+          "hidden_labels_sha256": "5b0ad0ae2f3067d71132d48e106977a13f0c6a63ee023f2657f52efb1a4838f1",
+          "public_sha256": "d6dae90ef56b3763e40370b75d5740dfd51ec5c31d03d65400e75fdc81814bfe",
           "task_count": 20
         },
         "heldout_unseen_names": {
@@ -468,8 +468,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_unseen_names_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "eb90c300e0466b19d8addd3adede50bacf624b6c357a02a4b09b1dc9c5d326b8",
-          "public_sha256": "1382c6ee12e55eb95dcc83608129f796e6ec51794a1af5a909a157b1cb331943",
+          "hidden_labels_sha256": "f03170f6ad9af3de2ec2b2caabb9827030469f6946fd6107126e5ef053cbf95b",
+          "public_sha256": "31988a52d2f39d4bda33226b03328b0245186683f0784f61ab1ce8b645580e49",
           "task_count": 20
         }
       },
@@ -486,8 +486,8 @@
           "excluded_from_learning_score": true,
           "generator_id": "gen_retrieval_canary_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "c205e00ff6ae871fb007d660ce21b7a36e423b6145b00f89a508f2081e46ff0d",
-          "public_sha256": "d481e7475d744076e679133671b006d9c954382f5b7f4b9818e3e1e046aba6eb",
+          "hidden_labels_sha256": "10b54cca0a69f3a0980f338b838d77adec5a7f409980db2d247d8437d1707265",
+          "public_sha256": "a173d7f9c227e47919b593462d5bff99c183bfda2206ba30788759b67471aeec",
           "task_count": 8
         },
         "heldout_comp_depth2": {
@@ -497,8 +497,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth2_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "7d41865eae87687404b9a5a91563bee8a549a60c87db021b8a860e68feddd15b",
-          "public_sha256": "1a9e11969bff6af3ed8c4b100faba347f7f88c48ed26969d3a8840326f88d268",
+          "hidden_labels_sha256": "5c763e5219c9af5f9828e81a9a15dd3f34bcaedfb974636e34bfaf40b6831d15",
+          "public_sha256": "919e4cc122bb32dddd99abc1bfa44c5ffe928584b49d580f8070d1a484a8bfbb",
           "task_count": 20
         },
         "heldout_comp_depth4": {
@@ -508,8 +508,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth4_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "b1c4f6e54bd479a501352fce229c1dbecbfcfb1fc2eb1bb094ec7af507860aa3",
-          "public_sha256": "07609c5d6c476be9ef6df8531ce545cb2ac286df7337836ef3a5dbda7cc77b85",
+          "hidden_labels_sha256": "fc22b9f99b02f90bcebd91f55fbf86fa502d980a38bbd20cb4cbf600ca8b9c79",
+          "public_sha256": "40abbe7bc7dfa0989cc9d5b5e9faba3c3ed28ee55923dda95338f67e286de185",
           "task_count": 20
         },
         "heldout_comp_depth6": {
@@ -519,8 +519,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_comp_depth6_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "dd5acf693ba0674447dd5e9d50952a2ffd2b64aee7bc2a1daec4e25889f487ee",
-          "public_sha256": "65691d7d3663fe9f776bca598d3921785b3b96abbe6fcdfbec3a765f3159cb43",
+          "hidden_labels_sha256": "b9baa3f5f4a65bffd055735647f5468176cdb2ee1938794db8b199a6e7437975",
+          "public_sha256": "44f5190828abeac9502c547a185d0999f64b71231e58045dee2cb29dfb0cfb2f",
           "task_count": 20
         },
         "heldout_guard_contrasts": {
@@ -530,8 +530,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_guard_contrasts_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "28e4e4af230a93fb7d4c7d5c7468b69e8a39fe6a4dd579ef77d9ea7877d84c24",
-          "public_sha256": "740b5eee1a89e965c7fc5fc3715241f8c47f16fb08b9f5fa9c742bf9d6e293b5",
+          "hidden_labels_sha256": "39a72eb18ba571fe819471e914aa06124229de2098e0e115874be1469705c722",
+          "public_sha256": "cb9b22c2c2a57c2cb7e0546daf7607c47c0193a62487aa5410baefadf4e4d0a3",
           "task_count": 20
         },
         "heldout_order_reversal": {
@@ -541,8 +541,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_order_reversal_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "a410e1724beca5d71ea26b39d5ba805cbe73323b434eaae5644daf988a7da230",
-          "public_sha256": "30baa27d01954ee25a9059ca61a2c9786d9af8280cc6f9e73b083f9105f028ed",
+          "hidden_labels_sha256": "ca363aaa27f2315eb521426425266208e05619b96668598290723dd86bc5bfc0",
+          "public_sha256": "cb168bc360b196f34ae95f4926036a9566a52bf916f780ba31036c5fba1c1ec7",
           "task_count": 16
         },
         "heldout_repeated_idempotent": {
@@ -552,8 +552,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_repeated_idempotent_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "13a2193051aa5932b8d5339cab1e4ed5688b3310388376e31491629e97d03b75",
-          "public_sha256": "f4a6b9bbc00aa3cd78db2e0ce359df90b3dfb503e023a27f3ab4cab7ad1d0049",
+          "hidden_labels_sha256": "ff2bf9f7d60f05194b1b337b58e16be5cdd84d156a6408b7a13c073652ff2cae",
+          "public_sha256": "b7760498eddbfd3dd543ecdf8dc51f22c30fc7763d200c327e02c1748ddc4d85",
           "task_count": 16
         },
         "heldout_role_swaps": {
@@ -563,8 +563,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_role_swaps_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "e550bc73c5ee66022ed5f0197996158df3b21491953424394c3d572dbbbde640",
-          "public_sha256": "6fbd98edec8d604510752e7908e58f0a43fbfe137a4ae0bc84f567db75d15a01",
+          "hidden_labels_sha256": "31f682941d47dc44b95e175e59bef2182775f62a17f3d6aa9ce07b33c6342fe0",
+          "public_sha256": "699acb03be8129b1cf191664698f557504e44767a0770cd3e8e7aecb41947a60",
           "task_count": 16
         },
         "heldout_temporal_frozen": {
@@ -575,8 +575,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_temporal_frozen_v2",
           "generator_version": "s0-temporal-v2.0",
-          "hidden_labels_sha256": "80b11dd21219145887543b8f4a684bbdf905aaa183cda090183b7f01f22f0b0f",
-          "public_sha256": "c340ac1e3196df7f5876154d6fed47f6b9864ef56d0da30b1f5994a0c738d52c",
+          "hidden_labels_sha256": "988dd43bc9df8a37045fc8e7732f1af6f8fba2a2e290cd37072e42384af0ae09",
+          "public_sha256": "0ddb4949809a5aeccb62906f723c9a0c4ef0308947c8811fe69c9073d995351b",
           "task_count": 20
         },
         "heldout_unseen_names": {
@@ -586,8 +586,8 @@
           "excluded_from_learning_score": false,
           "generator_id": "gen_unseen_names_v1",
           "generator_version": "s0-relworld-v1.0",
-          "hidden_labels_sha256": "7554a42a353337a3d208de5cac084f6789a8c2cc762e499f7c7e9e0845d70af2",
-          "public_sha256": "4e6a6883b8b146855f30c7f6296959f5b96c802a090f14fb8a495acf8f3003ed",
+          "hidden_labels_sha256": "47336afaf45252c71330e92b539284c03b51f60b9bf23c7acaf6fb2a6f8cb8e7",
+          "public_sha256": "3a5d9b6ade9f3ed173ab7d83f97279b83e3872790fb9212e84b902258f5d78a3",
           "task_count": 20
         }
       },

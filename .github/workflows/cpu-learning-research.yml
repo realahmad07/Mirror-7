@@ -46,5 +46,8 @@ jobs:
       - name: Run S0 unit, isolation, edge-case, and canary tests
         run: python -m pytest -v research/cpu_learning/tests
 
+      - name: Verify committed S0 pre-registered manifests match generator bit-for-bit
+        run: python -m research.cpu_learning.evaluation.run_experiments --verify-manifests
+
       - name: Verify reproducible 5-seed S0 benchmark gate
         run: python -m research.cpu_learning.evaluation.run_experiments

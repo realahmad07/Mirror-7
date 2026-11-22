@@ -31,7 +31,8 @@ from mirror_crystal.quotient_egraph_resonator import (
     hamming_sim10240,
     hv10240_of,
 )
-from mirror_eval.generalization.suts import native_chain
+from mirror_crystal import native_intelligence as _mirror_ni
+from mirror_eval.generalization.suts import Response as _MirrorResponse, _source_for as _mirror_source_for
 
 from research.cpu_learning.evaluation.metrics import BitBudgetAudit, TaskPrediction
 from research.cpu_learning.simulator.state_graph import (
@@ -167,8 +168,12 @@ class EpisodeLookupBaseline(BaseS0Solver):
         )
 
     def bit_budget(self, raw_training_bits: int, compressed_training_bits: int) -> BitBudgetAudit:
-        ep_bits = len(self._raw_store_bytes) * 8
-        mdl_bits = compressed_bit_length(self._raw_store_bytes)
+        if not self._store:
+            ep_bits = 0
+            mdl_bits = 0
+        else:
+            ep_bits = len(self._raw_store_bytes) * 8
+            mdl_bits = compressed_bit_length(self._raw_store_bytes)
         return BitBudgetAudit(
             raw_training_data_bits=raw_training_bits,
             compressed_training_data_bits=compressed_training_bits,
@@ -275,8 +280,12 @@ class StructuralKNNBaseline(BaseS0Solver):
         )
 
     def bit_budget(self, raw_training_bits: int, compressed_training_bits: int) -> BitBudgetAudit:
-        ep_bits = len(self._raw_store_bytes) * 8
-        mdl_bits = compressed_bit_length(self._raw_store_bytes)
+        if not self._entries:
+            ep_bits = 0
+            mdl_bits = 0
+        else:
+            ep_bits = len(self._raw_store_bytes) * 8
+            mdl_bits = compressed_bit_length(self._raw_store_bytes)
         return BitBudgetAudit(
             raw_training_data_bits=raw_training_bits,
             compressed_training_data_bits=compressed_training_bits,
@@ -286,6 +295,7 @@ class StructuralKNNBaseline(BaseS0Solver):
             compressed_model_mdl_bits=mdl_bits,
             compression_ratio_vs_raw=mdl_bits / max(1, raw_training_bits),
         )
+
 
 def _encode_state_action_hv10240(state: StateGraph, action: ActionInvocation) -> int:
     """Encode a relational (state, action) pair into a 10,240-bit Mirror BSC hypervector."""
@@ -378,11 +388,16 @@ class SHARDHDCRetrievalBaseline(BaseS0Solver):
         )
 
     def bit_budget(self, raw_training_bits: int, compressed_training_bits: int) -> BitBudgetAudit:
-        bundle_bits = len(self._entries) * D_UNIFIED
-        delta_bits = len(self._delta_bytes) * 8
-        total_raw = bundle_bits + delta_bits
-        # Compress delta payload + raw random-like HVs (incompressible bits = bundle_bits)
-        mdl_bits = bundle_bits + compressed_bit_length(self._delta_bytes)
+        if not self._entries:
+            bundle_bits = 0
+            total_raw = 0
+            mdl_bits = 0
+        else:
+            bundle_bits = len(self._entries) * D_UNIFIED
+            delta_bits = len(self._delta_bytes) * 8
+            total_raw = bundle_bits + delta_bits
+            # Compress delta payload + raw random-like HVs (incompressible bits = bundle_bits)
+            mdl_bits = bundle_bits + compressed_bit_length(self._delta_bytes)
         return BitBudgetAudit(
             raw_training_data_bits=raw_training_bits,
             compressed_training_data_bits=compressed_training_bits,
@@ -417,11 +432,12 @@ def _format_task_for_mirror(task: EvaluationTaskPublic) -> str:
 
 
 class CurrentMirrorSolverBaseline(BaseS0Solver):
-    """Evaluates Mirror 7's existing native reasoning organs without vault mutation.
+    """Evaluates Mirror 7's existing native reasoning organs in strictly read-only mode.
 
-    Uses fresh in-memory ``native_chain(include_context_reasoner=True)`` and
-    ``BilingualCCGHDCParser`` per evaluation run. Never writes test prompts or
-    answers to Mirror vaults.
+    Mirrors ``native_chain(include_context_reasoner=True)`` plus ``BilingualCCGHDCParser``,
+    deliberately excluding ``PersonalFactMemory.try_store`` and isolating session IDs per
+    task so zero test prompts can ever be ingested into Mirror memory or leak across tasks
+    (including after ``.freeze()``).
     """
 
     name = "current_mirror_solver"
@@ -430,12 +446,42 @@ class CurrentMirrorSolverBaseline(BaseS0Solver):
     def __init__(self, seed: int = 0) -> None:
         super().__init__(seed=seed)
         self._parser = BilingualCCGHDCParser()
-        self._sut = native_chain(include_context_reasoner=True)
+        self._chat = _mirror_ni.ConversationOrgan()
+        self._logic = _mirror_ni.LogicOrgan()
+        self._words = _mirror_ni.WordProblemSolver()
+        self._curated = _mirror_ni.CuratedKnowledgeOrgan()
+        self._kg = _mirror_ni.KnowledgeGraphEngine()
+        self._multi_hop = _mirror_ni.MultiHopChainingEngine(kg=self._kg)
+        reasoner_cls = getattr(_mirror_ni, "ContextReasoner", None)
+        self._reasoner = reasoner_cls() if reasoner_cls is not None else None
+
+    def _query_read_only_organs(self, prompt: str, session_id: str) -> _MirrorResponse:
+        calls = [
+            lambda: self._chat.respond(prompt, session_id=session_id),
+        ]
+        if self._reasoner is not None:
+            calls.append(lambda: self._reasoner.respond(prompt))
+        calls.extend(
+            [
+                lambda: self._multi_hop.resolve_chain(prompt),
+                lambda: self._logic.respond(prompt),
+                lambda: self._words.solve(prompt),
+                lambda: self._kg.lookup_from_prompt(prompt) or self._curated.lookup(prompt),
+            ]
+        )
+        for call in calls:
+            try:
+                hit = call()
+            except Exception:
+                hit = None
+            if hit is not None:
+                return _MirrorResponse(text=hit.answer, source=_mirror_source_for(hit.kind))
+        return _MirrorResponse(text="", source="abstain")
 
     def fit(self, episodes: Sequence[TrainingEpisode]) -> None:
         self._check_not_frozen()
-        # Existing native_chain is stateless / non-learning for relational operators;
-        # we intentionally do NOT ingest training or test episodes into production vaults.
+        # Existing Mirror native organs are non-learning for relational state-graph operators;
+        # we intentionally do NOT ingest training or test episodes into Mirror vaults/memory.
 
     def predict(self, task: EvaluationTaskPublic) -> TaskPrediction:
         parsed_steps = 0
@@ -453,7 +499,7 @@ class CurrentMirrorSolverBaseline(BaseS0Solver):
                 parsed_steps += 1
 
         prompt = _format_task_for_mirror(task)
-        resp = self._sut(prompt)
+        resp = self._query_read_only_organs(prompt, session_id=f"s0_ro:{self.seed}:{task.task_id}")
         meta = {
             "parser_nonzero_steps": parsed_steps,
             "total_steps": len(task.actions),
@@ -621,6 +667,16 @@ class SmallCPUNeuralReferenceBaseline(BaseS0Solver):
         )
 
     def bit_budget(self, raw_training_bits: int, compressed_training_bits: int) -> BitBudgetAudit:
+        if not self._templates:
+            return BitBudgetAudit(
+                raw_training_data_bits=raw_training_bits,
+                compressed_training_data_bits=compressed_training_bits,
+                episode_store_bits=0,
+                active_bundle_bits=0,
+                operator_library_bits=0,
+                compressed_model_mdl_bits=0,
+                compression_ratio_vs_raw=0.0,
+            )
         n_cls = len(self._templates)
         n_params = self.hidden_dim * (self.input_dim + 1) + n_cls * (self.hidden_dim + 1)
         # 32-bit float parameter accounting + stored delta templates

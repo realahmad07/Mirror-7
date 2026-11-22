@@ -3,7 +3,7 @@
   "environment": {
     "cpu_count": 8,
     "git_branch": "research/cpu-native-learning-s0",
-    "git_commit": "f41599bff4acf9a1ccbe546f65cf2d97819834bd",
+    "git_commit": "6b486b7c4ec79ac6875cb7581262d617a9a9b675",
     "machine": "AMD64",
     "platform": "Windows-11-10.0.26200-SP0",
     "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
@@ -12,16 +12,20 @@
     "ram_total_gb": 15.77
   },
   "generator_version": "s0-relworld-v1.0",
-  "reproduce_command": "python -m research.cpu_learning.evaluation.run_experiments",
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_experiments",
   "s0_gate": {
     "checks": {
-      "deterministic_seed_replay": true,
-      "episode_lookup_canary_retrieval_audited": true,
-      "five_fixed_seeds_present": true,
+      "all_solvers_frozen_before_temporal": true,
+      "cpu_budget_within_limit": true,
+      "deterministic_seed_replay_all_seeds": true,
+      "episode_lookup_canary_retrieval_audited_all_seeds": true,
+      "episode_lookup_unseen_zero_leakage": true,
+      "five_distinct_fixed_seeds_present": true,
       "hidden_oracle_collateral_zero": true,
       "hidden_oracle_exact_accuracy_100pct": true,
       "hidden_oracle_operator_recovery_f1_100pct": true,
-      "pool_disjointness_verified": true
+      "pool_disjointness_verified": true,
+      "shard_modular_addition_canary_confirmed": true
     },
     "passed": true
   },
@@ -35,7 +39,7 @@
   ],
   "shard_arithmetic_canary": {
     "canary_name": "shard_hdc_arithmetic_canary_v1",
-    "elapsed_seconds": 0.3248,
+    "elapsed_seconds": 0.9598,
     "epochs": 25,
     "hdc_dimension_bits": 4096,
     "per_seed": [
@@ -191,7 +195,8 @@
       "carry": {
         "chance_baseline": 0.5,
         "hdc_pure_similarity": {
-          "ci95_high": 1.008074,
+          "ci95_half": 0.058074,
+          "ci95_high": 1.0,
           "ci95_low": 0.891926,
           "max": 1.0,
           "mean": 0.95,
@@ -210,7 +215,8 @@
         "learned_readout_bits": 8192,
         "num_classes": 2,
         "shard_bit_perceptron": {
-          "ci95_high": 1.014004,
+          "ci95_half": 0.034004,
+          "ci95_high": 1.0,
           "ci95_low": 0.945996,
           "max": 1.0,
           "mean": 0.98,
@@ -230,6 +236,7 @@
       "comparison": {
         "chance_baseline": 0.5,
         "hdc_pure_similarity": {
+          "ci95_half": 0.181799,
           "ci95_high": 0.891799,
           "ci95_low": 0.528201,
           "max": 0.8,
@@ -249,6 +256,7 @@
         "learned_readout_bits": 8192,
         "num_classes": 2,
         "shard_bit_perceptron": {
+          "ci95_half": 0.099624,
           "ci95_high": 0.989624,
           "ci95_low": 0.790376,
           "max": 0.95,
@@ -269,6 +277,7 @@
       "modular_addition": {
         "chance_baseline": 0.1,
         "hdc_pure_similarity": {
+          "ci95_half": 0.017002,
           "ci95_high": 0.057002,
           "ci95_low": 0.022998,
           "max": 0.05,
@@ -288,6 +297,7 @@
         "learned_readout_bits": 40960,
         "num_classes": 10,
         "shard_bit_perceptron": {
+          "ci95_half": 0.025971,
           "ci95_high": 0.095971,
           "ci95_low": 0.044029,
           "max": 0.1,
@@ -313,11 +323,11 @@
       "bit_budget_mean": {
         "active_bundle_bits": 0.0,
         "compressed_model_mdl_bits": 0.0,
-        "compressed_training_data_bits": 51734.4,
+        "compressed_training_data_bits": 52427.2,
         "compression_ratio_vs_raw": 0.0,
         "episode_store_bits": 0.0,
         "operator_library_bits": 0.0,
-        "raw_training_data_bits": 704068.8
+        "raw_training_data_bits": 704300.8
       },
       "category": "existing_mirror",
       "comparison_only": false,
@@ -350,7 +360,7 @@
             true
           ],
           "instructions": [
-            "Have zara_3 give lantern_3 over to orion_3"
+            "Have kieran_6 give vial_6 over to orion_6"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_01"
@@ -366,7 +376,7 @@
             true
           ],
           "instructions": [
-            "nadia_8 open locker_8"
+            "nadia_5 open casket_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_02"
@@ -382,7 +392,7 @@
             true
           ],
           "instructions": [
-            "Have orion_4 lock the satchel_4"
+            "Have zara_7 lock the locker_7"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_03"
@@ -398,30 +408,32 @@
             true
           ],
           "instructions": [
-            "orion_8 move prism_8 from altar_8 to coffer_8"
+            "kieran_5 move scroll_5 from workbench_5 to satchel_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_04"
         }
       ],
       "fit_seconds": {
-        "ci95_high": 1.1e-05,
-        "ci95_low": 2e-06,
-        "max": 1.3e-05,
+        "ci95_half": 3e-06,
+        "ci95_high": 9e-06,
+        "ci95_low": 4e-06,
+        "max": 1e-05,
         "mean": 7e-06,
-        "min": 4e-06,
+        "min": 5e-06,
         "n": 5,
         "per_seed": [
-          1.3e-05,
-          6e-06,
-          6e-06,
-          4e-06,
-          4e-06
+          7e-06,
+          5e-06,
+          1e-05,
+          5e-06,
+          6e-06
         ],
-        "se": 2e-06,
-        "std": 4e-06
+        "se": 1e-06,
+        "std": 2e-06
       },
       "mirror_parser_step_coverage": {
+        "ci95_half": 0.0,
         "ci95_high": 0.221963,
         "ci95_low": 0.221963,
         "max": 0.221963,
@@ -439,6 +451,7 @@
         "std": 0.0
       },
       "operator_recovery_f1": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -456,6 +469,7 @@
         "std": 0.0
       },
       "operator_recovery_precision": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -473,6 +487,7 @@
         "std": 0.0
       },
       "operator_recovery_recall": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -492,6 +507,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -509,6 +525,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -525,8 +542,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 0,
+          "learning_scored_tasks_max": 0,
+          "learning_scored_tasks_per_seed": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -544,6 +569,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -561,6 +587,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -580,6 +607,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -597,6 +625,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -613,8 +642,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -632,6 +669,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -649,6 +687,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -668,6 +707,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -685,6 +725,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -701,8 +742,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -720,6 +769,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -737,6 +787,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -756,6 +807,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -773,6 +825,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -789,8 +842,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -808,6 +869,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -825,6 +887,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -844,6 +907,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -861,6 +925,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -877,8 +942,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -896,6 +969,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -913,6 +987,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -932,6 +1007,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -949,6 +1025,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -965,8 +1042,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -984,6 +1069,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1001,6 +1087,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1020,6 +1107,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1037,6 +1125,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1053,8 +1142,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1072,6 +1169,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1089,6 +1187,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1108,6 +1207,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1125,6 +1225,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1141,8 +1242,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1160,6 +1269,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1177,6 +1287,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1196,6 +1307,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1213,6 +1325,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1229,8 +1342,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1248,6 +1369,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1265,6 +1387,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1284,6 +1407,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1301,6 +1425,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1317,8 +1442,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1336,6 +1469,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1353,6 +1487,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1372,57 +1507,61 @@
         }
       },
       "predict_seconds": {
-        "ci95_high": 1.403857,
-        "ci95_low": 1.096475,
-        "max": 1.465513,
-        "mean": 1.250166,
-        "min": 1.155815,
+        "ci95_half": 0.193772,
+        "ci95_high": 1.169278,
+        "ci95_low": 0.781733,
+        "max": 1.108146,
+        "mean": 0.975505,
+        "min": 0.709749,
         "n": 5,
         "per_seed": [
-          1.192901,
-          1.155815,
-          1.236976,
-          1.199623,
-          1.465513
+          1.050391,
+          1.108146,
+          1.035394,
+          0.973847,
+          0.709749
         ],
-        "se": 0.055355,
-        "std": 0.123778
+        "se": 0.069792,
+        "std": 0.156059
       },
       "predictions_per_sec_single_core": {
-        "ci95_high": 157.462195,
-        "ci95_low": 126.093805,
-        "max": 152.27,
-        "mean": 141.778,
-        "min": 120.09,
+        "ci95_half": 44.762801,
+        "ci95_high": 229.774801,
+        "ci95_low": 140.249199,
+        "max": 247.97,
+        "mean": 185.012,
+        "min": 158.82,
         "n": 5,
         "per_seed": [
-          147.54,
-          152.27,
-          142.28,
-          146.71,
-          120.09
+          167.56,
+          158.82,
+          169.98,
+          180.73,
+          247.97
         ],
-        "se": 5.649021,
-        "std": 12.631594
+        "se": 16.122344,
+        "std": 36.050657
       },
       "tracemalloc_peak_kb": {
-        "ci95_high": 935.427585,
-        "ci95_low": 348.152415,
-        "max": 1035.14,
-        "mean": 641.79,
-        "min": 454.92,
+        "ci95_half": 0.443971,
+        "ci95_high": 33.533971,
+        "ci95_low": 32.646029,
+        "max": 33.58,
+        "mean": 33.09,
+        "min": 32.75,
         "n": 5,
         "per_seed": [
-          1035.14,
-          679.01,
-          558.54,
-          481.34,
-          454.92
+          33.58,
+          33.35,
+          32.84,
+          32.93,
+          32.75
         ],
-        "se": 105.760274,
-        "std": 236.487163
+        "se": 0.159906,
+        "std": 0.357561
       },
       "unseen_abstention_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 1.0,
         "ci95_low": 1.0,
         "max": 1.0,
@@ -1440,6 +1579,7 @@
         "std": 0.0
       },
       "unseen_learning_exact_accuracy": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -1457,6 +1597,7 @@
         "std": 0.0
       },
       "unseen_mean_collateral_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -1474,6 +1615,7 @@
         "std": 0.0
       },
       "unseen_wrong_non_abstain_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -1494,12 +1636,12 @@
     "episode_lookup": {
       "bit_budget_mean": {
         "active_bundle_bits": 0.0,
-        "compressed_model_mdl_bits": 11483.2,
-        "compressed_training_data_bits": 51734.4,
-        "compression_ratio_vs_raw": 0.01631,
-        "episode_store_bits": 44616.0,
+        "compressed_model_mdl_bits": 11580.8,
+        "compressed_training_data_bits": 52427.2,
+        "compression_ratio_vs_raw": 0.016443,
+        "episode_store_bits": 44656.0,
         "operator_library_bits": 0.0,
-        "raw_training_data_bits": 704068.8
+        "raw_training_data_bits": 704300.8
       },
       "category": "memory_baseline",
       "comparison_only": false,
@@ -1532,7 +1674,7 @@
             true
           ],
           "instructions": [
-            "Have zara_3 give lantern_3 over to orion_3"
+            "Have kieran_6 give vial_6 over to orion_6"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_01"
@@ -1548,7 +1690,7 @@
             true
           ],
           "instructions": [
-            "nadia_8 open locker_8"
+            "nadia_5 open casket_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_02"
@@ -1564,7 +1706,7 @@
             true
           ],
           "instructions": [
-            "Have orion_4 lock the satchel_4"
+            "Have zara_7 lock the locker_7"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_03"
@@ -1580,30 +1722,32 @@
             true
           ],
           "instructions": [
-            "orion_8 move prism_8 from altar_8 to coffer_8"
+            "kieran_5 move scroll_5 from workbench_5 to satchel_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_04"
         }
       ],
       "fit_seconds": {
-        "ci95_high": 0.012987,
-        "ci95_low": 0.010059,
-        "max": 0.012475,
-        "mean": 0.011523,
-        "min": 0.009533,
+        "ci95_half": 0.00206,
+        "ci95_high": 0.007008,
+        "ci95_low": 0.002888,
+        "max": 0.006902,
+        "mean": 0.004948,
+        "min": 0.002318,
         "n": 5,
         "per_seed": [
-          0.009533,
-          0.012475,
-          0.011401,
-          0.012155,
-          0.012052
+          0.004983,
+          0.006902,
+          0.002318,
+          0.005449,
+          0.005089
         ],
-        "se": 0.000527,
-        "std": 0.001179
+        "se": 0.000742,
+        "std": 0.001659
       },
       "operator_recovery_f1": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -1621,6 +1765,7 @@
         "std": 0.0
       },
       "operator_recovery_precision": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -1638,6 +1783,7 @@
         "std": 0.0
       },
       "operator_recovery_recall": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -1657,6 +1803,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1674,6 +1821,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1690,8 +1838,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 0,
+          "learning_scored_tasks_max": 0,
+          "learning_scored_tasks_per_seed": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1709,6 +1865,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1726,6 +1883,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1745,6 +1903,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1762,6 +1921,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1778,8 +1938,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1797,6 +1965,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1814,6 +1983,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1833,6 +2003,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1850,6 +2021,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1866,8 +2038,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1885,6 +2065,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1902,6 +2083,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1921,6 +2103,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -1938,6 +2121,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1954,8 +2138,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1973,6 +2165,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -1990,6 +2183,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2009,6 +2203,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2026,6 +2221,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2042,8 +2238,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2061,6 +2265,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2078,6 +2283,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2097,6 +2303,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2114,6 +2321,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2130,8 +2338,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2149,6 +2365,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2166,6 +2383,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2185,6 +2403,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2202,6 +2421,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2218,8 +2438,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2237,6 +2465,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2254,6 +2483,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2273,6 +2503,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2290,6 +2521,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2306,8 +2538,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2325,6 +2565,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2342,6 +2583,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2361,6 +2603,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2378,6 +2621,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2394,8 +2638,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2413,6 +2665,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2430,6 +2683,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2449,6 +2703,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2466,6 +2721,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2482,8 +2738,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2501,6 +2765,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2518,6 +2783,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2537,57 +2803,61 @@
         }
       },
       "predict_seconds": {
-        "ci95_high": 0.196305,
-        "ci95_low": 0.162654,
-        "max": 0.194621,
-        "mean": 0.17948,
-        "min": 0.159479,
+        "ci95_half": 0.004786,
+        "ci95_high": 0.046313,
+        "ci95_low": 0.036741,
+        "max": 0.045967,
+        "mean": 0.041527,
+        "min": 0.037071,
         "n": 5,
         "per_seed": [
-          0.159479,
-          0.194621,
-          0.178861,
-          0.18892,
-          0.175517
+          0.038522,
+          0.045967,
+          0.044807,
+          0.037071,
+          0.041268
         ],
-        "se": 0.00606,
-        "std": 0.013551
+        "se": 0.001724,
+        "std": 0.003854
       },
       "predictions_per_sec_single_core": {
-        "ci95_high": 1080.90864,
-        "ci95_low": 889.59936,
-        "max": 1103.59,
-        "mean": 985.254,
-        "min": 904.32,
+        "ci95_half": 492.37301,
+        "ci95_high": 4759.97301,
+        "ci95_low": 3775.22699,
+        "max": 4747.61,
+        "mean": 4267.6,
+        "min": 3828.84,
         "n": 5,
         "per_seed": [
-          1103.59,
-          904.32,
-          984.0,
-          931.61,
-          1002.75
+          4568.79,
+          3828.84,
+          3927.98,
+          4747.61,
+          4264.78
         ],
-        "se": 34.452201,
-        "std": 77.037463
+        "se": 177.339371,
+        "std": 396.542889
       },
       "tracemalloc_peak_kb": {
-        "ci95_high": 61.289371,
-        "ci95_low": 60.862629,
-        "max": 61.34,
-        "mean": 61.076,
-        "min": 60.9,
+        "ci95_half": 0.037866,
+        "ci95_high": 19.673866,
+        "ci95_low": 19.598134,
+        "max": 19.68,
+        "mean": 19.636,
+        "min": 19.6,
         "n": 5,
         "per_seed": [
-          60.9,
-          60.97,
-          61.03,
-          61.34,
-          61.14
+          19.68,
+          19.63,
+          19.65,
+          19.62,
+          19.6
         ],
-        "se": 0.076851,
-        "std": 0.171843
+        "se": 0.013638,
+        "std": 0.030496
       },
       "unseen_abstention_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 1.0,
         "ci95_low": 1.0,
         "max": 1.0,
@@ -2605,6 +2875,7 @@
         "std": 0.0
       },
       "unseen_learning_exact_accuracy": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -2622,6 +2893,7 @@
         "std": 0.0
       },
       "unseen_mean_collateral_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -2639,6 +2911,7 @@
         "std": 0.0
       },
       "unseen_wrong_non_abstain_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -2659,35 +2932,37 @@
     "hand_coded_hidden_oracle": {
       "bit_budget_mean": {
         "active_bundle_bits": 0.0,
-        "compressed_model_mdl_bits": 2256.0,
-        "compressed_training_data_bits": 51734.4,
-        "compression_ratio_vs_raw": 0.003204,
+        "compressed_model_mdl_bits": 2888.0,
+        "compressed_training_data_bits": 52427.2,
+        "compression_ratio_vs_raw": 0.0041,
         "episode_store_bits": 0.0,
-        "operator_library_bits": 9960.0,
-        "raw_training_data_bits": 704068.8
+        "operator_library_bits": 14288.0,
+        "raw_training_data_bits": 704300.8
       },
       "category": "evaluator_ceiling",
       "comparison_only": false,
       "evaluator_only": true,
       "failed_examples_seed0": [],
       "fit_seconds": {
-        "ci95_high": 9e-06,
-        "ci95_low": 1e-06,
-        "max": 1e-05,
-        "mean": 5e-06,
+        "ci95_half": 1e-06,
+        "ci95_high": 6e-06,
+        "ci95_low": 3e-06,
+        "max": 6e-06,
+        "mean": 4e-06,
         "min": 3e-06,
         "n": 5,
         "per_seed": [
-          1e-05,
-          5e-06,
-          3e-06,
-          3e-06,
-          4e-06
+          4e-06,
+          6e-06,
+          4e-06,
+          4e-06,
+          3e-06
         ],
-        "se": 1e-06,
-        "std": 3e-06
+        "se": 0.0,
+        "std": 1e-06
       },
       "operator_recovery_f1": {
+        "ci95_half": 0.0,
         "ci95_high": 1.0,
         "ci95_low": 1.0,
         "max": 1.0,
@@ -2705,6 +2980,7 @@
         "std": 0.0
       },
       "operator_recovery_precision": {
+        "ci95_half": 0.0,
         "ci95_high": 1.0,
         "ci95_low": 1.0,
         "max": 1.0,
@@ -2722,6 +2998,7 @@
         "std": 0.0
       },
       "operator_recovery_recall": {
+        "ci95_half": 0.0,
         "ci95_high": 1.0,
         "ci95_low": 1.0,
         "max": 1.0,
@@ -2741,6 +3018,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2758,6 +3036,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2774,8 +3053,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 0,
+          "learning_scored_tasks_max": 0,
+          "learning_scored_tasks_per_seed": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2793,6 +3080,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2810,6 +3098,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2829,6 +3118,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2846,6 +3136,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2862,8 +3153,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2881,6 +3180,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2898,6 +3198,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2917,6 +3218,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2934,6 +3236,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2950,8 +3253,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -2969,6 +3280,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -2986,6 +3298,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3005,6 +3318,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3022,6 +3336,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3038,8 +3353,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3057,6 +3380,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3074,6 +3398,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3093,6 +3418,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3110,6 +3436,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3126,8 +3453,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3145,6 +3480,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3162,6 +3498,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3181,6 +3518,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3198,6 +3536,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3214,8 +3553,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3233,6 +3580,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3250,6 +3598,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3269,6 +3618,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3286,6 +3636,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3302,8 +3653,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3321,6 +3680,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3338,6 +3698,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3357,6 +3718,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3374,6 +3736,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3390,8 +3753,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3409,6 +3780,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3426,6 +3798,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3445,6 +3818,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3462,6 +3836,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3478,8 +3853,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3497,6 +3880,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3514,6 +3898,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3533,6 +3918,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3550,6 +3936,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3566,8 +3953,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3585,6 +3980,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -3602,6 +3998,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3621,57 +4018,61 @@
         }
       },
       "predict_seconds": {
-        "ci95_high": 0.290965,
-        "ci95_low": 0.191742,
-        "max": 0.312534,
-        "mean": 0.241353,
-        "min": 0.218034,
+        "ci95_half": 0.035049,
+        "ci95_high": 0.151199,
+        "ci95_low": 0.081101,
+        "max": 0.149161,
+        "mean": 0.11615,
+        "min": 0.071469,
         "n": 5,
         "per_seed": [
-          0.228193,
-          0.312534,
-          0.218034,
-          0.224167,
-          0.223839
+          0.117498,
+          0.126102,
+          0.149161,
+          0.116519,
+          0.071469
         ],
-        "se": 0.017869,
-        "std": 0.039956
+        "se": 0.012624,
+        "std": 0.028227
       },
       "predictions_per_sec_single_core": {
-        "ci95_high": 868.193622,
-        "ci95_low": 617.022378,
-        "max": 807.21,
-        "mean": 742.608,
-        "min": 563.14,
+        "ci95_half": 614.674059,
+        "ci95_high": 2223.996059,
+        "ci95_low": 994.647941,
+        "max": 2462.59,
+        "mean": 1609.322,
+        "min": 1179.93,
         "n": 5,
         "per_seed": [
-          771.28,
-          563.14,
-          807.21,
-          785.13,
-          786.28
+          1497.9,
+          1395.7,
+          1179.93,
+          1510.49,
+          2462.59
         ],
-        "se": 45.232527,
-        "std": 101.143004
+        "se": 221.388883,
+        "std": 495.040593
       },
       "tracemalloc_peak_kb": {
-        "ci95_high": 99.997791,
-        "ci95_low": 96.406209,
-        "max": 100.71,
-        "mean": 98.202,
-        "min": 97.37,
+        "ci95_half": 0.035556,
+        "ci95_high": 23.837556,
+        "ci95_low": 23.766444,
+        "max": 23.84,
+        "mean": 23.802,
+        "min": 23.77,
         "n": 5,
         "per_seed": [
-          100.71,
-          98.19,
-          97.37,
-          97.37,
-          97.37
+          23.84,
+          23.82,
+          23.8,
+          23.78,
+          23.77
         ],
-        "se": 0.646795,
-        "std": 1.446278
+        "se": 0.012806,
+        "std": 0.028636
       },
       "unseen_abstention_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -3689,6 +4090,7 @@
         "std": 0.0
       },
       "unseen_learning_exact_accuracy": {
+        "ci95_half": 0.0,
         "ci95_high": 1.0,
         "ci95_low": 1.0,
         "max": 1.0,
@@ -3706,6 +4108,7 @@
         "std": 0.0
       },
       "unseen_mean_collateral_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -3723,6 +4126,7 @@
         "std": 0.0
       },
       "unseen_wrong_non_abstain_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -3744,11 +4148,11 @@
       "bit_budget_mean": {
         "active_bundle_bits": 0.0,
         "compressed_model_mdl_bits": 0.0,
-        "compressed_training_data_bits": 51734.4,
+        "compressed_training_data_bits": 52427.2,
         "compression_ratio_vs_raw": 0.0,
         "episode_store_bits": 0.0,
         "operator_library_bits": 0.0,
-        "raw_training_data_bits": 704068.8
+        "raw_training_data_bits": 704300.8
       },
       "category": "sanity_floor",
       "comparison_only": false,
@@ -3781,7 +4185,7 @@
             true
           ],
           "instructions": [
-            "Have zara_3 give lantern_3 over to orion_3"
+            "Have kieran_6 give vial_6 over to orion_6"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_01"
@@ -3797,7 +4201,7 @@
             true
           ],
           "instructions": [
-            "nadia_8 open locker_8"
+            "nadia_5 open casket_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_02"
@@ -3813,7 +4217,7 @@
             true
           ],
           "instructions": [
-            "Have orion_4 lock the satchel_4"
+            "Have zara_7 lock the locker_7"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_03"
@@ -3829,30 +4233,32 @@
             true
           ],
           "instructions": [
-            "orion_8 move prism_8 from altar_8 to coffer_8"
+            "kieran_5 move scroll_5 from workbench_5 to satchel_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_04"
         }
       ],
       "fit_seconds": {
-        "ci95_high": 5e-06,
-        "ci95_low": 1e-06,
-        "max": 6e-06,
+        "ci95_half": 1e-06,
+        "ci95_high": 4e-06,
+        "ci95_low": 2e-06,
+        "max": 4e-06,
         "mean": 3e-06,
         "min": 2e-06,
         "n": 5,
         "per_seed": [
-          6e-06,
           3e-06,
           2e-06,
-          2e-06,
+          3e-06,
+          4e-06,
           2e-06
         ],
-        "se": 1e-06,
-        "std": 2e-06
+        "se": 0.0,
+        "std": 1e-06
       },
       "operator_recovery_f1": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -3870,6 +4276,7 @@
         "std": 0.0
       },
       "operator_recovery_precision": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -3887,6 +4294,7 @@
         "std": 0.0
       },
       "operator_recovery_recall": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -3906,6 +4314,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3923,6 +4332,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3939,8 +4349,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 0,
+          "learning_scored_tasks_max": 0,
+          "learning_scored_tasks_per_seed": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3958,6 +4376,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3975,6 +4394,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -3994,6 +4414,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4011,6 +4432,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4027,8 +4449,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4046,6 +4476,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4063,6 +4494,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4082,6 +4514,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4099,6 +4532,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4115,8 +4549,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4134,6 +4576,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4151,6 +4594,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4170,6 +4614,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4187,6 +4632,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4203,8 +4649,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4222,6 +4676,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4239,6 +4694,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4258,6 +4714,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4275,6 +4732,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.5,
             "ci95_low": 0.5,
             "max": 0.5,
@@ -4291,8 +4749,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4310,6 +4776,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.5,
             "ci95_low": 0.5,
             "max": 0.5,
@@ -4327,6 +4794,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4346,6 +4814,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4363,6 +4832,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4379,8 +4849,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4398,6 +4876,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4415,6 +4894,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4434,6 +4914,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4451,6 +4932,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4467,8 +4949,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4486,6 +4976,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4503,6 +4994,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4522,6 +5014,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4539,6 +5032,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4555,8 +5049,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4574,6 +5076,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4591,6 +5094,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4610,6 +5114,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4627,6 +5132,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4643,8 +5149,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4662,6 +5176,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4679,6 +5194,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4698,6 +5214,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4715,6 +5232,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4731,8 +5249,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4750,6 +5276,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4767,6 +5294,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -4786,57 +5314,61 @@
         }
       },
       "predict_seconds": {
-        "ci95_high": 0.135099,
-        "ci95_low": 0.104869,
-        "max": 0.135741,
-        "mean": 0.119984,
-        "min": 0.107563,
+        "ci95_half": 0.006549,
+        "ci95_high": 0.035417,
+        "ci95_low": 0.022318,
+        "max": 0.034575,
+        "mean": 0.028868,
+        "min": 0.022457,
         "n": 5,
         "per_seed": [
-          0.108165,
-          0.135741,
-          0.107563,
-          0.121533,
-          0.126919
+          0.034575,
+          0.028512,
+          0.033694,
+          0.0251,
+          0.022457
         ],
-        "se": 0.005444,
-        "std": 0.012173
+        "se": 0.002359,
+        "std": 0.005275
       },
       "predictions_per_sec_single_core": {
-        "ci95_high": 1664.616501,
-        "ci95_low": 1293.327499,
-        "max": 1636.25,
-        "mean": 1478.972,
-        "min": 1296.58,
+        "ci95_half": 1456.293728,
+        "ci95_high": 7723.481728,
+        "ci95_low": 4810.894272,
+        "max": 7837.06,
+        "mean": 6267.188,
+        "min": 5090.38,
         "n": 5,
         "per_seed": [
-          1627.14,
-          1296.58,
-          1636.25,
-          1448.17,
-          1386.72
+          5090.38,
+          6172.88,
+          5223.53,
+          7012.09,
+          7837.06
         ],
-        "se": 66.864102,
-        "std": 149.512677
+        "se": 524.517406,
+        "std": 1172.856574
       },
       "tracemalloc_peak_kb": {
-        "ci95_high": 89.912389,
-        "ci95_low": 89.891611,
-        "max": 89.91,
-        "mean": 89.902,
-        "min": 89.89,
+        "ci95_half": 0.035556,
+        "ci95_high": 18.343556,
+        "ci95_low": 18.272444,
+        "max": 18.34,
+        "mean": 18.308,
+        "min": 18.27,
         "n": 5,
         "per_seed": [
-          89.89,
-          89.9,
-          89.91,
-          89.9,
-          89.91
+          18.34,
+          18.33,
+          18.31,
+          18.29,
+          18.27
         ],
-        "se": 0.003742,
-        "std": 0.008367
+        "se": 0.012806,
+        "std": 0.028636
       },
       "unseen_abstention_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -4854,6 +5386,7 @@
         "std": 0.0
       },
       "unseen_learning_exact_accuracy": {
+        "ci95_half": 0.0,
         "ci95_high": 0.059524,
         "ci95_low": 0.059524,
         "max": 0.059524,
@@ -4871,6 +5404,7 @@
         "std": 0.0
       },
       "unseen_mean_collateral_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -4888,6 +5422,7 @@
         "std": 0.0
       },
       "unseen_wrong_non_abstain_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.940476,
         "ci95_low": 0.940476,
         "max": 0.940476,
@@ -4908,12 +5443,12 @@
     "shard_hdc_retrieval_no_itl": {
       "bit_budget_mean": {
         "active_bundle_bits": 245760.0,
-        "compressed_model_mdl_bits": 249176.0,
-        "compressed_training_data_bits": 51734.4,
-        "compression_ratio_vs_raw": 0.353908,
-        "episode_store_bits": 277512.0,
+        "compressed_model_mdl_bits": 249262.4,
+        "compressed_training_data_bits": 52427.2,
+        "compression_ratio_vs_raw": 0.353915,
+        "episode_store_bits": 277552.0,
         "operator_library_bits": 0.0,
-        "raw_training_data_bits": 704068.8
+        "raw_training_data_bits": 704300.8
       },
       "category": "shard_baseline",
       "comparison_only": false,
@@ -4946,7 +5481,7 @@
             true
           ],
           "instructions": [
-            "Have zara_3 give lantern_3 over to orion_3"
+            "Have kieran_6 give vial_6 over to orion_6"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_01"
@@ -4962,7 +5497,7 @@
             true
           ],
           "instructions": [
-            "nadia_8 open locker_8"
+            "nadia_5 open casket_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_02"
@@ -4978,7 +5513,7 @@
             true
           ],
           "instructions": [
-            "Have orion_4 lock the satchel_4"
+            "Have zara_7 lock the locker_7"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_03"
@@ -4994,30 +5529,32 @@
             true
           ],
           "instructions": [
-            "orion_8 move prism_8 from altar_8 to coffer_8"
+            "kieran_5 move scroll_5 from workbench_5 to satchel_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_04"
         }
       ],
       "fit_seconds": {
-        "ci95_high": 0.026272,
-        "ci95_low": 0.019734,
-        "max": 0.027625,
-        "mean": 0.023003,
-        "min": 0.021225,
+        "ci95_half": 0.008262,
+        "ci95_high": 0.027352,
+        "ci95_low": 0.010828,
+        "max": 0.028688,
+        "mean": 0.01909,
+        "min": 0.011545,
         "n": 5,
         "per_seed": [
-          0.027625,
-          0.021923,
-          0.021628,
-          0.021225,
-          0.022614
+          0.028688,
+          0.020774,
+          0.020242,
+          0.014202,
+          0.011545
         ],
-        "se": 0.001178,
-        "std": 0.002633
+        "se": 0.002976,
+        "std": 0.006654
       },
       "operator_recovery_f1": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -5035,6 +5572,7 @@
         "std": 0.0
       },
       "operator_recovery_precision": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -5052,6 +5590,7 @@
         "std": 0.0
       },
       "operator_recovery_recall": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -5071,6 +5610,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5088,6 +5628,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5104,8 +5645,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 0,
+          "learning_scored_tasks_max": 0,
+          "learning_scored_tasks_per_seed": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5123,6 +5672,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -5140,6 +5690,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -5159,6 +5710,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5176,6 +5728,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5192,25 +5745,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.098392,
-            "ci95_low": 0.086052,
-            "max": 0.094444,
-            "mean": 0.092222,
-            "min": 0.083333,
+            "ci95_half": 0.002297,
+            "ci95_high": 0.04405,
+            "ci95_low": 0.039457,
+            "max": 0.043461,
+            "mean": 0.041753,
+            "min": 0.039802,
             "n": 5,
             "per_seed": [
-              0.094444,
-              0.094444,
-              0.083333,
-              0.094444,
-              0.094444
+              0.042241,
+              0.043461,
+              0.043461,
+              0.039802,
+              0.039802
             ],
-            "se": 0.002222,
-            "std": 0.004969
+            "se": 0.000827,
+            "std": 0.00185
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5228,6 +5790,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5247,6 +5810,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5264,6 +5828,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5280,25 +5845,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.159019,
-            "ci95_low": 0.132296,
-            "max": 0.155229,
-            "mean": 0.145658,
-            "min": 0.128881,
+            "ci95_half": 0.006292,
+            "ci95_high": 0.069094,
+            "ci95_low": 0.056509,
+            "max": 0.067253,
+            "mean": 0.062802,
+            "min": 0.05724,
             "n": 5,
             "per_seed": [
-              0.155229,
-              0.143423,
-              0.128881,
-              0.145874,
-              0.154882
+              0.066166,
+              0.067253,
+              0.06604,
+              0.057309,
+              0.05724
             ],
-            "se": 0.004812,
-            "std": 0.010761
+            "se": 0.002266,
+            "std": 0.005068
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5316,6 +5890,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5335,6 +5910,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5352,6 +5928,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5368,25 +5945,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.266905,
-            "ci95_low": 0.239178,
-            "max": 0.267708,
-            "mean": 0.253042,
-            "min": 0.239167,
+            "ci95_half": 0.007522,
+            "ci95_high": 0.121823,
+            "ci95_low": 0.106779,
+            "max": 0.119498,
+            "mean": 0.114301,
+            "min": 0.104479,
             "n": 5,
             "per_seed": [
-              0.258125,
-              0.255,
-              0.239167,
-              0.267708,
-              0.245208
+              0.118147,
+              0.116718,
+              0.119498,
+              0.104479,
+              0.112664
             ],
-            "se": 0.004993,
-            "std": 0.011165
+            "se": 0.002709,
+            "std": 0.006058
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5404,6 +5990,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5423,6 +6010,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5440,58 +6028,69 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
-            "ci95_high": 0.304004,
-            "ci95_low": 0.235996,
-            "max": 0.3,
-            "mean": 0.27,
+            "ci95_half": 0.062083,
+            "ci95_high": 0.362083,
+            "ci95_low": 0.237917,
+            "max": 0.35,
+            "mean": 0.3,
             "min": 0.25,
             "n": 5,
             "per_seed": [
+              0.3,
               0.25,
               0.25,
-              0.3,
-              0.3,
-              0.25
+              0.35,
+              0.35
             ],
-            "se": 0.012247,
-            "std": 0.027386
+            "se": 0.022361,
+            "std": 0.05
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.045682,
-            "ci95_low": 0.036345,
-            "max": 0.043301,
-            "mean": 0.041013,
-            "min": 0.034641,
+            "ci95_half": 0.002882,
+            "ci95_high": 0.020222,
+            "ci95_low": 0.014458,
+            "max": 0.019675,
+            "mean": 0.01734,
+            "min": 0.014479,
             "n": 5,
             "per_seed": [
-              0.043301,
-              0.043301,
-              0.034641,
-              0.040523,
-              0.043301
+              0.017077,
+              0.019675,
+              0.019675,
+              0.014479,
+              0.015795
             ],
-            "se": 0.001681,
-            "std": 0.00376
+            "se": 0.001038,
+            "std": 0.002321
           },
           "raw_exact_accuracy": {
-            "ci95_high": 0.304004,
-            "ci95_low": 0.235996,
-            "max": 0.3,
-            "mean": 0.27,
+            "ci95_half": 0.062083,
+            "ci95_high": 0.362083,
+            "ci95_low": 0.237917,
+            "max": 0.35,
+            "mean": 0.3,
             "min": 0.25,
             "n": 5,
             "per_seed": [
+              0.3,
               0.25,
               0.25,
-              0.3,
-              0.3,
-              0.25
+              0.35,
+              0.35
             ],
-            "se": 0.012247,
-            "std": 0.027386
+            "se": 0.022361,
+            "std": 0.05
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5511,6 +6110,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5528,6 +6128,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5544,25 +6145,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.089696,
-            "ci95_low": 0.08944,
-            "max": 0.089614,
-            "mean": 0.089568,
-            "min": 0.089384,
+            "ci95_half": 0.002927,
+            "ci95_high": 0.04317,
+            "ci95_low": 0.037316,
+            "max": 0.043568,
+            "mean": 0.040243,
+            "min": 0.0369,
             "n": 5,
             "per_seed": [
-              0.089614,
-              0.089614,
-              0.089384,
-              0.089614,
-              0.089614
+              0.040234,
+              0.043568,
+              0.040234,
+              0.0369,
+              0.040279
             ],
-            "se": 4.6e-05,
-            "std": 0.000103
+            "se": 0.001054,
+            "std": 0.002358
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5580,6 +6190,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5599,6 +6210,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5616,6 +6228,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5632,25 +6245,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.05776,
-            "ci95_low": 0.049594,
-            "max": 0.058824,
-            "mean": 0.053677,
-            "min": 0.051471,
+            "ci95_half": 0.002328,
+            "ci95_high": 0.026697,
+            "ci95_low": 0.02204,
+            "max": 0.026671,
+            "mean": 0.024369,
+            "min": 0.021737,
             "n": 5,
             "per_seed": [
-              0.058824,
-              0.051471,
-              0.051471,
-              0.051471,
-              0.055147
+              0.023382,
+              0.026671,
+              0.025027,
+              0.021737,
+              0.025027
             ],
-            "se": 0.001471,
-            "std": 0.003288
+            "se": 0.000839,
+            "std": 0.001875
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5668,6 +6290,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5687,6 +6310,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5704,6 +6328,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5720,25 +6345,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.056036,
-            "ci95_low": 0.046906,
-            "max": 0.055147,
-            "mean": 0.051471,
-            "min": 0.047794,
+            "ci95_half": 0.00479,
+            "ci95_high": 0.027816,
+            "ci95_low": 0.018237,
+            "max": 0.026316,
+            "mean": 0.023026,
+            "min": 0.016447,
             "n": 5,
             "per_seed": [
-              0.051471,
-              0.055147,
-              0.047794,
-              0.055147,
-              0.047794
+              0.024671,
+              0.024671,
+              0.026316,
+              0.016447,
+              0.023026
             ],
-            "se": 0.001644,
-            "std": 0.003677
+            "se": 0.001725,
+            "std": 0.003857
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5756,6 +6390,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5775,6 +6410,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5792,6 +6428,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5808,25 +6445,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.123159,
-            "ci95_low": 0.111956,
-            "max": 0.122304,
-            "mean": 0.117557,
-            "min": 0.110519,
+            "ci95_half": 0.003549,
+            "ci95_high": 0.055162,
+            "ci95_low": 0.048064,
+            "max": 0.054863,
+            "mean": 0.051613,
+            "min": 0.048571,
             "n": 5,
             "per_seed": [
-              0.119526,
-              0.110519,
-              0.116074,
-              0.122304,
-              0.119363
+              0.052355,
+              0.054863,
+              0.053574,
+              0.048703,
+              0.048571
             ],
-            "se": 0.002017,
-            "std": 0.004511
+            "se": 0.001278,
+            "std": 0.002858
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5844,6 +6490,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5863,6 +6510,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5880,6 +6528,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5896,25 +6545,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.056584,
-            "ci95_low": 0.050474,
-            "max": 0.055882,
-            "mean": 0.053529,
-            "min": 0.05,
+            "ci95_half": 0.00231,
+            "ci95_high": 0.027666,
+            "ci95_low": 0.023045,
+            "max": 0.026671,
+            "mean": 0.025355,
+            "min": 0.022724,
             "n": 5,
             "per_seed": [
-              0.055882,
-              0.052941,
-              0.05,
-              0.052941,
-              0.055882
+              0.026671,
+              0.026671,
+              0.026671,
+              0.02404,
+              0.022724
             ],
-            "se": 0.0011,
-            "std": 0.002461
+            "se": 0.000832,
+            "std": 0.001861
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5932,6 +6590,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -5951,57 +6610,61 @@
         }
       },
       "predict_seconds": {
-        "ci95_high": 0.750732,
-        "ci95_low": 0.45434,
-        "max": 0.813882,
-        "mean": 0.602536,
-        "min": 0.525929,
+        "ci95_half": 0.049684,
+        "ci95_high": 0.465414,
+        "ci95_low": 0.366047,
+        "max": 0.472234,
+        "mean": 0.415731,
+        "min": 0.36215,
         "n": 5,
         "per_seed": [
-          0.541782,
-          0.568458,
-          0.813882,
-          0.525929,
-          0.562629
+          0.472234,
+          0.424054,
+          0.399901,
+          0.420314,
+          0.36215
         ],
-        "se": 0.053376,
-        "std": 0.119353
+        "se": 0.017895,
+        "std": 0.040014
       },
       "predictions_per_sec_single_core": {
-        "ci95_high": 358.821347,
-        "ci95_low": 240.450653,
-        "max": 334.65,
-        "mean": 299.636,
-        "min": 216.25,
+        "ci95_half": 51.234385,
+        "ci95_high": 477.748385,
+        "ci95_low": 375.279615,
+        "max": 485.99,
+        "mean": 426.514,
+        "min": 372.7,
         "n": 5,
         "per_seed": [
-          324.85,
-          309.61,
-          216.25,
-          334.65,
-          312.82
+          372.7,
+          415.04,
+          440.11,
+          418.73,
+          485.99
         ],
-        "se": 21.316953,
-        "std": 47.666155
+        "se": 18.453232,
+        "std": 41.262682
       },
       "tracemalloc_peak_kb": {
-        "ci95_high": 663.142895,
-        "ci95_low": 48.025105,
-        "max": 789.07,
-        "mean": 355.584,
-        "min": 196.41,
+        "ci95_half": 0.0362,
+        "ci95_high": 75.3762,
+        "ci95_low": 75.3038,
+        "max": 75.38,
+        "mean": 75.34,
+        "min": 75.3,
         "n": 5,
         "per_seed": [
-          789.07,
-          323.01,
-          265.48,
-          203.95,
-          196.41
+          75.38,
+          75.34,
+          75.35,
+          75.33,
+          75.3
         ],
-        "se": 110.774352,
-        "std": 247.698981
+        "se": 0.013038,
+        "std": 0.029155
       },
       "unseen_abstention_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -6019,66 +6682,69 @@
         "std": 0.0
       },
       "unseen_learning_exact_accuracy": {
-        "ci95_high": 0.036191,
-        "ci95_low": 0.028095,
-        "max": 0.035714,
-        "mean": 0.032143,
+        "ci95_half": 0.007391,
+        "ci95_high": 0.043105,
+        "ci95_low": 0.028323,
+        "max": 0.041667,
+        "mean": 0.035714,
         "min": 0.029762,
         "n": 5,
         "per_seed": [
+          0.035714,
           0.029762,
           0.029762,
-          0.035714,
-          0.035714,
-          0.029762
+          0.041667,
+          0.041667
         ],
-        "se": 0.001458,
-        "std": 0.00326
+        "se": 0.002662,
+        "std": 0.005953
       },
       "unseen_mean_collateral_rate": {
-        "ci95_high": 0.107158,
-        "ci95_low": 0.097317,
-        "max": 0.105528,
-        "mean": 0.102237,
-        "min": 0.095597,
+        "ci95_half": 0.003579,
+        "ci95_high": 0.049207,
+        "ci95_low": 0.042049,
+        "max": 0.048163,
+        "mean": 0.045628,
+        "min": 0.041533,
         "n": 5,
         "per_seed": [
-          0.105528,
-          0.101978,
-          0.095597,
-          0.104855,
-          0.103229
+          0.04682,
+          0.048163,
+          0.047879,
+          0.041533,
+          0.043745
         ],
-        "se": 0.001772,
-        "std": 0.003963
+        "se": 0.001289,
+        "std": 0.002882
       },
       "unseen_wrong_non_abstain_rate": {
-        "ci95_high": 0.971905,
-        "ci95_low": 0.963809,
+        "ci95_half": 0.007391,
+        "ci95_high": 0.971677,
+        "ci95_low": 0.956895,
         "max": 0.970238,
-        "mean": 0.967857,
-        "min": 0.964286,
+        "mean": 0.964286,
+        "min": 0.958333,
         "n": 5,
         "per_seed": [
+          0.964286,
           0.970238,
           0.970238,
-          0.964286,
-          0.964286,
-          0.970238
+          0.958333,
+          0.958333
         ],
-        "se": 0.001458,
-        "std": 0.00326
+        "se": 0.002662,
+        "std": 0.005953
       }
     },
     "small_cpu_neural_reference": {
       "bit_budget_mean": {
-        "active_bundle_bits": 19494.4,
-        "compressed_model_mdl_bits": 22748.8,
-        "compressed_training_data_bits": 51734.4,
-        "compression_ratio_vs_raw": 0.032311,
-        "episode_store_bits": 25152.0,
+        "active_bundle_bits": 19660.8,
+        "compressed_model_mdl_bits": 23019.2,
+        "compressed_training_data_bits": 52427.2,
+        "compression_ratio_vs_raw": 0.032684,
+        "episode_store_bits": 25814.4,
         "operator_library_bits": 0.0,
-        "raw_training_data_bits": 704068.8
+        "raw_training_data_bits": 704300.8
       },
       "category": "comparison_only_neural",
       "comparison_only": true,
@@ -6086,7 +6752,7 @@
       "failed_examples_seed0": [
         {
           "abstained": false,
-          "collateral_changes": 1,
+          "collateral_changes": 0,
           "depth": 1,
           "gold_block_reasons": [
             "applied"
@@ -6102,7 +6768,7 @@
         },
         {
           "abstained": false,
-          "collateral_changes": 1,
+          "collateral_changes": 0,
           "depth": 1,
           "gold_block_reasons": [
             "applied"
@@ -6111,7 +6777,7 @@
             true
           ],
           "instructions": [
-            "Have zara_3 give lantern_3 over to orion_3"
+            "Have kieran_6 give vial_6 over to orion_6"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_01"
@@ -6127,7 +6793,7 @@
             true
           ],
           "instructions": [
-            "nadia_8 open locker_8"
+            "nadia_5 open casket_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_02"
@@ -6143,7 +6809,7 @@
             true
           ],
           "instructions": [
-            "Have orion_4 lock the satchel_4"
+            "Have zara_7 lock the locker_7"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_03"
@@ -6159,30 +6825,32 @@
             true
           ],
           "instructions": [
-            "orion_8 move prism_8 from altar_8 to coffer_8"
+            "kieran_5 move scroll_5 from workbench_5 to satchel_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_04"
         }
       ],
       "fit_seconds": {
-        "ci95_high": 3.873456,
-        "ci95_low": 2.60708,
-        "max": 4.12843,
-        "mean": 3.240268,
-        "min": 2.826183,
+        "ci95_half": 0.018641,
+        "ci95_high": 0.342763,
+        "ci95_low": 0.305481,
+        "max": 0.340368,
+        "mean": 0.324122,
+        "min": 0.304333,
         "n": 5,
         "per_seed": [
-          3.088521,
-          2.826183,
-          3.029472,
-          3.128734,
-          4.12843
+          0.334818,
+          0.313265,
+          0.340368,
+          0.304333,
+          0.327826
         ],
-        "se": 0.228057,
-        "std": 0.509951
+        "se": 0.006714,
+        "std": 0.015013
       },
       "operator_recovery_f1": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -6200,6 +6868,7 @@
         "std": 0.0
       },
       "operator_recovery_precision": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -6217,6 +6886,7 @@
         "std": 0.0
       },
       "operator_recovery_recall": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -6236,6 +6906,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6253,6 +6924,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6269,8 +6941,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 0,
+          "learning_scored_tasks_max": 0,
+          "learning_scored_tasks_per_seed": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6288,6 +6968,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -6305,6 +6986,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6324,6 +7006,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6341,6 +7024,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6357,25 +7041,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.061176,
-            "ci95_low": 0.038824,
-            "max": 0.061111,
-            "mean": 0.05,
-            "min": 0.041667,
+            "ci95_half": 0.005573,
+            "ci95_high": 0.028114,
+            "ci95_low": 0.016969,
+            "max": 0.027293,
+            "mean": 0.022542,
+            "min": 0.016226,
             "n": 5,
             "per_seed": [
-              0.044444,
-              0.058333,
-              0.044444,
-              0.061111,
-              0.041667
+              0.024791,
+              0.027293,
+              0.02473,
+              0.019668,
+              0.016226
             ],
-            "se": 0.004025,
-            "std": 0.009001
+            "se": 0.002007,
+            "std": 0.004488
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6393,6 +7086,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6412,6 +7106,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6429,6 +7124,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6445,25 +7141,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.13217,
-            "ci95_low": 0.05993,
-            "max": 0.146242,
-            "mean": 0.09605,
-            "min": 0.077002,
+            "ci95_half": 0.009445,
+            "ci95_high": 0.051397,
+            "ci95_low": 0.032507,
+            "max": 0.050685,
+            "mean": 0.041952,
+            "min": 0.030207,
             "n": 5,
             "per_seed": [
-              0.083435,
-              0.096058,
-              0.077002,
-              0.146242,
-              0.077512
+              0.044386,
+              0.044601,
+              0.03988,
+              0.050685,
+              0.030207
             ],
-            "se": 0.013009,
-            "std": 0.02909
+            "se": 0.003402,
+            "std": 0.007607
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6481,6 +7186,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6500,6 +7206,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6517,6 +7224,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6533,25 +7241,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.165301,
-            "ci95_low": 0.127366,
-            "max": 0.162917,
-            "mean": 0.146333,
-            "min": 0.121667,
+            "ci95_half": 0.016975,
+            "ci95_high": 0.073925,
+            "ci95_low": 0.039975,
+            "max": 0.078494,
+            "mean": 0.05695,
+            "min": 0.042664,
             "n": 5,
             "per_seed": [
-              0.162917,
-              0.146458,
-              0.121667,
-              0.153333,
-              0.147292
+              0.078494,
+              0.060541,
+              0.049575,
+              0.042664,
+              0.053475
             ],
-            "se": 0.006831,
-            "std": 0.015276
+            "se": 0.006114,
+            "std": 0.013671
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6569,6 +7286,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6588,6 +7306,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6605,58 +7324,69 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
-            "ci95_high": 0.387799,
-            "ci95_low": 0.212201,
-            "max": 0.35,
-            "mean": 0.3,
-            "min": 0.2,
+            "ci95_half": 0.16774,
+            "ci95_high": 0.39774,
+            "ci95_low": 0.06226,
+            "max": 0.45,
+            "mean": 0.23,
+            "min": 0.1,
             "n": 5,
             "per_seed": [
-              0.35,
+              0.1,
               0.25,
-              0.35,
+              0.15,
               0.2,
-              0.35
+              0.45
             ],
-            "se": 0.031623,
-            "std": 0.070711
+            "se": 0.060415,
+            "std": 0.135093
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.040093,
-            "ci95_low": 0.010365,
-            "max": 0.043137,
-            "mean": 0.025229,
-            "min": 0.014216,
+            "ci95_half": 0.007429,
+            "ci95_high": 0.021514,
+            "ci95_low": 0.006657,
+            "max": 0.019538,
+            "mean": 0.014085,
+            "min": 0.003949,
             "n": 5,
             "per_seed": [
-              0.017157,
-              0.031536,
-              0.014216,
-              0.043137,
-              0.020098
+              0.019538,
+              0.015727,
+              0.016905,
+              0.014307,
+              0.003949
             ],
-            "se": 0.005354,
-            "std": 0.011971
+            "se": 0.002676,
+            "std": 0.005983
           },
           "raw_exact_accuracy": {
-            "ci95_high": 0.387799,
-            "ci95_low": 0.212201,
-            "max": 0.35,
-            "mean": 0.3,
-            "min": 0.2,
+            "ci95_half": 0.16774,
+            "ci95_high": 0.39774,
+            "ci95_low": 0.06226,
+            "max": 0.45,
+            "mean": 0.23,
+            "min": 0.1,
             "n": 5,
             "per_seed": [
-              0.35,
+              0.1,
               0.25,
-              0.35,
+              0.15,
               0.2,
-              0.35
+              0.45
             ],
-            "se": 0.031623,
-            "std": 0.070711
+            "se": 0.060415,
+            "std": 0.135093
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6676,6 +7406,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6693,6 +7424,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6709,25 +7441,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.071043,
-            "ci95_low": 0.026107,
-            "max": 0.067325,
-            "mean": 0.048575,
-            "min": 0.026654,
+            "ci95_half": 0.006053,
+            "ci95_high": 0.028816,
+            "ci95_low": 0.01671,
+            "max": 0.026854,
+            "mean": 0.022763,
+            "min": 0.014936,
             "n": 5,
             "per_seed": [
-              0.044807,
-              0.066866,
-              0.026654,
-              0.067325,
-              0.037224
+              0.023337,
+              0.021922,
+              0.026765,
+              0.026854,
+              0.014936
             ],
-            "se": 0.008092,
-            "std": 0.018095
+            "se": 0.00218,
+            "std": 0.004875
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6745,6 +7486,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6764,6 +7506,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6781,6 +7524,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6797,25 +7541,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.051074,
-            "ci95_low": 0.03128,
-            "max": 0.051471,
-            "mean": 0.041177,
-            "min": 0.033088,
+            "ci95_half": 0.00912,
+            "ci95_high": 0.026447,
+            "ci95_low": 0.008208,
+            "max": 0.026671,
+            "mean": 0.017327,
+            "min": 0.006623,
             "n": 5,
             "per_seed": [
-              0.033088,
-              0.051471,
-              0.044118,
-              0.044118,
-              0.033088
+              0.026671,
+              0.020048,
+              0.018314,
+              0.01498,
+              0.006623
             ],
-            "se": 0.003565,
-            "std": 0.007971
+            "se": 0.003285,
+            "std": 0.007345
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6833,6 +7586,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6852,6 +7606,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6869,6 +7624,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6885,25 +7641,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.05383,
-            "ci95_low": 0.040288,
-            "max": 0.055147,
-            "mean": 0.047059,
-            "min": 0.040441,
+            "ci95_half": 0.007559,
+            "ci95_high": 0.022033,
+            "ci95_low": 0.006915,
+            "max": 0.021382,
+            "mean": 0.014474,
+            "min": 0.006579,
             "n": 5,
             "per_seed": [
-              0.044118,
-              0.055147,
-              0.047794,
-              0.047794,
-              0.040441
+              0.006579,
+              0.013158,
+              0.021382,
+              0.019737,
+              0.011513
             ],
-            "se": 0.002439,
-            "std": 0.005453
+            "se": 0.002723,
+            "std": 0.006088
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6921,6 +7686,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6940,6 +7706,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6957,6 +7724,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -6973,25 +7741,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.102002,
-            "ci95_low": 0.046095,
-            "max": 0.095935,
-            "mean": 0.074048,
-            "min": 0.037847,
+            "ci95_half": 0.008509,
+            "ci95_high": 0.040552,
+            "ci95_low": 0.023533,
+            "max": 0.037502,
+            "mean": 0.032042,
+            "min": 0.022727,
             "n": 5,
             "per_seed": [
-              0.037847,
-              0.069914,
-              0.088297,
-              0.095935,
-              0.078248
+              0.037502,
+              0.037181,
+              0.022727,
+              0.026707,
+              0.036094
             ],
-            "se": 0.010068,
-            "std": 0.022513
+            "se": 0.003065,
+            "std": 0.006853
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7009,6 +7786,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7028,6 +7806,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7045,6 +7824,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7061,25 +7841,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.051247,
-            "ci95_low": 0.020518,
-            "max": 0.05,
-            "mean": 0.035882,
-            "min": 0.017647,
+            "ci95_half": 0.004143,
+            "ci95_high": 0.015046,
+            "ci95_low": 0.006761,
+            "max": 0.013371,
+            "mean": 0.010903,
+            "min": 0.005299,
             "n": 5,
             "per_seed": [
-              0.032353,
-              0.05,
-              0.035294,
-              0.044118,
-              0.017647
+              0.013371,
+              0.0133,
+              0.010562,
+              0.011984,
+              0.005299
             ],
-            "se": 0.005534,
-            "std": 0.012374
+            "se": 0.001492,
+            "std": 0.003336
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7097,6 +7886,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7116,57 +7906,61 @@
         }
       },
       "predict_seconds": {
-        "ci95_high": 0.511428,
-        "ci95_low": 0.412614,
-        "max": 0.526215,
-        "mean": 0.462021,
-        "min": 0.429615,
+        "ci95_half": 0.087264,
+        "ci95_high": 0.368238,
+        "ci95_low": 0.19371,
+        "max": 0.376052,
+        "mean": 0.280974,
+        "min": 0.210273,
         "n": 5,
         "per_seed": [
-          0.526215,
-          0.444141,
-          0.435757,
-          0.429615,
-          0.474378
+          0.316046,
+          0.210273,
+          0.376052,
+          0.288136,
+          0.214361
         ],
-        "se": 0.017795,
-        "std": 0.039791
+        "se": 0.03143,
+        "std": 0.07028
       },
       "predictions_per_sec_single_core": {
-        "ci95_high": 421.449549,
-        "ci95_low": 344.670451,
-        "max": 409.67,
-        "mean": 383.06,
-        "min": 334.46,
+        "ci95_half": 203.241304,
+        "ci95_high": 861.997304,
+        "ci95_low": 455.514696,
+        "max": 837.01,
+        "mean": 658.756,
+        "min": 468.02,
         "n": 5,
         "per_seed": [
-          334.46,
-          396.27,
-          403.89,
-          409.67,
-          371.01
+          556.88,
+          837.01,
+          468.02,
+          610.82,
+          821.05
         ],
-        "se": 13.826872,
-        "std": 30.917825
+        "se": 73.201992,
+        "std": 163.68463
       },
       "tracemalloc_peak_kb": {
-        "ci95_high": 123.097634,
-        "ci95_low": 121.126366,
-        "max": 122.91,
-        "mean": 122.112,
-        "min": 120.82,
+        "ci95_half": 0.61267,
+        "ci95_high": 57.10467,
+        "ci95_low": 55.87933,
+        "max": 56.73,
+        "mean": 56.492,
+        "min": 55.61,
         "n": 5,
         "per_seed": [
-          122.91,
-          120.82,
-          121.99,
-          122.49,
-          122.35
+          55.61,
+          56.72,
+          56.72,
+          56.73,
+          56.68
         ],
-        "se": 0.354999,
-        "std": 0.793801
+        "se": 0.220667,
+        "std": 0.493427
       },
       "unseen_abstention_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -7184,66 +7978,69 @@
         "std": 0.0
       },
       "unseen_learning_exact_accuracy": {
-        "ci95_high": 0.046167,
-        "ci95_low": 0.025262,
-        "max": 0.041667,
-        "mean": 0.035715,
-        "min": 0.02381,
+        "ci95_half": 0.019969,
+        "ci95_high": 0.04735,
+        "ci95_low": 0.007412,
+        "max": 0.053571,
+        "mean": 0.027381,
+        "min": 0.011905,
         "n": 5,
         "per_seed": [
-          0.041667,
+          0.011905,
           0.029762,
-          0.041667,
+          0.017857,
           0.02381,
-          0.041667
+          0.053571
         ],
-        "se": 0.003765,
-        "std": 0.008418
+        "se": 0.007192,
+        "std": 0.016082
       },
       "unseen_mean_collateral_rate": {
-        "ci95_high": 0.077313,
-        "ci95_low": 0.050542,
-        "max": 0.079913,
-        "mean": 0.063928,
-        "min": 0.056079,
+        "ci95_half": 0.005086,
+        "ci95_high": 0.031529,
+        "ci95_low": 0.021358,
+        "max": 0.031352,
+        "mean": 0.026444,
+        "min": 0.020441,
         "n": 5,
         "per_seed": [
-          0.056639,
-          0.070367,
-          0.05664,
-          0.079913,
-          0.056079
+          0.031352,
+          0.028898,
+          0.025899,
+          0.025628,
+          0.020441
         ],
-        "se": 0.004821,
-        "std": 0.01078
+        "se": 0.001832,
+        "std": 0.004096
       },
       "unseen_wrong_non_abstain_rate": {
-        "ci95_high": 0.974738,
-        "ci95_low": 0.953833,
-        "max": 0.97619,
-        "mean": 0.964285,
-        "min": 0.958333,
+        "ci95_half": 0.019969,
+        "ci95_high": 0.992588,
+        "ci95_low": 0.95265,
+        "max": 0.988095,
+        "mean": 0.972619,
+        "min": 0.946429,
         "n": 5,
         "per_seed": [
-          0.958333,
+          0.988095,
           0.970238,
-          0.958333,
+          0.982143,
           0.97619,
-          0.958333
+          0.946429
         ],
-        "se": 0.003765,
-        "std": 0.008418
+        "se": 0.007192,
+        "std": 0.016082
       }
     },
     "structural_knn": {
       "bit_budget_mean": {
         "active_bundle_bits": 0.0,
-        "compressed_model_mdl_bits": 29768.0,
-        "compressed_training_data_bits": 51734.4,
-        "compression_ratio_vs_raw": 0.04228,
-        "episode_store_bits": 242955.2,
+        "compressed_model_mdl_bits": 30356.8,
+        "compressed_training_data_bits": 52427.2,
+        "compression_ratio_vs_raw": 0.043102,
+        "episode_store_bits": 243436.8,
         "operator_library_bits": 0.0,
-        "raw_training_data_bits": 704068.8
+        "raw_training_data_bits": 704300.8
       },
       "category": "memory_baseline",
       "comparison_only": false,
@@ -7276,7 +8073,7 @@
             true
           ],
           "instructions": [
-            "Have zara_3 give lantern_3 over to orion_3"
+            "Have kieran_6 give vial_6 over to orion_6"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_01"
@@ -7292,7 +8089,7 @@
             true
           ],
           "instructions": [
-            "nadia_8 open locker_8"
+            "nadia_5 open casket_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_02"
@@ -7308,7 +8105,7 @@
             true
           ],
           "instructions": [
-            "Have orion_4 lock the satchel_4"
+            "Have zara_7 lock the locker_7"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_03"
@@ -7324,30 +8121,32 @@
             true
           ],
           "instructions": [
-            "orion_8 move prism_8 from altar_8 to coffer_8"
+            "kieran_5 move scroll_5 from workbench_5 to satchel_5"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s101_04"
         }
       ],
       "fit_seconds": {
-        "ci95_high": 0.016807,
-        "ci95_low": 0.013205,
-        "max": 0.016475,
-        "mean": 0.015006,
-        "min": 0.012897,
+        "ci95_half": 0.003974,
+        "ci95_high": 0.013543,
+        "ci95_low": 0.005595,
+        "max": 0.014796,
+        "mean": 0.009569,
+        "min": 0.006687,
         "n": 5,
         "per_seed": [
-          0.012897,
-          0.016274,
-          0.014684,
-          0.016475,
-          0.0147
+          0.009721,
+          0.007271,
+          0.014796,
+          0.006687,
+          0.009371
         ],
-        "se": 0.000648,
-        "std": 0.00145
+        "se": 0.001431,
+        "std": 0.0032
       },
       "operator_recovery_f1": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -7365,6 +8164,7 @@
         "std": 0.0
       },
       "operator_recovery_precision": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -7382,6 +8182,7 @@
         "std": 0.0
       },
       "operator_recovery_recall": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -7401,6 +8202,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7418,6 +8220,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7434,8 +8237,16 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 0,
+          "learning_scored_tasks_max": 0,
+          "learning_scored_tasks_per_seed": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
           "mean_collateral_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7453,6 +8264,7 @@
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -7470,6 +8282,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 1.0,
             "ci95_low": 1.0,
             "max": 1.0,
@@ -7489,6 +8302,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7506,6 +8320,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7522,25 +8337,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.102157,
-            "ci95_low": 0.086732,
-            "max": 0.097222,
-            "mean": 0.094444,
-            "min": 0.083333,
+            "ci95_half": 0.0,
+            "ci95_high": 0.043461,
+            "ci95_low": 0.043461,
+            "max": 0.043461,
+            "mean": 0.043461,
+            "min": 0.043461,
             "n": 5,
             "per_seed": [
-              0.083333,
-              0.097222,
-              0.097222,
-              0.097222,
-              0.097222
+              0.043461,
+              0.043461,
+              0.043461,
+              0.043461,
+              0.043461
             ],
-            "se": 0.002778,
-            "std": 0.006211
+            "se": 0.0,
+            "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7558,6 +8382,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7577,6 +8402,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7594,6 +8420,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7610,25 +8437,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.139329,
-            "ci95_low": 0.123906,
-            "max": 0.134395,
-            "mean": 0.131617,
-            "min": 0.120507,
+            "ci95_half": 0.0,
+            "ci95_high": 0.058453,
+            "ci95_low": 0.058453,
+            "max": 0.058453,
+            "mean": 0.058453,
+            "min": 0.058453,
             "n": 5,
             "per_seed": [
-              0.120507,
-              0.134395,
-              0.134395,
-              0.134395,
-              0.134395
+              0.058453,
+              0.058453,
+              0.058453,
+              0.058453,
+              0.058453
             ],
-            "se": 0.002778,
-            "std": 0.006211
+            "se": 0.0,
+            "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7646,6 +8482,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7665,6 +8502,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7682,6 +8520,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7698,25 +8537,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.257912,
-            "ci95_low": 0.237088,
-            "max": 0.25125,
-            "mean": 0.2475,
-            "min": 0.2325,
+            "ci95_half": 0.0,
+            "ci95_high": 0.108378,
+            "ci95_low": 0.108378,
+            "max": 0.108378,
+            "mean": 0.108378,
+            "min": 0.108378,
             "n": 5,
             "per_seed": [
-              0.2325,
-              0.25125,
-              0.25125,
-              0.25125,
-              0.25125
+              0.108378,
+              0.108378,
+              0.108378,
+              0.108378,
+              0.108378
             ],
-            "se": 0.00375,
-            "std": 0.008385
+            "se": 0.0,
+            "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7734,6 +8582,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7753,6 +8602,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7770,6 +8620,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.25,
             "ci95_low": 0.25,
             "max": 0.25,
@@ -7786,25 +8637,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.043301,
-            "ci95_low": 0.043301,
-            "max": 0.043301,
-            "mean": 0.043301,
-            "min": 0.043301,
+            "ci95_half": 0.0,
+            "ci95_high": 0.019675,
+            "ci95_low": 0.019675,
+            "max": 0.019675,
+            "mean": 0.019675,
+            "min": 0.019675,
             "n": 5,
             "per_seed": [
-              0.043301,
-              0.043301,
-              0.043301,
-              0.043301,
-              0.043301
+              0.019675,
+              0.019675,
+              0.019675,
+              0.019675,
+              0.019675
             ],
             "se": 0.0,
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.25,
             "ci95_low": 0.25,
             "max": 0.25,
@@ -7822,6 +8682,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7841,6 +8702,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7858,6 +8720,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7874,25 +8737,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.092226,
-            "ci95_low": 0.08406,
-            "max": 0.089614,
-            "mean": 0.088143,
-            "min": 0.082261,
+            "ci95_half": 0.0,
+            "ci95_high": 0.040279,
+            "ci95_low": 0.040279,
+            "max": 0.040279,
+            "mean": 0.040279,
+            "min": 0.040279,
             "n": 5,
             "per_seed": [
-              0.082261,
-              0.089614,
-              0.089614,
-              0.089614,
-              0.089614
+              0.040279,
+              0.040279,
+              0.040279,
+              0.040279,
+              0.040279
             ],
-            "se": 0.001471,
-            "std": 0.003288
+            "se": 0.0,
+            "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7910,6 +8782,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7929,6 +8802,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7946,6 +8820,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7962,25 +8837,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.069931,
-            "ci95_low": 0.053599,
-            "max": 0.073529,
-            "mean": 0.061765,
-            "min": 0.058824,
+            "ci95_half": 0.0,
+            "ci95_high": 0.026671,
+            "ci95_low": 0.026671,
+            "max": 0.026671,
+            "mean": 0.026671,
+            "min": 0.026671,
             "n": 5,
             "per_seed": [
-              0.058824,
-              0.058824,
-              0.058824,
-              0.058824,
-              0.073529
+              0.026671,
+              0.026671,
+              0.026671,
+              0.026671,
+              0.026671
             ],
-            "se": 0.002941,
-            "std": 0.006576
+            "se": 0.0,
+            "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -7998,6 +8882,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8017,6 +8902,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8034,6 +8920,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8050,25 +8937,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 16,
+          "learning_scored_tasks_max": 16,
+          "learning_scored_tasks_per_seed": [
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.058824,
-            "ci95_low": 0.058824,
-            "max": 0.058824,
-            "mean": 0.058824,
-            "min": 0.058824,
+            "ci95_half": 0.0,
+            "ci95_high": 0.026316,
+            "ci95_low": 0.026316,
+            "max": 0.026316,
+            "mean": 0.026316,
+            "min": 0.026316,
             "n": 5,
             "per_seed": [
-              0.058824,
-              0.058824,
-              0.058824,
-              0.058824,
-              0.058824
+              0.026316,
+              0.026316,
+              0.026316,
+              0.026316,
+              0.026316
             ],
             "se": 0.0,
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8086,6 +8982,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8105,6 +9002,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8122,6 +9020,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8138,25 +9037,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.123127,
-            "ci95_low": 0.110787,
-            "max": 0.119179,
-            "mean": 0.116957,
-            "min": 0.108068,
+            "ci95_half": 0.0,
+            "ci95_high": 0.052355,
+            "ci95_low": 0.052355,
+            "max": 0.052355,
+            "mean": 0.052355,
+            "min": 0.052355,
             "n": 5,
             "per_seed": [
-              0.108068,
-              0.119179,
-              0.119179,
-              0.119179,
-              0.119179
+              0.052355,
+              0.052355,
+              0.052355,
+              0.052355,
+              0.052355
             ],
-            "se": 0.002222,
-            "std": 0.004969
+            "se": 0.0,
+            "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8174,6 +9082,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8193,6 +9102,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8210,6 +9120,7 @@
             "std": 0.0
           },
           "learning_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8226,25 +9137,34 @@
             "se": 0.0,
             "std": 0.0
           },
-          "learning_scored_tasks_per_seed": 20,
+          "learning_scored_tasks_max": 20,
+          "learning_scored_tasks_per_seed": [
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
           "mean_collateral_rate": {
-            "ci95_high": 0.058824,
-            "ci95_low": 0.058824,
-            "max": 0.058824,
-            "mean": 0.058824,
-            "min": 0.058824,
+            "ci95_half": 0.0,
+            "ci95_high": 0.026671,
+            "ci95_low": 0.026671,
+            "max": 0.026671,
+            "mean": 0.026671,
+            "min": 0.026671,
             "n": 5,
             "per_seed": [
-              0.058824,
-              0.058824,
-              0.058824,
-              0.058824,
-              0.058824
+              0.026671,
+              0.026671,
+              0.026671,
+              0.026671,
+              0.026671
             ],
             "se": 0.0,
             "std": 0.0
           },
           "raw_exact_accuracy": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8262,6 +9182,7 @@
             "std": 0.0
           },
           "retrieval_hit_rate": {
+            "ci95_half": 0.0,
             "ci95_high": 0.0,
             "ci95_low": 0.0,
             "max": 0.0,
@@ -8281,57 +9202,61 @@
         }
       },
       "predict_seconds": {
-        "ci95_high": 0.45806,
-        "ci95_low": 0.406384,
-        "max": 0.455996,
-        "mean": 0.432222,
-        "min": 0.406569,
+        "ci95_half": 0.024237,
+        "ci95_high": 0.269963,
+        "ci95_low": 0.22149,
+        "max": 0.278708,
+        "mean": 0.245726,
+        "min": 0.230743,
         "n": 5,
         "per_seed": [
-          0.406569,
-          0.44759,
-          0.435006,
-          0.455996,
-          0.415947
+          0.245025,
+          0.278708,
+          0.24263,
+          0.231525,
+          0.230743
         ],
-        "se": 0.009306,
-        "std": 0.020809
+        "se": 0.008729,
+        "std": 0.01952
       },
       "predictions_per_sec_single_core": {
-        "ci95_high": 432.51089,
-        "ci95_low": 383.40911,
-        "max": 432.89,
-        "mean": 407.96,
-        "min": 385.97,
+        "ci95_half": 66.021377,
+        "ci95_high": 785.637377,
+        "ci95_low": 653.594623,
+        "max": 762.75,
+        "mean": 719.616,
+        "min": 631.48,
         "n": 5,
         "per_seed": [
-          432.89,
-          393.22,
-          404.59,
-          385.97,
-          423.13
+          718.29,
+          631.48,
+          725.38,
+          760.18,
+          762.75
         ],
-        "se": 8.842563,
-        "std": 19.772572
+        "se": 23.779105,
+        "std": 53.171695
       },
       "tracemalloc_peak_kb": {
-        "ci95_high": 233.257345,
-        "ci95_low": 232.902655,
-        "max": 233.17,
-        "mean": 233.08,
-        "min": 232.83,
+        "ci95_half": 0.049976,
+        "ci95_high": 168.251976,
+        "ci95_low": 168.152024,
+        "max": 168.25,
+        "mean": 168.202,
+        "min": 168.14,
         "n": 5,
         "per_seed": [
-          232.83,
-          233.13,
-          233.17,
-          233.17,
-          233.1
+          168.2,
+          168.22,
+          168.25,
+          168.2,
+          168.14
         ],
-        "se": 0.063875,
-        "std": 0.142829
+        "se": 0.018,
+        "std": 0.040249
       },
       "unseen_abstention_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.0,
         "ci95_low": 0.0,
         "max": 0.0,
@@ -8349,6 +9274,7 @@
         "std": 0.0
       },
       "unseen_learning_exact_accuracy": {
+        "ci95_half": 0.0,
         "ci95_high": 0.029762,
         "ci95_low": 0.029762,
         "max": 0.029762,
@@ -8366,23 +9292,25 @@
         "std": 0.0
       },
       "unseen_mean_collateral_rate": {
-        "ci95_high": 0.106794,
-        "ci95_low": 0.097879,
-        "max": 0.10497,
-        "mean": 0.102337,
-        "min": 0.096007,
+        "ci95_half": 0.0,
+        "ci95_high": 0.045667,
+        "ci95_low": 0.045667,
+        "max": 0.045667,
+        "mean": 0.045667,
+        "min": 0.045667,
         "n": 5,
         "per_seed": [
-          0.096007,
-          0.103569,
-          0.103569,
-          0.103569,
-          0.10497
+          0.045667,
+          0.045667,
+          0.045667,
+          0.045667,
+          0.045667
         ],
-        "se": 0.001606,
-        "std": 0.00359
+        "se": 0.0,
+        "std": 0.0
       },
       "unseen_wrong_non_abstain_rate": {
+        "ci95_half": 0.0,
         "ci95_high": 0.970238,
         "ci95_low": 0.970238,
         "max": 0.970238,
@@ -8403,5 +9331,5 @@
   },
   "stage": "S0",
   "temporal_generator_version": "s0-temporal-v2.0",
-  "total_elapsed_seconds": 35.9528
+  "total_elapsed_seconds": 75.673
 }

@@ -61,8 +61,12 @@ def t_critical_95(n: int) -> float:
     return 1.959964
 
 
-def summarize_across_seeds(values: Sequence[float]) -> dict[str, Any]:
-    """Compute mean, sample std, standard error, and exact 95% Student-t CI."""
+def summarize_across_seeds(
+    values: Sequence[float],
+    *,
+    bounds: tuple[float | None, float | None] | None = None,
+) -> dict[str, Any]:
+    """Compute mean, sample std, SE, and exact 95% Student-t CI (optionally clipped to bounds)."""
     vals = [float(v) for v in values]
     n = len(vals)
     if n == 0:
@@ -71,6 +75,7 @@ def summarize_across_seeds(values: Sequence[float]) -> dict[str, Any]:
             "mean": 0.0,
             "std": 0.0,
             "se": 0.0,
+            "ci95_half": 0.0,
             "ci95_low": 0.0,
             "ci95_high": 0.0,
             "min": 0.0,
@@ -87,13 +92,22 @@ def summarize_across_seeds(values: Sequence[float]) -> dict[str, Any]:
         std = 0.0
         se = 0.0
         half = 0.0
+    ci_lo = mean - half
+    ci_hi = mean + half
+    if bounds is not None:
+        lo_bound, hi_bound = bounds
+        if lo_bound is not None:
+            ci_lo = max(lo_bound, ci_lo)
+        if hi_bound is not None:
+            ci_hi = min(hi_bound, ci_hi)
     return {
         "n": n,
         "mean": round(mean, 6),
         "std": round(std, 6),
         "se": round(se, 6),
-        "ci95_low": round(mean - half, 6),
-        "ci95_high": round(mean + half, 6),
+        "ci95_half": round(half, 6),
+        "ci95_low": round(ci_lo, 6),
+        "ci95_high": round(ci_hi, 6),
         "min": round(min(vals), 6),
         "max": round(max(vals), 6),
         "per_seed": [round(x, 6) for x in vals],
@@ -130,6 +144,7 @@ class TaskScore:
     total_steps: int
     memory_accesses: int
     gold_any_step_applied: bool
+    exact_train_key_overlap: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -139,6 +154,7 @@ class TaskScore:
             "exact_final_match": self.exact_final_match,
             "abstained": self.abstained,
             "is_retrieval_hit": self.is_retrieval_hit,
+            "exact_train_key_overlap": self.exact_train_key_overlap,
             "excluded_from_learning_score": self.excluded_from_learning_score,
             "collateral_changes": self.collateral_changes,
             "unrelated_fact_count": self.unrelated_fact_count,
@@ -150,43 +166,81 @@ class TaskScore:
         }
 
 
+_MISSING_ATTR = object()
+
+
 def compute_collateral_changes(
     initial_state: StateGraph,
     gold_final_state: StateGraph,
     predicted_final_state: StateGraph | None,
     abstained: bool,
 ) -> tuple[int, int, float]:
-    """Count unrelated facts/attributes altered incorrectly by a non-abstaining prediction."""
+    """Count unrelated facts, attributes, entity types, and hallucinated entities altered incorrectly.
+
+    Distinguishes primary action errors (wrong value on a fact predicate or entity attribute
+    that genuinely changed in gold) from collateral corruption on unrelated facts, unrelated
+    attributes/types (even on entities whose other facts changed), deleted entities, and
+    hallucinated entities.
+    """
     preserved_gold_facts = initial_state.facts & gold_final_state.facts
-    unrelated_count = max(1, len(preserved_gold_facts))
+    init_ents = initial_state.entity_map()
+    gold_ents = gold_final_state.entity_map()
+
+    gold_changed_fact_keys = {(f[0], f[1]) for f in (initial_state.facts ^ gold_final_state.facts)}
+    gold_changed_attr_keys: set[tuple[str, str]] = set()
+    gold_changed_types: set[str] = set()
+    preserved_attr_count = 0
+
+    for eid in set(init_ents) | set(gold_ents):
+        i_ent = init_ents.get(eid)
+        g_ent = gold_ents.get(eid)
+        if i_ent is None or g_ent is None or i_ent.entity_type != g_ent.entity_type:
+            gold_changed_types.add(eid)
+        i_attrs = i_ent.attr_dict() if i_ent is not None else {}
+        g_attrs = g_ent.attr_dict() if g_ent is not None else {}
+        for attr_name in set(i_attrs) | set(g_attrs):
+            if i_attrs.get(attr_name, _MISSING_ATTR) != g_attrs.get(attr_name, _MISSING_ATTR):
+                gold_changed_attr_keys.add((eid, attr_name))
+            elif attr_name in g_attrs:
+                preserved_attr_count += 1
+
+    unrelated_count = max(1, len(preserved_gold_facts) + preserved_attr_count)
     if abstained or predicted_final_state is None:
         return (0, unrelated_count, 0.0)
 
-    # Entities touched by the true action sequence
-    gold_changed_facts = initial_state.facts ^ gold_final_state.facts
-    touched_entities = {f[0] for f in gold_changed_facts}
-    init_ents = initial_state.entity_map()
-    gold_ents = gold_final_state.entity_map()
     pred_ents = predicted_final_state.entity_map()
-    for eid in set(init_ents) | set(gold_ents):
-        if init_ents.get(eid) != gold_ents.get(eid):
-            touched_entities.add(eid)
 
     # 1. Preserved gold facts erroneously deleted
     deleted_unrelated = len(preserved_gold_facts - predicted_final_state.facts)
-    # 2. Spurious facts injected on untouched (or extraneous training) entities
-    spurious_facts = predicted_final_state.facts - gold_final_state.facts
-    spurious_unrelated = sum(1 for f in spurious_facts if f[0] not in touched_entities)
-    # 3. Attribute mutations on untouched entities
-    attr_collateral = 0
-    for eid, g_ent in gold_ents.items():
-        if eid in touched_entities:
-            continue
-        p_ent = pred_ents.get(eid)
-        if p_ent is None or p_ent.attributes != g_ent.attributes:
-            attr_collateral += 1
 
-    total_collateral = deleted_unrelated + spurious_unrelated + attr_collateral
+    # 2. Spurious facts injected on ANY (entity, predicate) not modified by the gold transition
+    spurious_facts = predicted_final_state.facts - gold_final_state.facts
+    spurious_unrelated = sum(
+        1 for f in spurious_facts if (f[0], f[1]) not in gold_changed_fact_keys
+    )
+
+    # 3. Unchanged entity deletions, entity_type mutations, unrelated attribute mutations,
+    #    and hallucinated extraneous entities
+    entity_attr_collateral = 0
+    for eid, g_ent in gold_ents.items():
+        p_ent = pred_ents.get(eid)
+        if p_ent is None:
+            entity_attr_collateral += 1
+            continue
+        if eid not in gold_changed_types and p_ent.entity_type != g_ent.entity_type:
+            entity_attr_collateral += 1
+        g_attrs = g_ent.attr_dict()
+        p_attrs = p_ent.attr_dict()
+        for attr_name in set(g_attrs) | set(p_attrs):
+            if (eid, attr_name) in gold_changed_attr_keys:
+                continue
+            if g_attrs.get(attr_name, _MISSING_ATTR) != p_attrs.get(attr_name, _MISSING_ATTR):
+                entity_attr_collateral += 1
+
+    hallucinated_entities = len(set(pred_ents) - set(gold_ents))
+    total_collateral = (
+        deleted_unrelated + spurious_unrelated + entity_attr_collateral + hallucinated_entities
+    )
     rate = total_collateral / float(unrelated_count)
     return (total_collateral, unrelated_count, rate)
 
@@ -198,16 +252,33 @@ def score_task(
     *,
     is_canary_split: bool = False,
 ) -> TaskScore:
-    """Score one predicted task against hidden ground truth with strict retrieval auditing."""
+    """Score one predicted task against hidden ground truth with full multi-step retrieval auditing."""
     pub = case.public
     hid = case.hidden
 
-    # Independent retrieval audit: check whether initial (state, action_0) is an exact
-    # training key AND the solver reported retrieval/memory access, or any step matched
-    # an exact training key via memory retrieval.
-    step0_exact = pub.step_state_action_key(pub.initial_state, 0) in training_exact_keys if pub.actions else False
-    is_retrieval_hit = bool(prediction.retrieval_hits > 0 or (step0_exact and prediction.memory_accesses > 0))
-    excluded = bool(is_retrieval_hit or is_canary_split)
+    # Independent multi-step retrieval audit: inspect EVERY step (0..depth-1) on both the
+    # true pre-step state and the solver's predicted pre-step state against training_exact_keys.
+    any_step_exact = False
+    for step_idx in range(len(pub.actions)):
+        gold_pre_state = pub.initial_state if step_idx == 0 else hid.gold_intermediate_states[step_idx - 1]
+        if pub.step_state_action_key(gold_pre_state, step_idx) in training_exact_keys:
+            any_step_exact = True
+            break
+        if step_idx > 0 and step_idx - 1 < len(prediction.step_predictions):
+            pred_pre_state = prediction.step_predictions[step_idx - 1]
+            if (
+                pred_pre_state is not None
+                and pub.step_state_action_key(pred_pre_state, step_idx) in training_exact_keys
+            ):
+                any_step_exact = True
+                break
+
+    is_retrieval_hit = bool(
+        prediction.retrieval_hits > 0 or (any_step_exact and prediction.memory_accesses > 0)
+    )
+    # Any exact training (state, action) overlap on ANY step is excluded from unseen learning
+    # accuracy even if a dishonest solver reports memory_accesses == 0.
+    excluded = bool(is_retrieval_hit or any_step_exact or is_canary_split)
 
     if prediction.abstained or prediction.predicted_final_state is None:
         exact_match = False
@@ -236,6 +307,7 @@ def score_task(
         exact_final_match=exact_match,
         abstained=prediction.abstained,
         is_retrieval_hit=is_retrieval_hit,
+        exact_train_key_overlap=any_step_exact,
         excluded_from_learning_score=excluded,
         collateral_changes=col_changes,
         unrelated_fact_count=unrel_count,
@@ -333,21 +405,31 @@ def score_operator_recovery(
     fn = 0
     per_action: dict[str, Any] = {}
 
-    for action_id, gold in gold_schemas.items():
+    for action_id in sorted(set(gold_schemas) | set(candidate_schemas)):
+        gold = gold_schemas.get(action_id)
         gold_clauses: set[tuple[str, ...]] = set()
-        for f in gold.required_facts:
-            gold_clauses.add(("pre_fact",) + f)
-        for f in gold.add_facts:
-            gold_clauses.add(("add_fact",) + f)
-        for f in gold.delete_facts:
-            gold_clauses.add(("del_fact",) + f)
-        for e in gold.attribute_edits:
-            gold_clauses.add(("attr_edit",) + e)
+        if gold is not None:
+            for f in gold.required_facts:
+                gold_clauses.add(("pre_fact",) + f)
+            for t in gold.required_types:
+                gold_clauses.add(("pre_type",) + t)
+            for g in gold.required_attr_guards:
+                gold_clauses.add(("pre_attr",) + g)
+            for f in gold.add_facts:
+                gold_clauses.add(("add_fact",) + f)
+            for f in gold.delete_facts:
+                gold_clauses.add(("del_fact",) + f)
+            for e in gold.attribute_edits:
+                gold_clauses.add(("attr_edit",) + e)
 
         cand = candidate_schemas.get(action_id, {})
         cand_clauses: set[tuple[str, ...]] = set()
         for f in cand.get("required_facts", ()):
             cand_clauses.add(("pre_fact",) + tuple(f))
+        for t in cand.get("required_types", ()):
+            cand_clauses.add(("pre_type",) + tuple(t))
+        for g in cand.get("required_attr_guards", ()):
+            cand_clauses.add(("pre_attr",) + tuple(g))
         for f in cand.get("add_facts", ()):
             cand_clauses.add(("add_fact",) + tuple(f))
         for f in cand.get("delete_facts", ()):

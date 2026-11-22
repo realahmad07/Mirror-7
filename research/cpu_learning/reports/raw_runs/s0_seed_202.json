@@ -5,11 +5,11 @@
       "bit_budget": {
         "active_bundle_bits": 0,
         "compressed_model_mdl_bits": 0,
-        "compressed_training_data_bits": 50696,
+        "compressed_training_data_bits": 51944,
         "compression_ratio_vs_raw": 0.0,
         "episode_store_bits": 0,
         "operator_library_bits": 0,
-        "raw_training_data_bits": 704128
+        "raw_training_data_bits": 704568
       },
       "category": "existing_mirror",
       "comparison_only": false,
@@ -42,7 +42,7 @@
             true
           ],
           "instructions": [
-            "Have tariq_4 give relic_4 over to kieran_4"
+            "Have tariq_8 give scroll_8 over to nadia_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_01"
@@ -58,7 +58,7 @@
             true
           ],
           "instructions": [
-            "selene_5 open satchel_5"
+            "tariq_2 open vault_2"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_02"
@@ -74,7 +74,7 @@
             true
           ],
           "instructions": [
-            "Have nadia_5 lock the satchel_5"
+            "Have zara_4 lock the satchel_4"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_03"
@@ -90,43 +90,43 @@
             true
           ],
           "instructions": [
-            "selene_8 move scroll_8 from console_8 to satchel_8"
+            "tariq_8 move crystal_8 from pedestal_8 to casket_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_04"
         }
       ],
-      "fit_seconds": 6e-06,
+      "fit_seconds": 5e-06,
       "frozen_before_temporal": true,
       "mirror_parser_step_coverage": 0.221963,
       "operator_recovery": {
         "f1": 0.0,
-        "fn": 26,
+        "fn": 41,
         "fp": 0,
         "per_action": {
           "give": {
-            "fn": 5,
+            "fn": 10,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "lock": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "move": {
-            "fn": 9,
+            "fn": 15,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "open": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
@@ -140,7 +140,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.045028,
+          "elapsed_seconds": 0.087721,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 0,
@@ -153,7 +153,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.125325,
+          "elapsed_seconds": 0.116083,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -166,7 +166,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.15989,
+          "elapsed_seconds": 0.145097,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -179,7 +179,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.179279,
+          "elapsed_seconds": 0.168296,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -192,7 +192,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.108143,
+          "elapsed_seconds": 0.099774,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -205,7 +205,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.094063,
+          "elapsed_seconds": 0.097971,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -218,7 +218,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.094392,
+          "elapsed_seconds": 0.078612,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -231,7 +231,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.090916,
+          "elapsed_seconds": 0.080871,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -244,7 +244,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.152224,
+          "elapsed_seconds": 0.143106,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -257,7 +257,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.106554,
+          "elapsed_seconds": 0.090614,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -269,12 +269,12 @@
           "wrong_non_abstain_rate": 0.0
         }
       },
-      "predict_seconds": 1.155815,
-      "predictions_per_sec_single_core": 152.27,
-      "rss_mb": 60.25,
+      "predict_seconds": 1.108146,
+      "predictions_per_sec_single_core": 158.82,
+      "rss_mb": 62.289,
       "seed": 202,
       "solver": "current_mirror_solver",
-      "tracemalloc_peak_kb": 679.01,
+      "tracemalloc_peak_kb": 33.35,
       "unseen_overall": {
         "abstention_rate": 1.0,
         "intermediate_step_accuracy": 0.0,
@@ -291,12 +291,12 @@
     "episode_lookup": {
       "bit_budget": {
         "active_bundle_bits": 0,
-        "compressed_model_mdl_bits": 11328,
-        "compressed_training_data_bits": 50696,
-        "compression_ratio_vs_raw": 0.016088,
-        "episode_store_bits": 44480,
+        "compressed_model_mdl_bits": 11568,
+        "compressed_training_data_bits": 51944,
+        "compression_ratio_vs_raw": 0.016419,
+        "episode_store_bits": 44552,
         "operator_library_bits": 0,
-        "raw_training_data_bits": 704128
+        "raw_training_data_bits": 704568
       },
       "category": "memory_baseline",
       "comparison_only": false,
@@ -329,7 +329,7 @@
             true
           ],
           "instructions": [
-            "Have tariq_4 give relic_4 over to kieran_4"
+            "Have tariq_8 give scroll_8 over to nadia_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_01"
@@ -345,7 +345,7 @@
             true
           ],
           "instructions": [
-            "selene_5 open satchel_5"
+            "tariq_2 open vault_2"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_02"
@@ -361,7 +361,7 @@
             true
           ],
           "instructions": [
-            "Have nadia_5 lock the satchel_5"
+            "Have zara_4 lock the satchel_4"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_03"
@@ -377,42 +377,42 @@
             true
           ],
           "instructions": [
-            "selene_8 move scroll_8 from console_8 to satchel_8"
+            "tariq_8 move crystal_8 from pedestal_8 to casket_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_04"
         }
       ],
-      "fit_seconds": 0.012475,
+      "fit_seconds": 0.006902,
       "frozen_before_temporal": true,
       "operator_recovery": {
         "f1": 0.0,
-        "fn": 26,
+        "fn": 41,
         "fp": 0,
         "per_action": {
           "give": {
-            "fn": 5,
+            "fn": 10,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "lock": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "move": {
-            "fn": 9,
+            "fn": 15,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "open": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
@@ -426,7 +426,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.00932,
+          "elapsed_seconds": 0.003742,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 0,
@@ -439,7 +439,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.025995,
+          "elapsed_seconds": 0.002786,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -452,7 +452,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.025886,
+          "elapsed_seconds": 0.007222,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -465,7 +465,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.023412,
+          "elapsed_seconds": 0.007218,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -478,7 +478,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.019921,
+          "elapsed_seconds": 0.003744,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -491,7 +491,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.016365,
+          "elapsed_seconds": 0.002229,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -504,7 +504,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.015806,
+          "elapsed_seconds": 0.004043,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -517,7 +517,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.015947,
+          "elapsed_seconds": 0.003167,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -530,7 +530,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.021557,
+          "elapsed_seconds": 0.006803,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -543,7 +543,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": 1.0,
-          "elapsed_seconds": 0.020412,
+          "elapsed_seconds": 0.005012,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -555,12 +555,12 @@
           "wrong_non_abstain_rate": 0.0
         }
       },
-      "predict_seconds": 0.194621,
-      "predictions_per_sec_single_core": 904.32,
-      "rss_mb": 59.801,
+      "predict_seconds": 0.045967,
+      "predictions_per_sec_single_core": 3828.84,
+      "rss_mb": 62.109,
       "seed": 202,
       "solver": "episode_lookup",
-      "tracemalloc_peak_kb": 60.97,
+      "tracemalloc_peak_kb": 19.63,
       "unseen_overall": {
         "abstention_rate": 1.0,
         "intermediate_step_accuracy": 0.0,
@@ -577,18 +577,18 @@
     "hand_coded_hidden_oracle": {
       "bit_budget": {
         "active_bundle_bits": 0,
-        "compressed_model_mdl_bits": 2256,
-        "compressed_training_data_bits": 50696,
-        "compression_ratio_vs_raw": 0.003204,
+        "compressed_model_mdl_bits": 2888,
+        "compressed_training_data_bits": 51944,
+        "compression_ratio_vs_raw": 0.004099,
         "episode_store_bits": 0,
-        "operator_library_bits": 9960,
-        "raw_training_data_bits": 704128
+        "operator_library_bits": 14288,
+        "raw_training_data_bits": 704568
       },
       "category": "evaluator_ceiling",
       "comparison_only": false,
       "evaluator_only": true,
       "failed_examples_sample": [],
-      "fit_seconds": 5e-06,
+      "fit_seconds": 6e-06,
       "frozen_before_temporal": true,
       "operator_recovery": {
         "f1": 1.0,
@@ -600,38 +600,38 @@
             "fp": 0,
             "precision": 1.0,
             "recall": 1.0,
-            "tp": 5
+            "tp": 10
           },
           "lock": {
             "fn": 0,
             "fp": 0,
             "precision": 1.0,
             "recall": 1.0,
-            "tp": 6
+            "tp": 8
           },
           "move": {
             "fn": 0,
             "fp": 0,
             "precision": 1.0,
             "recall": 1.0,
-            "tp": 9
+            "tp": 15
           },
           "open": {
             "fn": 0,
             "fp": 0,
             "precision": 1.0,
             "recall": 1.0,
-            "tp": 6
+            "tp": 8
           }
         },
         "precision": 1.0,
         "recall": 1.0,
-        "tp": 26
+        "tp": 41
       },
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.014008,
+          "elapsed_seconds": 0.002744,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 0,
@@ -644,7 +644,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.036025,
+          "elapsed_seconds": 0.014156,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 20,
@@ -657,7 +657,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.043763,
+          "elapsed_seconds": 0.021462,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 20,
@@ -670,7 +670,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.056086,
+          "elapsed_seconds": 0.03635,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 20,
@@ -683,7 +683,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.029122,
+          "elapsed_seconds": 0.006425,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 20,
@@ -696,7 +696,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.032807,
+          "elapsed_seconds": 0.009212,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 16,
@@ -709,7 +709,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.036352,
+          "elapsed_seconds": 0.008616,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 16,
@@ -722,7 +722,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.013172,
+          "elapsed_seconds": 0.006105,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 16,
@@ -735,7 +735,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.034615,
+          "elapsed_seconds": 0.013428,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 20,
@@ -748,7 +748,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.016585,
+          "elapsed_seconds": 0.007604,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 1.0,
           "learning_scored_tasks": 20,
@@ -760,12 +760,12 @@
           "wrong_non_abstain_rate": 0.0
         }
       },
-      "predict_seconds": 0.312534,
-      "predictions_per_sec_single_core": 563.14,
-      "rss_mb": 59.801,
+      "predict_seconds": 0.126102,
+      "predictions_per_sec_single_core": 1395.7,
+      "rss_mb": 62.109,
       "seed": 202,
       "solver": "hand_coded_hidden_oracle",
-      "tracemalloc_peak_kb": 98.19,
+      "tracemalloc_peak_kb": 23.82,
       "unseen_overall": {
         "abstention_rate": 0.0,
         "intermediate_step_accuracy": 1.0,
@@ -783,11 +783,11 @@
       "bit_budget": {
         "active_bundle_bits": 0,
         "compressed_model_mdl_bits": 0,
-        "compressed_training_data_bits": 50696,
+        "compressed_training_data_bits": 51944,
         "compression_ratio_vs_raw": 0.0,
         "episode_store_bits": 0,
         "operator_library_bits": 0,
-        "raw_training_data_bits": 704128
+        "raw_training_data_bits": 704568
       },
       "category": "sanity_floor",
       "comparison_only": false,
@@ -820,7 +820,7 @@
             true
           ],
           "instructions": [
-            "Have tariq_4 give relic_4 over to kieran_4"
+            "Have tariq_8 give scroll_8 over to nadia_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_01"
@@ -836,7 +836,7 @@
             true
           ],
           "instructions": [
-            "selene_5 open satchel_5"
+            "tariq_2 open vault_2"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_02"
@@ -852,7 +852,7 @@
             true
           ],
           "instructions": [
-            "Have nadia_5 lock the satchel_5"
+            "Have zara_4 lock the satchel_4"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_03"
@@ -868,42 +868,42 @@
             true
           ],
           "instructions": [
-            "selene_8 move scroll_8 from console_8 to satchel_8"
+            "tariq_8 move crystal_8 from pedestal_8 to casket_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_04"
         }
       ],
-      "fit_seconds": 3e-06,
+      "fit_seconds": 2e-06,
       "frozen_before_temporal": true,
       "operator_recovery": {
         "f1": 0.0,
-        "fn": 26,
+        "fn": 41,
         "fp": 0,
         "per_action": {
           "give": {
-            "fn": 5,
+            "fn": 10,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "lock": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "move": {
-            "fn": 9,
+            "fn": 15,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "open": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
@@ -917,7 +917,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.005127,
+          "elapsed_seconds": 0.001542,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 0,
@@ -930,7 +930,7 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.017331,
+          "elapsed_seconds": 0.002846,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -943,7 +943,7 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.017491,
+          "elapsed_seconds": 0.00497,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -956,7 +956,7 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.017575,
+          "elapsed_seconds": 0.007687,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -969,7 +969,7 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.012862,
+          "elapsed_seconds": 0.001563,
           "intermediate_step_accuracy": 0.5,
           "learning_exact_accuracy": 0.5,
           "learning_scored_tasks": 20,
@@ -982,7 +982,7 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.014001,
+          "elapsed_seconds": 0.001002,
           "intermediate_step_accuracy": 0.1875,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -995,7 +995,7 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.011409,
+          "elapsed_seconds": 0.001812,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -1008,7 +1008,7 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.011146,
+          "elapsed_seconds": 0.001236,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
@@ -1021,7 +1021,7 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.015153,
+          "elapsed_seconds": 0.004204,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -1034,7 +1034,7 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.013645,
+          "elapsed_seconds": 0.001648,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
@@ -1046,12 +1046,12 @@
           "wrong_non_abstain_rate": 1.0
         }
       },
-      "predict_seconds": 0.135741,
-      "predictions_per_sec_single_core": 1296.58,
-      "rss_mb": 59.801,
+      "predict_seconds": 0.028512,
+      "predictions_per_sec_single_core": 6172.88,
+      "rss_mb": 62.109,
       "seed": 202,
       "solver": "noop_identity_floor",
-      "tracemalloc_peak_kb": 89.9,
+      "tracemalloc_peak_kb": 18.33,
       "unseen_overall": {
         "abstention_rate": 0.0,
         "intermediate_step_accuracy": 0.038095,
@@ -1068,12 +1068,12 @@
     "shard_hdc_retrieval_no_itl": {
       "bit_budget": {
         "active_bundle_bits": 245760,
-        "compressed_model_mdl_bits": 248960,
-        "compressed_training_data_bits": 50696,
-        "compression_ratio_vs_raw": 0.353572,
-        "episode_store_bits": 277376,
+        "compressed_model_mdl_bits": 249224,
+        "compressed_training_data_bits": 51944,
+        "compression_ratio_vs_raw": 0.353726,
+        "episode_store_bits": 277448,
         "operator_library_bits": 0,
-        "raw_training_data_bits": 704128
+        "raw_training_data_bits": 704568
       },
       "category": "shard_baseline",
       "comparison_only": false,
@@ -1106,7 +1106,7 @@
             true
           ],
           "instructions": [
-            "Have tariq_4 give relic_4 over to kieran_4"
+            "Have tariq_8 give scroll_8 over to nadia_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_01"
@@ -1122,7 +1122,7 @@
             true
           ],
           "instructions": [
-            "selene_5 open satchel_5"
+            "tariq_2 open vault_2"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_02"
@@ -1138,7 +1138,7 @@
             true
           ],
           "instructions": [
-            "Have nadia_5 lock the satchel_5"
+            "Have zara_4 lock the satchel_4"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_03"
@@ -1154,42 +1154,42 @@
             true
           ],
           "instructions": [
-            "selene_8 move scroll_8 from console_8 to satchel_8"
+            "tariq_8 move crystal_8 from pedestal_8 to casket_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_04"
         }
       ],
-      "fit_seconds": 0.021923,
+      "fit_seconds": 0.020774,
       "frozen_before_temporal": true,
       "operator_recovery": {
         "f1": 0.0,
-        "fn": 26,
+        "fn": 41,
         "fp": 0,
         "per_action": {
           "give": {
-            "fn": 5,
+            "fn": 10,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "lock": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "move": {
-            "fn": 9,
+            "fn": 15,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "open": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
@@ -1203,7 +1203,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.013217,
+          "elapsed_seconds": 0.009989,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 0,
@@ -1216,50 +1216,50 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.053002,
+          "elapsed_seconds": 0.039246,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.094444,
+          "mean_collateral_rate": 0.043461,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 34,
+          "total_collateral_changes": 35,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_comp_depth4": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.103951,
+          "elapsed_seconds": 0.07403,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.143423,
+          "mean_collateral_rate": 0.067253,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 48,
+          "total_collateral_changes": 52,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_comp_depth6": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.145813,
+          "elapsed_seconds": 0.125453,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.255,
+          "mean_collateral_rate": 0.116718,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 80,
+          "total_collateral_changes": 85,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_guard_contrasts": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.029648,
+          "elapsed_seconds": 0.019511,
           "intermediate_step_accuracy": 0.25,
           "learning_exact_accuracy": 0.25,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.043301,
+          "mean_collateral_rate": 0.019675,
           "raw_exact_accuracy_including_retrieval": 0.25,
           "retrieval_hits": 0,
           "total_collateral_changes": 15,
@@ -1268,37 +1268,37 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.04051,
+          "elapsed_seconds": 0.030076,
           "intermediate_step_accuracy": 0.0625,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.089614,
+          "mean_collateral_rate": 0.043568,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 24,
+          "total_collateral_changes": 26,
           "total_tasks": 16,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.039892,
+          "elapsed_seconds": 0.023474,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.051471,
+          "mean_collateral_rate": 0.026671,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 14,
+          "total_collateral_changes": 16,
           "total_tasks": 16,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_role_swaps": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.024107,
+          "elapsed_seconds": 0.017803,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.055147,
+          "mean_collateral_rate": 0.024671,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 15,
@@ -1307,59 +1307,59 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.087872,
+          "elapsed_seconds": 0.063411,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.110519,
+          "mean_collateral_rate": 0.054863,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 38,
+          "total_collateral_changes": 43,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_unseen_names": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.030447,
+          "elapsed_seconds": 0.021061,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.052941,
+          "mean_collateral_rate": 0.026671,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 18,
+          "total_collateral_changes": 20,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         }
       },
-      "predict_seconds": 0.568458,
-      "predictions_per_sec_single_core": 309.61,
-      "rss_mb": 60.055,
+      "predict_seconds": 0.424054,
+      "predictions_per_sec_single_core": 415.04,
+      "rss_mb": 62.117,
       "seed": 202,
       "solver": "shard_hdc_retrieval_no_itl",
-      "tracemalloc_peak_kb": 323.01,
+      "tracemalloc_peak_kb": 75.34,
       "unseen_overall": {
         "abstention_rate": 0.0,
         "intermediate_step_accuracy": 0.016667,
         "learning_exact_accuracy": 0.029762,
         "learning_scored_tasks": 168,
-        "mean_collateral_rate": 0.101978,
+        "mean_collateral_rate": 0.048163,
         "raw_exact_accuracy_including_retrieval": 0.029762,
         "retrieval_hits": 0,
-        "total_collateral_changes": 286,
+        "total_collateral_changes": 307,
         "total_tasks": 168,
         "wrong_non_abstain_rate": 0.970238
       }
     },
     "small_cpu_neural_reference": {
       "bit_budget": {
-        "active_bundle_bits": 18496,
-        "compressed_model_mdl_bits": 21480,
-        "compressed_training_data_bits": 50696,
-        "compression_ratio_vs_raw": 0.030506,
-        "episode_store_bits": 21016,
+        "active_bundle_bits": 19744,
+        "compressed_model_mdl_bits": 23104,
+        "compressed_training_data_bits": 51944,
+        "compression_ratio_vs_raw": 0.032792,
+        "episode_store_bits": 26088,
         "operator_library_bits": 0,
-        "raw_training_data_bits": 704128
+        "raw_training_data_bits": 704568
       },
       "category": "comparison_only_neural",
       "comparison_only": true,
@@ -1367,7 +1367,7 @@
       "failed_examples_sample": [
         {
           "abstained": false,
-          "collateral_changes": 0,
+          "collateral_changes": 1,
           "depth": 1,
           "gold_block_reasons": [
             "applied"
@@ -1383,7 +1383,7 @@
         },
         {
           "abstained": false,
-          "collateral_changes": 1,
+          "collateral_changes": 0,
           "depth": 1,
           "gold_block_reasons": [
             "applied"
@@ -1392,7 +1392,7 @@
             true
           ],
           "instructions": [
-            "Have tariq_4 give relic_4 over to kieran_4"
+            "Have tariq_8 give scroll_8 over to nadia_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_01"
@@ -1408,14 +1408,14 @@
             true
           ],
           "instructions": [
-            "selene_5 open satchel_5"
+            "tariq_2 open vault_2"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_02"
         },
         {
           "abstained": false,
-          "collateral_changes": 1,
+          "collateral_changes": 0,
           "depth": 1,
           "gold_block_reasons": [
             "applied"
@@ -1424,7 +1424,7 @@
             true
           ],
           "instructions": [
-            "Have nadia_5 lock the satchel_5"
+            "Have zara_4 lock the satchel_4"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_03"
@@ -1440,42 +1440,42 @@
             true
           ],
           "instructions": [
-            "selene_8 move scroll_8 from console_8 to satchel_8"
+            "tariq_8 move crystal_8 from pedestal_8 to casket_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_04"
         }
       ],
-      "fit_seconds": 2.826183,
+      "fit_seconds": 0.313265,
       "frozen_before_temporal": true,
       "operator_recovery": {
         "f1": 0.0,
-        "fn": 26,
+        "fn": 41,
         "fp": 0,
         "per_action": {
           "give": {
-            "fn": 5,
+            "fn": 10,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "lock": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "move": {
-            "fn": 9,
+            "fn": 15,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "open": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
@@ -1489,7 +1489,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.010095,
+          "elapsed_seconds": 0.004794,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 0,
@@ -1502,137 +1502,137 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.044021,
+          "elapsed_seconds": 0.019885,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.058333,
+          "mean_collateral_rate": 0.027293,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 21,
+          "total_collateral_changes": 22,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_comp_depth4": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.07568,
+          "elapsed_seconds": 0.037729,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.096058,
+          "mean_collateral_rate": 0.044601,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 32,
+          "total_collateral_changes": 34,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_comp_depth6": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.111801,
+          "elapsed_seconds": 0.064325,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.146458,
+          "mean_collateral_rate": 0.060541,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 46,
+          "total_collateral_changes": 44,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_guard_contrasts": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.026977,
+          "elapsed_seconds": 0.009186,
           "intermediate_step_accuracy": 0.25,
           "learning_exact_accuracy": 0.25,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.031536,
+          "mean_collateral_rate": 0.015727,
           "raw_exact_accuracy_including_retrieval": 0.25,
           "retrieval_hits": 0,
-          "total_collateral_changes": 11,
+          "total_collateral_changes": 12,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 0.75
         },
         "heldout_order_reversal": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.03854,
-          "intermediate_step_accuracy": 0.09375,
+          "elapsed_seconds": 0.015751,
+          "intermediate_step_accuracy": 0.0625,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.066866,
+          "mean_collateral_rate": 0.021922,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 18,
+          "total_collateral_changes": 13,
           "total_tasks": 16,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.033216,
+          "elapsed_seconds": 0.014964,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.051471,
+          "mean_collateral_rate": 0.020048,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 14,
+          "total_collateral_changes": 12,
           "total_tasks": 16,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_role_swaps": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.021569,
+          "elapsed_seconds": 0.007546,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.055147,
+          "mean_collateral_rate": 0.013158,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 15,
+          "total_collateral_changes": 8,
           "total_tasks": 16,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_temporal_frozen": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.056,
+          "elapsed_seconds": 0.025922,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.069914,
+          "mean_collateral_rate": 0.037181,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 24,
+          "total_collateral_changes": 29,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         },
         "heldout_unseen_names": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.026242,
+          "elapsed_seconds": 0.010171,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.05,
+          "mean_collateral_rate": 0.0133,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
-          "total_collateral_changes": 17,
+          "total_collateral_changes": 10,
           "total_tasks": 20,
           "wrong_non_abstain_rate": 1.0
         }
       },
-      "predict_seconds": 0.444141,
-      "predictions_per_sec_single_core": 396.27,
-      "rss_mb": 60.68,
+      "predict_seconds": 0.210273,
+      "predictions_per_sec_single_core": 837.01,
+      "rss_mb": 62.789,
       "seed": 202,
       "solver": "small_cpu_neural_reference",
-      "tracemalloc_peak_kb": 120.82,
+      "tracemalloc_peak_kb": 56.72,
       "unseen_overall": {
         "abstention_rate": 0.0,
-        "intermediate_step_accuracy": 0.019048,
+        "intermediate_step_accuracy": 0.016667,
         "learning_exact_accuracy": 0.029762,
         "learning_scored_tasks": 168,
-        "mean_collateral_rate": 0.070367,
+        "mean_collateral_rate": 0.028898,
         "raw_exact_accuracy_including_retrieval": 0.029762,
         "retrieval_hits": 0,
-        "total_collateral_changes": 198,
+        "total_collateral_changes": 184,
         "total_tasks": 168,
         "wrong_non_abstain_rate": 0.970238
       }
@@ -1640,12 +1640,12 @@
     "structural_knn": {
       "bit_budget": {
         "active_bundle_bits": 0,
-        "compressed_model_mdl_bits": 29240,
-        "compressed_training_data_bits": 50696,
-        "compression_ratio_vs_raw": 0.041527,
-        "episode_store_bits": 242880,
+        "compressed_model_mdl_bits": 30336,
+        "compressed_training_data_bits": 51944,
+        "compression_ratio_vs_raw": 0.043056,
+        "episode_store_bits": 243464,
         "operator_library_bits": 0,
-        "raw_training_data_bits": 704128
+        "raw_training_data_bits": 704568
       },
       "category": "memory_baseline",
       "comparison_only": false,
@@ -1678,7 +1678,7 @@
             true
           ],
           "instructions": [
-            "Have tariq_4 give relic_4 over to kieran_4"
+            "Have tariq_8 give scroll_8 over to nadia_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_01"
@@ -1694,7 +1694,7 @@
             true
           ],
           "instructions": [
-            "selene_5 open satchel_5"
+            "tariq_2 open vault_2"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_02"
@@ -1710,7 +1710,7 @@
             true
           ],
           "instructions": [
-            "Have nadia_5 lock the satchel_5"
+            "Have zara_4 lock the satchel_4"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_03"
@@ -1726,42 +1726,42 @@
             true
           ],
           "instructions": [
-            "selene_8 move scroll_8 from console_8 to satchel_8"
+            "tariq_8 move crystal_8 from pedestal_8 to casket_8"
           ],
           "split_id": "heldout_unseen_names",
           "task_id": "unseen_names_s202_04"
         }
       ],
-      "fit_seconds": 0.016274,
+      "fit_seconds": 0.007271,
       "frozen_before_temporal": true,
       "operator_recovery": {
         "f1": 0.0,
-        "fn": 26,
+        "fn": 41,
         "fp": 0,
         "per_action": {
           "give": {
-            "fn": 5,
+            "fn": 10,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "lock": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "move": {
-            "fn": 9,
+            "fn": 15,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
             "tp": 0
           },
           "open": {
-            "fn": 6,
+            "fn": 8,
             "fp": 0,
             "precision": 0.0,
             "recall": 0.0,
@@ -1775,7 +1775,7 @@
       "per_split": {
         "canary_exact_memorization": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.011191,
+          "elapsed_seconds": 0.019312,
           "intermediate_step_accuracy": 1.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 0,
@@ -1788,11 +1788,11 @@
         },
         "heldout_comp_depth2": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.04683,
+          "elapsed_seconds": 0.021828,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.097222,
+          "mean_collateral_rate": 0.043461,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 35,
@@ -1801,11 +1801,11 @@
         },
         "heldout_comp_depth4": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.076459,
+          "elapsed_seconds": 0.051927,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.134395,
+          "mean_collateral_rate": 0.058453,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 45,
@@ -1814,11 +1814,11 @@
         },
         "heldout_comp_depth6": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.107937,
+          "elapsed_seconds": 0.062632,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.25125,
+          "mean_collateral_rate": 0.108378,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 79,
@@ -1827,11 +1827,11 @@
         },
         "heldout_guard_contrasts": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.025616,
+          "elapsed_seconds": 0.014755,
           "intermediate_step_accuracy": 0.25,
           "learning_exact_accuracy": 0.25,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.043301,
+          "mean_collateral_rate": 0.019675,
           "raw_exact_accuracy_including_retrieval": 0.25,
           "retrieval_hits": 0,
           "total_collateral_changes": 15,
@@ -1840,11 +1840,11 @@
         },
         "heldout_order_reversal": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.033916,
+          "elapsed_seconds": 0.020534,
           "intermediate_step_accuracy": 0.0625,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.089614,
+          "mean_collateral_rate": 0.040279,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 24,
@@ -1853,11 +1853,11 @@
         },
         "heldout_repeated_idempotent": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.032939,
+          "elapsed_seconds": 0.020518,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.058824,
+          "mean_collateral_rate": 0.026671,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 16,
@@ -1866,11 +1866,11 @@
         },
         "heldout_role_swaps": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.022683,
+          "elapsed_seconds": 0.009538,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 16,
-          "mean_collateral_rate": 0.058824,
+          "mean_collateral_rate": 0.026316,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 16,
@@ -1879,11 +1879,11 @@
         },
         "heldout_temporal_frozen": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.063557,
+          "elapsed_seconds": 0.047438,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.119179,
+          "mean_collateral_rate": 0.052355,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 41,
@@ -1892,11 +1892,11 @@
         },
         "heldout_unseen_names": {
           "abstention_rate": 0.0,
-          "elapsed_seconds": 0.026461,
+          "elapsed_seconds": 0.010226,
           "intermediate_step_accuracy": 0.0,
           "learning_exact_accuracy": 0.0,
           "learning_scored_tasks": 20,
-          "mean_collateral_rate": 0.058824,
+          "mean_collateral_rate": 0.026671,
           "raw_exact_accuracy_including_retrieval": 0.0,
           "retrieval_hits": 0,
           "total_collateral_changes": 20,
@@ -1904,18 +1904,18 @@
           "wrong_non_abstain_rate": 1.0
         }
       },
-      "predict_seconds": 0.44759,
-      "predictions_per_sec_single_core": 393.22,
-      "rss_mb": 59.848,
+      "predict_seconds": 0.278708,
+      "predictions_per_sec_single_core": 631.48,
+      "rss_mb": 62.109,
       "seed": 202,
       "solver": "structural_knn",
-      "tracemalloc_peak_kb": 233.13,
+      "tracemalloc_peak_kb": 168.22,
       "unseen_overall": {
         "abstention_rate": 0.0,
         "intermediate_step_accuracy": 0.016667,
         "learning_exact_accuracy": 0.029762,
         "learning_scored_tasks": 168,
-        "mean_collateral_rate": 0.103569,
+        "mean_collateral_rate": 0.045667,
         "raw_exact_accuracy_including_retrieval": 0.029762,
         "retrieval_hits": 0,
         "total_collateral_changes": 291,

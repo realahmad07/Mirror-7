@@ -28,15 +28,20 @@
     "open",
     "lock"
   ],
-  "reproduce_command": "python -m research.cpu_learning.evaluation.run_experiments",
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_experiments",
   "s0_acceptance_gates": {
-    "deterministic_seed_replay": true,
+    "all_solvers_frozen_before_temporal": true,
+    "cpu_budget_within_limit": true,
+    "deterministic_seed_replay_all_seeds": true,
     "episode_lookup_canary_excluded_from_learning": true,
     "episode_lookup_canary_retrieval_audit_rate": 1.0,
+    "episode_lookup_unseen_zero_leakage": true,
+    "five_distinct_fixed_seeds_present": true,
     "hidden_oracle_collateral_rate": 0.0,
     "hidden_oracle_exact_accuracy": 1.0,
     "hidden_oracle_operator_recovery_f1": 1.0,
-    "pool_disjointness_verified": true
+    "pool_disjointness_verified": true,
+    "shard_modular_addition_canary_confirmed": true
   },
   "schema_version": "s0-preregistration-v1",
   "seeds": [
@@ -49,11 +54,11 @@
   "stage": "S0",
   "temporal_generator_version": "s0-temporal-v2.0",
   "train_manifest_sha256_by_seed": {
-    "101": "0c1ce736ff9dc2a41d985f05660e2d6fd92fec8f144c929645084ac3e51114b7",
-    "202": "1345cd89e36e9bfc336af4d2da7ca853ae88a81458ca60e35bfcead4152de27f",
-    "303": "f096bd049aee7eba7c038c7610f3be7537ebc5af3f8f6cf67990c26e80895fc7",
-    "404": "7f118e9ebffbf390eb1df791d0eb59a935fcf87efa847b0e0cabf88c9b95deaa",
-    "505": "062e4ec0387cc8b08e5f57e2fc9b02b3e82f61cc5544ffafbf104b04bfe98566"
+    "101": "254aff1f3f0aee86fc8c439e658cc4173de9ab3130ce7b872143c9087a68ec24",
+    "202": "70139854b067fb334ec1d2db72633f395673e837983b8a8cb4d459fcf2ee152b",
+    "303": "051c780bdc70584fdab0849ef844369d29ca003f080b2ee0935665295f783eb9",
+    "404": "8af2d2a7fed53d1f8920b9063f372d6ffdbf2eed2d6837bf31cebf3c061575d4",
+    "505": "dab21a401022580c70d3e98d5deec3309ed0aefbdf476f0a05e88ce257537187"
   },
   "unseen_eval_splits": [
     "heldout_unseen_names",

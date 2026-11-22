@@ -51,9 +51,19 @@ class SignedBitSlicedAccumulator:
     def __init__(self, bits: int = 12) -> None:
         self.K = max(4, int(bits))
         self.planes: list[int] = [0] * self.K
+        self._updates: int = 0
+
+    def _ensure_headroom(self) -> None:
+        # Dynamic 2's-complement sign extension prevents silent sign-flip wraparound
+        # when cumulative updates approach 2^(K-1) - 1.
+        if self._updates + 1 >= (1 << (self.K - 1)):
+            self.planes.append(self.planes[self.K - 1])
+            self.K += 1
 
     def add_bipolar(self, v: int) -> None:
         """Add +1 where bit i of v is 1, and -1 where bit i of v is 0 (2*v - 1)."""
+        self._ensure_headroom()
+        self._updates += 1
         v = v & MASK
         planes = self.planes
         K = self.K
@@ -244,8 +254,12 @@ def run_shard_arithmetic_canary(
         summary_by_task[task_name] = {
             "num_classes": n_cls,
             "chance_baseline": round(1.0 / n_cls, 6),
-            "hdc_pure_similarity": summarize_across_seeds(sim_by_task[task_name]),
-            "shard_bit_perceptron": summarize_across_seeds(perc_by_task[task_name]),
+            "hdc_pure_similarity": summarize_across_seeds(
+                sim_by_task[task_name], bounds=(0.0, 1.0)
+            ),
+            "shard_bit_perceptron": summarize_across_seeds(
+                perc_by_task[task_name], bounds=(0.0, 1.0)
+            ),
             "learned_readout_bits": n_cls * D,
         }
 

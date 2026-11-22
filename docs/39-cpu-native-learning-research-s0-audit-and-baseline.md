@@ -72,19 +72,19 @@ PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_experiments
 
 ### A. Unseen Generator-Split Baseline Matrix (9 Unseen Splits, 168 Tasks/Seed = 840 Total)
 
-| Solver | Category | Unseen Exact Acc (Mean ± 95% CI) | Depth-4 Acc | Depth-6 Acc | Temporal Frozen | Abstain Rate | Collateral Rate | Preds/s (1-core) | Peak Heap (KB) | Model MDL (bits) |
+| Solver | Category | Unseen Exact Acc (Mean ± 95% CI) | Depth-4 Acc | Depth-6 Acc | Temporal Frozen | Abstain Rate | Collateral Rate | Preds/s (1-core, uninstrumented) | Peak Heap (KB) | Model MDL (bits) |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| `hand_coded_hidden_oracle` | `evaluator_ceiling` | **100.00% ± 0.00%** | 100.00% | 100.00% | 100.00% | 0.00% | 0.00% | 742.6 | 98.2 | 2,256 |
-| `noop_identity_floor` | `sanity_floor` | 5.95% ± 0.00% | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% | 1,479.0 | 89.9 | 0 |
-| `episode_lookup` | `memory_baseline` | **0.00% ± 0.00%** | 0.00% | 0.00% | 0.00% | 100.00% | 0.00% | 985.3 | 61.1 | 11,483 |
-| `structural_knn` | `memory_baseline` | 2.98% ± 0.00% | 0.00% | 0.00% | 0.00% | 0.00% | 10.23% | 408.0 | 233.1 | 29,768 |
-| `shard_hdc_retrieval_no_itl` | `shard_baseline` | **3.21% ± 0.40%** | 0.00% | 0.00% | 0.00% | 0.00% | 10.22% | 299.6 | 355.6 | 249,176 |
-| `current_mirror_solver` | `existing_mirror` | **0.00% ± 0.00%** | 0.00% | 0.00% | 0.00% | 100.00% | 0.00% | 141.8 | 641.8 | 0 |
-| `small_cpu_neural_reference` | `comparison_only_neural` | 3.57% ± 1.05% | 0.00% | 0.00% | 0.00% | 0.00% | 6.39% | 383.1 | 122.1 | 22,749 |
+| `hand_coded_hidden_oracle` | `evaluator_ceiling` | **100.00% ± 0.00%** | 100.00% | 100.00% | 100.00% | 0.00% | 0.00% | 1,609.3 | 23.8 | 2,888 |
+| `noop_identity_floor` | `sanity_floor` | 5.95% ± 0.00% | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% | 6,267.2 | 18.3 | 0 |
+| `episode_lookup` | `memory_baseline` | **0.00% ± 0.00%** | 0.00% | 0.00% | 0.00% | 100.00% | 0.00% | 4,267.6 | 19.6 | 11,581 |
+| `structural_knn` | `memory_baseline` | 2.98% ± 0.00% | 0.00% | 0.00% | 0.00% | 0.00% | 4.57% | 719.6 | 168.2 | 30,357 |
+| `shard_hdc_retrieval_no_itl` | `shard_baseline` | **3.57% ± 0.74%** | 0.00% | 0.00% | 0.00% | 0.00% | 4.56% | 426.5 | 75.3 | 249,262 |
+| `current_mirror_solver` | `existing_mirror` | **0.00% ± 0.00%** | 0.00% | 0.00% | 0.00% | 100.00% | 0.00% | 185.0 | 33.1 | 0 |
+| `small_cpu_neural_reference` | `comparison_only_neural` | 2.74% ± 2.00% | 0.00% | 0.00% | 0.00% | 0.00% | 2.64% | 658.8 | 56.5 | 23,019 |
 
 Key S0 findings:
-1. **Retrieval vs. Learning Verified:** On `canary_exact_memorization` (8 exact training copies/seed), `episode_lookup`, `structural_knn`, and `shard_hdc_retrieval_no_itl` achieve `100.00%` raw exact match, and the evaluator flags `100.00%` as retrieval hits (`learning_scored_tasks = 0`), preventing memorization from inflating learning scores.
-2. **Memory, Pure HDC Similarity, Current Mirror, and Small Neural Reference All Collapse on Unseen Entities & Compositions:** Every non-oracle baseline achieves `0.00%` exact final-state accuracy on `heldout_comp_depth4`, `heldout_comp_depth6`, and `heldout_temporal_frozen`. Non-abstaining retrieval baselines (`structural_knn`, `shard_hdc_retrieval_no_itl`) also inflict `> 10%` collateral corruption by applying concrete training entity deltas into unseen worlds.
+1. **Retrieval vs. Learning Verified:** On `canary_exact_memorization` (8 exact training copies/seed), `episode_lookup`, `structural_knn`, and `shard_hdc_retrieval_no_itl` achieve `100.00%` raw exact match, and the evaluator flags `100.00%` as retrieval hits (`learning_scored_tasks_max = 0` across all 5 seeds), preventing memorization from inflating learning scores. Multi-step exact matches and `memory_accesses=0` exact-key overlaps are also excluded independently.
+2. **Memory, Pure HDC Similarity, Current Mirror, and Small Neural Reference All Collapse on Unseen Entities & Compositions:** Every non-oracle baseline achieves `0.00%` exact final-state accuracy on `heldout_comp_depth4`, `heldout_comp_depth6`, and `heldout_temporal_frozen`. Non-abstaining retrieval baselines (`structural_knn`, `shard_hdc_retrieval_no_itl`) also inflict `> 4.5%` collateral corruption across preserved unrelated facts and entity attributes (more than double the future `< 2%` gate) by applying concrete training entity deltas into unseen worlds.
 3. **Current Mirror Safety Preserved:** `current_mirror_solver` abstains cleanly (`100.00%` abstention, `0.00%` collateral corruption) rather than hallucinating state changes, while its `BilingualCCGHDCParser` achieves `22.20%` exact role-parse accuracy on the raw simulator instructions.
 
 ### B. Independent 5-Seed SHARD HDC Arithmetic Canary (PDF p. 3 Reproduction)
@@ -105,7 +105,7 @@ This independent CPU reproduction confirms both conclusions from the research ha
 
 ## 5. Missing Mechanisms & Stage S1 Acceptance Criteria
 
-S0 passes all 7 pre-registered acceptance checks (`deterministic_seed_replay`, `pool_disjointness_verified`, `hidden_oracle_exact_accuracy_100pct`, `hidden_oracle_collateral_zero`, `hidden_oracle_operator_recovery_f1_100pct`, `episode_lookup_canary_retrieval_audited`, `five_fixed_seeds_present`).
+S0 passes all 11 pre-registered acceptance checks across all 5 distinct seeds (`five_distinct_fixed_seeds_present`, `deterministic_seed_replay_all_seeds`, `pool_disjointness_verified`, `all_solvers_frozen_before_temporal`, `hidden_oracle_exact_accuracy_100pct`, `hidden_oracle_collateral_zero`, `hidden_oracle_operator_recovery_f1_100pct`, `episode_lookup_unseen_zero_leakage`, `episode_lookup_canary_retrieval_audited_all_seeds`, `cpu_budget_within_limit`, `shard_modular_addition_canary_confirmed`), and committed manifests verify bit-exact via `python -m research.cpu_learning.evaluation.run_experiments --verify-manifests`.
 
 The next stage is **S1 — Typed State-Frame + Append-Only Episode Ledger** (not yet implemented). Its acceptance gate requires:
 1. Learner-facing typed state-frame and observation-mask ingestion module receiving ONLY public episode observations (zero access to `hidden_actions.py` or gold schemas).
