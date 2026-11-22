@@ -120,6 +120,7 @@ _BROAD_AMBIGUOUS_SINGLETONS: frozenset[str] = frozenset({
     "plane", "radio", "phone", "video", "email", "blog", "wiki", "data", "file",
     "byte", "node", "edge", "path", "tree", "list", "heap", "pool", "lock",
     "flag", "type", "cast", "loop", "call", "fork", "pipe", "task", "job",
+    "python", "example", "examples", "simple", "lines", "short",
 })
 
 # High-salience short technical acronyms (<= 4 chars) allowed to match without rigid framing
@@ -211,15 +212,17 @@ _RE_WORD_3 = re.compile(r"[a-z0-9]{3,}")
 _RE_WORD_4_ALPHA = re.compile(r"[a-z]{4,}")
 _RE_NGRAM_TOK = re.compile(r"[a-z0-9]+(?:[-'._][a-z0-9]+)*")
 _RE_INTENT_DEF = re.compile(
-    r"\b(?:what\s+is|what\s+are|kya\s+(?:hai|h|hota\s+hai|hoti\s+hai|hotay\s+hain|hote\s+hain|hota\s+h|hoti\s+h|matlab|cheez\s+hai)|"
-    r"kia\s+(?:hai|h|hota\s+hai|hoti\s+hai|hota\s+h|hoti\s+h|cheez\s+h)|"
+    r"\b(?:what\s+is|what\s+are|kya\s+(?:hai|h|hy|hota\s+hai|hoti\s+hai|hotay\s+hain|hote\s+hain|hota\s+h|hoti\s+h|hta\s+h|hta\s+hy|hta\s+hai|matlab|cheez\s+hai|cheez\s+h)|"
+    r"kia\s+(?:hai|h|hy|hota\s+hai|hoti\s+hai|hota\s+h|hoti\s+h|hta\s+h|hta\s+hy|hta\s+hai|cheez\s+h|cheez\s+hai)|"
     r"kise\s+kehte\s+hain|kisay\s+kehtay\s+hain|define|taaruf|meaning\s+of)\b"
 )
-_RE_INTENT_MECH = re.compile(r"\b(?:how\s+does|how\s+do|kaam\s+kaise|kaam\s+kese|kese\s+krta|kaise\s+karta|mechanism|working|internally)\b")
-_RE_INTENT_APPS = re.compile(r"\b(?:benefit\w*|advantage\w*|use\w*|application\w*|fayda|faida|istemal|strength\w*)\b")
-_RE_INTENT_TRD = re.compile(r"\b(?:drawback\w*|limitation\w*|risk\w*|disadvantage\w*|trade[\-\s]?off\w*|nuqsan|kami|bottleneck\w*)\b")
+_RE_INTENT_MECH = re.compile(
+    r"\b(?:how\s+does|how\s+do|kaam\s+kaise|kaam\s+kese|kese\s+krta|kaise\s+karta|kese\s+kam\s+krta|mechanism|working|internally)\b"
+)
+_RE_INTENT_APPS = re.compile(r"\b(?:benefit\w*|advantage\w*|use\w*|application\w*|fayda|faida|fayday|istemal|strength\w*)\b")
+_RE_INTENT_TRD = re.compile(r"\b(?:drawback\w*|limitation\w*|risk\w*|disadvantage\w*|trade[\-\s]?off\w*|nuqsan\w*|kami\w*|khami\w*|bottleneck\w*)\b")
 _RE_INTENT_GEN = re.compile(
-    r"\b(?:explain|tell\s+me\s+about|overview\s+of|ke\s+baare\s+mein|samjhao|samjha\s+do|batao|btao|bata\s+do)\b"
+    r"\b(?:explain|tell\s+me\s+about|overview\s+of|ke\s+baare\s+mein|k\s+bare\s+m|samjhao|smjhao|samjha\s+do|smjha\s+do|batao|btao|bata\s+do|bta\s+do)\b"
 )
 _RE_INTENT_EXPL = re.compile(r"\b(?:explain|tell\s+me\s+about|overview\s+of)\b")
 _RE_DEFER_OOD = re.compile(
@@ -230,7 +233,7 @@ _RE_DIGIT_ALLOWLIST = re.compile(
     r"\b(?:oauth\s*2|http/?[123](?:\.[01])?|http-3|tls\s*1\.[23]|web3|sha[-\s]?(?:1|224|256|384|512|3)|aes[-\s]?(?:128|192|256)|"
     r"x\.509|type\s+2\s+diabetes|fido2|crispr-cas9|layer\s+2|rfc[-\s]?\d+|cwe[-\s]?\d+|cve[-\s]?\d+(?:-\d+)?|capec[-\s]?\d+|"
     r"owasp|a\d{2}:20\d{2}|iso[-\s]?\d+|ieee[-\s]?\d+|fips[-\s]?\d+|nist\s+(?:sp|ai\s+rmf)|ai\s+rmf\s+1\.0|pkcs|ed25519|x25519|pbkdf2|"
-    r"python\s+3|ipv6|ipv4|utf-8|5g|3d|2d|b\+?\s*tree)\b"
+    r"python\s+3|ipv6|ipv4|utf-8|5g|3d|2d|b\+?\s*tree|[1-5]\s*(?:lines?|sentences?|bullets?|points?|satron))\b"
 )
 _RE_DEFER_QUANT = re.compile(
     r"\b(?:what\s+is\s+(?:the\s+)?(?:voltage|current|resistance|force|velocity|speed|mass|acceleration|momentum|kinetic\s+energy|potential\s+energy|electrical\s+power|density|axial\s+stress|stress|safety\s+factor|bmi|molarity|circle\s+area|cylinder\s+volume|triangle\s+area|sale\s+price|total\s+price|net\s+payout)\b|find\s+(?:velocity|mass|acceleration|current|resistance|radius|height|area|force|stress|safety\s+factor|momentum|work|efficiency|kelvin)|calculate\s+|solve\s+|differentiate\s+|integrate\s+|balance\s+(?:chemical\s+)?equation|check\s+(?:pubchem|openfda|clinvar|contradiction)|lookup\s+(?:uniprot|chembl)|explain\s+(?:reactome|clinicaltrials|quantum\s+entanglement\s+according\s+to\s+arxiv)|show\s+context7|diagnose\s+root\s+cause|optimize\s+budget|generate\s+(?:edge-case\s+)?unit\s+tests|generate\s+json\s+schema|audit\s+(?:security|complexity)|discover\s+(?:law|formula)|clean\s+outliers|predict\s+next\s+value|find\s+outliers|fix\s+this\s+(?:python\s+code|function)|write\s+(?:a\s+poem|a\s+short\s+story|an\s+upwork\s+proposal|python\s+code))\b"
@@ -250,16 +253,23 @@ _RE_CMD_COMPILE = re.compile(
 )
 _RE_CROSS_SYNERGY = re.compile(r"\b(?:work\s+together|combine|interact|relationship\s+between|taluq|aapas\s+mein|aur\s+.+\s+ka)\b")
 _RE_CROSS_COMPARE = re.compile(r"\b(?:compare|difference\s+between|vs\.?|versus|farq|muqabla)\b")
-_RE_URDU = re.compile(r"\b(?:yaar|kya|kia|kaise|kese|krta|karta|nuqsan|fayda|faida|mein|hai|h|aur|taluq|samjhao|batao|farq|muqabla)\b")
+_RE_URDU = re.compile(
+    r"\b(?:yaar|kya|kia|hta|hota|hoti|kaise|kese|krta|karta|nuqsan|fayda|faida|fayday|mein|mn|hai|h|hy|aur|taluq|"
+    r"samjhao|smjhao|samjha|smjha|batao|btao|bata|bta|farq|muqabla|asaan|lafzon|sirf|mukhtasir|kise|kehte)\b"
+)
 _NGRAM_SKIP_EDGE = _INDEX_STOP_TOKENS | {
     "a", "an", "as", "at", "be", "by", "do", "go", "if", "in", "is", "it",
     "me", "my", "no", "of", "on", "or", "so", "to", "up", "us", "we",
-    "ka", "ke", "ki", "ko", "se", "ho", "hi", "ya",
+    "ka", "ke", "ki", "ko", "se", "ho", "hi", "ya", "hy", "mn",
     "what", "when", "where", "which", "who", "why", "how", "explain", "tell",
     "define", "compare", "versus", "yaar", "bhai", "kya", "kia", "hai", "hain",
+    "hta", "hti", "hota", "hoti", "smjha", "smjhao", "samjha", "btao", "bta", "bata",
     "aur", "batao", "samjhao", "farq", "muqabla", "kaise", "kese", "karta", "krta",
-    "iska", "iske", "nuqsan", "fayda", "faida", "drawbacks", "limitations",
+    "iska", "iske", "nuqsan", "fayda", "faida", "fayday", "drawbacks", "limitations",
     "tradeoffs", "benefits", "advantages", "mechanism", "work", "works", "working",
+    "asaan", "asan", "lafzon", "alfaz", "simple", "words", "terms", "short", "briefly",
+    "concise", "mukhtasir", "sirf", "faqat", "only", "just", "line", "lines", "sentences",
+    "example", "misaal", "saath", "roman", "urdu", "english",
 }
 
 
@@ -267,13 +277,19 @@ _NGRAM_SKIP_EDGE = _INDEX_STOP_TOKENS | {
 def _compiled_framing_re(al_low: str) -> re.Pattern[str]:
     esc = re.escape(al_low)
     return re.compile(
-        rf"(?:\b(?:what\s+(?:is|are)|define|explain|tell\s+me\s+about|overview\s+of|how\s+does|how\s+do|benefits?\s+of|drawbacks?\s+of|risks?\s+of|compare|difference\s+between|versus|vs\.?|and|aur)\s+(?:the\s+|a\s+|an\s+)?{esc}\b|\b{esc}\s+(?:kya\s+hai|kia\s+hai|kia\s+h|kaam\s+kaise|kaam\s+kese|ke\s+baare\s+mein|vs\.?|versus|aur|work\s+together|works)\b)"
+        rf"(?:\b(?:what\s+(?:is|are)|define|explain|tell\s+me\s+about|overview\s+of|how\s+does|how\s+do|benefits?\s+of|drawbacks?\s+of|risks?\s+of|compare|difference\s+between|versus|vs\.?|and|aur)\s+(?:the\s+|a\s+|an\s+)?{esc}\b|\b{esc}\s+(?:kya\s+hai|kia\s+hai|kia\s+h|kya\s+hta|kia\s+hta|kya\s+hota|kaam\s+kaise|kaam\s+kese|ke\s+baare\s+mein|samjha\w*|smjha\w*|bta\w*|bata\w*|vs\.?|versus|aur|work\s+together|works)\b)"
     )
 _COVERAGE_FILLER = _COMMON_NON_TYPO_TOKENS | {
     "this", "that", "with", "from", "into", "does", "have", "been", "were", "also",
     "more", "than", "very", "just", "only", "most", "much", "many", "such", "each",
     "other", "both", "same", "then", "here", "your", "their", "hota", "hoti", "liye",
     "nahi", "kuch", "karna", "karein", "karen", "btao", "samjho", "baare",
+    "hta", "hti", "smjha", "smjhao", "samjha", "bata", "bta", "asaan", "asan",
+    "lafzon", "alfaz", "simple", "words", "terms", "short", "briefly", "concise",
+    "mukhtasir", "sirf", "faqat", "line", "lines", "sentences", "points", "satron",
+    "example", "misaal", "saath", "kehte", "kehtay", "kise", "kisay", "cheez", "matlab",
+    "hotay", "hote", "fayday", "nuqsanat", "kamiyan", "khamiyan", "beginner", "friendly",
+    "eli5", "easy", "detail", "detailed", "internally", "principle", "overview",
 }
 
 
@@ -3807,7 +3823,14 @@ class OpenEndedConceptLatticeEngine:
 
     @staticmethod
     def _resolve_open_intents(low: str) -> tuple[str, ...]:
-        """Detect requested cognitive facets without requiring a rigid prefix regex."""
+        """Detect requested cognitive facets via surface patterns + 0-token byte-level intent router."""
+        from .byte_intent_router import get_default_byte_intent_router
+
+        byte_router = get_default_byte_intent_router()
+        constraints = byte_router.extract_constraints(low)
+        if constraints.strict_single_facet:
+            return (constraints.strict_single_facet,)
+
         intents: list[str] = []
         if _RE_INTENT_DEF.search(low):
             intents.append("definition")
@@ -3820,6 +3843,10 @@ class OpenEndedConceptLatticeEngine:
         if not intents:
             if _RE_INTENT_GEN.search(low):
                 intents = ["definition", "mechanism", "applications", "tradeoffs"]
+            else:
+                byte_facets = byte_router.resolve_concept_facets(low, constraints=constraints)
+                if byte_facets:
+                    intents = list(byte_facets)
         elif "definition" not in intents and _RE_INTENT_EXPL.search(low):
             intents.insert(0, "definition")
         return tuple(intents)
@@ -3836,6 +3863,43 @@ class OpenEndedConceptLatticeEngine:
         if _RE_DEFER_PROSE.search(low):
             return True
         return False
+
+    @staticmethod
+    def _illustrative_code_for_concept(nd: ConceptNode) -> str:
+        """Synthesize a deterministic, sandbox-safe illustrative Python snippet grounded in `nd`."""
+        cid = nd.concept_id.casefold()
+        if "binary search" in cid or "binary_search" in cid:
+            return (
+                "def binary_search(arr, target):\n"
+                "    lo, hi = 0, len(arr) - 1\n"
+                "    while lo <= hi:\n"
+                "        mid = (lo + hi) // 2\n"
+                "        if arr[mid] == target:\n"
+                "            return mid\n"
+                "        if arr[mid] < target:\n"
+                "            lo = mid + 1\n"
+                "        else:\n"
+                "            hi = mid - 1\n"
+                "    return -1"
+            )
+        if "recursion" in cid or "factorial" in cid:
+            return (
+                "def factorial_recursive(n):\n"
+                "    return 1 if n <= 1 else n * factorial_recursive(n - 1)"
+            )
+        if "sql" in cid or "injection" in cid:
+            return (
+                "def safe_parameterized_query(cursor, user_id):\n"
+                "    # Parameterized placeholder (?) prevents SQL injection\n"
+                "    return ('SELECT * FROM users WHERE id = ?', (user_id,))"
+            )
+        safe_fn = re.sub(r"[^a-z0-9_]", "_", cid).strip("_")[:32] or "concept_example"
+        if safe_fn[0].isdigit():
+            safe_fn = "concept_" + safe_fn
+        return (
+            f"def {safe_fn}_summary():\n"
+            f"    return {{'concept': {nd.title!r}, 'category': {nd.category!r}}}"
+        )
 
     def route_explicit_command(self, prompt: str) -> OpenEndedSynthesisResult:
         """Fast-path for explicit Concept Lattice vault commands (status, domain list, live compile)."""
@@ -3912,6 +3976,11 @@ class OpenEndedConceptLatticeEngine:
         if self._should_defer_to_specialized_organ(low):
             return OpenEndedSynthesisResult(False)
 
+        from .byte_intent_router import get_default_byte_intent_router
+
+        byte_router = get_default_byte_intent_router()
+        constraints = byte_router.extract_constraints(text)
+
         intents = self._resolve_open_intents(low)
         is_cross_synergy = bool(_RE_CROSS_SYNERGY.search(low))
         is_cross_compare = bool(_RE_CROSS_COMPARE.search(low))
@@ -3938,7 +4007,7 @@ class OpenEndedConceptLatticeEngine:
             ):
                 return OpenEndedSynthesisResult(False)
 
-        is_urdu = bool(_RE_URDU.search(low))
+        is_urdu = bool(_RE_URDU.search(low)) or constraints.language == "roman_urdu"
         lang = "roman_urdu" if is_urdu else "en"
 
         # Case 1A: Cross-Concept Head-to-Head Comparison
@@ -3999,11 +4068,65 @@ class OpenEndedConceptLatticeEngine:
                 candidates_scanned=scanned,
             )
 
-        # Case 2: Single Concept Multi-Facet Synthesis
+        # Case 2: Single Concept Constraint-Aware Adaptive Realization
         nd = nodes[0]
-        active_intents = intents or ("definition", "mechanism", "applications", "tradeoffs")
+        if constraints.strict_single_facet:
+            active_intents = (constraints.strict_single_facet,)
+        else:
+            active_intents = intents or ("definition", "mechanism", "applications", "tradeoffs")
+
+        # 2a. Concise 1-2 line realization ("in 2 lines", "2 lines mein btao", "in short")
+        if constraints.style == "concise_2_lines":
+            header = (
+                f"[Open-Ended Concept Lattice ({nd.title}) | Category: {nd.category} | "
+                f"Style: concise_{constraints.max_lines or 2}_lines | Facets: {', '.join(active_intents)} | O(1) Candidates Scanned: {scanned}]"
+            )
+            if is_urdu:
+                summary_line = f"- Mukhtasir Khulasa ({nd.title}): {nd.definition} (Kaam: {nd.mechanism})"
+            else:
+                summary_line = f"- Concise Summary ({nd.title}): {nd.definition} (Mechanism: {nd.mechanism})"
+            return OpenEndedSynthesisResult(
+                matched=True,
+                concepts_used=(nd.concept_id,),
+                intents_resolved=(*active_intents, "concise_2_lines"),
+                language=lang,
+                response=f"{header}\n{summary_line}",
+                candidates_scanned=scanned,
+            )
+
+        # 2b. Beginner-friendly / ELI5 realization ("asaan lafzon mein", "simple words")
+        if constraints.style == "simple_eli5":
+            header = (
+                f"[Open-Ended Concept Lattice ({nd.title}) | Category: {nd.category} | "
+                f"Style: simple_eli5 | Facets: {', '.join(active_intents)} | O(1) Candidates Scanned: {scanned}]"
+            )
+            if is_urdu:
+                lines = [
+                    header,
+                    f"- Asaan Lafzon Mein ({nd.title}): Seedhe lafzon mein, {nd.definition}",
+                    f"- Yeh Kaise Kaam Karta Hai: {nd.mechanism}",
+                    f"- Rozmarra Fayda / Istemal: {nd.applications}",
+                ]
+            else:
+                lines = [
+                    header,
+                    f"- Simple Explanation ({nd.title}): In plain terms, {nd.definition}",
+                    f"- How It Works Simply: {nd.mechanism}",
+                    f"- Everyday Use & Benefit: {nd.applications}",
+                ]
+            return OpenEndedSynthesisResult(
+                matched=True,
+                concepts_used=(nd.concept_id,),
+                intents_resolved=(*active_intents, "simple_eli5"),
+                language=lang,
+                response="\n".join(lines),
+                candidates_scanned=scanned,
+            )
+
+        # 2c. Standard or Strict Single-Facet or Code+Explanation Realization
+        style_tag = f" | Style: {constraints.style}" if constraints.style != "standard" else ""
         lines = [
-            f"[Open-Ended Concept Lattice ({nd.title}) | Category: {nd.category} | Facets: {', '.join(active_intents)} | O(1) Candidates Scanned: {scanned}]"
+            f"[Open-Ended Concept Lattice ({nd.title}) | Category: {nd.category}{style_tag} | Facets: {', '.join(active_intents)} | O(1) Candidates Scanned: {scanned}]"
         ]
         for facet in active_intents:
             if facet == "definition":
@@ -4018,6 +4141,12 @@ class OpenEndedConceptLatticeEngine:
             elif facet == "tradeoffs":
                 lbl = "Nuqsan aur Hudood (Trade-offs & Risks)" if is_urdu else "Limitations & Trade-offs"
                 lines.append(f"- {lbl}: {nd.tradeoffs}")
+
+        if constraints.include_code:
+            snippet = self._illustrative_code_for_concept(nd)
+            code_lbl = "Python Code Misaal (Example)" if is_urdu else "Illustrative Python Code"
+            lines.append(f"- {code_lbl}:\n```python\n{snippet}\n```")
+            active_intents = (*active_intents, "code_example")
 
         return OpenEndedSynthesisResult(
             matched=True,

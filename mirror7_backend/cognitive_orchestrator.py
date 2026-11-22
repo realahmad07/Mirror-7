@@ -87,37 +87,9 @@ class UnifiedCognitiveOrchestrator:
 
     @staticmethod
     def _is_code_request(prompt: str) -> bool:
-        text = prompt.casefold()
-        # Do not hijack static code auditing, unit-test synthesis, buggy-code repair, or concept explanations
-        if re.search(
-            r"\b(?:audit\s+(?:security|complexity)|generate\s+(?:edge-case\s+)?unit\s+tests|fix\s+this\s+(?:python\s+code|function)|explain\s+python|what\s+is\s+python)\b",
-            text,
-        ):
-            return False
-        if re.search(
-            r"\b(?:write|create|implement|build|generate|make)\s+(?:an?\s+)?(?:python\s+)?(?:function|script|program|code|class|method)\b",
-            text,
-        ):
-            return True
-        # Bilingual Roman-Urdu coding intents (e.g. "python k code likho jo Ahmad print kry",
-        # "python mein factorial ka code likho", "2 numbers add krne ka function banao")
-        if re.search(
-            r"\b(?:code|program|script|function|class|loop|algorithm)\s+(?:likho|likh\s*do|banao|bana\s*do|btao|batao|do|de\s*do|chahiye)\b"
-            r"|\bpython\s+(?:k|ka|ki|ke|mein|me|mn|m)\s+(?:aik\s+|ek\s+)?(?:code|program|script|function|class|loop|print)\b"
-            r"|\bpython\b.*\b(?:likho|likh\s*do|banao|bana\s*do|btao|batao|ka\s+code|k\s+code|print\s+(?:kro|karo|kry|kare|krna|karna))\b"
-            r"|\b(?:ka\s+table|multiplication\s+table)\b.*\b(?:print|code|likho|banao|python)\b",
-            text,
-        ):
-            return True
-        markers = (
-            "write code", "generate code", "implement", "build a function",
-            "write a function", "create a class", "write a script",
-            "program this", "code this", "fix this code", "implement in python",
-            "implement in javascript", "create an api", "build an api",
-            "python code", "python program", "python script", "write a program",
-            "python function",
-        )
-        return any(marker in text for marker in markers)
+        from mirror_crystal.byte_intent_router import get_default_byte_intent_router
+
+        return get_default_byte_intent_router().is_code_request(prompt)
 
     @staticmethod
     def _should_extract_memory(prompt: str) -> bool:
