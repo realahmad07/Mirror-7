@@ -145,7 +145,7 @@ def evaluate_organ1_babi_parser(babi_rows: list[dict[str, Any]]) -> dict[str, An
         texts = story.get("text") or []
         types = story.get("type") or []
         for text, kind in zip(texts, types):
-            if int(kind) != 0:
+            if not (kind == 0 or str(kind).casefold() in {"0", "context"}):
                 continue
             parsed = parser.parse_clause(str(text))
             tokens = re.findall(r"[A-Za-z]+", str(text).casefold())
