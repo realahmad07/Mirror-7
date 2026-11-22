@@ -437,7 +437,7 @@ class UnifiedCognitiveOrchestrator:
                 or fallback_hit
             )
 
-        if native_hit is not None and not task_uol_verified:
+        if native_hit is not None and not task_uol_verified and not evidence:
             return {
                 "answer": native_hit.answer,
                 "answer_qualification": native_hit.qualification,
