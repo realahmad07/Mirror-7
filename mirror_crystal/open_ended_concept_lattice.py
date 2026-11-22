@@ -210,11 +210,17 @@ _DEPRECATED_DEF_RE = re.compile(
 _RE_WORD_3 = re.compile(r"[a-z0-9]{3,}")
 _RE_WORD_4_ALPHA = re.compile(r"[a-z]{4,}")
 _RE_NGRAM_TOK = re.compile(r"[a-z0-9]+(?:[-'._][a-z0-9]+)*")
-_RE_INTENT_DEF = re.compile(r"\b(?:what\s+is|what\s+are|kya\s+hai|kia\s+h|kia\s+hai|define|taaruf|meaning\s+of)\b")
+_RE_INTENT_DEF = re.compile(
+    r"\b(?:what\s+is|what\s+are|kya\s+(?:hai|h|hota\s+hai|hoti\s+hai|hotay\s+hain|hote\s+hain|hota\s+h|hoti\s+h|matlab|cheez\s+hai)|"
+    r"kia\s+(?:hai|h|hota\s+hai|hoti\s+hai|hota\s+h|hoti\s+h|cheez\s+h)|"
+    r"kise\s+kehte\s+hain|kisay\s+kehtay\s+hain|define|taaruf|meaning\s+of)\b"
+)
 _RE_INTENT_MECH = re.compile(r"\b(?:how\s+does|how\s+do|kaam\s+kaise|kaam\s+kese|kese\s+krta|kaise\s+karta|mechanism|working|internally)\b")
 _RE_INTENT_APPS = re.compile(r"\b(?:benefit\w*|advantage\w*|use\w*|application\w*|fayda|faida|istemal|strength\w*)\b")
 _RE_INTENT_TRD = re.compile(r"\b(?:drawback\w*|limitation\w*|risk\w*|disadvantage\w*|trade[\-\s]?off\w*|nuqsan|kami|bottleneck\w*)\b")
-_RE_INTENT_GEN = re.compile(r"\b(?:explain|tell\s+me\s+about|overview\s+of|ke\s+baare\s+mein|samjhao|batao)\b")
+_RE_INTENT_GEN = re.compile(
+    r"\b(?:explain|tell\s+me\s+about|overview\s+of|ke\s+baare\s+mein|samjhao|samjha\s+do|batao|btao|bata\s+do)\b"
+)
 _RE_INTENT_EXPL = re.compile(r"\b(?:explain|tell\s+me\s+about|overview\s+of)\b")
 _RE_DEFER_OOD = re.compile(
     r"\b(?:what\s+(?:is|are)\s+(?:my|our|your|his|her|their)\b|stock\s+price|aapl|tomorrow|world\s+cup|20\d{2}\s+(?:world|election|champion|winner|population)|population\s+of\s+mars|best\s+programming\s+language|most\s+beautiful|secret\s+board\s+meeting|hamlet\s+hesitated|atlantis\s+governance|in\s+the\s+contract|arbitration\s+kis\s+shehar|what\s+legal\s+code\s+did\s+mesopotamia|who\s+will\s+win|predict\s+the\s+future|next\s+year'?s\s+stock|live\s+weather\s+in|current\s+weather\s+in)\b"

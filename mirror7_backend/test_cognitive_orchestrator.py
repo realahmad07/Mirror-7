@@ -273,3 +273,55 @@ def test_unknown_factual_question_is_not_invented():
     assert result["answer"] == "Insufficient independently verified evidence."
     assert result["verified"] is False
     assert result["abstained"] is True
+
+
+def test_roman_urdu_code_prompt_triggers_native_builder_and_tdd():
+    code = Code({
+        "verified": True,
+        "tests_generated": 1,
+        "tests_passed": 1,
+        "final_code": "def main():\n    message = 'Ahmad'\n    print(message)\n    return message",
+    })
+    result = make(
+        code=code,
+        code_generation_provider=lambda prompt: {
+            "code": "def main():\n    message = 'Ahmad'\n    print(message)\n    return message",
+            "tests": "assert main() == 'Ahmad'\n",
+            "spec_desc": "print the requested text",
+            "generation_kind": "print_text",
+        },
+    ).ask("python k code likho jo Ahmad print kry")
+
+    assert result["task_result_verified"] is True
+    assert result["task_code_verified"] is True
+    assert result["abstained"] is False
+    assert "message = 'Ahmad'" in result["answer"]
+    assert "code_generation" in result["sources_consulted"]
+    assert "code_verification" in result["sources_consulted"]
+
+
+def test_missing_container_runtime_reports_transparent_sandbox_diagnostic():
+    code = Code({
+        "verified": False,
+        "tests_generated": 1,
+        "tests_passed": 0,
+        "diagnostics": [
+            "Iteration 1: FAILED: Docker or Podman is required; process fallback is disabled by default."
+        ],
+    })
+    result = make(
+        code=code,
+        code_generation_provider=lambda prompt: {
+            "code": "def main():\n    message = 'Ahmad'\n    print(message)\n    return message",
+            "tests": "assert main() == 'Ahmad'\n",
+            "spec_desc": "print the requested text",
+            "generation_kind": "print_text",
+        },
+    ).ask("python k code likho jo Ahmad print kry")
+
+    assert result["abstained"] is True
+    assert result["verified"] is False
+    assert result["task_code_verified"] is False
+    assert result["answer_qualification"] == "sandbox_unavailable"
+    assert "Docker or Podman" in result["answer"]
+    assert "MIRROR_SANDBOX_MODE=process" in result["answer"]

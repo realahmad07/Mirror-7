@@ -35,8 +35,42 @@ class NativeCodeGenerationProvider:
             value = name.group(1).strip().strip("\"'")
             if value and value.casefold() not in {"in python", "using python"}:
                 return value, None
-        if re.search(r"\bmy\s+name\b", prompt, flags=re.IGNORECASE):
+        if re.search(r"\b(?:my\s+name|mera\s+naam)\b", prompt, flags=re.IGNORECASE):
             return None, "What name should the Python program print? Please include the name."
+
+        # Roman-Urdu / Hinglish: prioritize explicit "jo <X> print" before "mein <X> ko print"
+        urdu_jo = re.search(
+            r"\bjo\s+([A-Za-z0-9_][A-Za-z0-9_ .\-]{0,60}?)(?:\s+ko)?\s+print\s*(?:kry|kare|kre|kro|karo|karna|krna|karne|krne|ho|hoga)?\b",
+            prompt,
+            flags=re.IGNORECASE,
+        )
+        if urdu_jo:
+            value = urdu_jo.group(1).strip().strip("\"'")
+            if value and value.casefold() not in {"code", "program", "python", "script", "function", "text", "output", "numbers", "number", "table"}:
+                return value, None
+
+        urdu_mein = re.search(
+            r"\b(?:mein|me|mn)\s+([A-Za-z0-9_][A-Za-z0-9_ .\-]{0,60}?)(?:\s+ko)?\s+print\s*(?:kry|kare|kre|kro|karo|karna|krna|karne|krne|ho|hoga)?\b",
+            prompt,
+            flags=re.IGNORECASE,
+        )
+        if urdu_mein:
+            value = urdu_mein.group(1).strip().strip("\"'")
+            if value and value.casefold() not in {"code", "program", "python", "script", "function", "text", "output", "numbers", "number", "table"}:
+                return value, None
+
+        # English / mixed: "print Ahmad", "prints Ahmad in python", "display Hello World"
+        plain_after = re.search(
+            r"\b(?:print|prints|display)\s+(?!the\b|a\b|an\b|my\b|your\b|text\b|message\b|output\b|something\b|name\b|numbers?\b|all\b|even\b|odd\b|table\b)"
+            r"([A-Za-z0-9_][A-Za-z0-9_ .\-]{0,60}?)"
+            r"(?=\s+(?:in|using|with|via|by|on|for)\s+python\b|\s+(?:\d+\s+(?:times|bar|baar|martaba)|kro|karo|kry|kare|kre)\b|[?.!,]|$)",
+            prompt,
+            flags=re.IGNORECASE,
+        )
+        if plain_after:
+            value = plain_after.group(1).strip().strip("\"'")
+            if value and value.casefold() not in {"python", "code", "program", "script", "function", "numbers", "table"}:
+                return value, None
         return None, None
 
     @staticmethod
@@ -68,7 +102,93 @@ class NativeCodeGenerationProvider:
         text = prompt.strip()
         lower = text.casefold()
 
+        # Multiplication table ("5 ka table print kro", "multiplication table of 7")
+        m_table = re.search(
+            r"(?:\b(\d+)\s+ka\s+(?:table|pahara)\b|\b(?:multiplication\s+)?table\s+(?:of|for)\s+(\d+)\b)",
+            lower,
+        )
+        if m_table:
+            n_val = int(m_table.group(1) or m_table.group(2))
+            code = (
+                f"def multiplication_table(n={n_val}, upto=10):\n"
+                "    lines = [f'{n} x {i} = {n * i}' for i in range(1, upto + 1)]\n"
+                "    for line in lines:\n"
+                "        print(line)\n"
+                "    return lines\n"
+            )
+            tests = (
+                f"res = multiplication_table({n_val}, 10)\n"
+                f"assert len(res) == 10\n"
+                f"assert res[0] == '{n_val} x 1 = {n_val}'\n"
+                f"assert res[-1] == '{n_val} x 10 = {n_val * 10}'\n"
+            )
+            return self._validated_result(code, tests, f"print multiplication table of {n_val}", "multiplication_table")
+
+        # Number range printing ("1 se 10 tak numbers print kro", "print numbers from 1 to 10")
+        m_range = re.search(
+            r"\b(?:from\s+)?(\d+)\s+(?:to|se)\s+(\d+)(?:\s+tak)?\b.*\b(?:print|numbers?|counting|ginti)\b"
+            r"|\b(?:print|display)\s+(?:numbers?\s+)?(?:from\s+)?(\d+)\s+(?:to|se)\s+(\d+)\b",
+            lower,
+        )
+        if m_range:
+            a_val = int(m_range.group(1) or m_range.group(3))
+            b_val = int(m_range.group(2) or m_range.group(4))
+            if abs(b_val - a_val) <= 1000:
+                step = 1 if b_val >= a_val else -1
+                code = (
+                    f"def print_range(start={a_val}, end={b_val}):\n"
+                    f"    step = 1 if end >= start else -1\n"
+                    "    nums = list(range(start, end + step, step))\n"
+                    "    for num in nums:\n"
+                    "        print(num)\n"
+                    "    return nums\n"
+                )
+                expected_len = abs(b_val - a_val) + 1
+                tests = (
+                    f"out = print_range({a_val}, {b_val})\n"
+                    f"assert len(out) == {expected_len}\n"
+                    f"assert out[0] == {a_val} and out[-1] == {b_val}\n"
+                )
+                return self._validated_result(code, tests, f"print numbers from {a_val} to {b_val}", "print_range")
+
         if any(token in lower for token in ("print", "prints", "display", "output")):
+            # Check repeated print ("print Ahmad 5 times", "Ahmad ko 5 bar print kro", "python mein Ahmad ko 5 bar print kro")
+            m_rep = (
+                re.search(
+                    r"\b(?:jo|mein|me|mn)\s+['\"]?([A-Za-z0-9_][A-Za-z0-9_ .\-]{0,40}?)['\"]?(?:\s+ko)?\s+(\d+)\s+(?:times|bar|baar|martaba)\s+print\b",
+                    text,
+                    flags=re.IGNORECASE,
+                )
+                or re.search(
+                    r"\b(?:print|prints|display)\s+['\"]?([A-Za-z0-9_][A-Za-z0-9_ .\-]{0,40}?)['\"]?\s+(\d+)\s+(?:times|bar|baar|martaba)\b",
+                    text,
+                    flags=re.IGNORECASE,
+                )
+                or re.search(
+                    r"^\s*['\"]?([A-Za-z0-9_][A-Za-z0-9_ .\-]{0,40}?)['\"]?(?:\s+ko)?\s+(\d+)\s+(?:times|bar|baar|martaba)\s+print\b",
+                    text,
+                    flags=re.IGNORECASE,
+                )
+            )
+            if m_rep:
+                rep_val = (m_rep.group(1) or "").strip().strip("\"'")
+                rep_n = int(m_rep.group(2))
+                if rep_val and 1 <= rep_n <= 500:
+                    lit = repr(rep_val)
+                    code = (
+                        f"def repeat_print(message={lit}, times={rep_n}):\n"
+                        "    outputs = []\n"
+                        "    for _ in range(times):\n"
+                        "        print(message)\n"
+                        "        outputs.append(message)\n"
+                        "    return outputs\n"
+                    )
+                    tests = (
+                        f"res = repeat_print({lit}, {rep_n})\n"
+                        f"assert len(res) == {rep_n} and res[0] == {lit}\n"
+                    )
+                    return self._validated_result(code, tests, f"print {rep_val} {rep_n} times", "repeat_print")
+
             value, needs_input = self._print_value(text)
             if needs_input:
                 return {"code": None, "needs_input": needs_input, "generation_kind": "print_text"}
@@ -86,24 +206,29 @@ class NativeCodeGenerationProvider:
                 )
 
         operation_specs = (
-            (("add", "sum", "plus"), "add", "a + b", (
+            (("add", "sum", "plus", "jorna", "jama"), "add", "a + b", (
                 "assert add(2, 3) == 5\n"
                 "assert add(-4, 1) == -3\n"
                 "assert add(0, 0) == 0\n"
             ), "add two numbers"),
-            (("subtract", "minus", "difference"), "subtract", "a - b", (
+            (("subtract", "minus", "difference", "ghatana", "tafreeq"), "subtract", "a - b", (
                 "assert subtract(7, 2) == 5\n"
                 "assert subtract(2, 7) == -5\n"
                 "assert subtract(0, 0) == 0\n"
             ), "subtract two numbers"),
-            (("multiply", "product", "times"), "multiply", "a * b", (
+            (("multiply", "product", "times", "zarb"), "multiply", "a * b", (
                 "assert multiply(3, 4) == 12\n"
                 "assert multiply(-2, 5) == -10\n"
                 "assert multiply(0, 9) == 0\n"
             ), "multiply two numbers"),
+            (("divide", "division", "taqseem"), "divide", "a / b if b != 0 else None", (
+                "assert divide(10, 2) == 5.0\n"
+                "assert divide(7, 2) == 3.5\n"
+                "assert divide(5, 0) is None\n"
+            ), "safely divide two numbers"),
         )
         mentions_two_numbers = bool(re.search(
-            r"\b(?:two|2)\s+(?:numbers|values)\b|\bnumber\s+[a-b]\s+and\s+[a-b]\b",
+            r"\b(?:two|2|do)\s+(?:numbers?|values?|adad|digits?)\b|\bnumber\s+[a-b]\s+and\s+[a-b]\b",
             lower,
         ))
         if mentions_two_numbers:
@@ -114,6 +239,43 @@ class NativeCodeGenerationProvider:
                         f"    return {expression}\n"
                     )
                     return self._validated_result(code, tests, spec, function_name)
+
+        # Simple Calculator
+        if re.search(r"\bcalculator\b", lower):
+            code = (
+                "def calculate(a, b, op):\n"
+                "    if op == '+':\n"
+                "        return a + b\n"
+                "    if op == '-':\n"
+                "        return a - b\n"
+                "    if op == '*':\n"
+                "        return a * b\n"
+                "    if op == '/':\n"
+                "        if b == 0:\n"
+                "            raise ValueError('Cannot divide by zero')\n"
+                "        return a / b\n"
+                "    raise ValueError(f'Unsupported operator: {op}')\n"
+            )
+            tests = (
+                "assert calculate(10, 5, '+') == 15\n"
+                "assert calculate(10, 5, '-') == 5\n"
+                "assert calculate(10, 5, '*') == 50\n"
+                "assert calculate(10, 5, '/') == 2.0\n"
+            )
+            return self._validated_result(code, tests, "implement a basic calculator", "calculator")
+
+        # Even or Odd check
+        if re.search(r"\b(?:even\s+(?:or|and|ya)\s+odd|odd\s+(?:or|and|ya)\s+even|juft\s+(?:ya|aur)\s+taaq)\b", lower):
+            code = (
+                "def check_even_odd(n):\n"
+                "    return 'even' if n % 2 == 0 else 'odd'\n"
+            )
+            tests = (
+                "assert check_even_odd(4) == 'even'\n"
+                "assert check_even_odd(7) == 'odd'\n"
+                "assert check_even_odd(0) == 'even'\n"
+            )
+            return self._validated_result(code, tests, "check whether a number is even or odd", "check_even_odd")
 
         square_request = (
             re.search(r"\bsquare\b", lower)
@@ -503,5 +665,196 @@ class NativeCodeGenerationProvider:
                 "assert median([7]) == 7\n"
             )
             return self._validated_result(code, tests, "compute median of numeric list", "median")
+
+        # Reverse a list ("python mein list reverse krne ka code btao", "reverse a list")
+        if re.search(r"\b(?:reverse|ulta)\b", lower) and re.search(r"\b(?:list|array)\b", lower):
+            code = (
+                "def reverse_list(items):\n"
+                "    return list(items)[::-1]\n"
+            )
+            tests = (
+                "assert reverse_list([1, 2, 3, 4]) == [4, 3, 2, 1]\n"
+                "assert reverse_list([]) == []\n"
+            )
+            return self._validated_result(code, tests, "reverse a list", "reverse_list")
+
+        # Remove duplicates from list
+        if re.search(r"\b(?:remove|unique|dedup\w*)\b", lower) and re.search(r"\b(?:duplicate|duplicates|list|array)\b", lower):
+            code = (
+                "def remove_duplicates(items):\n"
+                "    seen = set()\n"
+                "    result = []\n"
+                "    for item in items:\n"
+                "        if item not in seen:\n"
+                "            seen.add(item)\n"
+                "            result.append(item)\n"
+                "    return result\n"
+            )
+            tests = (
+                "assert remove_duplicates([1, 2, 2, 3, 1, 4]) == [1, 2, 3, 4]\n"
+                "assert remove_duplicates([]) == []\n"
+            )
+            return self._validated_result(code, tests, "remove duplicates preserving order", "remove_duplicates")
+
+        # Bubble / Merge / Quick sort or sort a list (deliberately skips broad requests like "complete sorting library")
+        if not re.search(r"\blibrary\b", lower):
+            if re.search(r"\bbubble\s+sort\b", lower):
+                code = (
+                    "def bubble_sort(items):\n"
+                    "    arr = list(items)\n"
+                    "    n = len(arr)\n"
+                    "    for i in range(n):\n"
+                    "        for j in range(0, n - i - 1):\n"
+                    "            if arr[j] > arr[j + 1]:\n"
+                    "                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n"
+                    "    return arr\n"
+                )
+                tests = (
+                    "assert bubble_sort([5, 1, 4, 2, 8]) == [1, 2, 4, 5, 8]\n"
+                    "assert bubble_sort([]) == []\n"
+                )
+                return self._validated_result(code, tests, "implement bubble sort", "bubble_sort")
+
+            if re.search(r"\bmerge\s+sort\b", lower):
+                code = (
+                    "def merge_sort(items):\n"
+                    "    if len(items) <= 1:\n"
+                    "        return list(items)\n"
+                    "    mid = len(items) // 2\n"
+                    "    left = merge_sort(items[:mid])\n"
+                    "    right = merge_sort(items[mid:])\n"
+                    "    merged = []\n"
+                    "    i = j = 0\n"
+                    "    while i < len(left) and j < len(right):\n"
+                    "        if left[i] <= right[j]:\n"
+                    "            merged.append(left[i]); i += 1\n"
+                    "        else:\n"
+                    "            merged.append(right[j]); j += 1\n"
+                    "    merged.extend(left[i:])\n"
+                    "    merged.extend(right[j:])\n"
+                    "    return merged\n"
+                )
+                tests = (
+                    "assert merge_sort([38, 27, 43, 3, 9, 82, 10]) == [3, 9, 10, 27, 38, 43, 82]\n"
+                    "assert merge_sort([]) == []\n"
+                )
+                return self._validated_result(code, tests, "implement merge sort", "merge_sort")
+
+            if re.search(r"\bquick\s*sort\b", lower):
+                code = (
+                    "def quicksort(items):\n"
+                    "    if len(items) <= 1:\n"
+                    "        return list(items)\n"
+                    "    pivot = items[len(items) // 2]\n"
+                    "    left = [x for x in items if x < pivot]\n"
+                    "    middle = [x for x in items if x == pivot]\n"
+                    "    right = [x for x in items if x > pivot]\n"
+                    "    return quicksort(left) + middle + quicksort(right)\n"
+                )
+                tests = (
+                    "assert quicksort([3, 6, 8, 10, 1, 2, 1]) == [1, 1, 2, 3, 6, 8, 10]\n"
+                    "assert quicksort([]) == []\n"
+                )
+                return self._validated_result(code, tests, "implement quicksort", "quicksort")
+
+            if re.search(r"\bsort\b", lower) and re.search(r"\b(?:list|array|numbers)\b", lower):
+                code = (
+                    "def sort_list(items, reverse=False):\n"
+                    "    return sorted(items, reverse=reverse)\n"
+                )
+                tests = (
+                    "assert sort_list([4, 1, 3, 2]) == [1, 2, 3, 4]\n"
+                    "assert sort_list([4, 1, 3, 2], reverse=True) == [4, 3, 2, 1]\n"
+                )
+                return self._validated_result(code, tests, "sort a list of items", "sort_list")
+
+        # Count vowels
+        if re.search(r"\bvowels?\b", lower):
+            code = (
+                "def count_vowels(text):\n"
+                "    return sum(1 for ch in text.lower() if ch in 'aeiou')\n"
+            )
+            tests = (
+                "assert count_vowels('Ahmad') == 2\n"
+                "assert count_vowels('Mirror') == 2\n"
+                "assert count_vowels('xyz') == 0\n"
+            )
+            return self._validated_result(code, tests, "count vowels in a string", "count_vowels")
+
+        # Word count / frequency
+        if re.search(r"\bword\s+(?:count|frequency|frequencies)\b", lower):
+            code = (
+                "def word_frequency(text):\n"
+                "    counts = {}\n"
+                "    for word in text.lower().split():\n"
+                "        clean = ''.join(ch for ch in word if ch.isalnum())\n"
+                "        if clean:\n"
+                "            counts[clean] = counts.get(clean, 0) + 1\n"
+                "    return counts\n"
+            )
+            tests = (
+                "assert word_frequency('AI is fast and AI is clean') == {'ai': 2, 'is': 2, 'fast': 1, 'and': 1, 'clean': 1}\n"
+            )
+            return self._validated_result(code, tests, "count word frequencies in text", "word_frequency")
+
+        # Find max / min / average / sum of a list
+        if re.search(r"\b(?:max|maximum|largest|sab\s+se\s+bara)\b", lower) and re.search(r"\b(?:list|array|numbers)\b", lower):
+            code = (
+                "def find_max(nums):\n"
+                "    if not nums:\n"
+                "        raise ValueError('nums must not be empty')\n"
+                "    best = nums[0]\n"
+                "    for n in nums[1:]:\n"
+                "        if n > best:\n"
+                "            best = n\n"
+                "    return best\n"
+            )
+            tests = (
+                "assert find_max([3, 9, 2, 15, 7]) == 15\n"
+                "assert find_max([-5, -1, -9]) == -1\n"
+            )
+            return self._validated_result(code, tests, "find the largest number in a list", "find_max")
+
+        if re.search(r"\b(?:min|minimum|smallest|sab\s+se\s+chota)\b", lower) and re.search(r"\b(?:list|array|numbers)\b", lower):
+            code = (
+                "def find_min(nums):\n"
+                "    if not nums:\n"
+                "        raise ValueError('nums must not be empty')\n"
+                "    best = nums[0]\n"
+                "    for n in nums[1:]:\n"
+                "        if n < best:\n"
+                "            best = n\n"
+                "    return best\n"
+            )
+            tests = (
+                "assert find_min([3, 9, 2, 15, 7]) == 2\n"
+                "assert find_min([-5, -1, -9]) == -9\n"
+            )
+            return self._validated_result(code, tests, "find the smallest number in a list", "find_min")
+
+        if re.search(r"\b(?:average|mean|ausat)\b", lower) and re.search(r"\b(?:list|array|numbers)\b", lower):
+            code = (
+                "def average(nums):\n"
+                "    if not nums:\n"
+                "        raise ValueError('nums must not be empty')\n"
+                "    return sum(nums) / len(nums)\n"
+            )
+            tests = (
+                "assert average([10, 20, 30]) == 20.0\n"
+                "assert average([5]) == 5.0\n"
+            )
+            return self._validated_result(code, tests, "compute average of a list of numbers", "average")
+
+        if re.search(r"\bleap\s+year\b", lower):
+            code = (
+                "def is_leap_year(year):\n"
+                "    return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)\n"
+            )
+            tests = (
+                "assert is_leap_year(2024) is True\n"
+                "assert is_leap_year(1900) is False\n"
+                "assert is_leap_year(2000) is True\n"
+            )
+            return self._validated_result(code, tests, "check whether a year is a leap year", "is_leap_year")
 
         return None

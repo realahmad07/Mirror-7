@@ -1255,6 +1255,23 @@ def test_multi_shard_discovery_zero_dup_quality_gate_and_slas(tmp_path):
     s_eng.close()
 
 
+def test_roman_urdu_open_ended_concept_intents():
+    from mirror_crystal.open_ended_concept_lattice import OpenEndedConceptLatticeEngine
+
+    eng = OpenEndedConceptLatticeEngine()
+    try:
+        for prompt, expected_term in (
+            ("sql injection kya hota hai", "injection"),
+            ("kubernetes samjha do", "kubernetes"),
+            ("photosynthesis btao", "photosynthesis"),
+        ):
+            res = eng.route_open_ended(prompt)
+            assert res.matched is True, prompt
+            assert expected_term in res.response.casefold(), f"{prompt} -> {res.response[:120]}"
+    finally:
+        eng.close()
+
+
 
 
 

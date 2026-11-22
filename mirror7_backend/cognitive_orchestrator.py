@@ -88,7 +88,26 @@ class UnifiedCognitiveOrchestrator:
     @staticmethod
     def _is_code_request(prompt: str) -> bool:
         text = prompt.casefold()
-        if re.search(r"\b(?:write|create|implement|build|generate|make)\s+(?:an?\s+)?(?:python\s+)?(?:function|script|program|code|class|method)\b", text):
+        # Do not hijack static code auditing, unit-test synthesis, buggy-code repair, or concept explanations
+        if re.search(
+            r"\b(?:audit\s+(?:security|complexity)|generate\s+(?:edge-case\s+)?unit\s+tests|fix\s+this\s+(?:python\s+code|function)|explain\s+python|what\s+is\s+python)\b",
+            text,
+        ):
+            return False
+        if re.search(
+            r"\b(?:write|create|implement|build|generate|make)\s+(?:an?\s+)?(?:python\s+)?(?:function|script|program|code|class|method)\b",
+            text,
+        ):
+            return True
+        # Bilingual Roman-Urdu coding intents (e.g. "python k code likho jo Ahmad print kry",
+        # "python mein factorial ka code likho", "2 numbers add krne ka function banao")
+        if re.search(
+            r"\b(?:code|program|script|function|class|loop|algorithm)\s+(?:likho|likh\s*do|banao|bana\s*do|btao|batao|do|de\s*do|chahiye)\b"
+            r"|\bpython\s+(?:k|ka|ki|ke|mein|me|mn|m)\s+(?:aik\s+|ek\s+)?(?:code|program|script|function|class|loop|print)\b"
+            r"|\bpython\b.*\b(?:likho|likh\s*do|banao|bana\s*do|btao|batao|ka\s+code|k\s+code|print\s+(?:kro|karo|kry|kare|krna|karna))\b"
+            r"|\b(?:ka\s+table|multiplication\s+table)\b.*\b(?:print|code|likho|banao|python)\b",
+            text,
+        ):
             return True
         markers = (
             "write code", "generate code", "implement", "build a function",
@@ -493,6 +512,21 @@ class UnifiedCognitiveOrchestrator:
                 or "Mirror's native code writer does not support this request yet."
             )
             qualification = "unsupported_task"
+        elif (
+            generated_code
+            and isinstance(code_verification, Mapping)
+            and any(
+                "Docker or Podman is required" in str(diag)
+                for diag in (code_verification.get("diagnostics") or [])
+            )
+        ):
+            final_answer = (
+                "Code was synthesized, but Mirror's Zero-Trust container sandbox could not "
+                "execute the verification tests because Docker or Podman is not running. "
+                "Start Docker/Podman for container isolation, or set "
+                "MIRROR_SANDBOX_MODE=process for local development."
+            )
+            qualification = "sandbox_unavailable"
         elif candidate:
             final_answer = (
                 "UNVERIFIED CANDIDATE — not independently verified.\n\n"
