@@ -71,6 +71,8 @@ class TernaryBitLinear(nn.Module):
         self.register_buffer("frozen_ternary_int8", torch.empty(0, dtype=torch.int8), persistent=False)
         self.register_buffer("frozen_scale", torch.tensor(1.0, dtype=torch.float32), persistent=False)
         self._lut_kernel: Any | None = None
+        self._lut_scale_q32: int = 1 << 32
+        self._lut_bias_q32: list[int] = []
         self.use_lut_inference: bool = True
         self.last_inference_backend: str = "ste_float_train"
 
@@ -92,16 +94,15 @@ class TernaryBitLinear(nn.Module):
         self.frozen_scale = scale.detach().to(torch.float32)
         from mirror_crystal.ternary_lut_realizer import Q16, TernaryLUTLinearKernel
 
-        scale_q16 = max(1, int(round(float(self.frozen_scale.item()) * Q16)))
-        bias_q16 = (
-            [int(round(float(b) * Q16)) for b in self.bias.detach().cpu().tolist()]
+        self._lut_scale_q32 = max(1, int(round(float(self.frozen_scale.item()) * (1 << 32))))
+        self._lut_bias_q32 = (
+            [int(round(float(b) * (1 << 32))) for b in self.bias.detach().cpu().tolist()]
             if self.bias is not None
-            else None
+            else [0] * self.out_features
         )
         self._lut_kernel = TernaryLUTLinearKernel(
             q.detach().cpu().tolist(),
-            weight_scale_q16=scale_q16,
-            bias_q16=bias_q16,
+            weight_scale_q16=Q16,
             kernel_mode=kernel_mode,
         )
         fp32_bytes = self.weight.numel() * 4
@@ -120,15 +121,25 @@ class TernaryBitLinear(nn.Module):
         if not self.training and self.frozen_ternary_int8.numel() == self.weight.numel():
             if self.use_lut_inference and self._lut_kernel is not None and x.device.type == "cpu":
                 # Strict 0-float-matmul T-MAC/TL2 integer LUT execution path (Stages 12-L1 & 13-L1)
-                from mirror_crystal.ternary_lut_realizer import Q16
-
+                q32 = 1 << 32
                 orig_shape = x.shape[:-1]
                 flat = x.detach().reshape(-1, self.in_features).to(torch.float32).tolist()
                 out_rows: list[list[float]] = []
                 for row in flat:
-                    row_q16 = [int(round(v * Q16)) for v in row]
-                    y_q16 = self._lut_kernel.forward_q16(row_q16)
-                    out_rows.append([v / float(Q16) for v in y_q16])
+                    # Q32.32 preserves float32 activation precision at the I/O boundary.
+                    # The projection itself remains integer-only LUT lookups and additions.
+                    row_q32 = [int(round(float(v) * q32)) for v in row]
+                    raw_q32 = self._lut_kernel.matvec_int(row_q32)
+                    y_q32: list[int] = []
+                    for index, acc in enumerate(raw_q32):
+                        product = acc * self._lut_scale_q32
+                        rounded = (
+                            (product + (q32 // 2)) // q32
+                            if product >= 0
+                            else -((-product + (q32 // 2)) // q32)
+                        )
+                        y_q32.append(rounded + self._lut_bias_q32[index])
+                    out_rows.append([v / float(q32) for v in y_q32])
                 self.last_inference_backend = f"zero_float_matmul_lut:{self._lut_kernel.kernel_mode}"
                 return torch.tensor(out_rows, dtype=x.dtype, device=x.device).reshape(*orig_shape, self.out_features)
             self.last_inference_backend = "frozen_float_fallback"
