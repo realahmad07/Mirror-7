@@ -77,7 +77,7 @@ class BackendService:
         self._cognitive_orchestrator: Any | None = None
         self._universal_intelligence_pipeline: Any | None = None
         self._concept_lattice: Any | None = None
-        self._concept_lattice_sig: tuple[int, int] | None = None
+        self._concept_lattice_sig: Any = None
         self._is_ready: bool = False
         self._warmup_ms: float = 0.0
         if self.crystal_vault is None and enable_crystal_auto_load:
@@ -725,15 +725,28 @@ class BackendService:
         lattice_nodes = 0
         lattice_domains: dict[str, int] = {}
         lattice_telemetry: dict[str, Any] = {}
+        shard_telemetry: dict[str, Any] = {}
         try:
             _lat = self._get_concept_lattice()
             lattice_nodes = _lat.concept_count()
             lattice_domains = _lat.domain_distribution()
             if hasattr(_lat, "vault_telemetry"):
                 lattice_telemetry = _lat.vault_telemetry()
+            if hasattr(_lat, "shard_telemetry"):
+                shard_telemetry = _lat.shard_telemetry()
         except Exception:
             pass
         lattice_pairs = (lattice_nodes * (lattice_nodes - 1)) // 2
+        shards_breakdown = [
+            {
+                "filename": s["filename"],
+                "node_count": s["node_count"],
+                "disk_mb": s["disk_mb"],
+                "domains_count": s.get("domains_count", 0),
+                "schema_version": s.get("schema_version", "v4_fts5_zlib"),
+            }
+            for s in shard_telemetry.get("shards_breakdown", lattice_telemetry.get("shards_breakdown", []))
+        ]
 
         return {
             "ok": True,
@@ -750,7 +763,7 @@ class BackendService:
                 "CounterfactualWhatIfEngine, CEGIS AST Code Repair & ZeroParamDataAnalyst",
                 "ConversationalBlueprintEngine (Plotkin Anti-Unification + Raw-Data Eviction)",
                 "CategorizedConversationDomainEngine (12 Human Domains + Cross-Domain Blender + Socratic Coach + Document Composer)",
-                "OpenEndedConceptLatticeEngine (Disk-Backed SQLite FTS5 & Zlib 5-Facet ConceptNodes, O(1) Sharded Inverted Index & Compositional Synthesizer)",
+                "OpenEndedConceptLatticeEngine (Multi-Shard Disk-Backed SQLite FTS5 & Zlib 5-Facet ConceptNodes, O(1) Sharded Inverted Index & Compositional Synthesizer)",
                 "MarketIntelligenceOrgans (Newton Law Discovery, EV/ROI Decision Matrix, Multi-Organ Pipeline, AST Security Auditor)",
                 "FrontierIntelligenceOrgans (0/1 Knapsack Optimizer, White-Box Test Synth, Contradiction Auditor, Fault-Tree Diagnostician)",
                 "ScientificPluginIntelligenceEngine (PubChem, ChEMBL, openFDA, UniProt, ClinVar, Reactome, ClinicalTrials, arXiv, Context7)",
@@ -761,6 +774,13 @@ class BackendService:
             "conversation_domains_count": 12,
             "open_ended_concept_lattice": {
                 "concept_nodes": lattice_nodes,
+                "primary_node_count": shard_telemetry.get("primary_node_count", lattice_nodes),
+                "shards_count": shard_telemetry.get("shards_count", lattice_telemetry.get("shards_count", 0)),
+                "shards_node_count": shard_telemetry.get("shards_node_count", lattice_telemetry.get("shards_node_count", 0)),
+                "shards_disk_mb": shard_telemetry.get("shards_disk_mb", lattice_telemetry.get("shards_disk_mb", 0.0)),
+                "primary_disk_mb": shard_telemetry.get("primary_disk_mb", lattice_telemetry.get("vault_disk_mb", 0.0)),
+                "total_disk_mb": shard_telemetry.get("total_disk_mb", lattice_telemetry.get("vault_disk_mb", 0.0)),
+                "shards_breakdown": shards_breakdown,
                 "domains_count": len(lattice_domains),
                 "combinatorial_cross_pairs": lattice_pairs,
                 "discourse_operator_combinations": lattice_pairs * 12,
@@ -940,17 +960,37 @@ class BackendService:
             mem.close()
 
     # =========================================================================
-    # Market-Launch Open-Ended Concept Lattice API (50,000+ Concepts, Disk FTS5)
+    # Market-Launch Open-Ended Concept Lattice API (Multi-Shard Disk FTS5)
     # =========================================================================
     def _get_concept_lattice(self):
+        import os
+        from pathlib import Path
         from mirror_crystal.open_ended_concept_lattice import (
             OpenEndedConceptLatticeEngine,
             _DEFAULT_VAULT_PATH,
         )
-        sig: tuple[int, int] | None = None
+        if self._concept_lattice is not None and self._concept_lattice_sig == "__custom__":
+            return self._concept_lattice
+
+        primary_sig: tuple[int, int] | None = None
         if _DEFAULT_VAULT_PATH.exists():
             st = _DEFAULT_VAULT_PATH.stat()
-            sig = (st.st_mtime_ns, st.st_size)
+            primary_sig = (st.st_mtime_ns, st.st_size)
+
+        env_shards = os.getenv("MIRROR_CONCEPT_SHARDS_DIR", "").strip()
+        shard_dir = Path(env_shards) if env_shards else (_DEFAULT_VAULT_PATH.parent / "concept_shards")
+        shards_sig: tuple[tuple[str, int, int], ...] = ()
+        if shard_dir.is_dir():
+            s_entries: list[tuple[str, int, int]] = []
+            for sp in sorted(shard_dir.glob("*.dcrystal"), key=lambda p: p.name.casefold()):
+                try:
+                    sst = sp.stat()
+                    s_entries.append((sp.name, sst.st_mtime_ns, sst.st_size))
+                except OSError:
+                    continue
+            shards_sig = tuple(s_entries)
+
+        sig = (primary_sig, shards_sig)
         if self._concept_lattice is None or self._concept_lattice_sig != sig:
             if self._concept_lattice is not None and hasattr(self._concept_lattice, "close"):
                 self._concept_lattice.close()
@@ -959,16 +999,34 @@ class BackendService:
         return self._concept_lattice
 
     def lattice_status(self) -> dict[str, Any]:
-        """Return live telemetry for Mirror 7's Disk-Backed SQLite FTS5 Open-Ended Concept Lattice."""
+        """Return live telemetry for Mirror 7's Multi-Shard Disk-Backed SQLite FTS5 Concept Lattice."""
         lat = self._get_concept_lattice()
         total = lat.concept_count()
         dist = lat.domain_distribution()
         pairs = (total * (total - 1)) // 2
         tel = lat.vault_telemetry() if hasattr(lat, "vault_telemetry") else {}
+        shard_tel = lat.shard_telemetry() if hasattr(lat, "shard_telemetry") else {}
+        shards_breakdown = [
+            {
+                "filename": s["filename"],
+                "node_count": s["node_count"],
+                "disk_mb": s["disk_mb"],
+                "domains_count": s.get("domains_count", 0),
+                "schema_version": s.get("schema_version", "v4_fts5_zlib"),
+            }
+            for s in shard_tel.get("shards_breakdown", tel.get("shards_breakdown", []))
+        ]
         return {
             "ok": True,
             "version": lat.VERSION,
             "concept_nodes": total,
+            "primary_node_count": shard_tel.get("primary_node_count", total),
+            "shards_count": shard_tel.get("shards_count", tel.get("shards_count", 0)),
+            "shards_node_count": shard_tel.get("shards_node_count", tel.get("shards_node_count", 0)),
+            "shards_disk_mb": shard_tel.get("shards_disk_mb", tel.get("shards_disk_mb", 0.0)),
+            "primary_disk_mb": shard_tel.get("primary_disk_mb", tel.get("vault_disk_mb", 0.0)),
+            "total_disk_mb": shard_tel.get("total_disk_mb", tel.get("vault_disk_mb", 0.0)),
+            "shards_breakdown": shards_breakdown,
             "domains_count": len(dist),
             "combinatorial_cross_pairs": pairs,
             "discourse_operator_combinations": pairs * 12,

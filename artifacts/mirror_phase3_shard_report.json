@@ -1,0 +1,358 @@
+{
+  "primary_vault_path": "C:\\Users\\Ali Computers\\.gemini\\antigravity\\brain\\a898f823-e2d0-47d4-8476-3c5b509f9b39\\scratch\\mirror7_remote\\artifacts\\mirror_uol_skills.dcrystal",
+  "primary_node_count": 63510,
+  "primary_disk_mb": 64.16,
+  "primary_sha256_before": "3df8d0284e3afbb83a4a358c1df6459a2a2a94ee8b9883bc41800cd88a45a618",
+  "primary_sha256_after": "3df8d0284e3afbb83a4a358c1df6459a2a2a94ee8b9883bc41800cd88a45a618",
+  "primary_untouched": true,
+  "shards_count": 2,
+  "shards_node_count": 11231,
+  "shards_disk_mb": 12.91,
+  "total_unique_concepts": 74741,
+  "total_domains": 21,
+  "combinatorial_cross_pairs": 2793071170,
+  "discourse_operator_combinations_12x": 33516854040,
+  "discourse_operator_combinations_24x": 67033708080,
+  "total_disk_mb": 77.07,
+  "all_shards_under_35mb": true,
+  "cold_load_ms": 19.75,
+  "warm_load_ms": 12.835,
+  "peak_ram_mb": 0.4,
+  "median_lookup_ms": 0.569,
+  "p90_lookup_ms": 1.679,
+  "sla_cold_start_pass": true,
+  "sla_ram_pass": true,
+  "sla_lookup_pass": true,
+  "elapsed_seconds": 12.76,
+  "shard_admissions": {
+    "shard_github_engineering.dcrystal": {
+      "inserted_new": 4440,
+      "rejected_low_quality": 0,
+      "skipped_existing_primary_or_shard": 0,
+      "skipped_canonical_duplicate": 2,
+      "skipped_alias_duplicate": 0,
+      "skipped_content_duplicate": 0,
+      "shard_disk_mb": 5.33,
+      "shard_node_count": 4440,
+      "total_lattice_nodes": 67950,
+      "input_browser_nodes": 30,
+      "input_github_nodes": 4412
+    },
+    "shard_public_datasets.dcrystal": {
+      "inserted_new": 6791,
+      "rejected_low_quality": 0,
+      "skipped_existing_primary_or_shard": 10,
+      "skipped_canonical_duplicate": 1,
+      "skipped_alias_duplicate": 4,
+      "skipped_content_duplicate": 0,
+      "shard_disk_mb": 7.58,
+      "shard_node_count": 6791,
+      "total_lattice_nodes": 74741,
+      "input_dataset_nodes": 6806
+    }
+  },
+  "shards_breakdown": [
+    {
+      "filename": "shard_github_engineering.dcrystal",
+      "path": "C:\\Users\\Ali Computers\\.gemini\\antigravity\\brain\\a898f823-e2d0-47d4-8476-3c5b509f9b39\\scratch\\mirror7_remote\\artifacts\\concept_shards\\shard_github_engineering.dcrystal",
+      "node_count": 4440,
+      "domains_count": 6,
+      "disk_mb": 5.33,
+      "schema_version": "v4_fts5_zlib"
+    },
+    {
+      "filename": "shard_public_datasets.dcrystal",
+      "path": "C:\\Users\\Ali Computers\\.gemini\\antigravity\\brain\\a898f823-e2d0-47d4-8476-3c5b509f9b39\\scratch\\mirror7_remote\\artifacts\\concept_shards\\shard_public_datasets.dcrystal",
+      "node_count": 6791,
+      "domains_count": 20,
+      "disk_mb": 7.58,
+      "schema_version": "v4_fts5_zlib"
+    }
+  ],
+  "global_integrity_audit": {
+    "total_rows_audited": 74741,
+    "integrity_checks": {
+      "mirror_uol_skills.dcrystal": "ok",
+      "shard_github_engineering.dcrystal": "ok",
+      "shard_public_datasets.dcrystal": "ok"
+    },
+    "all_integrity_ok": true,
+    "global_duplicate_concept_ids": 0,
+    "global_duplicate_canonical_keys": 0,
+    "global_duplicate_content_fps": 0,
+    "global_zero_duplicates": true,
+    "source_counts": {
+      "live_wikipedia_api": 50838,
+      "science_plugins_verified": 10969,
+      "dataset_openalex_topics": 2866,
+      "dataset_nih_mesh": 2754,
+      "standards_nist_csrc_glossary": 1664,
+      "github_mitre_attack_stix": 898,
+      "live_arxiv_api": 870,
+      "curated_20_domain_catalog": 643,
+      "dataset_worldbank_indicators": 620,
+      "github_mitre_capec_stix": 531,
+      "dataset_schema_org_ontology": 466,
+      "github_mdn_web_glossary": 369,
+      "standards_ietf_rfc4949": 353,
+      "browser_verified_web_portals": 147,
+      "github_python_glossary": 145,
+      "github_kubernetes_glossary": 138,
+      "github_owasp_cheatsheets": 124,
+      "github_postgresql_glossary": 111,
+      "dataset_huggingface_verified": 85,
+      "python_stdlib_docs_introspector": 60,
+      "github_cncf_glossary": 42,
+      "github_rust_glossary": 37,
+      "seed_foundational": 10,
+      "other_verified": 1
+    },
+    "per_database_source_counts": {
+      "mirror_uol_skills.dcrystal": {
+        "live_wikipedia_api": 50838,
+        "science_plugins_verified": 10969,
+        "live_arxiv_api": 870,
+        "curated_20_domain_catalog": 643,
+        "browser_verified_web_portals": 119,
+        "python_stdlib_docs_introspector": 60,
+        "seed_foundational": 10,
+        "other_verified": 1
+      },
+      "shard_github_engineering.dcrystal": {
+        "standards_nist_csrc_glossary": 1664,
+        "github_mitre_attack_stix": 898,
+        "github_mitre_capec_stix": 531,
+        "github_mdn_web_glossary": 369,
+        "standards_ietf_rfc4949": 353,
+        "github_python_glossary": 145,
+        "github_kubernetes_glossary": 138,
+        "github_owasp_cheatsheets": 124,
+        "github_postgresql_glossary": 111,
+        "github_cncf_glossary": 42,
+        "github_rust_glossary": 37,
+        "browser_verified_web_portals": 28
+      },
+      "shard_public_datasets.dcrystal": {
+        "dataset_openalex_topics": 2866,
+        "dataset_nih_mesh": 2754,
+        "dataset_worldbank_indicators": 620,
+        "dataset_schema_org_ontology": 466,
+        "dataset_huggingface_verified": 85
+      }
+    },
+    "total_distilled_bytes": 29041862
+  },
+  "cross_shard_probe_results": [
+    {
+      "query": "What is Raft consensus?",
+      "matched": true,
+      "concepts_used": [
+        "raft consensus"
+      ],
+      "latency_ms": 0.791
+    },
+    {
+      "query": "Explain photosynthesis",
+      "matched": true,
+      "concepts_used": [
+        "photosynthesis"
+      ],
+      "latency_ms": 0.416
+    },
+    {
+      "query": "Compare Docker and Kubernetes",
+      "matched": true,
+      "concepts_used": [
+        "docker",
+        "kubernetes"
+      ],
+      "latency_ms": 1.679
+    },
+    {
+      "query": "How do Blockchain and Cryptography work together?",
+      "matched": true,
+      "concepts_used": [
+        "blockchain",
+        "cryptography"
+      ],
+      "latency_ms": 0.569
+    },
+    {
+      "query": "Yaar blokchain kaam kese krta h?",
+      "matched": true,
+      "concepts_used": [
+        "blockchain"
+      ],
+      "latency_ms": 0.132
+    },
+    {
+      "query": "What is Cross-Origin Resource Sharing?",
+      "matched": true,
+      "concepts_used": [
+        "cross-origin resource sharing"
+      ],
+      "latency_ms": 0.426
+    },
+    {
+      "query": "Explain Content Security Policy",
+      "matched": true,
+      "concepts_used": [
+        "content security policy"
+      ],
+      "latency_ms": 0.365
+    },
+    {
+      "query": "Explain CRISPR gene editing",
+      "matched": true,
+      "concepts_used": [
+        "crispr gene editing"
+      ],
+      "latency_ms": 1.406
+    },
+    {
+      "query": "What is System Information Discovery?",
+      "matched": true,
+      "concepts_used": [
+        "system information discovery"
+      ],
+      "latency_ms": 0.744
+    },
+    {
+      "query": "What is Authentication Abuse?",
+      "matched": true,
+      "concepts_used": [
+        "authentication abuse"
+      ],
+      "latency_ms": 0.554
+    },
+    {
+      "query": "Explain Bayes theorem",
+      "matched": true,
+      "concepts_used": [
+        "bayes theorem"
+      ],
+      "latency_ms": 0.279
+    },
+    {
+      "query": "What is zero-knowledge proof?",
+      "matched": true,
+      "concepts_used": [
+        "zero-knowledge proof"
+      ],
+      "latency_ms": 0.348
+    },
+    {
+      "query": "What is Absolute error?",
+      "matched": true,
+      "concepts_used": [
+        "absolute error"
+      ],
+      "latency_ms": 0.577
+    },
+    {
+      "query": "What is Audience restriction?",
+      "matched": true,
+      "concepts_used": [
+        "audience restriction"
+      ],
+      "latency_ms": 0.495
+    },
+    {
+      "query": "What is Cellular Traffic Intercept?",
+      "matched": true,
+      "concepts_used": [
+        "cellular traffic intercept"
+      ],
+      "latency_ms": 0.526
+    },
+    {
+      "query": "What is COMSEC demilitarization?",
+      "matched": true,
+      "concepts_used": [
+        "comsec demilitarization"
+      ],
+      "latency_ms": 0.422
+    },
+    {
+      "query": "What is Abdominal Radiography?",
+      "matched": true,
+      "concepts_used": [
+        "abdominal radiography"
+      ],
+      "latency_ms": 0.741
+    },
+    {
+      "query": "What is Endorsement Rating?",
+      "matched": true,
+      "concepts_used": [
+        "endorsement rating"
+      ],
+      "latency_ms": 0.697
+    },
+    {
+      "query": "What is Medical Practice Management?",
+      "matched": true,
+      "concepts_used": [
+        "medical practice management"
+      ],
+      "latency_ms": 0.893
+    },
+    {
+      "query": "What is Radio Broadcast Service?",
+      "matched": true,
+      "concepts_used": [
+        "radio broadcast service"
+      ],
+      "latency_ms": 2.316
+    }
+  ],
+  "domain_counts": {
+    "biology_genomics": 11487,
+    "medicine_pharmacology": 8804,
+    "chemistry": 5468,
+    "cybersecurity_networking": 5397,
+    "earth_climate_science": 5176,
+    "everyday_life_productivity": 4657,
+    "history_civilization": 3745,
+    "law_governance": 3521,
+    "physics": 3520,
+    "linguistics_literature": 3423,
+    "mathematics": 3173,
+    "software_engineering": 2711,
+    "psychology_cognitive": 2468,
+    "engineering": 2435,
+    "economics_finance": 2235,
+    "computer_science": 2084,
+    "business_management": 1455,
+    "philosophy_ethics": 1152,
+    "artificial_intelligence": 906,
+    "astronomy_space": 890,
+    "general_knowledge": 34
+  },
+  "source_counts": {
+    "live_wikipedia_api": 50838,
+    "science_plugins_verified": 10969,
+    "dataset_openalex_topics": 2866,
+    "dataset_nih_mesh": 2754,
+    "standards_nist_csrc_glossary": 1664,
+    "github_mitre_attack_stix": 898,
+    "live_arxiv_api": 870,
+    "curated_20_domain_catalog": 643,
+    "dataset_worldbank_indicators": 620,
+    "github_mitre_capec_stix": 531,
+    "dataset_schema_org_ontology": 466,
+    "github_mdn_web_glossary": 369,
+    "standards_ietf_rfc4949": 353,
+    "browser_verified_web_portals": 147,
+    "github_python_glossary": 145,
+    "github_kubernetes_glossary": 138,
+    "github_owasp_cheatsheets": 124,
+    "github_postgresql_glossary": 111,
+    "dataset_huggingface_verified": 85,
+    "python_stdlib_docs_introspector": 60,
+    "github_cncf_glossary": 42,
+    "github_rust_glossary": 37,
+    "seed_foundational": 10,
+    "other_verified": 1
+  }
+}

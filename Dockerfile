@@ -5,14 +5,15 @@ RUN groupadd -r mirror7 && useradd -r -g mirror7 -d /app -s /sbin/nologin mirror
 
 WORKDIR /app
 COPY . /app
-RUN chown -R mirror7:mirror7 /app
+RUN mkdir -p /app/artifacts/concept_shards && chown -R mirror7:mirror7 /app
 
 USER mirror7
 
 ENV PYTHONUNBUFFERED=1
 ENV MIRROR7_HOST=0.0.0.0
 ENV MIRROR7_PORT=8787
-ENV MIRROR7_CORS_ORIGIN=*
+ENV MIRROR7_CORS_ORIGIN=http://localhost:8787
+ENV MIRROR_CONCEPT_SHARDS_DIR=/app/artifacts/concept_shards
 ENV MIRROR_LOG_LEVEL=INFO
 
 EXPOSE 8787

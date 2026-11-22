@@ -32,8 +32,10 @@ from __future__ import annotations
 from collections import Counter, OrderedDict, defaultdict
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
+from functools import lru_cache
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sqlite3
@@ -142,7 +144,8 @@ _DISAMBIG_RE = re.compile(
     re.IGNORECASE,
 )
 _LIST_OR_OBSOLETE_TITLE_RE = re.compile(
-    r"^(?:list\s+of|timeline\s+of|outline\s+of|index\s+of|glossary\s+of|bibliography\s+of|obsolete\b)",
+    r"^(?:list\s+of|timeline\s+of|outline\s+of|index\s+of|glossary\s+of|bibliography\s+of|obsolete\b|deprecated\b|revoked\b)|"
+    r"\((?:deprecated|obsolete|revoked)\)\s*$",
     re.IGNORECASE,
 )
 _RAW_ACCESSION_TITLE_RE = re.compile(
@@ -168,11 +171,45 @@ _NON_BIO_HISTORICAL_ENTITY_RE = re.compile(
     re.IGNORECASE,
 )
 _DIRTY_TITLE_RE = re.compile(r"(?:<[^>]+>|https?://|\{\{|\}\}|\[\[|\]\])")
+_MCQ_JUNK_RE = re.compile(
+    r"(?:\bwhich\s+of\s+the\s+following\b|\ball\s+of\s+the\s+above\b|\bnone\s+of\s+the\s+above\b|"
+    r"\btrue\s+or\s+false\b|\boption\s+[a-d]\b|\bselect\s+(?:the\s+)?correct\s+(?:answer|option)\b|"
+    r"\bmultiple[\-\s]choice\b)",
+    re.IGNORECASE,
+)
+_MARKDOWN_LINK_RE = re.compile(
+    r"\[[^\]]{1,120}\]\((?:https?://|/|#|\.\.?/|[a-zA-Z0-9_./-]+\.(?:md|html|htm)|[a-zA-Z0-9_/-]+(?:[-_/][a-zA-Z0-9_./-]+)+)[^)\s]*\)"
+    r"|\[[A-Za-z][^\]]{1,119}\]\([a-z0-9][a-z0-9._/#-]{2,}\)"
+)
+_MARKDOWN_CODE_OR_MACRO_RE = re.compile(
+    r"(?:```|\{\{|\}\}|\[\[|\]\]|\(Citation:\s*[^)]+\))",
+    re.IGNORECASE,
+)
+_HTML_TAG_RE = re.compile(
+    r"</?(?:abbr|address|article|aside|audio|bdi|bdo|blockquote|body|br|button|canvas|caption|cite|code|col|colgroup|"
+    r"data|datalist|dd|del|details|dfn|dialog|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h[1-6]|head|header|hr|html|"
+    r"iframe|img|input|ins|kbd|label|legend|li|link|main|map|mark|menu|meta|meter|nav|noscript|object|ol|optgroup|option|"
+    r"output|picture|pre|progress|rp|rt|ruby|samp|script|section|select|small|source|span|strong|style|sub|summary|sup|"
+    r"svg|table|tbody|td|template|textarea|tfoot|th|thead|time|title|tr|track|ul|var|video|wbr)\b[^>]*>"
+    r"|</?(?:a|b|i|p|q|s|u)(?:\s*/?>|\s+[a-zA-Z_:][a-zA-Z0-9_.:-]*\s*=[^>]*>)",
+    re.IGNORECASE,
+)
+_YAML_FRONTMATTER_RE = re.compile(
+    r"(?:^|\n)\s*---\s*(?:\n|$)|^---\s+[a-z_]+:",
+    re.IGNORECASE,
+)
+_RAW_URL_RE = re.compile(r"https?://\S+", re.IGNORECASE)
+_DEPRECATED_DEF_RE = re.compile(
+    r"(?:^(?:deprecated|obsolete|revoked)\b|"
+    r"\b(?:is|was|has\s+been)\s+(?:now\s+|officially\s+|widely\s+|considered\s+)?(?:an?\s+)?(?:deprecated|obsolete|revoked|outdated\s+term)\b|"
+    r"\b(?:deprecated|obsolete|revoked)\s+(?:by\s+rfc|in\s+favor\s+of|protocol|standard|api|feature|method|technique|term|interface)\b)",
+    re.IGNORECASE,
+)
 
 # Pre-compiled hot-path regexes for sub-millisecond O(1) query routing
 _RE_WORD_3 = re.compile(r"[a-z0-9]{3,}")
 _RE_WORD_4_ALPHA = re.compile(r"[a-z]{4,}")
-_RE_NGRAM_TOK = re.compile(r"[a-z0-9]+(?:[-'.][a-z0-9]+)*")
+_RE_NGRAM_TOK = re.compile(r"[a-z0-9]+(?:[-'._][a-z0-9]+)*")
 _RE_INTENT_DEF = re.compile(r"\b(?:what\s+is|what\s+are|kya\s+hai|kia\s+h|kia\s+hai|define|taaruf|meaning\s+of)\b")
 _RE_INTENT_MECH = re.compile(r"\b(?:how\s+does|how\s+do|kaam\s+kaise|kaam\s+kese|kese\s+krta|kaise\s+karta|mechanism|working|internally)\b")
 _RE_INTENT_APPS = re.compile(r"\b(?:benefit\w*|advantage\w*|use\w*|application\w*|fayda|faida|istemal|strength\w*)\b")
@@ -206,12 +243,23 @@ _RE_CROSS_SYNERGY = re.compile(r"\b(?:work\s+together|combine|interact|relations
 _RE_CROSS_COMPARE = re.compile(r"\b(?:compare|difference\s+between|vs\.?|versus|farq|muqabla)\b")
 _RE_URDU = re.compile(r"\b(?:yaar|kya|kia|kaise|kese|krta|karta|nuqsan|fayda|faida|mein|hai|h|aur|taluq|samjhao|batao|farq|muqabla)\b")
 _NGRAM_SKIP_EDGE = _INDEX_STOP_TOKENS | {
+    "a", "an", "as", "at", "be", "by", "do", "go", "if", "in", "is", "it",
+    "me", "my", "no", "of", "on", "or", "so", "to", "up", "us", "we",
+    "ka", "ke", "ki", "ko", "se", "ho", "hi", "ya",
     "what", "when", "where", "which", "who", "why", "how", "explain", "tell",
     "define", "compare", "versus", "yaar", "bhai", "kya", "kia", "hai", "hain",
     "aur", "batao", "samjhao", "farq", "muqabla", "kaise", "kese", "karta", "krta",
     "iska", "iske", "nuqsan", "fayda", "faida", "drawbacks", "limitations",
     "tradeoffs", "benefits", "advantages", "mechanism", "work", "works", "working",
 }
+
+
+@lru_cache(maxsize=512)
+def _compiled_framing_re(al_low: str) -> re.Pattern[str]:
+    esc = re.escape(al_low)
+    return re.compile(
+        rf"(?:\b(?:what\s+(?:is|are)|define|explain|tell\s+me\s+about|overview\s+of|how\s+does|how\s+do|benefits?\s+of|drawbacks?\s+of|risks?\s+of|compare|difference\s+between|versus|vs\.?|and|aur)\s+(?:the\s+|a\s+|an\s+)?{esc}\b|\b{esc}\s+(?:kya\s+hai|kia\s+hai|kia\s+h|kaam\s+kaise|kaam\s+kese|ke\s+baare\s+mein|vs\.?|versus|aur|work\s+together|works)\b)"
+    )
 _COVERAGE_FILLER = _COMMON_NON_TYPO_TOKENS | {
     "this", "that", "with", "from", "into", "does", "have", "been", "were", "also",
     "more", "than", "very", "just", "only", "most", "much", "many", "such", "each",
@@ -227,8 +275,9 @@ def provenance_tier_rank(provenance: str) -> float:
       Tier 5.0 : Seed Foundational & User-Compiled (`mirror:concept_lattice:*`, `mirror:auto_compiled*`, `mirror:user_compiled*`, `user:*`)
       Tier 4.0 : Curated 20-Domain Catalog (`mirror:domain_agent_harvester*`, `curated:*`)
       Tier 3.0 : Browser-Verified Portals (`browser:*`)
-      Tier 2.5 : Official Science Plugins & Technical Docs (`docs:*`, `ols:*`, `chembl:*`, `pubchem:*`, `uniprot:*`, `reactome:*`, `interpro:*`, `openfda:*`, `clinvar:*`, `clinicaltrials:*`, `plugin:*`, `science_plugin:*`)
-      Tier 2.0 : Wikipedia MediaWiki API (`wikipedia:*`)
+      Tier 2.8 : Authoritative Security/Engineering Standards & Glossaries (`mitre:*`, `owasp:*`, `cncf:*`, `mdn:*`, `nist:*`, `ietf:*`)
+      Tier 2.5 : Official Science Plugins & Public Knowledge Registries (`ols:*`, `chembl:*`, `pubchem:*`, `uniprot:*`, `reactome:*`, `interpro:*`, `openfda:*`, `clinicaltrials:*`, `clinvar:*`, `openalex:*`, `schema.org:*`, `mesh:*`, `hf:*`, `worldbank:*`, `plugin:*`, `science_plugin:*`)
+      Tier 2.0 : Documentation & Wikipedia (`docs:*`, `wikipedia:*`)
       Tier 1.0 : arXiv & Other Research Harvests (`arxiv:*`, default)
     """
     p = (provenance or "").strip().casefold()
@@ -238,8 +287,9 @@ def provenance_tier_rank(provenance: str) -> float:
         return 4.0
     if p.startswith("browser:"):
         return 3.0
+    if p.startswith(("mitre:", "owasp:", "cncf:", "mdn:", "nist:", "ietf:")):
+        return 2.8
     if p.startswith((
-        "docs:",
         "ols:",
         "chembl:",
         "pubchem:",
@@ -249,11 +299,16 @@ def provenance_tier_rank(provenance: str) -> float:
         "openfda:",
         "clinvar:",
         "clinicaltrials:",
+        "openalex:",
+        "schema.org:",
+        "mesh:",
+        "hf:",
+        "worldbank:",
         "plugin:",
         "science_plugin:",
     )):
         return 2.5
-    if p.startswith("wikipedia:"):
+    if p.startswith(("docs:", "wikipedia:")):
         return 2.0
     return 1.0
 
@@ -338,7 +393,8 @@ def score_concept_quality(node: ConceptNode) -> float:
     """Compute a deterministic quality score in [0.0, 1.0] for a 5-facet ConceptNode.
 
     Penalizes disambiguation pages, biographical stubs, broken/truncated sentence splits,
-    list/timeline/obsolete/raw-accession titles, and missing/duplicate facets.
+    list/timeline/obsolete/deprecated/raw-accession titles, MCQ/question junk,
+    markdown/HTML/macro/YAML/URL garbage, and missing/duplicate facets.
     """
     score = 1.0
     title = (node.title or "").strip()
@@ -350,12 +406,14 @@ def score_concept_quality(node: ConceptNode) -> float:
     # 1. Clean title check
     if len(title) < 2 or len(title) > 160 or _DIRTY_TITLE_RE.search(title):
         score -= 0.55
-    if _LIST_OR_OBSOLETE_TITLE_RE.match(title) or _RAW_ACCESSION_TITLE_RE.match(title):
+    if _LIST_OR_OBSOLETE_TITLE_RE.search(title) or _RAW_ACCESSION_TITLE_RE.match(title):
         score -= 0.70
 
-    # 2. Disambiguation page check
+    # 2. Disambiguation & deprecated page check
     if _DISAMBIG_RE.search(title) or _DISAMBIG_RE.search(defn):
         score -= 0.75
+    if _DEPRECATED_DEF_RE.search(defn):
+        score -= 0.65
 
     # 3. Broken / truncated sentence-split definitions (e.g. ending in 'c.', '[O.S.', unclosed '(' or orphan ')')
     if _ORPHAN_YEAR_PREFIX_RE.match(defn):
@@ -368,11 +426,34 @@ def score_concept_quality(node: ConceptNode) -> float:
         if _BIO_BIRTH_DATE_RE.search(defn) or _BIO_NATIONALITY_ROLE_RE.search(defn):
             score -= 0.65
 
-    # 5. Facet completeness & distinctiveness
+    # 5. MCQ / trivia / question-fragment detection
+    if (
+        _MCQ_JUNK_RE.search(title)
+        or _MCQ_JUNK_RE.search(defn)
+        or _MCQ_JUNK_RE.search(mech)
+        or _MCQ_JUNK_RE.search(apps)
+        or _MCQ_JUNK_RE.search(trd)
+        or "?" in defn
+    ):
+        score -= 0.75
+
+    # 6. Markdown link / code fence / macro / HTML / YAML / raw URL garbage detection
+    for field_txt in (title, defn, mech, apps, trd):
+        if (
+            _MARKDOWN_LINK_RE.search(field_txt)
+            or _MARKDOWN_CODE_OR_MACRO_RE.search(field_txt)
+            or _HTML_TAG_RE.search(field_txt)
+            or _YAML_FRONTMATTER_RE.search(field_txt)
+            or _RAW_URL_RE.search(field_txt)
+        ):
+            score -= 0.65
+            break
+
+    # 7. Facet completeness & distinctiveness
     if len(defn) < 20:
         score -= 0.55
-    elif len(defn) < 35:
-        score -= 0.15
+    elif len(defn) < 50:
+        score -= 0.30
     if len(mech) < 15:
         score -= 0.20
     if len(apps) < 15:
@@ -391,6 +472,58 @@ def score_concept_quality(node: ConceptNode) -> float:
     if provenance_tier_rank(node.provenance) >= 4.0:
         score = max(score, 0.85)
     return round(max(0.0, min(1.0, score)), 3)
+
+
+def _validate_shard_candidate(node: ConceptNode, min_quality: float) -> tuple[bool, float]:
+    """Strict Quality-Over-Quantity admission gate for Phase-3 multi-shard concept ingestion."""
+    title = (node.title or "").strip()
+    defn = (node.definition or "").strip()
+    mech = (node.mechanism or "").strip()
+    apps = (node.applications or "").strip()
+    trd = (node.tradeoffs or "").strip()
+
+    # Hard structural & cleanliness rejects
+    if len(title) < 2 or len(title) > 160 or _DIRTY_TITLE_RE.search(title):
+        return False, 0.0
+    if _LIST_OR_OBSOLETE_TITLE_RE.search(title) or _RAW_ACCESSION_TITLE_RE.match(title):
+        return False, 0.0
+    if len(defn) < 50 or len(mech) < 15 or len(apps) < 15 or len(trd) < 15:
+        return False, 0.0
+    if _DISAMBIG_RE.search(title) or _DISAMBIG_RE.search(defn) or _DEPRECATED_DEF_RE.search(defn):
+        return False, 0.0
+    if "?" in defn:
+        return False, 0.0
+    for field_txt in (title, defn, mech, apps, trd):
+        if (
+            _MCQ_JUNK_RE.search(field_txt)
+            or _MARKDOWN_LINK_RE.search(field_txt)
+            or _MARKDOWN_CODE_OR_MACRO_RE.search(field_txt)
+            or _HTML_TAG_RE.search(field_txt)
+            or _YAML_FRONTMATTER_RE.search(field_txt)
+            or _RAW_URL_RE.search(field_txt)
+        ):
+            return False, 0.0
+
+    computed_q = score_concept_quality(node)
+    provided_q = float(node.quality_score) if node.quality_score is not None else 1.0
+    eff_q = min(computed_q, provided_q) if 0.0 <= provided_q < 1.0 else computed_q
+    if eff_q < min_quality:
+        return False, round(eff_q, 3)
+    return True, round(eff_q, 3)
+
+
+@dataclass
+class _ShardHandle:
+    """Persistent read-only handle + lightweight metadata for a mounted `.dcrystal` concept shard."""
+
+    name: str
+    path: Path
+    conn: sqlite3.Connection
+    has_v4_schema: bool
+    has_legacy_table: bool
+    node_count: int
+    domain_dist: dict[str, int]
+    disk_mb: float
 
 
 @dataclass(frozen=True)
@@ -657,14 +790,15 @@ class _DiskConceptNodeProxy(Mapping[str, ConceptNode]):
 
 
 class OpenEndedConceptLatticeEngine:
-    """Disk-Backed SQLite FTS5 & Sharded Inverted-Index Concept Lattice + Compositional Synthesizer."""
+    """Multi-Shard Disk-Backed SQLite FTS5 & Sharded Inverted-Index Concept Lattice + Compositional Synthesizer."""
 
-    VERSION = "open-ended-concept-lattice-v4-50k-fts5-disk"
+    VERSION = "open-ended-concept-lattice-v5-multishard-fts5-disk"
 
     def __init__(
         self,
         *,
         vault_path: str | Path | None = None,
+        shard_dir: str | Path | None = None,
         lru_maxsize: int = _LRU_MAXSIZE,
     ) -> None:
         if vault_path is not None:
@@ -674,8 +808,19 @@ class OpenEndedConceptLatticeEngine:
         else:
             self.vault_path = None
 
+        self._explicit_shard_dir: Path | None = Path(shard_dir) if shard_dir is not None else None
+        if self._explicit_shard_dir is not None:
+            self.shard_dir: Path | None = self._explicit_shard_dir
+        elif vault_path is None and os.getenv("MIRROR_CONCEPT_SHARDS_DIR", "").strip():
+            self.shard_dir = Path(os.getenv("MIRROR_CONCEPT_SHARDS_DIR", "").strip())
+        elif self.vault_path is not None:
+            self.shard_dir = self.vault_path.parent / "concept_shards"
+        else:
+            self.shard_dir = None
+
         self._lock = threading.RLock()
         self._conn: sqlite3.Connection | None = None
+        self._shards: list[_ShardHandle] = []
         self._lru_maxsize = max(64, int(lru_maxsize))
         self._lru: OrderedDict[str, ConceptNode] = OrderedDict()
 
@@ -699,6 +844,9 @@ class OpenEndedConceptLatticeEngine:
         self._has_legacy_table: bool = False
         self._cached_db_count: int = 0
         self._cached_db_domain_dist: dict[str, int] = {}
+        self._cached_shards_count: int = 0
+        self._cached_total_db_count: int = 0
+        self._cached_total_domain_dist: dict[str, int] = {}
         self._nodes = _DiskConceptNodeProxy(self)
 
         if self.vault_path is not None and self.vault_path.exists():
@@ -708,6 +856,9 @@ class OpenEndedConceptLatticeEngine:
             for nd in _SEED_CONCEPT_NODES:
                 self._index_ephemeral_node(nd)
 
+        self._attach_shards()
+        self._recompute_combined_metadata()
+
     def close(self) -> None:
         with self._lock:
             if self._conn is not None:
@@ -716,6 +867,12 @@ class OpenEndedConceptLatticeEngine:
                 except Exception:
                     pass
                 self._conn = None
+            for sh in self._shards:
+                try:
+                    sh.conn.close()
+                except Exception:
+                    pass
+            self._shards.clear()
 
     def __del__(self) -> None:
         try:
@@ -733,6 +890,243 @@ class OpenEndedConceptLatticeEngine:
         conn.execute("PRAGMA mmap_size=67108864")
         conn.execute("PRAGMA cache_size=-8000")
         conn.execute("PRAGMA temp_store=MEMORY")
+
+    @staticmethod
+    def _configure_shard_connection(conn: sqlite3.Connection) -> None:
+        conn.execute("PRAGMA query_only=ON")
+        conn.execute("PRAGMA mmap_size=33554432")
+        conn.execute("PRAGMA cache_size=-4000")
+        conn.execute("PRAGMA temp_store=MEMORY")
+
+    @staticmethod
+    def _invalidate_path_snapshot_cache(path: Path | None) -> None:
+        if path is None:
+            return
+        try:
+            resolved = str(path.resolve())
+        except OSError:
+            resolved = str(path)
+        for k in [key for key in _VAULT_SNAPSHOT_CACHE if key[0] == resolved]:
+            _VAULT_SNAPSHOT_CACHE.pop(k, None)
+
+    def _recompute_combined_metadata(self) -> None:
+        shards_total = sum(sh.node_count for sh in self._shards)
+        self._cached_shards_count = shards_total
+        self._cached_total_db_count = self._cached_db_count + shards_total
+        if not self._shards:
+            self._cached_total_domain_dist = dict(self._cached_db_domain_dist)
+            return
+        merged: dict[str, int] = defaultdict(int, self._cached_db_domain_dist)
+        for sh in self._shards:
+            for cat, cnt in sh.domain_dist.items():
+                merged[cat] += int(cnt)
+        self._cached_total_domain_dist = dict(
+            sorted(merged.items(), key=lambda x: (-x[1], x[0]))
+        )
+
+    def _attach_shard_file(self, shard_path: Path) -> _ShardHandle | None:
+        if not shard_path.is_file():
+            return None
+        try:
+            st = shard_path.stat()
+        except OSError:
+            return None
+        if st.st_size < 1024:
+            return None
+        if self.vault_path is not None:
+            try:
+                if shard_path.resolve() == self.vault_path.resolve():
+                    return None
+            except OSError:
+                pass
+
+        resolved_str = str(shard_path.resolve())
+        cache_key = (resolved_str, st.st_mtime_ns, st.st_size)
+
+        conn: sqlite3.Connection | None = None
+        try:
+            conn = sqlite3.connect(str(shard_path), check_same_thread=False)
+            self._configure_shard_connection(conn)
+            conn.execute("SELECT 1 FROM sqlite_master LIMIT 1").fetchone()
+        except sqlite3.OperationalError:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                conn = None
+            try:
+                uri = f"{shard_path.resolve().as_uri()}?mode=ro&immutable=1"
+                conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+                self._configure_shard_connection(conn)
+                conn.execute("SELECT 1 FROM sqlite_master LIMIT 1").fetchone()
+            except Exception:
+                if conn is not None:
+                    try:
+                        conn.close()
+                    except Exception:
+                        pass
+                return None
+        except Exception:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            return None
+
+        disk_mb = round(st.st_size / (1024 * 1024), 2)
+        cached_meta = _VAULT_SNAPSHOT_CACHE.get(cache_key)
+        if cached_meta is not None and cached_meta.get("schema_version") in (_SCHEMA_VERSION, "legacy_v3"):
+            is_v4 = cached_meta.get("schema_version") == _SCHEMA_VERSION
+            return _ShardHandle(
+                name=shard_path.name,
+                path=shard_path,
+                conn=conn,
+                has_v4_schema=is_v4,
+                has_legacy_table=not is_v4,
+                node_count=int(cached_meta["total_count"]),
+                domain_dist=dict(cached_meta["domain_dist"]),
+                disk_mb=disk_mb,
+            )
+
+        try:
+            tables = {
+                r[0]
+                for r in conn.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table' AND name IN "
+                    "('mirror_concept_lattice','mirror_concept_tokens','mirror_concept_trigrams',"
+                    "'mirror_concept_aliases','mirror_concept_fts','mirror_concept_meta')"
+                ).fetchall()
+            }
+            if "mirror_concept_lattice" not in tables:
+                conn.close()
+                return None
+
+            has_v4 = False
+            if {
+                "mirror_concept_lattice",
+                "mirror_concept_tokens",
+                "mirror_concept_trigrams",
+                "mirror_concept_aliases",
+                "mirror_concept_fts",
+                "mirror_concept_meta",
+            }.issubset(tables):
+                row_ver = conn.execute(
+                    "SELECT val FROM mirror_concept_meta WHERE key = 'schema_version'"
+                ).fetchone()
+                if row_ver and row_ver[0] == _SCHEMA_VERSION:
+                    has_v4 = True
+
+            if has_v4:
+                meta_rows = dict(
+                    conn.execute(
+                        "SELECT key, val FROM mirror_concept_meta WHERE key IN ('total_count', 'domain_distribution')"
+                    ).fetchall()
+                )
+                if "total_count" in meta_rows and "domain_distribution" in meta_rows:
+                    node_count = int(meta_rows["total_count"])
+                    domain_dist = json.loads(meta_rows["domain_distribution"])
+                else:
+                    node_count = int(conn.execute("SELECT COUNT(*) FROM mirror_concept_lattice").fetchone()[0])
+                    rows = conn.execute(
+                        "SELECT category, COUNT(*) FROM mirror_concept_lattice GROUP BY category"
+                    ).fetchall()
+                    domain_dist = dict(sorted(((str(c), int(n)) for c, n in rows), key=lambda x: (-x[1], x[0])))
+            else:
+                node_count = int(conn.execute("SELECT COUNT(*) FROM mirror_concept_lattice").fetchone()[0])
+                rows = conn.execute(
+                    "SELECT category, COUNT(*) FROM mirror_concept_lattice GROUP BY category"
+                ).fetchall()
+                domain_dist = dict(sorted(((str(c), int(n)) for c, n in rows), key=lambda x: (-x[1], x[0])))
+
+            _VAULT_SNAPSHOT_CACHE[cache_key] = {
+                "schema_version": _SCHEMA_VERSION if has_v4 else "legacy_v3",
+                "total_count": node_count,
+                "domain_dist": dict(domain_dist),
+            }
+            return _ShardHandle(
+                name=shard_path.name,
+                path=shard_path,
+                conn=conn,
+                has_v4_schema=has_v4,
+                has_legacy_table=not has_v4,
+                node_count=node_count,
+                domain_dist=domain_dist,
+                disk_mb=disk_mb,
+            )
+        except Exception:
+            try:
+                conn.close()
+            except Exception:
+                pass
+            return None
+
+    def _attach_shards(self) -> None:
+        """Auto-discover and attach all `*.dcrystal` read-only shards in `self.shard_dir`."""
+        with self._lock:
+            for sh in self._shards:
+                try:
+                    sh.conn.close()
+                except Exception:
+                    pass
+            self._shards.clear()
+            if self.shard_dir is None or not self.shard_dir.is_dir():
+                return
+            shard_files = sorted(
+                self.shard_dir.glob("*.dcrystal"),
+                key=lambda p: p.name.casefold(),
+            )
+            for sp in shard_files:
+                handle = self._attach_shard_file(sp)
+                if handle is not None:
+                    self._shards.append(handle)
+
+    def _register_or_reload_shard_locked(self, shard_path: Path) -> _ShardHandle | None:
+        """Close any previous read-only handle for `shard_path` and mount the fresh shard cleanly."""
+        target_res = shard_path.resolve()
+        kept: list[_ShardHandle] = []
+        for sh in self._shards:
+            if sh.path.resolve() == target_res:
+                try:
+                    sh.conn.close()
+                except Exception:
+                    pass
+            else:
+                kept.append(sh)
+        self._shards = kept
+        self._invalidate_path_snapshot_cache(shard_path)
+        handle = self._attach_shard_file(shard_path)
+        if handle is not None:
+            self._shards.append(handle)
+            self._shards.sort(key=lambda s: s.name.casefold())
+        self._recompute_combined_metadata()
+        return handle
+
+    def _discover_unmounted_shards_locked(self, extra_dir: Path | None = None) -> None:
+        """Mount any newly added `.dcrystal` shards on disk that are not yet in `self._shards`."""
+        mounted = {sh.path.resolve() for sh in self._shards}
+        dirs: list[Path] = []
+        if self.shard_dir is not None and self.shard_dir.is_dir():
+            dirs.append(self.shard_dir)
+        if extra_dir is not None and extra_dir.is_dir():
+            if not dirs or extra_dir.resolve() != dirs[0].resolve():
+                if self.vault_path is None or extra_dir.resolve() != self.vault_path.parent.resolve():
+                    dirs.append(extra_dir)
+        added = False
+        for d in dirs:
+            for sp in sorted(d.glob("*.dcrystal"), key=lambda p: p.name.casefold()):
+                sp_res = sp.resolve()
+                if sp_res in mounted:
+                    continue
+                handle = self._attach_shard_file(sp)
+                if handle is not None:
+                    self._shards.append(handle)
+                    mounted.add(sp_res)
+                    added = True
+        if added:
+            self._shards.sort(key=lambda s: s.name.casefold())
+            self._recompute_combined_metadata()
 
     @staticmethod
     def _create_v4_schema(conn: sqlite3.Connection) -> None:
@@ -815,11 +1209,7 @@ class OpenEndedConceptLatticeEngine:
         )
 
     def _invalidate_snapshot_cache(self) -> None:
-        if self.vault_path is None:
-            return
-        resolved = str(self.vault_path.resolve())
-        for k in [key for key in _VAULT_SNAPSHOT_CACHE if key[0] == resolved]:
-            _VAULT_SNAPSHOT_CACHE.pop(k, None)
+        self._invalidate_path_snapshot_cache(self.vault_path)
 
     def _update_meta_and_local_cache(self, conn: sqlite3.Connection) -> None:
         total = int(conn.execute("SELECT COUNT(*) FROM mirror_concept_lattice").fetchone()[0])
@@ -837,14 +1227,27 @@ class OpenEndedConceptLatticeEngine:
         )
         self._cached_db_count = total
         self._cached_db_domain_dist = dist
+        self._recompute_combined_metadata()
 
     def _attach_existing_vault(self) -> None:
         assert self.vault_path is not None
         st = self.vault_path.stat()
         cache_key = (str(self.vault_path.resolve()), st.st_mtime_ns, st.st_size)
 
-        conn = sqlite3.connect(str(self.vault_path), check_same_thread=False)
-        self._configure_connection(conn, enable_wal=False)
+        conn: sqlite3.Connection | None = None
+        try:
+            conn = sqlite3.connect(str(self.vault_path), check_same_thread=False)
+            self._configure_connection(conn, enable_wal=False)
+            conn.execute("SELECT 1 FROM sqlite_master LIMIT 1").fetchone()
+        except sqlite3.OperationalError:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            uri = f"{self.vault_path.resolve().as_uri()}?mode=ro&immutable=1"
+            conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+            self._configure_shard_connection(conn)
         self._conn = conn
 
         cached_meta = _VAULT_SNAPSHOT_CACHE.get(cache_key)
@@ -1194,7 +1597,42 @@ class OpenEndedConceptLatticeEngine:
             provenance=str(prov),
         )
 
-    def _get_node(self, cid: str) -> ConceptNode | None:
+    def _iter_active_db_sources_locked(self) -> list[tuple[sqlite3.Connection, bool]]:
+        """Return active `(conn, is_v4)` handles in priority order: primary FIRST, then mounted shards."""
+        sources: list[tuple[sqlite3.Connection, bool]] = []
+        if self._conn is not None and (self._has_v4_schema or self._has_legacy_table):
+            sources.append((self._conn, self._has_v4_schema))
+        for sh in self._shards:
+            if sh.has_v4_schema or sh.has_legacy_table:
+                sources.append((sh.conn, sh.has_v4_schema))
+        return sources
+
+    def _fetch_node_from_conn(
+        self,
+        conn: sqlite3.Connection,
+        is_v4: bool,
+        cid_low: str,
+    ) -> ConceptNode | None:
+        if is_v4:
+            row = conn.execute(
+                "SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
+                "FROM mirror_concept_lattice WHERE concept_id = ?",
+                (cid_low,),
+            ).fetchone()
+            return self._row_to_node_v4(row) if row is not None else None
+        row = conn.execute(
+            "SELECT concept_id, title, category, aliases_csv, definition, mechanism, applications, tradeoffs, provenance "
+            "FROM mirror_concept_lattice WHERE concept_id = ?",
+            (cid_low,),
+        ).fetchone()
+        return self._row_to_node_legacy(row) if row is not None else None
+
+    def _get_node(
+        self,
+        cid: str,
+        *,
+        hint_source: tuple[sqlite3.Connection, bool] | None = None,
+    ) -> ConceptNode | None:
         cid_low = cid.strip().casefold()
         if cid_low in self._ephemeral_nodes:
             return self._ephemeral_nodes[cid_low]
@@ -1202,136 +1640,149 @@ class OpenEndedConceptLatticeEngine:
         if cached is not None:
             self._lru.move_to_end(cid_low)
             return cached
-        if self._conn is None or (not self._has_v4_schema and not self._has_legacy_table):
-            return self._seed_by_id.get(cid_low)
         with self._lock:
-            if self._has_v4_schema:
-                row = self._conn.execute(
-                    "SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
-                    "FROM mirror_concept_lattice WHERE concept_id = ?",
-                    (cid_low,),
-                ).fetchone()
-                if row is None:
+            # Primary ALWAYS checked first so primary wins on any hypothetical ID tie
+            if self._conn is not None and (self._has_v4_schema or self._has_legacy_table):
+                nd = self._fetch_node_from_conn(self._conn, self._has_v4_schema, cid_low)
+                if nd is not None:
+                    self._lru_put(cid_low, nd)
+                    return nd
+                if hint_source is not None and hint_source[0] is self._conn:
                     return self._seed_by_id.get(cid_low)
-                nd = self._row_to_node_v4(row)
-            else:
-                row = self._conn.execute(
-                    "SELECT concept_id, title, category, aliases_csv, definition, mechanism, applications, tradeoffs, provenance "
-                    "FROM mirror_concept_lattice WHERE concept_id = ?",
-                    (cid_low,),
-                ).fetchone()
-                if row is None:
-                    return self._seed_by_id.get(cid_low)
-                nd = self._row_to_node_legacy(row)
-            self._lru_put(cid_low, nd)
-            return nd
+
+            if hint_source is not None and hint_source[0] is not self._conn:
+                nd = self._fetch_node_from_conn(hint_source[0], hint_source[1], cid_low)
+                if nd is not None:
+                    self._lru_put(cid_low, nd)
+                    return nd
+
+            for sh in self._shards:
+                if hint_source is not None and sh.conn is hint_source[0]:
+                    continue
+                if not (sh.has_v4_schema or sh.has_legacy_table):
+                    continue
+                nd = self._fetch_node_from_conn(sh.conn, sh.has_v4_schema, cid_low)
+                if nd is not None:
+                    self._lru_put(cid_low, nd)
+                    return nd
+
+            return self._seed_by_id.get(cid_low)
 
     def _has_node(self, cid: str) -> bool:
         cid_low = cid.strip().casefold()
         if cid_low in self._ephemeral_nodes or cid_low in self._lru or cid_low in self._seed_by_id:
             return True
-        if self._conn is None or (not self._has_v4_schema and not self._has_legacy_table):
-            return False
         with self._lock:
-            row = self._conn.execute(
-                "SELECT 1 FROM mirror_concept_lattice WHERE concept_id = ? LIMIT 1",
-                (cid_low,),
-            ).fetchone()
-            return row is not None
+            for conn, _ in self._iter_active_db_sources_locked():
+                row = conn.execute(
+                    "SELECT 1 FROM mirror_concept_lattice WHERE concept_id = ? LIMIT 1",
+                    (cid_low,),
+                ).fetchone()
+                if row is not None:
+                    return True
+            return False
 
     def _iter_all_ids_streaming(self) -> Iterator[str]:
         seen: set[str] = set()
         for cid in list(self._ephemeral_nodes.keys()):
             seen.add(cid)
             yield cid
-        if self._conn is not None and (self._has_v4_schema or self._has_legacy_table):
-            with self._lock:
-                cur = self._conn.execute("SELECT concept_id FROM mirror_concept_lattice")
+        with self._lock:
+            sources = self._iter_active_db_sources_locked()
+            for conn, _ in sources:
+                cur = conn.execute("SELECT concept_id FROM mirror_concept_lattice")
                 while True:
                     batch = cur.fetchmany(512)
                     if not batch:
                         break
                     for (cid,) in batch:
-                        if cid not in seen:
-                            yield cid
+                        cid_s = str(cid)
+                        if cid_s not in seen:
+                            seen.add(cid_s)
+                            yield cid_s
 
     def _iter_all_items_streaming(self) -> Iterator[tuple[str, ConceptNode]]:
         seen: set[str] = set()
         for cid, nd in list(self._ephemeral_nodes.items()):
             seen.add(cid)
             yield cid, nd
-        if self._conn is not None and (self._has_v4_schema or self._has_legacy_table):
-            sql = (
-                "SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
-                "FROM mirror_concept_lattice"
-                if self._has_v4_schema
-                else "SELECT concept_id, title, category, aliases_csv, definition, mechanism, applications, tradeoffs, provenance "
-                "FROM mirror_concept_lattice"
-            )
-            with self._lock:
-                cur = self._conn.execute(sql)
+        with self._lock:
+            sources = self._iter_active_db_sources_locked()
+            for conn, is_v4 in sources:
+                sql = (
+                    "SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
+                    "FROM mirror_concept_lattice"
+                    if is_v4
+                    else "SELECT concept_id, title, category, aliases_csv, definition, mechanism, applications, tradeoffs, provenance "
+                    "FROM mirror_concept_lattice"
+                )
+                cur = conn.execute(sql)
                 while True:
                     batch = cur.fetchmany(512)
                     if not batch:
                         break
                     for row in batch:
-                        cid = str(row[0])
-                        if cid in seen:
+                        cid_s = str(row[0])
+                        if cid_s in seen:
                             continue
-                        nd = self._row_to_node_v4(row) if self._has_v4_schema else self._row_to_node_legacy(row)
-                        yield cid, nd
+                        seen.add(cid_s)
+                        nd = self._row_to_node_v4(row) if is_v4 else self._row_to_node_legacy(row)
+                        yield cid_s, nd
 
     def concept_count(self) -> int:
         if not self._ephemeral_nodes:
-            return self._cached_db_count
-        if self._conn is None or (not self._has_v4_schema and not self._has_legacy_table):
-            return len(self._ephemeral_nodes)
-        # Count ephemeral nodes not already in DB
+            return self._cached_total_db_count
         with self._lock:
+            sources = self._iter_active_db_sources_locked()
+            if not sources:
+                return len(self._ephemeral_nodes)
             eids = tuple(self._ephemeral_nodes.keys())
-            in_db = 0
-            for i in range(0, len(eids), _SQL_IN_CHUNK_SIZE):
-                chunk = eids[i: i + _SQL_IN_CHUNK_SIZE]
-                ph = ",".join("?" for _ in chunk)
-                in_db += int(
-                    self._conn.execute(
-                        f"SELECT COUNT(*) FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
-                        chunk,
-                    ).fetchone()[0]
-                )
-            return self._cached_db_count + (len(eids) - in_db)
-
-    def domain_distribution(self) -> dict[str, int]:
-        if not self._ephemeral_nodes:
-            return dict(self._cached_db_domain_dist)
-        counts: dict[str, int] = defaultdict(int, self._cached_db_domain_dist)
-        if self._conn is not None and (self._has_v4_schema or self._has_legacy_table):
-            with self._lock:
-                eids = tuple(self._ephemeral_nodes.keys())
-                db_cats: dict[str, str] = {}
+            found_in_db: set[str] = set()
+            for conn, _ in sources:
                 for i in range(0, len(eids), _SQL_IN_CHUNK_SIZE):
                     chunk = eids[i: i + _SQL_IN_CHUNK_SIZE]
                     ph = ",".join("?" for _ in chunk)
-                    for cid, cat in self._conn.execute(
+                    for (cid,) in conn.execute(
+                        f"SELECT concept_id FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
+                        chunk,
+                    ).fetchall():
+                        found_in_db.add(str(cid))
+            return self._cached_total_db_count + (len(eids) - len(found_in_db))
+
+    def domain_distribution(self) -> dict[str, int]:
+        if not self._ephemeral_nodes:
+            return dict(self._cached_total_domain_dist)
+        with self._lock:
+            sources = self._iter_active_db_sources_locked()
+            if not sources:
+                counts: dict[str, int] = defaultdict(int)
+                for nd in self._ephemeral_nodes.values():
+                    counts[nd.category] += 1
+                return dict(sorted(counts.items(), key=lambda x: (-x[1], x[0])))
+
+            counts = defaultdict(int, self._cached_total_domain_dist)
+            eids = tuple(self._ephemeral_nodes.keys())
+            db_cats: dict[str, str] = {}
+            for conn, _ in sources:
+                for i in range(0, len(eids), _SQL_IN_CHUNK_SIZE):
+                    chunk = eids[i: i + _SQL_IN_CHUNK_SIZE]
+                    ph = ",".join("?" for _ in chunk)
+                    for cid, cat in conn.execute(
                         f"SELECT concept_id, category FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
                         chunk,
                     ).fetchall():
-                        db_cats[str(cid)] = str(cat)
-                for cid, nd in self._ephemeral_nodes.items():
-                    old_cat = db_cats.get(cid)
-                    if old_cat is not None:
-                        if old_cat != nd.category:
-                            counts[old_cat] = max(0, counts[old_cat] - 1)
-                            if counts[old_cat] == 0:
-                                counts.pop(old_cat, None)
-                            counts[nd.category] += 1
-                    else:
+                        db_cats.setdefault(str(cid), str(cat))
+            for cid, nd in self._ephemeral_nodes.items():
+                old_cat = db_cats.get(cid)
+                if old_cat is not None:
+                    if old_cat != nd.category:
+                        counts[old_cat] = max(0, counts[old_cat] - 1)
+                        if counts[old_cat] == 0:
+                            counts.pop(old_cat, None)
                         counts[nd.category] += 1
-        else:
-            counts.clear()
-            for nd in self._ephemeral_nodes.values():
-                counts[nd.category] += 1
-        return dict(sorted(counts.items(), key=lambda x: (-x[1], x[0])))
+                else:
+                    counts[nd.category] += 1
+            return dict(sorted(counts.items(), key=lambda x: (-x[1], x[0])))
 
     def search_by_category(self, category: str, *, limit: int = 25) -> list[ConceptNode]:
         cat_low = category.strip().casefold()
@@ -1339,16 +1790,16 @@ class OpenEndedConceptLatticeEngine:
         for cid, nd in self._ephemeral_nodes.items():
             if nd.category.casefold() == cat_low:
                 out_by_id[cid] = nd
-        if self._conn is not None and (self._has_v4_schema or self._has_legacy_table):
-            with self._lock:
-                if self._has_v4_schema:
-                    rows = self._conn.execute(
+        with self._lock:
+            for conn, is_v4 in self._iter_active_db_sources_locked():
+                if is_v4:
+                    rows = conn.execute(
                         "SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
                         "FROM mirror_concept_lattice WHERE category = ? ORDER BY concept_id ASC LIMIT ?",
                         (cat_low, int(limit)),
                     ).fetchall()
                     if not rows:
-                        rows = self._conn.execute(
+                        rows = conn.execute(
                             "SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
                             "FROM mirror_concept_lattice WHERE LOWER(category) = ? ORDER BY concept_id ASC LIMIT ?",
                             (cat_low, int(limit)),
@@ -1358,7 +1809,7 @@ class OpenEndedConceptLatticeEngine:
                         if cid not in out_by_id:
                             out_by_id[cid] = self._row_to_node_v4(row)
                 else:
-                    rows = self._conn.execute(
+                    rows = conn.execute(
                         "SELECT concept_id, title, category, aliases_csv, definition, mechanism, applications, tradeoffs, provenance "
                         "FROM mirror_concept_lattice WHERE LOWER(category) = ? ORDER BY concept_id ASC LIMIT ?",
                         (cat_low, int(limit)),
@@ -1371,43 +1822,103 @@ class OpenEndedConceptLatticeEngine:
         return out[:limit]
 
     def search_fts(self, query: str, *, limit: int = 20) -> list[ConceptNode]:
-        """Fast SQLite FTS5 full-text search across title, aliases, and category."""
+        """Fast SQLite FTS5 full-text search across title, aliases, and category spanning primary + all shards."""
         toks = [t for t in re.findall(r"[a-z0-9]{2,}", (query or "").casefold()) if t not in _INDEX_STOP_TOKENS]
-        if not toks or self._conn is None or not self._has_v4_schema:
+        if not toks:
             return []
         unique_toks = list(dict.fromkeys(toks))[:10]
         match_expr = " OR ".join(f'"{t}"' for t in unique_toks)
+        lim = max(1, int(limit))
+        ranked_hits: list[tuple[float, int, str, sqlite3.Connection]] = []
+        seen_cids: set[str] = set()
         with self._lock:
-            try:
-                rows = self._conn.execute(
-                    "SELECT concept_id FROM mirror_concept_fts WHERE mirror_concept_fts MATCH ? "
-                    "ORDER BY bm25(mirror_concept_fts) LIMIT ?",
-                    (match_expr, max(1, int(limit))),
-                ).fetchall()
-            except sqlite3.OperationalError:
+            v4_conns = [c for c, is_v4 in self._iter_active_db_sources_locked() if is_v4]
+            if not v4_conns:
                 return []
+            for src_idx, conn in enumerate(v4_conns):
+                try:
+                    rows = conn.execute(
+                        "SELECT concept_id, bm25(mirror_concept_fts) AS rank_score "
+                        "FROM mirror_concept_fts WHERE mirror_concept_fts MATCH ? "
+                        "ORDER BY rank_score LIMIT ?",
+                        (match_expr, lim),
+                    ).fetchall()
+                except sqlite3.OperationalError:
+                    continue
+                for cid, rscore in rows:
+                    cid_s = str(cid)
+                    if cid_s in seen_cids:
+                        continue
+                    seen_cids.add(cid_s)
+                    ranked_hits.append((float(rscore), src_idx, cid_s, conn))
+        ranked_hits.sort(key=lambda x: (x[0], x[1], x[2]))
         out: list[ConceptNode] = []
-        for (cid,) in rows:
-            nd = self._get_node(str(cid))
+        for _, _, cid_s, conn in ranked_hits[:lim]:
+            nd = self._get_node(cid_s, hint_source=(conn, True))
             if nd is not None:
                 out.append(nd)
         return out
 
-    def vault_telemetry(self) -> dict[str, Any]:
-        """Return lightweight disk/schema/cache telemetry without scanning the database."""
-        disk_mb = 0.0
+    def shard_telemetry(self) -> dict[str, Any]:
+        """Return multi-shard telemetry across primary vault and all mounted `.dcrystal` shards."""
+        primary_mb = 0.0
         if self.vault_path is not None and self.vault_path.exists():
-            disk_mb = round(self.vault_path.stat().st_size / (1024 * 1024), 2)
+            primary_mb = round(self.vault_path.stat().st_size / (1024 * 1024), 2)
+        with self._lock:
+            shards_breakdown = [
+                {
+                    "filename": sh.name,
+                    "path": str(sh.path),
+                    "node_count": sh.node_count,
+                    "domains_count": len(sh.domain_dist),
+                    "disk_mb": sh.disk_mb,
+                    "schema_version": _SCHEMA_VERSION if sh.has_v4_schema else "legacy_v3",
+                }
+                for sh in self._shards
+            ]
+            shards_node_count = sum(sh.node_count for sh in self._shards)
+            shards_disk_mb = round(sum(sh.disk_mb for sh in self._shards), 2)
+            shards_count = len(self._shards)
+        return {
+            "shard_dir": str(self.shard_dir) if self.shard_dir is not None else None,
+            "primary_vault": self.vault_path.name if self.vault_path is not None else None,
+            "primary_node_count": self._cached_db_count,
+            "primary_disk_mb": primary_mb,
+            "shards_count": shards_count,
+            "shards_node_count": shards_node_count,
+            "shards_disk_mb": shards_disk_mb,
+            "total_node_count": self.concept_count(),
+            "total_disk_mb": round(primary_mb + shards_disk_mb, 2),
+            "shards_breakdown": shards_breakdown,
+        }
+
+    def vault_telemetry(self) -> dict[str, Any]:
+        """Return lightweight disk/schema/cache/multi-shard telemetry without scanning any database."""
+        st = self.shard_telemetry()
+        has_any_v4 = self._has_v4_schema or any(sh.has_v4_schema for sh in self._shards)
+        if has_any_v4 and st["shards_count"] > 0:
+            backend = "sqlite_fts5_zlib_multi_shard"
+        elif has_any_v4:
+            backend = "sqlite_fts5_zlib_disk"
+        else:
+            backend = "in_memory"
         return {
             "version": self.VERSION,
-            "schema_version": _SCHEMA_VERSION if self._has_v4_schema else ("legacy_v3" if self._has_legacy_table else "ephemeral"),
-            "storage_backend": "sqlite_fts5_zlib_disk" if self._has_v4_schema else "in_memory",
+            "schema_version": _SCHEMA_VERSION if has_any_v4 else ("legacy_v3" if self._has_legacy_table else "ephemeral"),
+            "storage_backend": backend,
             "concept_nodes": self.concept_count(),
             "domains_count": len(self.domain_distribution()),
             "lru_cache_entries": len(self._lru),
             "lru_cache_maxsize": self._lru_maxsize,
             "ephemeral_overlay_nodes": len(self._ephemeral_nodes),
-            "vault_disk_mb": disk_mb,
+            "vault_disk_mb": st["primary_disk_mb"],
+            "primary_node_count": st["primary_node_count"],
+            "primary_disk_mb": st["primary_disk_mb"],
+            "shards_count": st["shards_count"],
+            "shards_node_count": st["shards_node_count"],
+            "shards_disk_mb": st["shards_disk_mb"],
+            "total_disk_mb": st["total_disk_mb"],
+            "shards_breakdown": st["shards_breakdown"],
             "trigram_df_cap": _MAX_TRIGRAM_DF,
         }
 
@@ -2357,24 +2868,432 @@ class OpenEndedConceptLatticeEngine:
                 "vacuumed": bool(persist and vacuum),
             }
 
+    def admit_to_shard(
+        self,
+        shard_path: str | Path,
+        nodes: Iterable[ConceptNode],
+        *,
+        min_quality: float = 0.78,
+        vacuum: bool = True,
+    ) -> dict[str, Any]:
+        """Global Cross-Shard Zero-Duplicate, Zero-Overwrite & Quality-Over-Quantity Shard Admission.
+
+        Checks `concept_id`, `canonical_key`, `aliases`, and 64-bit `content_fp` globally across
+        PRIMARY VAULT + ALL EXISTING SHARDS + TARGET SHARD + CURRENT BATCH without modifying
+        the primary vault or any other existing shard.
+
+        Writes ONLY brand-new verified high-quality records into `shard_path` using the exact
+        `v4_fts5_zlib` schema (`mirror_concept_lattice`, `mirror_concept_tokens WITHOUT ROWID`,
+        DF-pruned `mirror_concept_trigrams WITHOUT ROWID` <= 300, `mirror_concept_aliases WITHOUT ROWID`,
+        `mirror_concept_fts` FTS5, `ANALYZE`, `VACUUM`), then mounts/reloads the shard cleanly.
+        """
+        target_path = Path(shard_path)
+        if self.vault_path is not None:
+            try:
+                if target_path.resolve() == self.vault_path.resolve():
+                    raise ValueError(
+                        "admit_to_shard cannot target the primary vault; pass a shard path inside concept_shards/"
+                    )
+            except OSError:
+                pass
+
+        stats: dict[str, Any] = {
+            "inserted_new": 0,
+            "rejected_low_quality": 0,
+            "skipped_existing_primary_or_shard": 0,
+            "skipped_canonical_duplicate": 0,
+            "skipped_alias_duplicate": 0,
+            "skipped_content_duplicate": 0,
+            "shard_disk_mb": 0.0,
+            "shard_node_count": 0,
+            "total_lattice_nodes": self.concept_count(),
+        }
+
+        with self._lock:
+            # Discover any unmounted shards on disk before global dedup checks
+            self._discover_unmounted_shards_locked(extra_dir=target_path.parent)
+
+            target_res = target_path.resolve()
+            # Close existing read-only handle to target_path (required on Windows before writing)
+            remaining_shards: list[_ShardHandle] = []
+            for sh in self._shards:
+                if sh.path.resolve() == target_res:
+                    try:
+                        sh.conn.close()
+                    except Exception:
+                        pass
+                else:
+                    remaining_shards.append(sh)
+            self._shards = remaining_shards
+
+            existed_before = target_path.is_file() and target_path.stat().st_size >= 1024
+            target_conn: sqlite3.Connection | None = None
+            target_write_ready = False
+
+            # All read-only sources (primary + other shards); target_conn appended lazily if existing or written
+            read_sources: list[tuple[sqlite3.Connection, bool]] = []
+            if self._conn is not None and (self._has_v4_schema or self._has_legacy_table):
+                read_sources.append((self._conn, self._has_v4_schema))
+            for sh in self._shards:
+                if sh.has_v4_schema or sh.has_legacy_table:
+                    read_sources.append((sh.conn, sh.has_v4_schema))
+
+            if existed_before:
+                # Open existing shard WITHOUT switching to WAL unless rows are actually written,
+                # preserving journal_mode=DELETE and zero-touch idempotency on 0-insert re-runs!
+                target_conn = sqlite3.connect(str(target_path), check_same_thread=False)
+                self._configure_connection(target_conn, enable_wal=False)
+                t_tables = {
+                    r[0]
+                    for r in target_conn.execute(
+                        "SELECT name FROM sqlite_master WHERE type='table' AND name IN "
+                        "('mirror_concept_lattice','mirror_concept_aliases')"
+                    ).fetchall()
+                }
+                if "mirror_concept_lattice" in t_tables:
+                    read_sources.append((target_conn, "mirror_concept_aliases" in t_tables))
+
+            def _ensure_target_writable() -> sqlite3.Connection:
+                nonlocal target_conn, target_write_ready
+                if target_conn is None:
+                    target_path.parent.mkdir(parents=True, exist_ok=True)
+                    target_conn = sqlite3.connect(str(target_path), check_same_thread=False)
+                if not target_write_ready:
+                    self._configure_connection(target_conn, enable_wal=True)
+                    self._create_v4_schema(target_conn)
+                    target_write_ready = True
+                    if not any(src_c is target_conn for src_c, _ in read_sources):
+                        read_sources.append((target_conn, True))
+                return target_conn
+
+            # Ephemeral & foundational seed keys (tiny ~10-node overlay)
+            ephem_cids: set[str] = set()
+            ephem_cks: set[str] = set()
+            ephem_alias_cks: set[str] = set()
+            ephem_fps: set[str] = set()
+            for src_map in (self._seed_by_id, self._ephemeral_nodes):
+                for scid, snd in src_map.items():
+                    ephem_cids.add(scid)
+                    sck = canonical_concept_key(scid)
+                    if sck:
+                        ephem_cks.add(sck)
+                    stck = canonical_concept_key(snd.title)
+                    if stck:
+                        ephem_cks.add(stck)
+                    for sal in snd.aliases:
+                        sak = canonical_concept_key(sal)
+                        if sak:
+                            ephem_alias_cks.add(sak)
+                    ephem_fps.add(content_fingerprint(snd.definition))
+
+            def _process_shard_chunk(chunk_nodes: list[ConceptNode]) -> None:
+                if not chunk_nodes:
+                    return
+
+                prepared: list[tuple[ConceptNode, str, str, str, str, float]] = []
+                cand_cids: list[str] = []
+                cand_cks: list[str] = []
+                cand_fps: list[str] = []
+                seen_q_cid: set[str] = set()
+                seen_q_ck: set[str] = set()
+                seen_q_fp: set[str] = set()
+
+                for node in chunk_nodes:
+                    cid = (node.concept_id or "").strip().casefold()
+                    if not cid or len(cid) < 3:
+                        stats["rejected_low_quality"] += 1
+                        continue
+                    ok_q, eff_q = _validate_shard_candidate(node, min_quality)
+                    if not ok_q:
+                        stats["rejected_low_quality"] += 1
+                        continue
+
+                    ck = canonical_concept_key(cid)
+                    title_ck = canonical_concept_key(node.title)
+                    fp = content_fingerprint(node.definition)
+                    prepared.append((node, cid, ck, title_ck, fp, eff_q))
+
+                    if cid not in seen_q_cid:
+                        seen_q_cid.add(cid)
+                        cand_cids.append(cid)
+                    for k_cand in (ck, title_ck):
+                        if k_cand and k_cand not in seen_q_ck:
+                            seen_q_ck.add(k_cand)
+                            cand_cks.append(k_cand)
+                    for al in node.aliases:
+                        ak = canonical_concept_key(al)
+                        if ak and ak not in seen_q_ck:
+                            seen_q_ck.add(ak)
+                            cand_cks.append(ak)
+                    if fp not in seen_q_fp:
+                        seen_q_fp.add(fp)
+                        cand_fps.append(fp)
+
+                if not prepared:
+                    return
+
+                db_cids: set[str] = set(ephem_cids)
+                db_cks: set[str] = set(ephem_cks)
+                db_alias_cks: set[str] = set(ephem_alias_cks)
+                db_fps: set[str] = set(ephem_fps)
+
+                for src_conn, is_v4 in read_sources:
+                    for i in range(0, len(cand_cids), _SQL_IN_CHUNK_SIZE):
+                        sub = cand_cids[i: i + _SQL_IN_CHUNK_SIZE]
+                        ph = ",".join("?" for _ in sub)
+                        for (r_cid,) in src_conn.execute(
+                            f"SELECT concept_id FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
+                            sub,
+                        ).fetchall():
+                            db_cids.add(str(r_cid))
+
+                    if is_v4:
+                        for i in range(0, len(cand_cks), _SQL_IN_CHUNK_SIZE):
+                            sub = cand_cks[i: i + _SQL_IN_CHUNK_SIZE]
+                            ph = ",".join("?" for _ in sub)
+                            for (r_ck,) in src_conn.execute(
+                                f"SELECT canonical_key FROM mirror_concept_lattice WHERE canonical_key IN ({ph})",
+                                sub,
+                            ).fetchall():
+                                db_cks.add(str(r_ck))
+                            for (r_ak,) in src_conn.execute(
+                                f"SELECT alias_ck FROM mirror_concept_aliases WHERE alias_ck IN ({ph})",
+                                sub,
+                            ).fetchall():
+                                db_alias_cks.add(str(r_ak))
+
+                        for i in range(0, len(cand_fps), _SQL_IN_CHUNK_SIZE):
+                            sub = cand_fps[i: i + _SQL_IN_CHUNK_SIZE]
+                            ph = ",".join("?" for _ in sub)
+                            for (r_fp,) in src_conn.execute(
+                                f"SELECT content_fp FROM mirror_concept_lattice WHERE content_fp IN ({ph})",
+                                sub,
+                            ).fetchall():
+                                db_fps.add(str(r_fp))
+
+                pending_rows: list[tuple[Any, ...]] = []
+                pending_alias_rows: list[tuple[str, str]] = []
+
+                for node, cid, ck, title_ck, fp, eff_q in prepared:
+                    # Layer 1: Exact concept_id protection across primary + all shards + batch
+                    if cid in db_cids:
+                        stats["skipped_existing_primary_or_shard"] += 1
+                        continue
+
+                    # Layer 2: Canonical plural/hyphen/punctuation duplicate guard
+                    if (ck and ck in db_cks) or (title_ck and title_ck in db_cks):
+                        stats["skipped_canonical_duplicate"] += 1
+                        continue
+
+                    # Layer 3: Existing alias collision guard
+                    if (ck and ck in db_alias_cks) or (title_ck and title_ck in db_alias_cks):
+                        stats["skipped_alias_duplicate"] += 1
+                        continue
+
+                    # Layer 4: 64-bit normalized definition content fingerprint guard
+                    if fp in db_fps:
+                        stats["skipped_content_duplicate"] += 1
+                        continue
+
+                    # Sanitize secondary aliases so no shard alias collides with existing canonical/alias keys
+                    cleaned_aliases: list[str] = []
+                    seen_al: set[str] = set()
+                    for raw_al in (cid, node.title, *node.aliases):
+                        al_str = str(raw_al).strip()
+                        al_low = al_str.casefold()
+                        if not al_low or al_low in seen_al:
+                            continue
+                        al_ck = canonical_concept_key(al_low)
+                        if al_low != cid and al_ck and al_ck != ck:
+                            if al_ck in db_cks or al_ck in db_alias_cks:
+                                continue
+                        seen_al.add(al_low)
+                        cleaned_aliases.append(al_str)
+                    if not cleaned_aliases:
+                        cleaned_aliases = [cid]
+                    aliases_csv = "|".join(cleaned_aliases)
+
+                    pending_rows.append(
+                        (
+                            cid,
+                            node.title.strip(),
+                            node.category.strip().casefold() or "general_knowledge",
+                            aliases_csv,
+                            ck or cid,
+                            fp,
+                            node.provenance.strip(),
+                            eff_q,
+                            pack_facets_zblob(
+                                node.definition.strip(),
+                                node.mechanism.strip(),
+                                node.applications.strip(),
+                                node.tradeoffs.strip(),
+                            ),
+                        )
+                    )
+
+                    db_cids.add(cid)
+                    if ck:
+                        db_cks.add(ck)
+                    if title_ck and title_ck != ck:
+                        db_alias_cks.add(title_ck)
+                        pending_alias_rows.append((title_ck, cid))
+                    for al in cleaned_aliases:
+                        ak = canonical_concept_key(al)
+                        if ak and ak != ck:
+                            db_alias_cks.add(ak)
+                            pending_alias_rows.append((ak, cid))
+                    db_fps.add(fp)
+                    stats["inserted_new"] += 1
+
+                if pending_rows:
+                    wconn = _ensure_target_writable()
+                    wconn.executemany(
+                        """
+                        INSERT OR IGNORE INTO mirror_concept_lattice
+                        (concept_id, title, category, aliases_csv, canonical_key, content_fp, provenance, quality_score, facets_zblob)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        pending_rows,
+                    )
+                    if pending_alias_rows:
+                        wconn.executemany(
+                            "INSERT OR IGNORE INTO mirror_concept_aliases(alias_ck, concept_id) VALUES (?, ?)",
+                            pending_alias_rows,
+                        )
+
+            try:
+                chunk_buf: list[ConceptNode] = []
+                for node in nodes:
+                    chunk_buf.append(node)
+                    if len(chunk_buf) >= 1000:
+                        _process_shard_chunk(chunk_buf)
+                        chunk_buf.clear()
+                if chunk_buf:
+                    _process_shard_chunk(chunk_buf)
+                    chunk_buf.clear()
+
+                if stats["inserted_new"] > 0 and target_conn is not None:
+                    # Physically sort rows by (category, quality_score DESC, concept_id) for B-tree locality
+                    target_conn.execute("DROP TABLE IF EXISTS mirror_concept_lattice_sorted")
+                    target_conn.execute(
+                        """
+                        CREATE TABLE mirror_concept_lattice_sorted (
+                            concept_id TEXT PRIMARY KEY,
+                            title TEXT NOT NULL,
+                            category TEXT NOT NULL,
+                            aliases_csv TEXT NOT NULL,
+                            canonical_key TEXT NOT NULL DEFAULT '',
+                            content_fp TEXT NOT NULL DEFAULT '',
+                            provenance TEXT NOT NULL,
+                            quality_score REAL NOT NULL DEFAULT 1.0,
+                            facets_zblob BLOB NOT NULL
+                        )
+                        """
+                    )
+                    target_conn.execute(
+                        """
+                        INSERT INTO mirror_concept_lattice_sorted
+                        (concept_id, title, category, aliases_csv, canonical_key, content_fp, provenance, quality_score, facets_zblob)
+                        SELECT concept_id, title, category, aliases_csv, canonical_key, content_fp, provenance, quality_score, facets_zblob
+                        FROM mirror_concept_lattice
+                        ORDER BY category ASC, quality_score DESC, concept_id ASC
+                        """
+                    )
+                    target_conn.execute("DROP TABLE mirror_concept_lattice")
+                    target_conn.execute("ALTER TABLE mirror_concept_lattice_sorted RENAME TO mirror_concept_lattice")
+                    self._create_v4_schema(target_conn)
+
+                    self._rebuild_all_disk_indexes(target_conn)
+
+                    # Write shard metadata (do NOT mutate primary vault counters)
+                    shard_total = int(target_conn.execute("SELECT COUNT(*) FROM mirror_concept_lattice").fetchone()[0])
+                    s_rows = target_conn.execute(
+                        "SELECT category, COUNT(*) FROM mirror_concept_lattice GROUP BY category"
+                    ).fetchall()
+                    s_dist = dict(sorted(((str(c), int(n)) for c, n in s_rows), key=lambda x: (-x[1], x[0])))
+                    target_conn.executemany(
+                        "INSERT OR REPLACE INTO mirror_concept_meta(key, val) VALUES (?, ?)",
+                        (
+                            ("schema_version", _SCHEMA_VERSION),
+                            ("total_count", str(shard_total)),
+                            ("domain_distribution", json.dumps(s_dist, separators=(",", ":"))),
+                        ),
+                    )
+                    target_conn.commit()
+                    target_conn.execute("ANALYZE")
+                    target_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                    if vacuum:
+                        target_conn.execute("VACUUM")
+                        target_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                    # Switch to self-contained single-file mode so no -wal/-shm sidecars remain
+                    target_conn.execute("PRAGMA journal_mode=DELETE").fetchone()
+                    target_conn.close()
+                    target_conn = None
+
+                    handle = self._register_or_reload_shard_locked(target_path)
+                    self._lru.clear()
+                    if handle is not None:
+                        stats["shard_disk_mb"] = handle.disk_mb
+                        stats["shard_node_count"] = handle.node_count
+                else:
+                    if target_conn is not None:
+                        if target_write_ready:
+                            target_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                            target_conn.execute("PRAGMA journal_mode=DELETE").fetchone()
+                        target_conn.close()
+                        target_conn = None
+                    if not existed_before:
+                        for sidecar in (
+                            target_path,
+                            Path(str(target_path) + "-wal"),
+                            Path(str(target_path) + "-shm"),
+                        ):
+                            try:
+                                if sidecar.exists():
+                                    sidecar.unlink()
+                            except OSError:
+                                pass
+                        self._recompute_combined_metadata()
+                    else:
+                        handle = self._register_or_reload_shard_locked(target_path)
+                        if handle is not None:
+                            stats["shard_disk_mb"] = handle.disk_mb
+                            stats["shard_node_count"] = handle.node_count
+            finally:
+                if target_conn is not None:
+                    try:
+                        target_conn.close()
+                    except Exception:
+                        pass
+
+            stats["total_lattice_nodes"] = self.concept_count()
+            return stats
+
     def load_from_vault(self, vault_path: str | Path | None = None) -> int:
-        """Backward-compatible vault loader: attaches disk-backed vault in O(1) without pulling 50k rows into RAM."""
+        """Backward-compatible vault loader: attaches disk-backed vault + shards in O(1) without pulling rows into RAM."""
         target = Path(vault_path) if vault_path is not None else self.vault_path
         if target is None or not target.exists():
             return 0
         with self._lock:
             if self.vault_path is not None and target.resolve() == self.vault_path.resolve() and self._conn is not None:
-                return self._cached_db_count
+                return self._cached_total_db_count
             self.close()
             self.vault_path = target
+            if self._explicit_shard_dir is None:
+                self.shard_dir = self.vault_path.parent / "concept_shards"
             self._lru.clear()
             self._ephemeral_nodes.clear()
             self._ephemeral_tokens.clear()
             self._ephemeral_trigrams.clear()
             self._has_v4_schema = False
             self._has_legacy_table = False
+            self._cached_db_count = 0
+            self._cached_db_domain_dist = {}
             self._attach_existing_vault()
-            return self._cached_db_count
+            self._attach_shards()
+            self._recompute_combined_metadata()
+            return self._cached_total_db_count
 
     def compile_text_to_concept_node(
         self,
@@ -2444,11 +3363,13 @@ class OpenEndedConceptLatticeEngine:
         self,
         low: str,
         q_tokens: list[str],
-    ) -> tuple[set[str], dict[str, tuple[str, ...]]]:
-        """Query zero-I/O seed surface map -> single-shot disk PK n-grams (with inline hydration) ->
+    ) -> tuple[set[str], dict[str, tuple[str, ...]], dict[str, tuple[sqlite3.Connection, bool]]]:
+        """Multi-shard O(1) lookup across primary + all mounted `.dcrystal` shards:
+        zero-I/O seed surface map -> single-shot disk PK n-grams (with inline hydration) ->
         alias PKs -> `mirror_concept_tokens` -> DF-pruned `mirror_concept_trigrams` -> surgical FTS5."""
         candidate_ids: set[str] = set()
         preloaded_aliases: dict[str, tuple[str, ...]] = {}
+        cand_source: dict[str, tuple[sqlite3.Connection, bool]] = {}
 
         unique_q_tokens = list(dict.fromkeys(q_tokens))
         substantive_toks = [
@@ -2466,175 +3387,295 @@ class OpenEndedConceptLatticeEngine:
 
         uncovered_toks = [t for t in substantive_toks if t not in covered_tokens]
         if candidate_ids and not uncovered_toks:
-            return candidate_ids, preloaded_aliases
-
-        if self._conn is None or not self._has_v4_schema:
-            return candidate_ids, preloaded_aliases
+            return candidate_ids, preloaded_aliases, cand_source
 
         with self._lock:
-            # 1a. Single-shot Exact O(1) Primary-Key n-gram lookup (hydrates matching 1-2 nodes directly into LRU!)
+            v4_sources: list[sqlite3.Connection] = []
+            if self._conn is not None and self._has_v4_schema:
+                v4_sources.append(self._conn)
+            for sh in self._shards:
+                if sh.has_v4_schema:
+                    v4_sources.append(sh.conn)
+            if not v4_sources:
+                return candidate_ids, preloaded_aliases, cand_source
+
+            # 1a. Single-shot Exact O(1) Primary-Key n-gram lookup across primary + shards.
+            # Early-exit inside the loop ONLY when a SINGLE concept covers 100% of all_content_toks
+            # (so multi-word shard concepts are NEVER shadowed by shorter 1-word primary component concepts!).
+            all_content_toks = {t for t in unique_q_tokens if t not in _NGRAM_SKIP_EDGE} or set(substantive_toks)
+            is_cross_q = bool(_RE_CROSS_COMPARE.search(low) or _RE_CROSS_SYNERGY.search(low))
+            max_single_cov = 0
             if ngrams:
                 disk_ngrams = [ng for ng in ngrams if ng not in self._seed_by_id]
                 if disk_ngrams:
                     ph = ",".join("?" for _ in disk_ngrams)
-                    for row in self._conn.execute(
+                    sql_pk = (
                         f"SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
-                        f"FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
-                        disk_ngrams,
-                    ).fetchall():
-                        nd = self._row_to_node_v4(row)
-                        cid_s = nd.concept_id
-                        self._lru_put(cid_s, nd)
-                        candidate_ids.add(cid_s)
-                        preloaded_aliases[cid_s] = nd.aliases
-                        for surf in (cid_s, *nd.aliases):
-                            s_low = surf.strip().casefold()
-                            if len(s_low) >= 3 and _has_word_boundary_match(low, s_low) >= 0:
-                                covered_tokens.update(_RE_WORD_3.findall(s_low))
+                        f"FROM mirror_concept_lattice WHERE concept_id IN ({ph})"
+                    )
+                    for src_conn in v4_sources:
+                        rows = src_conn.execute(sql_pk, disk_ngrams).fetchall()
+                        if not rows:
+                            continue
+                        max_rlen = max(len(str(r[0])) for r in rows)
+                        hydrate_all = len(rows) <= 2
+                        for row in rows:
+                            cid_s = str(row[0])
+                            if cid_s in candidate_ids:
+                                continue
+                            if hydrate_all or len(cid_s) == max_rlen:
+                                nd = self._row_to_node_v4(row)
+                                self._lru_put(cid_s, nd)
+                                als = nd.aliases
+                            else:
+                                als = tuple(a for a in str(row[3]).split("|") if a)
+                            candidate_ids.add(cid_s)
+                            cand_source[cid_s] = (src_conn, True)
+                            preloaded_aliases[cid_s] = als
+                            node_cov: set[str] = set()
+                            for surf in (cid_s, *als):
+                                s_low = surf.strip().casefold()
+                                if len(s_low) >= 3 and _has_word_boundary_match(low, s_low) >= 0:
+                                    s_toks = _RE_WORD_3.findall(s_low)
+                                    covered_tokens.update(s_toks)
+                                    node_cov.update(s_toks)
+                            if all_content_toks:
+                                c_sz = len(node_cov & all_content_toks)
+                                if c_sz > max_single_cov:
+                                    max_single_cov = c_sz
+                        if all_content_toks and max_single_cov >= len(all_content_toks):
+                            return candidate_ids, preloaded_aliases, cand_source
 
                 uncovered_toks = [t for t in substantive_toks if t not in covered_tokens]
-                if candidate_ids and not uncovered_toks:
-                    return candidate_ids, preloaded_aliases
+                if (
+                    candidate_ids
+                    and not uncovered_toks
+                    and (len(all_content_toks) <= 1 or max_single_cov >= len(all_content_toks) or is_cross_q)
+                ):
+                    return candidate_ids, preloaded_aliases, cand_source
 
-                # 1b. Exact O(1) extra-alias PK lookup ONLY when Step 1a left uncovered tokens
+                # 1b. Exact O(1) canonical_key + extra-alias PK lookup across ALL sources (primary + every shard)
                 ngram_cks = list(dict.fromkeys(ck for ng in ngrams if (ck := canonical_concept_key(ng))))
                 if ngram_cks:
                     ph_ck = ",".join("?" for _ in ngram_cks)
-                    alias_cids = [
-                        str(r[0])
-                        for r in self._conn.execute(
-                            f"SELECT concept_id FROM mirror_concept_aliases WHERE alias_ck IN ({ph_ck})",
-                            ngram_cks,
-                        ).fetchall()
-                    ]
-                    if alias_cids:
-                        candidate_ids.update(alias_cids)
-                        missing_a = [
-                            c for c in alias_cids
-                            if c not in preloaded_aliases and c not in self._lru and c not in self._seed_by_id
-                        ]
-                        if missing_a:
-                            ph_m = ",".join("?" for _ in missing_a)
-                            for cid, aliases_csv in self._conn.execute(
-                                f"SELECT concept_id, aliases_csv FROM mirror_concept_lattice WHERE concept_id IN ({ph_m})",
-                                missing_a,
-                            ).fetchall():
-                                preloaded_aliases[str(cid)] = tuple(a for a in str(aliases_csv).split("|") if a)
-                        for c in alias_cids:
-                            als = (
-                                self._lru[c].aliases
-                                if c in self._lru
-                                else (self._seed_by_id[c].aliases if c in self._seed_by_id else preloaded_aliases.get(c, ()))
-                            )
-                            for surf in (c, *als):
+                    sql_ck = (
+                        f"SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
+                        f"FROM mirror_concept_lattice WHERE canonical_key IN ({ph_ck})"
+                    )
+                    sql_alias = f"SELECT concept_id FROM mirror_concept_aliases WHERE alias_ck IN ({ph_ck})"
+                    # Pass 1b-i: direct canonical_key across sources
+                    for src_conn in v4_sources:
+                        rows = src_conn.execute(sql_ck, ngram_cks).fetchall()
+                        if not rows:
+                            continue
+                        max_rlen = max(len(str(r[0])) for r in rows)
+                        hydrate_all = len(rows) <= 2
+                        for row in rows:
+                            cid_s = str(row[0])
+                            if cid_s in candidate_ids:
+                                continue
+                            if hydrate_all or len(cid_s) == max_rlen:
+                                nd = self._row_to_node_v4(row)
+                                self._lru_put(cid_s, nd)
+                                als = nd.aliases
+                            else:
+                                als = tuple(a for a in str(row[3]).split("|") if a)
+                            candidate_ids.add(cid_s)
+                            cand_source[cid_s] = (src_conn, True)
+                            preloaded_aliases[cid_s] = als
+                            node_cov = set()
+                            for surf in (cid_s, *als):
                                 s_low = surf.strip().casefold()
                                 if len(s_low) >= 3 and _has_word_boundary_match(low, s_low) >= 0:
-                                    covered_tokens.update(_RE_WORD_3.findall(s_low))
+                                    s_toks = _RE_WORD_3.findall(s_low)
+                                    covered_tokens.update(s_toks)
+                                    node_cov.update(s_toks)
+                            if all_content_toks:
+                                c_sz = len(node_cov & all_content_toks)
+                                if c_sz > max_single_cov:
+                                    max_single_cov = c_sz
+                        if all_content_toks and max_single_cov >= len(all_content_toks):
+                            return candidate_ids, preloaded_aliases, cand_source
 
-            uncovered_toks = [t for t in substantive_toks if t not in covered_tokens]
-            if candidate_ids and not uncovered_toks:
-                return candidate_ids, preloaded_aliases
+                    uncovered_toks = [t for t in substantive_toks if t not in covered_tokens]
+                    if (
+                        candidate_ids
+                        and not uncovered_toks
+                        and (len(all_content_toks) <= 1 or max_single_cov >= len(all_content_toks) or is_cross_q)
+                    ):
+                        return candidate_ids, preloaded_aliases, cand_source
 
-            # 2. Sharded disk-backed inverted token lookup ONLY for uncovered substantive tokens
+                    # Pass 1b-ii: extra-alias lookup across ALL sources
+                    for src_conn in v4_sources:
+                        alias_cids = [
+                            str(r[0])
+                            for r in src_conn.execute(sql_alias, ngram_cks).fetchall()
+                            if str(r[0]) not in candidate_ids
+                        ]
+                        if alias_cids:
+                            for c in alias_cids:
+                                candidate_ids.add(c)
+                                cand_source.setdefault(c, (src_conn, True))
+                            missing_a = [
+                                c for c in alias_cids
+                                if c not in preloaded_aliases and c not in self._lru and c not in self._seed_by_id
+                            ]
+                            if missing_a:
+                                ph_m = ",".join("?" for _ in missing_a)
+                                if len(missing_a) <= 4:
+                                    for row in src_conn.execute(
+                                        f"SELECT concept_id, title, category, aliases_csv, provenance, quality_score, facets_zblob "
+                                        f"FROM mirror_concept_lattice WHERE concept_id IN ({ph_m})",
+                                        missing_a,
+                                    ).fetchall():
+                                        nd = self._row_to_node_v4(row)
+                                        self._lru_put(nd.concept_id, nd)
+                                        preloaded_aliases[nd.concept_id] = nd.aliases
+                                else:
+                                    for cid, aliases_csv in src_conn.execute(
+                                        f"SELECT concept_id, aliases_csv FROM mirror_concept_lattice WHERE concept_id IN ({ph_m})",
+                                        missing_a,
+                                    ).fetchall():
+                                        preloaded_aliases[str(cid)] = tuple(a for a in str(aliases_csv).split("|") if a)
+                            for c in alias_cids:
+                                als = (
+                                    self._lru[c].aliases
+                                    if c in self._lru
+                                    else (self._seed_by_id[c].aliases if c in self._seed_by_id else preloaded_aliases.get(c, ()))
+                                )
+                                for surf in (c, *als):
+                                    s_low = surf.strip().casefold()
+                                    if len(s_low) >= 3 and _has_word_boundary_match(low, s_low) >= 0:
+                                        covered_tokens.update(_RE_WORD_3.findall(s_low))
+
+                    uncovered_toks = [t for t in substantive_toks if t not in covered_tokens]
+                    if candidate_ids and not uncovered_toks:
+                        return candidate_ids, preloaded_aliases, cand_source
+
+            # 2. Multi-shard disk-backed inverted token lookup ONLY for uncovered substantive tokens
             unknown_typo_toks: list[str] = []
             hit_cap_tokens: list[str] = []
             for tok in uncovered_toks[:8]:
-                rows = self._conn.execute(
-                    "SELECT concept_id FROM mirror_concept_tokens WHERE token = ? LIMIT ?",
-                    (tok, _PER_TOKEN_SQL_LIMIT),
-                ).fetchall()
-                if rows:
-                    for (cid,) in rows:
-                        candidate_ids.add(str(cid))
-                    if len(rows) >= _PER_TOKEN_SQL_LIMIT:
-                        hit_cap_tokens.append(tok)
-                elif len(tok) >= 6:
+                tok_found = False
+                for src_conn in v4_sources:
+                    rows = src_conn.execute(
+                        "SELECT concept_id FROM mirror_concept_tokens WHERE token = ? LIMIT ?",
+                        (tok, _PER_TOKEN_SQL_LIMIT),
+                    ).fetchall()
+                    if rows:
+                        tok_found = True
+                        for (cid,) in rows:
+                            cid_s = str(cid)
+                            candidate_ids.add(cid_s)
+                            cand_source.setdefault(cid_s, (src_conn, True))
+                        if len(rows) >= _PER_TOKEN_SQL_LIMIT:
+                            hit_cap_tokens.append(tok)
+                if not tok_found and len(tok) >= 6 and tok not in self._ephemeral_tokens:
                     unknown_typo_toks.append(tok)
 
             if not candidate_ids:
                 fallback_toks = [t for t in unique_q_tokens if t in _COMMON_NON_TYPO_TOKENS and t not in _INDEX_STOP_TOKENS]
                 for tok in fallback_toks[:4]:
-                    rows = self._conn.execute(
-                        "SELECT concept_id FROM mirror_concept_tokens WHERE token = ? LIMIT 32",
-                        (tok,),
-                    ).fetchall()
-                    for (cid,) in rows:
-                        candidate_ids.add(str(cid))
+                    for src_conn in v4_sources:
+                        rows = src_conn.execute(
+                            "SELECT concept_id FROM mirror_concept_tokens WHERE token = ? LIMIT 32",
+                            (tok,),
+                        ).fetchall()
+                        for (cid,) in rows:
+                            cid_s = str(cid)
+                            candidate_ids.add(cid_s)
+                            cand_source.setdefault(cid_s, (src_conn, True))
 
-            # 3. DF-pruned disk-backed trigram fuzzy lookup ONLY for unknown typo tokens (len >= 6)
+            # 3. DF-pruned disk-backed trigram fuzzy lookup across primary + shards ONLY for unknown typo tokens (len >= 6)
             for tok in unknown_typo_toks[:2]:
                 tgs = list(_trigrams(tok))
                 if not tgs:
                     continue
-                # Single-query batched EXISTS check across all trigrams (1 SQL round-trip instead of N!)
                 exists_sql = "SELECT " + " + ".join(
                     "EXISTS(SELECT 1 FROM mirror_concept_trigrams WHERE trigram = ?)" for _ in tgs
                 )
-                active_tgs = int(self._conn.execute(exists_sql, tgs).fetchone()[0])
-                if active_tgs == 0:
-                    continue
-                threshold = max(2, int(active_tgs * 0.55)) if active_tgs >= 2 else 3
                 ph = ",".join("?" for _ in tgs)
-                tg_rows = self._conn.execute(
+                tg_sql = (
                     f"SELECT concept_id FROM mirror_concept_trigrams WHERE trigram IN ({ph}) "
-                    "GROUP BY concept_id HAVING COUNT(*) >= ? LIMIT 32",
-                    (*tgs, threshold),
-                ).fetchall()
-                for (cid,) in tg_rows:
-                    candidate_ids.add(str(cid))
+                    "GROUP BY concept_id HAVING COUNT(*) >= ? LIMIT 32"
+                )
+                for src_conn in v4_sources:
+                    active_tgs = int(src_conn.execute(exists_sql, tgs).fetchone()[0])
+                    if active_tgs == 0:
+                        continue
+                    threshold = max(2, int(active_tgs * 0.55)) if active_tgs >= 2 else 3
+                    for (cid,) in src_conn.execute(tg_sql, (*tgs, threshold)).fetchall():
+                        cid_s = str(cid)
+                        candidate_ids.add(cid_s)
+                        cand_source.setdefault(cid_s, (src_conn, True))
 
-            # 4. Surgical SQLite FTS5 AND-intersection fallback (never unconstrained wide OR+bm25!)
+            # 4. Surgical SQLite FTS5 AND-intersection fallback across primary + shards
             if len(uncovered_toks) >= 2 and (hit_cap_tokens or not candidate_ids):
                 fts_toks = [t for t in uncovered_toks if t not in unknown_typo_toks][:4]
                 if len(fts_toks) >= 2:
-                    try:
-                        and_expr = " AND ".join(f'"{t}"' for t in fts_toks[:3])
-                        for (cid,) in self._conn.execute(
-                            "SELECT concept_id FROM mirror_concept_fts WHERE mirror_concept_fts MATCH ? LIMIT 24",
-                            (and_expr,),
-                        ).fetchall():
-                            candidate_ids.add(str(cid))
-                    except sqlite3.OperationalError:
-                        pass
+                    and_expr = " AND ".join(f'"{t}"' for t in fts_toks[:3])
+                    for src_conn in v4_sources:
+                        try:
+                            for (cid,) in src_conn.execute(
+                                "SELECT concept_id FROM mirror_concept_fts WHERE mirror_concept_fts MATCH ? LIMIT 24",
+                                (and_expr,),
+                            ).fetchall():
+                                cid_s = str(cid)
+                                candidate_ids.add(cid_s)
+                                cand_source.setdefault(cid_s, (src_conn, True))
+                        except sqlite3.OperationalError:
+                            pass
             elif not candidate_ids and substantive_toks:
                 fts_toks = [t for t in substantive_toks if t not in unknown_typo_toks][:4]
                 if fts_toks:
-                    try:
-                        or_expr = " OR ".join(f'"{t}"' for t in fts_toks)
-                        for (cid,) in self._conn.execute(
-                            "SELECT concept_id FROM mirror_concept_fts WHERE mirror_concept_fts MATCH ? LIMIT 24",
-                            (or_expr,),
-                        ).fetchall():
-                            candidate_ids.add(str(cid))
-                    except sqlite3.OperationalError:
-                        pass
+                    or_expr = " OR ".join(f'"{t}"' for t in fts_toks)
+                    for src_conn in v4_sources:
+                        try:
+                            for (cid,) in src_conn.execute(
+                                "SELECT concept_id FROM mirror_concept_fts WHERE mirror_concept_fts MATCH ? LIMIT 24",
+                                (or_expr,),
+                            ).fetchall():
+                                cid_s = str(cid)
+                                candidate_ids.add(cid_s)
+                                cand_source.setdefault(cid_s, (src_conn, True))
+                        except sqlite3.OperationalError:
+                            pass
 
-            # 5. Fetch ONLY lightweight `aliases_csv` for remaining candidate_ids (ZERO zlib decompression!)
-            missing_alias_ids = [
-                cid for cid in candidate_ids
-                if cid not in preloaded_aliases
-                and cid not in self._ephemeral_nodes
-                and cid not in self._lru
-                and cid not in self._seed_by_id
-            ]
-            for i in range(0, len(missing_alias_ids), _SQL_IN_CHUNK_SIZE):
-                chunk = missing_alias_ids[i: i + _SQL_IN_CHUNK_SIZE]
-                ph = ",".join("?" for _ in chunk)
-                for cid, aliases_csv in self._conn.execute(
-                    f"SELECT concept_id, aliases_csv FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
-                    chunk,
-                ).fetchall():
-                    preloaded_aliases[str(cid)] = tuple(a for a in str(aliases_csv).split("|") if a)
+            # 5. Fetch ONLY lightweight `aliases_csv` per owning source (ZERO zlib decompression!)
+            missing_by_conn: dict[sqlite3.Connection, list[str]] = defaultdict(list)
+            for cid in candidate_ids:
+                if (
+                    cid in preloaded_aliases
+                    or cid in self._ephemeral_nodes
+                    or cid in self._lru
+                    or cid in self._seed_by_id
+                ):
+                    continue
+                src_info = cand_source.get(cid)
+                if src_info is not None:
+                    missing_by_conn[src_info[0]].append(cid)
+                elif v4_sources:
+                    missing_by_conn[v4_sources[0]].append(cid)
 
-        return candidate_ids, preloaded_aliases
+            for src_conn, cids_for_src in missing_by_conn.items():
+                for i in range(0, len(cids_for_src), _SQL_IN_CHUNK_SIZE):
+                    chunk = cids_for_src[i: i + _SQL_IN_CHUNK_SIZE]
+                    ph = ",".join("?" for _ in chunk)
+                    for cid, aliases_csv in src_conn.execute(
+                        f"SELECT concept_id, aliases_csv FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
+                        chunk,
+                    ).fetchall():
+                        preloaded_aliases[str(cid)] = tuple(a for a in str(aliases_csv).split("|") if a)
+
+        return candidate_ids, preloaded_aliases, cand_source
 
     def _retrieve_concepts_sublinear(self, query: str) -> tuple[list[ConceptNode], int]:
-        """Disk-backed O(1) inverted token + DF-pruned trigram + FTS5 lookup followed by
+        """Multi-shard disk-backed O(1) inverted token + DF-pruned trigram + FTS5 lookup followed by
         lightweight alias boundary verification and top-K-only `ConceptNode` hydration."""
         low = query.casefold()
         q_tokens = _RE_WORD_3.findall(low)
 
-        candidate_ids, preloaded_aliases = self._query_disk_candidates(low, q_tokens)
+        candidate_ids, preloaded_aliases, cand_source = self._query_disk_candidates(low, q_tokens)
 
         # Merge ephemeral in-memory overlay (0 cost when empty!)
         if self._ephemeral_nodes:
@@ -2656,19 +3697,22 @@ class OpenEndedConceptLatticeEngine:
                         if cnt >= threshold:
                             candidate_ids.add(cid)
 
-        # Legacy read-only SQLite fallback (only if DB could not be migrated)
-        if self._has_legacy_table and not self._has_v4_schema and self._conn is not None:
-            ngrams = _extract_query_ngrams(low)
-            if ngrams:
-                with self._lock:
+        # Legacy read-only SQLite fallback (primary or any legacy v3 shard)
+        with self._lock:
+            legacy_conns = [c for c, is_v4 in self._iter_active_db_sources_locked() if not is_v4]
+            if legacy_conns:
+                ngrams = _extract_query_ngrams(low)
+                if ngrams:
                     ph = ",".join("?" for _ in ngrams)
-                    for cid, aliases_csv in self._conn.execute(
-                        f"SELECT concept_id, aliases_csv FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
-                        ngrams,
-                    ).fetchall():
-                        cid_s = str(cid)
-                        candidate_ids.add(cid_s)
-                        preloaded_aliases[cid_s] = tuple(a for a in str(aliases_csv).split("|") if a)
+                    for lconn in legacy_conns:
+                        for cid, aliases_csv in lconn.execute(
+                            f"SELECT concept_id, aliases_csv FROM mirror_concept_lattice WHERE concept_id IN ({ph})",
+                            ngrams,
+                        ).fetchall():
+                            cid_s = str(cid)
+                            candidate_ids.add(cid_s)
+                            cand_source.setdefault(cid_s, (lconn, False))
+                            preloaded_aliases.setdefault(cid_s, tuple(a for a in str(aliases_csv).split("|") if a))
 
         # Evaluate candidate matches with exact word-boundary span tracking BEFORE decompressing facets:
         # (start_pos, end_pos, match_len, is_exact_not_fuzzy, cid)
@@ -2696,12 +3740,7 @@ class OpenEndedConceptLatticeEngine:
                         or (" " not in al_low and len(al_low) <= 4 and al_low not in _TECH_ACRONYM_ALLOWLIST)
                     )
                     if needs_framing:
-                        framed = bool(
-                            re.search(
-                                rf"(?:\b(?:what\s+(?:is|are)|define|explain|tell\s+me\s+about|overview\s+of|how\s+does|how\s+do|benefits?\s+of|drawbacks?\s+of|risks?\s+of|compare|difference\s+between|versus|vs\.?|and|aur)\s+(?:the\s+|a\s+|an\s+)?{re.escape(al_low)}\b|\b{re.escape(al_low)}\s+(?:kya\s+hai|kia\s+hai|kia\s+h|kaam\s+kaise|kaam\s+kese|ke\s+baare\s+mein|vs\.?|versus|aur|work\s+together|works)\b)",
-                                low,
-                            )
-                        )
+                        framed = bool(_compiled_framing_re(al_low).search(low))
                         if not framed:
                             continue
                     best_pos = idx
@@ -2750,7 +3789,7 @@ class OpenEndedConceptLatticeEngine:
         for _, _, _, _, cid in kept_spans:
             if cid not in seen:
                 seen.add(cid)
-                nd = self._get_node(cid)
+                nd = self._get_node(cid, hint_source=cand_source.get(cid))
                 if nd is not None:
                     unique_nodes.append(nd)
                     if len(unique_nodes) >= 6:
@@ -2806,7 +3845,7 @@ class OpenEndedConceptLatticeEngine:
                 intents_resolved=("vault_telemetry",),
                 response=(
                     f"[Open-Ended Concept Lattice Vault Status | Total 5-Facet ConceptNodes: {total} | "
-                    f"Domains: {len(dist)} | Combinatorial Cross-Concept Pairs: {pairs:,}]\n"
+                    f"Domains: {len(dist)} | Shards: {len(self._shards)} | Combinatorial Cross-Concept Pairs: {pairs:,}]\n"
                     f"- Top Domains: {top_doms}"
                 ),
             )

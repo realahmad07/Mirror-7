@@ -240,9 +240,9 @@
                     <div class="text-[11px] font-mono text-zinc-500 mt-1">CPU LSH Direct Lock</div>
                 </div>
                 <div class="bg-quantum-base p-5">
-                    <div class="text-zinc-500 font-mono text-xs mb-1">VERIFIED_BLUEPRINTS</div>
-                    <div class="text-3xl font-display font-bold text-white tracking-tight">38,720<span class="text-indigo-400 text-sm font-mono ml-1">+</span></div>
-                    <div class="text-[11px] font-mono text-zinc-500 mt-1">Discrete Ground-Truth Rules</div>
+                    <div class="text-zinc-500 font-mono text-xs mb-1">VERIFIED_CONCEPTS</div>
+                    <div id="hero-rule-counter" class="text-3xl font-display font-bold text-white tracking-tight">63,510<span class="text-indigo-400 text-sm font-mono ml-1">+</span></div>
+                    <div id="hero-shard-subtitle" class="text-[11px] font-mono text-zinc-500 mt-1">Multi-Shard Disk FTS5 Lattice</div>
                 </div>
                 <div class="bg-quantum-base p-5">
                     <div class="text-zinc-500 font-mono text-xs mb-1">GPU_REQUIREMENT</div>
@@ -1141,7 +1141,7 @@ angle$
                 <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm space-y-1 text-[11px]">
                     <div class="flex justify-between">
                         <span>Lattice Nodes:</span>
-                        <span class="text-white">Awaiting verified feed</span>
+                        <span id="footer-lattice-nodes" class="text-white">Awaiting verified feed</span>
                     </div>
                     <div class="flex justify-between">
                         <span>CPU Thread Pool:</span>
@@ -2597,14 +2597,41 @@ angle$
                 const organs = data.capability_organs || [];
                 const lattice = data.open_ended_concept_lattice || {};
                 const latticeNodes = lattice.concept_nodes || 0;
+                const primaryNodes = lattice.primary_node_count ?? latticeNodes;
+                const shardsCount = lattice.shards_count || 0;
+                const shardsNodes = lattice.shards_node_count || 0;
+                const shardsBreakdown = lattice.shards_breakdown || [];
+                const primaryDiskMb = lattice.primary_disk_mb ?? lattice.vault_disk_mb ?? 0;
+                const totalDiskMb = lattice.total_disk_mb ?? primaryDiskMb;
+                const storageBackend = lattice.storage_backend || 'sqlite_fts5_zlib_disk';
+                const schemaVer = lattice.schema_version || 'v4_fts5_zlib';
                 const latticeDomains = lattice.domains_count || 0;
                 const latticePairs = lattice.combinatorial_cross_pairs || 0;
                 const latticeBreak = lattice.domain_breakdown || {};
 
                 let latticeDomChips = Object.entries(latticeBreak)
-                    .slice(0, 12)
+                    .slice(0, 25)
                     .map(([k, v]) => `<button onclick="inspectLatticeDomain('${escapeHtml(k)}')" class="px-2 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-xs text-[10px] text-cyan-300 cursor-pointer">${escapeHtml(k)} (${v.toLocaleString()})</button>`)
                     .join(' ');
+
+                let shardRows = `
+                    <tr class="bg-white/[0.02]">
+                        <td class="p-2 text-cyan-300 font-bold">mirror_uol_skills.dcrystal <span class="text-[9px] px-1 py-0.5 ml-1 bg-cyan-500/15 border border-cyan-500/30 text-cyan-200 rounded-xs">PRIMARY</span></td>
+                        <td class="p-2 text-white font-bold">${primaryNodes.toLocaleString()}</td>
+                        <td class="p-2 text-zinc-300">${primaryDiskMb} MB</td>
+                        <td class="p-2 text-emerald-400">${escapeHtml(schemaVer)}</td>
+                    </tr>
+                `;
+                for (const sh of shardsBreakdown) {
+                    shardRows += `
+                        <tr>
+                            <td class="p-2 text-indigo-300 font-bold">${escapeHtml(sh.filename || 'shard.dcrystal')} <span class="text-[9px] px-1 py-0.5 ml-1 bg-indigo-500/15 border border-indigo-500/30 text-indigo-200 rounded-xs">SHARD RO</span></td>
+                            <td class="p-2 text-white font-bold">${(sh.node_count || 0).toLocaleString()}</td>
+                            <td class="p-2 text-zinc-300">${sh.disk_mb ?? 0} MB</td>
+                            <td class="p-2 text-emerald-400">${escapeHtml(sh.schema_version || schemaVer)}</td>
+                        </tr>
+                    `;
+                }
 
                 let domRows = '';
                 for (const [dom, info] of Object.entries(dMap)) {
@@ -2622,7 +2649,7 @@ angle$
                         <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
                             <div class="text-zinc-500 text-[10px]">Open-Ended Concepts</div>
                             <div class="text-xl font-bold text-cyan-400">${latticeNodes.toLocaleString()}</div>
-                            <div class="text-[10px] text-zinc-400">${latticeDomains} Domains | 0 Params</div>
+                            <div class="text-[10px] text-zinc-400">${latticeDomains} Domains | ${shardsCount} Shards | 0 Params</div>
                         </div>
                         <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
                             <div class="text-zinc-500 text-[10px]">Cross-Concept Pairs</div>
@@ -2630,15 +2657,28 @@ angle$
                             <div class="text-[10px] text-zinc-400">${(latticePairs * 12).toLocaleString()} Discourse Combos</div>
                         </div>
                         <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
-                            <div class="text-zinc-500 text-[10px]">Total Vault Rules</div>
-                            <div class="text-xl font-bold text-white">${(data.total_vault_rules || 0).toLocaleString()}</div>
-                            <div class="text-[10px] text-zinc-400">Answered Exact: ${tel.queries_answered || 0}</div>
+                            <div class="text-zinc-500 text-[10px]">Multi-Shard Footprint</div>
+                            <div class="text-xl font-bold text-indigo-300">${totalDiskMb} MB</div>
+                            <div class="text-[10px] text-zinc-400">Primary ${primaryNodes.toLocaleString()} + ${shardsNodes.toLocaleString()} Sharded</div>
                         </div>
                         <div class="p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
                             <div class="text-zinc-500 text-[10px]">Abstention Rate</div>
                             <div class="text-xl font-bold text-amber-400">${tel.abstention_rate_pct || 0}%</div>
-                            <div class="text-[10px] text-zinc-400">Queries: ${tel.queries_total || 0}</div>
+                            <div class="text-[10px] text-zinc-400">Vault Rules: ${(data.total_vault_rules || 0).toLocaleString()} | Queries: ${tel.queries_total || 0}</div>
                         </div>
+                    </div>
+
+                    <div class="mb-4 p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs font-bold text-indigo-300">Multi-Shard Disk-Backed SQLite FTS5 Topology (${shardsCount + 1} Vault Files)</div>
+                            <span class="text-[10px] text-emerald-400 font-bold">${escapeHtml(storageBackend)}</span>
+                        </div>
+                        <table class="w-full text-left font-mono text-[11px] border border-quantum-border">
+                            <thead class="bg-black/40 text-zinc-400 text-[10px] uppercase">
+                                <tr><th class="p-2">Vault / Shard File</th><th class="p-2">Concepts</th><th class="p-2">Disk Size</th><th class="p-2">Schema</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-quantum-border text-zinc-300">${shardRows}</tbody>
+                        </table>
                     </div>
 
                     <div class="mb-4 p-3 bg-quantum-subbase border border-quantum-border rounded-sm">
@@ -2687,22 +2727,35 @@ angle$
             }
         }
 
+        let _coverageLoaded = false;
+
         async function refreshAbstentionBadge() {
             try {
                 const res = await fetch('/api/crystal/coverage');
                 const data = await res.json();
                 const tel = data.telemetry || {};
                 const total = data.total_vault_rules || 0;
-                const latticeNodes = (data.open_ended_concept_lattice && data.open_ended_concept_lattice.concept_nodes) || 0;
+                const lat = data.open_ended_concept_lattice || {};
+                const latticeNodes = lat.concept_nodes || 0;
+                const shardsCount = lat.shards_count || 0;
+                const shardTag = shardsCount > 0 ? ` (${shardsCount} SHARDS)` : '';
+
+                _coverageLoaded = true;
 
                 const badge = document.getElementById('abstention-badge');
                 if (badge) badge.innerText = `ABSTENTION: ${tel.abstention_rate_pct || 0}%`;
 
                 const vaultBadge = document.getElementById('vault-status-badge');
-                if (vaultBadge) vaultBadge.innerText = `VAULT: ${latticeNodes.toLocaleString()} CONCEPTS | ${total.toLocaleString()} BLUEPRINTS`;
+                if (vaultBadge) vaultBadge.innerText = `VAULT: ${latticeNodes.toLocaleString()} CONCEPTS${shardTag} | ${total.toLocaleString()} BLUEPRINTS`;
 
                 const heroCounter = document.getElementById('hero-rule-counter');
                 if (heroCounter) heroCounter.innerHTML = `${latticeNodes.toLocaleString()}<span class="text-indigo-400 text-sm font-mono ml-1 font-normal">concepts</span>`;
+
+                const heroSub = document.getElementById('hero-shard-subtitle');
+                if (heroSub) heroSub.innerText = shardsCount > 0 ? `Primary + ${shardsCount} Disk FTS5 Shards` : 'Disk-Backed SQLite FTS5 Lattice';
+
+                const footerNodes = document.getElementById('footer-lattice-nodes');
+                if (footerNodes) footerNodes.innerText = `${latticeNodes.toLocaleString()} (${shardsCount} shards)`;
 
                 const latticeBadge = document.getElementById('lattice-node-count-badge');
                 if (latticeBadge) latticeBadge.innerText = `${latticeNodes.toLocaleString()} CONCEPTS`;
@@ -2735,7 +2788,7 @@ angle$
                     if (data && data.crystal && data.crystal.rule_count) {
                         const cntStr = data.crystal.rule_count.toLocaleString();
                         const badge = document.getElementById('vault-status-badge');
-                        if (badge) badge.innerText = `VAULT: ${cntStr} BLUEPRINTS`;
+                        if (badge && !_coverageLoaded) badge.innerText = `VAULT: ${cntStr} BLUEPRINTS`;
                         const tableCount = document.getElementById('mirror-table-rule-count');
                         if (tableCount) tableCount.innerText = `${cntStr}+ Verified Ground Truths`;
                     }

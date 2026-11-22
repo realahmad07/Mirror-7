@@ -4,12 +4,17 @@ services:
     ports:
       - "8787:8787"
     environment:
-      MIRROR7_HOST: "0.0.0.0"
+      MIRROR7_HOST: "${MIRROR7_HOST:-0.0.0.0}"
       MIRROR7_PORT: "8787"
-      MIRROR7_CORS_ORIGIN: "${MIRROR7_CORS_ORIGIN:-*}"
+      MIRROR7_CORS_ORIGIN: "${MIRROR7_CORS_ORIGIN:-http://localhost:8787}"
+      MIRROR7_API_TOKEN: "${MIRROR7_API_TOKEN:-}"
+      MIRROR_CONCEPT_SHARDS_DIR: "/app/artifacts/concept_shards"
       MIRROR_LOG_LEVEL: "INFO"
       MIRROR_LOG_FORMAT: "json"
       MIRROR_MAX_WORKERS: "32"
+    volumes:
+      - ./artifacts/mirror_uol_skills.dcrystal:/app/artifacts/mirror_uol_skills.dcrystal:ro
+      - ./artifacts/concept_shards:/app/artifacts/concept_shards:ro
     restart: unless-stopped
     stop_grace_period: 15s
     stop_signal: SIGTERM

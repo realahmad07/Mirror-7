@@ -196,6 +196,21 @@ class MirrorAPIHandler(BaseHTTPRequestHandler):
         if path == "/api/lattice/status":
             self._send(200, service.lattice_status())
             return
+        if path == "/api/lattice/shards":
+            st = service.lattice_status()
+            self._send(200, {
+                "ok": True,
+                "concept_nodes": st.get("concept_nodes", 0),
+                "primary_node_count": st.get("primary_node_count", 0),
+                "primary_disk_mb": st.get("primary_disk_mb", 0.0),
+                "shards_count": st.get("shards_count", 0),
+                "shards_node_count": st.get("shards_node_count", 0),
+                "shards_disk_mb": st.get("shards_disk_mb", 0.0),
+                "total_disk_mb": st.get("total_disk_mb", 0.0),
+                "shards_breakdown": st.get("shards_breakdown", []),
+                "storage_backend": st.get("storage_backend", "sqlite_fts5_zlib_disk"),
+            })
+            return
         if path == "/api/lattice/domain":
             parsed_qs = parse_qs(urlparse(self.path).query)
             dom = parsed_qs.get("name", [""])[0] or parsed_qs.get("domain", [""])[0]

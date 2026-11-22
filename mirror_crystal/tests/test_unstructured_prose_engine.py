@@ -584,35 +584,42 @@ def test_socratic_coach_document_composer_remaining_plugins_and_service_status()
     assert "chembl-database" in st["antigravity_science_plugins_distilled"]
 
 
-def test_open_ended_concept_lattice_sublinear_trigram_and_cross_synthesis():
+def test_open_ended_concept_lattice_sublinear_trigram_and_cross_synthesis(tmp_path):
+    from mirror_crystal.open_ended_concept_lattice import OpenEndedConceptLatticeEngine
+
     router = NaturalLanguageUOLRouter()
+    router.concept_lattice.close()
+    router.concept_lattice = OpenEndedConceptLatticeEngine(vault_path=tmp_path / "compile_iso.dcrystal")
 
-    # 1. Messy Roman-Urdu with typo ('blokchain', 'kese krta h', 'nuqsan kia h') -> resolved via O(1) trigrams + fuzzy intents!
-    r1 = router.route("yaar blokchain asal mein kaam kese krta h or iska nuqsan kia h?")
-    assert r1.matched is True
-    assert "Merkle trees" in r1.explanation
-    assert "Throughput and latency overhead" in r1.explanation
+    try:
+        # 1. Messy Roman-Urdu with typo ('blokchain', 'kese krta h', 'nuqsan kia h') -> resolved via O(1) trigrams + fuzzy intents!
+        r1 = router.route("yaar blokchain asal mein kaam kese krta h or iska nuqsan kia h?")
+        assert r1.matched is True
+        assert "Merkle trees" in r1.explanation
+        assert "Throughput and latency overhead" in r1.explanation
 
-    # 2. Cross-Concept Compositional Synthesis (Blockchain x Cryptography)
-    r2 = router.route("How do blockchain and cryptography work together?")
-    assert r2.matched is True
-    assert "Cross-Concept Lattice Synthesis: Blockchain & Distributed Ledger x Modern Cryptography" in r2.explanation
+        # 2. Cross-Concept Compositional Synthesis (Blockchain x Cryptography)
+        r2 = router.route("How do blockchain and cryptography work together?")
+        assert r2.matched is True
+        assert "Cross-Concept Lattice Synthesis: Blockchain & Distributed Ledger x Modern Cryptography" in r2.explanation
 
-    # 3. Live Unsupervised Concept Compilation + Immediate Open-Ended Query
-    c_comp = router.route(
-        "Compile concept WebAssembly: "
-        "WebAssembly (Wasm) is a portable binary instruction format for stack-based virtual machines. "
-        "Wasm works by executing pre-compiled near-native bytecode inside a memory-safe sandboxed linear memory. "
-        "It enables high-performance browser and edge-cloud applications across C++, Rust, and Go. "
-        "However, Wasm has limited direct DOM access and requires host-binding marshaling overhead."
-    )
-    assert c_comp.matched is True
-    assert "Compiled 5-Facet ConceptNode 'webassembly'" in c_comp.explanation
+        # 3. Live Unsupervised Concept Compilation + Immediate Open-Ended Query (isolated from production vault)
+        c_comp = router.route(
+            "Compile concept WebAssembly: "
+            "WebAssembly (Wasm) is a portable binary instruction format for stack-based virtual machines. "
+            "Wasm works by executing pre-compiled near-native bytecode inside a memory-safe sandboxed linear memory. "
+            "It enables high-performance browser and edge-cloud applications across C++, Rust, and Go. "
+            "However, Wasm has limited direct DOM access and requires host-binding marshaling overhead."
+        )
+        assert c_comp.matched is True
+        assert "Compiled 5-Facet ConceptNode 'webassembly'" in c_comp.explanation
 
-    r3 = router.route("WebAssembly kaam kaise karta hai aur iska fayda aur nuqsan kya hai?")
-    assert r3.matched is True
-    assert "sandboxed linear memory" in r3.explanation
-    assert "DOM access" in r3.explanation
+        r3 = router.route("WebAssembly kaam kaise karta hai aur iska fayda aur nuqsan kya hai?")
+        assert r3.matched is True
+        assert "sandboxed linear memory" in r3.explanation
+        assert "DOM access" in r3.explanation
+    finally:
+        router.concept_lattice.close()
 
 
 def test_bulk_harvested_3200plus_multisource_vault_and_offline_harvester(tmp_path):
@@ -708,6 +715,544 @@ def test_bulk_harvested_3200plus_multisource_vault_and_offline_harvester(tmp_pat
     )
     assert rep.total_unique_concepts >= 750
     assert rep.total_domains >= 20
+
+
+def test_multi_shard_discovery_zero_dup_quality_gate_and_slas(tmp_path):
+    import hashlib
+    import sqlite3
+    import statistics
+    import time
+    import tracemalloc
+    import pytest
+    from mirror_crystal.open_ended_concept_lattice import (
+        ConceptNode,
+        OpenEndedConceptLatticeEngine,
+        _VAULT_SNAPSHOT_CACHE,
+        canonical_concept_key,
+        content_fingerprint,
+        provenance_tier_rank,
+    )
+
+    # 1. Verify Phase-3 provenance tier ordering
+    assert provenance_tier_rank("mirror:concept_lattice:v1") == 5.0
+    assert provenance_tier_rank("mirror:auto_compiled_concept") == 5.0
+    assert provenance_tier_rank("mirror:domain_agent_harvester:v2") == 4.0
+    assert provenance_tier_rank("browser:mdn:cors") == 3.0
+    for p28 in ("mitre:attack:T1059", "owasp:cheatsheet:ssrf", "cncf:glossary:mesh", "mdn:glossary:cors", "nist:csrc:zero-trust", "ietf:rfc:9114"):
+        assert provenance_tier_rank(p28) == 2.8
+    for p25 in ("ols:go:0001", "chembl:CHEMBL25", "pubchem:2244", "uniprot:P04637", "reactome:R-HSA-1", "interpro:IPR001", "openfda:drug", "clinicaltrials:NCT1", "clinvar:BRCA1", "openalex:T101", "schema.org:Dataset", "mesh:D001", "hf:sciq:1"):
+        assert provenance_tier_rank(p25) == 2.5
+    assert provenance_tier_rank("docs:python:asyncio") == 2.0
+    assert provenance_tier_rank("wikipedia:mediawiki_api:en") == 2.0
+    assert provenance_tier_rank("arxiv:2401.00001") == 1.0
+
+    # 2. Isolated primary vault without concept_shards/ must load 0 stray shards
+    primary_path = tmp_path / "primary_vault.dcrystal"
+    eng = OpenEndedConceptLatticeEngine(vault_path=primary_path)
+    assert eng.shard_telemetry()["shards_count"] == 0
+    eng.register_nodes_bulk(
+        [
+            ConceptNode(
+                concept_id="raft consensus",
+                title="Raft Consensus Algorithm",
+                category="computer_science",
+                aliases=("raft consensus", "raft protocol"),
+                definition="Raft is an understandable distributed consensus algorithm that manages a replicated log across fault-tolerant server clusters.",
+                mechanism="Elects a single leader per term via randomized election timeouts and replicates state-machine log entries through AppendEntries RPC quorums.",
+                applications="Used in etcd, Consul, CockroachDB, and TiKV for strongly consistent metadata coordination and leader election.",
+                tradeoffs="Requires a strict majority quorum (2f+1 nodes) and suffers write latency proportional to wide-area network round-trip times.",
+                provenance="mirror:domain_agent_harvester:v1",
+            )
+        ],
+        persist=True,
+    )
+    eng.close()
+
+    # Re-open primary and record byte-exact SHA-256 hash to prove 0 primary modifications
+    primary_sha_before = hashlib.sha256(primary_path.read_bytes()).hexdigest()
+    eng = OpenEndedConceptLatticeEngine(vault_path=primary_path)
+    assert eng.concept_count() == 11  # 10 seeds + raft consensus
+    assert eng.shard_telemetry()["shards_count"] == 0
+
+    # Primary vault cannot be targeted by admit_to_shard
+    with pytest.raises(ValueError):
+        eng.admit_to_shard(primary_path, [])
+
+    shard_dir = tmp_path / "concept_shards"
+    shard1_path = shard_dir / "shard_github_engineering.dcrystal"
+    shard2_path = shard_dir / "shard_public_datasets.dcrystal"
+
+    # 3. Admit Shard 1 with valid nodes + duplicates against primary + low-quality junk
+    shard1_candidates = [
+        # Valid high-quality MITRE / CNCF / OWASP concepts
+        ConceptNode(
+            concept_id="ebpf telemetry",
+            title="eBPF Kernel Telemetry",
+            category="cybersecurity_networking",
+            aliases=("ebpf telemetry", "extended berkeley packet filter"),
+            definition="eBPF is an in-kernel virtual machine technology that runs sandboxed bytecode programs attached to Linux kernel hooks safely.",
+            mechanism="A static in-kernel verifier proves memory safety and bounded execution before JIT-compiling bytecode attached to tracepoints, kprobes, or XDP hooks.",
+            applications="High-performance observability, Cilium container networking, runtime intrusion detection, and zero-overhead syscall profiling.",
+            tradeoffs="Strict verifier complexity limits loop depth and stack size, while older kernel versions lack CO-RE BTF portability features.",
+            provenance="cncf:glossary:ebpf",
+        ),
+        ConceptNode(
+            concept_id="ssrf defense",
+            title="Server-Side Request Forgery Defense",
+            category="cybersecurity_networking",
+            aliases=("ssrf defense", "ssrf prevention"),
+            definition="Server-Side Request Forgery defense prevents attackers from forcing a backend server to issue unauthorized internal network requests.",
+            mechanism="Combines strict egress allowlists, DNS resolution verification blocking RFC1918 and link-local metadata IPs, and IMDSv2 session tokens.",
+            applications="Hardening webhook fetchers, PDF renderers, cloud microservices, and API gateways against cloud metadata exfiltration.",
+            tradeoffs="Strict egress proxies add deployment friction and must guard against DNS rebinding and HTTP redirect bypasses.",
+            provenance="owasp:cheatsheet:ssrf-prevention",
+        ),
+        # Duplicate 1: Exact primary concept_id
+        ConceptNode(
+            concept_id="raft consensus",
+            title="Raft Consensus Duplicate",
+            category="computer_science",
+            aliases=("raft consensus",),
+            definition="A completely separate description trying to overwrite or duplicate an existing primary concept identifier cleanly.",
+            mechanism="Uses quorum heartbeats and leader terms across distributed cluster nodes to synchronize state machines.",
+            applications="Distributed key-value coordination, lock services, and strongly consistent configuration storage.",
+            tradeoffs="Requires odd node counts and degrades under network partitions that split majority quorums.",
+            provenance="cncf:glossary:raft",
+        ),
+        # Duplicate 2: Canonical plural duplicate of primary seed 'blockchain'
+        ConceptNode(
+            concept_id="blockchains",
+            title="Blockchains",
+            category="computer_science",
+            aliases=("blockchains",),
+            definition="Plural canonical variant of blockchain that must be blocked globally across primary and all concept shards.",
+            mechanism="Chains cryptographic block digests together across distributed peer networks using consensus proofs.",
+            applications="Financial ledgers, smart-contract execution, and decentralized asset registries.",
+            tradeoffs="Higher latency and storage overhead than centralized transactional database systems.",
+            provenance="cncf:glossary:blockchains",
+        ),
+        # Duplicate 3: Alias duplicate of primary 'raft protocol'
+        ConceptNode(
+            concept_id="raft protocol",
+            title="Raft Protocol",
+            category="computer_science",
+            aliases=("raft protocol",),
+            definition="Alias collision attempting to re-register an already claimed surface alias belonging to primary Raft Consensus.",
+            mechanism="Leader election and log replication through serialized RPC heartbeats across replicated nodes.",
+            applications="Cluster metadata coordination and fault-tolerant consensus replication.",
+            tradeoffs="Majority quorum requirement limits availability during severe asymmetric network splits.",
+            provenance="cncf:glossary:raft-protocol",
+        ),
+        # Duplicate 4: 64-bit content_fp collision with primary 'blockchain'
+        ConceptNode(
+            concept_id="unique_ledger_clone",
+            title="Unique Ledger Clone",
+            category="computer_science",
+            aliases=("unique_ledger_clone",),
+            definition=eng._nodes["blockchain"].definition,
+            mechanism="Uses cryptographic block chains and distributed peer verification across participating validator nodes.",
+            applications="Tamper-evident financial settlement and verifiable audit logging across organizations.",
+            tradeoffs="Throughput limits and immutable state growth across full archival network participants.",
+            provenance="cncf:glossary:clone",
+        ),
+        # Low-quality rejects:
+        ConceptNode(
+            concept_id="short_stub_item",
+            title="Short Stub",
+            category="computer_science",
+            aliases=("short_stub_item",),
+            definition="Too short stub.",
+            mechanism="Minimal stub mechanism text.",
+            applications="Minimal stub applications text.",
+            tradeoffs="Minimal stub tradeoffs text.",
+            provenance="mdn:glossary:stub",
+        ),
+        ConceptNode(
+            concept_id="mcq_junk_item",
+            title="MCQ Junk Concept",
+            category="computer_science",
+            aliases=("mcq_junk_item",),
+            definition="Which of the following protocols guarantees reliable delivery? All of the above are correct answers.",
+            mechanism="Select option A or option B based on textbook exam review questions and trivia rules.",
+            applications="Multiple-choice assessment banks for introductory networking students.",
+            tradeoffs="Contains uncleaned quiz phrasing rather than factual encyclopedic knowledge.",
+            provenance="hf:sciq:bad1",
+        ),
+        ConceptNode(
+            concept_id="disambig_junk_item",
+            title="Mercury (disambiguation)",
+            category="astronomy_space",
+            aliases=("disambig_junk_item",),
+            definition="Mercury may refer to: the innermost planet of the Solar System, the chemical element Hg, or the Roman messenger deity.",
+            mechanism="Disambiguation listing separating homonymous encyclopedia article titles across unrelated domains.",
+            applications="Navigation index for ambiguous single-word queries in general encyclopedias.",
+            tradeoffs="Provides zero actionable technical mechanism or domain-specific synthesis value.",
+            provenance="wikipedia:mediawiki_api:en",
+        ),
+        ConceptNode(
+            concept_id="markdown_garbage_item",
+            title="Markdown Garbage",
+            category="software_engineering",
+            aliases=("markdown_garbage_item",),
+            definition="See [MDN HTTP Guide](https://developer.mozilla.org/en-US/docs/Web/HTTP) and {{Glossary('CORS')}} for uncleaned syntax.",
+            mechanism="Contains raw markdown links, macros, and unstripped template syntax inside concept prose.",
+            applications="Demonstrates strict quality gate rejection of uncleaned documentation scrapes.",
+            tradeoffs="Raw markup pollutes synthesized answers and degrades readability for downstream users.",
+            provenance="mdn:glossary:bad",
+        ),
+        ConceptNode(
+            concept_id="low_explicit_score",
+            title="Low Explicit Quality Score",
+            category="software_engineering",
+            aliases=("low_explicit_score",),
+            definition="A grammatically valid definition exceeding fifty characters whose explicit quality score falls below the shard threshold.",
+            mechanism="Evaluates minimum quality threshold enforcement when upstream harvesters flag borderline records.",
+            applications="Ensuring strict quality-over-quantity curation across all admitted multi-shard vaults.",
+            tradeoffs="Trades raw concept volume for higher precision and cleaner synthesis outputs.",
+            provenance="openalex:T999",
+            quality_score=0.55,
+        ),
+        # QA adversarial edge cases: relative markdown link, unlisted HTML5 tags, subject-led deprecation
+        ConceptNode(
+            concept_id="rel_md_link_junk",
+            title="Relative Markdown Link",
+            category="software_engineering",
+            aliases=("rel_md_link_junk",),
+            definition="See the [Service Mesh](service-mesh) glossary entry for detailed sidecar proxy routing behavior in clusters.",
+            mechanism="Demonstrates unstripped relative markdown anchor syntax inside prose.",
+            applications="Quality gate test for relative markdown links without leading slash or extension.",
+            tradeoffs="Raw markdown syntax degrades clean prose synthesis.",
+            provenance="cncf:glossary:bad-rel",
+        ),
+        ConceptNode(
+            concept_id="html5_kbd_junk",
+            title="HTML5 Tag Leakage",
+            category="software_engineering",
+            aliases=("html5_kbd_junk",),
+            definition="Press <kbd>Ctrl</kbd> with <var>x</var> inside <details><summary>shortcuts</summary></details> to interrupt execution.",
+            mechanism="Demonstrates unstripped HTML5 inline/semantic tags from MDN or OWASP pages.",
+            applications="Quality gate test for extended HTML5 markup filtering.",
+            tradeoffs="Unescaped HTML tags corrupt plain-text and markdown output surfaces.",
+            provenance="mdn:glossary:bad-html",
+        ),
+        ConceptNode(
+            concept_id="subject_deprecated_junk",
+            title="SSLv2 Transport",
+            category="cybersecurity_networking",
+            aliases=("subject_deprecated_junk",),
+            definition="SSLv2 is deprecated due to severe cryptographic weaknesses including DROWN attacks and truncated MAC protection.",
+            mechanism="Legacy transport encryption handshake replaced by modern TLS 1.2 and TLS 1.3 protocols.",
+            applications="Historical protocol study only; prohibited in modern production systems.",
+            tradeoffs="Vulnerable to downgrade and padding oracle exploits.",
+            provenance="ietf:rfc:6176",
+        ),
+    ]
+
+    st1 = eng.admit_to_shard(shard1_path, shard1_candidates, min_quality=0.78, vacuum=True)
+    assert st1["inserted_new"] == 2
+    assert st1["skipped_existing_primary_or_shard"] == 1
+    assert st1["skipped_canonical_duplicate"] == 1
+    assert st1["skipped_alias_duplicate"] == 1
+    assert st1["skipped_content_duplicate"] == 1
+    assert st1["rejected_low_quality"] == 8
+    assert st1["shard_node_count"] == 2
+    assert st1["shard_disk_mb"] >= 0.0
+    # Primary vault must be byte-for-byte untouched!
+    assert hashlib.sha256(primary_path.read_bytes()).hexdigest() == primary_sha_before
+
+    # Verify shard1 is in self-contained journal_mode='delete' AND idempotent 0-insert re-run preserves it!
+    shard1_sha_before_rerun = hashlib.sha256(shard1_path.read_bytes()).hexdigest()
+    c_chk = sqlite3.connect(str(shard1_path))
+    assert str(c_chk.execute("PRAGMA journal_mode").fetchone()[0]).casefold() == "delete"
+    c_chk.close()
+
+    st1_rerun = eng.admit_to_shard(shard1_path, shard1_candidates, min_quality=0.78, vacuum=True)
+    assert st1_rerun["inserted_new"] == 0
+    assert hashlib.sha256(shard1_path.read_bytes()).hexdigest() == shard1_sha_before_rerun
+    c_chk2 = sqlite3.connect(str(shard1_path))
+    assert str(c_chk2.execute("PRAGMA journal_mode").fetchone()[0]).casefold() == "delete"
+    c_chk2.close()
+
+    # 4. Admit Shard 2 and verify global cross-shard zero-duplication against Primary + Shard 1
+    shard2_candidates = [
+        ConceptNode(
+            concept_id="crispr prime editing",
+            title="CRISPR Prime Editing",
+            category="biology_genomics",
+            aliases=("crispr prime editing", "prime editing", "pegRNA editing"),
+            definition="Prime editing is a search-and-replace genome editing technology that writes targeted DNA edits without double-strand breaks.",
+            mechanism="Fuses a Cas9 nickase to an engineered reverse transcriptase guided by a pegRNA that encodes both target site and edit template.",
+            applications="Correcting point mutations, small insertions, and deletions in genetic disease research and therapeutic development.",
+            tradeoffs="Larger ribonucleoprotein payload complicates viral AAV delivery and editing efficiency varies across cell types.",
+            provenance="openalex:T10442",
+        ),
+        ConceptNode(
+            concept_id="federated thermodynamics",
+            title="Non-Equilibrium Statistical Mechanics",
+            category="physics",
+            aliases=("federated thermodynamics", "fluctuation theorem", "jarzynski equality"),
+            definition="Non-equilibrium statistical mechanics extends thermodynamic laws to systems driven far from thermal equilibrium via fluctuation theorems.",
+            mechanism="Relates microscopic trajectory entropy production ratios to free-energy differences using Jarzynski and Crooks fluctuation identities.",
+            applications="Single-molecule biophysics pulling experiments, nanoscale heat engines, and active matter transport modeling.",
+            tradeoffs="Exponential averages in free-energy estimators suffer severe finite-sample variance in rare dissipative trajectories.",
+            provenance="openalex:T20891",
+        ),
+        # Cross-shard exact ID duplicate against Shard 1
+        ConceptNode(
+            concept_id="ebpf telemetry",
+            title="eBPF Duplicate in Shard 2",
+            category="cybersecurity_networking",
+            aliases=("ebpf telemetry",),
+            definition="Cross-shard duplicate attempting to re-admit eBPF telemetry into the second public datasets shard.",
+            mechanism="Sandboxed kernel hooks executing verified bytecode on Linux networking and tracing events.",
+            applications="Runtime security telemetry and cloud-native observability pipelines.",
+            tradeoffs="Kernel verifier restrictions on unbounded loops and arbitrary pointer arithmetic.",
+            provenance="openalex:T90001",
+        ),
+        # Cross-shard alias duplicate against Shard 1 ('ssrf prevention')
+        ConceptNode(
+            concept_id="ssrf prevention",
+            title="SSRF Prevention Duplicate",
+            category="cybersecurity_networking",
+            aliases=("ssrf prevention",),
+            definition="Cross-shard alias duplicate attempting to claim an alias already owned by Shard 1 SSRF defense.",
+            mechanism="Validates outbound URLs and denies private IP ranges on server-side HTTP client requests.",
+            applications="Preventing cloud metadata SSRF attacks in multi-tenant web applications.",
+            tradeoffs="Requires continuous maintenance of egress rules and DNS rebinding protections.",
+            provenance="openalex:T90002",
+        ),
+    ]
+
+    st2 = eng.admit_to_shard(shard2_path, shard2_candidates, min_quality=0.78, vacuum=True)
+    assert st2["inserted_new"] == 2
+    assert st2["skipped_existing_primary_or_shard"] == 1
+    assert st2["skipped_alias_duplicate"] == 1
+    assert st2["rejected_low_quality"] == 0
+    assert hashlib.sha256(primary_path.read_bytes()).hexdigest() == primary_sha_before
+    eng.close()
+
+    # 5. Cold-start SLA (< 50 ms) & Peak RAM SLA (< 25 MB) across Primary + 2 auto-discovered shards
+    _VAULT_SNAPSHOT_CACHE.clear()
+    tracemalloc.start()
+    t0 = time.perf_counter()
+    fresh = OpenEndedConceptLatticeEngine(vault_path=primary_path)
+    cold_ms = (time.perf_counter() - t0) * 1000.0
+    _, peak_bytes = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    peak_mb = peak_bytes / (1024 * 1024)
+
+    assert cold_ms < 50.0, f"Multi-shard cold start exceeded 50ms: {cold_ms:.2f} ms"
+    assert peak_mb < 25.0, f"Multi-shard peak RAM exceeded 25MB: {peak_mb:.2f} MB"
+
+    # 6. Verify unified counts, domains, proxy mapping, FTS5, and telemetry across Primary + Shard 1 + Shard 2
+    assert fresh.concept_count() == 15  # 11 primary + 2 shard1 + 2 shard2
+    assert len(fresh._nodes) == 15
+    assert "raft consensus" in fresh._nodes
+    assert "ebpf telemetry" in fresh._nodes
+    assert "crispr prime editing" in fresh._nodes
+    assert fresh._nodes["ebpf telemetry"].provenance == "cncf:glossary:ebpf"
+    assert fresh._nodes["crispr prime editing"].provenance == "openalex:T10442"
+    all_items = dict(fresh._nodes.items())
+    assert len(all_items) == 15
+
+    # Check global uniqueness across all 3 SQLite files directly
+    global_ids: set[str] = set()
+    global_cks: set[str] = set()
+    global_fps: set[str] = set()
+    for db_p in (primary_path, shard1_path, shard2_path):
+        c = sqlite3.connect(str(db_p))
+        assert c.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+        for cid, ck, fp in c.execute("SELECT concept_id, canonical_key, content_fp FROM mirror_concept_lattice").fetchall():
+            assert cid not in global_ids
+            assert ck not in global_cks
+            assert fp not in global_fps
+            global_ids.add(cid)
+            global_cks.add(ck)
+            global_fps.add(fp)
+        c.close()
+
+    stel = fresh.shard_telemetry()
+    assert stel["shards_count"] == 2
+    assert stel["primary_node_count"] == 11
+    assert stel["shards_node_count"] == 4
+    assert stel["total_node_count"] == 15
+    assert len(stel["shards_breakdown"]) == 2
+
+    dist = fresh.domain_distribution()
+    assert sum(dist.values()) == 15
+    assert dist["cybersecurity_networking"] == 3  # cybersecurity + ebpf telemetry + ssrf defense
+    cyber_nodes = fresh.search_by_category("cybersecurity_networking", limit=10)
+    assert {nd.concept_id for nd in cyber_nodes} == {"cybersecurity", "ebpf telemetry", "ssrf defense"}
+    fts_hits = fresh.search_fts("Jarzynski fluctuation", limit=5)
+    assert any(nd.concept_id == "federated thermodynamics" for nd in fts_hits)
+
+    # 7. Cross-shard retrieval, uncached lookup SLA (< 2.0 ms), and OOD epistemic guards
+    probes = [
+        ("What is Raft consensus?", "replicated log"),
+        ("How does Raft consensus work?", "AppendEntries"),
+        ("Explain eBPF telemetry and its tradeoffs", "sandboxed bytecode"),
+        ("How does CRISPR prime editing work?", "pegRNA"),
+        ("Compare Raft consensus and eBPF telemetry", "Cross-Concept Comparison"),
+    ]
+    latencies_ms: list[float] = []
+    for q, expected in probes:
+        fresh._lru.clear()
+        tq0 = time.perf_counter()
+        res = fresh.route_open_ended(q)
+        latencies_ms.append((time.perf_counter() - tq0) * 1000.0)
+        assert res.matched is True, f"Failed multi-shard query: {q}"
+        assert expected in res.response
+
+    assert statistics.median(latencies_ms) < 2.0, f"Uncached multi-shard median lookup >= 2.0ms: {latencies_ms}"
+
+    # Epistemic OOD guards preserved across multi-shard lattice
+    assert fresh.route_open_ended("What is my stock price tomorrow?").matched is False
+    assert fresh.route_open_ended("Explain why Hamlet hesitated in Act III.").matched is False
+
+    fresh.close()
+
+    # 8. Multi-word shard concepts MUST beat shorter 1-word/2-word primary component concepts (zero shadowing!)
+    p_shadow = tmp_path / "shadow_primary.dcrystal"
+    s_shadow_dir = tmp_path / "shadow_shards"
+    s_eng = OpenEndedConceptLatticeEngine(vault_path=p_shadow, shard_dir=s_shadow_dir)
+    s_eng.register_nodes_bulk(
+        [
+            ConceptNode(
+                concept_id="privacy",
+                title="Privacy",
+                category="law_governance",
+                aliases=("privacy",),
+                definition="Privacy is the right of individuals to control access to their personal information and communications.",
+                mechanism="Enforced through legal consent frameworks, encryption, and data minimization practices.",
+                applications="Personal data protection regulations, confidential messaging, and enterprise governance.",
+                tradeoffs="Strong privacy controls can complicate telemetry, auditing, and fraud-detection analytics.",
+                provenance="wikipedia:mediawiki_api:en",
+            ),
+            ConceptNode(
+                concept_id="risk management",
+                title="Risk Management",
+                category="business_management",
+                aliases=("risk management",),
+                definition="Risk management is the structured identification, evaluation, and prioritization of operational uncertainties.",
+                mechanism="Quantifies likelihood and impact across threat matrices to allocate mitigation controls efficiently.",
+                applications="Financial portfolio hedging, enterprise compliance, and safety-critical engineering.",
+                tradeoffs="Excessive risk aversion slows product iteration and increases compliance overhead.",
+                provenance="wikipedia:mediawiki_api:en",
+            ),
+            ConceptNode(
+                concept_id="radio",
+                title="Radio",
+                category="physics",
+                aliases=("radio",),
+                definition="Radio is the technology of signaling and communicating using modulated electromagnetic radio-frequency waves.",
+                mechanism="Transmitters modulate carrier amplitude or frequency and receivers demodulate induced antenna currents.",
+                applications="Wireless broadcasting, aviation navigation, radar sensing, and cellular telecommunications.",
+                tradeoffs="Shared electromagnetic spectrum suffers interference, attenuation, and regulatory allocation limits.",
+                provenance="wikipedia:mediawiki_api:en",
+            ),
+            ConceptNode(
+                concept_id="broadcast",
+                title="Broadcast",
+                category="computer_science",
+                aliases=("broadcast",),
+                definition="Broadcast is a one-to-many communication model that transmits a single signal simultaneously to all receivers.",
+                mechanism="Delivers packets or RF transmissions across a shared medium without per-recipient point-to-point sessions.",
+                applications="Television distribution, ARP discovery on LAN segments, and emergency alert systems.",
+                tradeoffs="Broadcast storms consume network bandwidth and lack native per-receiver confidentiality.",
+                provenance="wikipedia:mediawiki_api:en",
+            ),
+        ],
+        persist=True,
+    )
+    adm_sh = s_eng.admit_to_shard(
+        s_shadow_dir / "shard_multiword.dcrystal",
+        [
+            ConceptNode(
+                concept_id="privacy risk management",
+                title="Privacy Risk Management",
+                category="cybersecurity_networking",
+                aliases=("privacy risk management",),
+                definition="A cross-organizational set of processes for identifying, assessing, and responding to personal privacy risks.",
+                mechanism="Applies NIST Privacy Framework risk models to evaluate problematic data actions across system lifecycles.",
+                applications="Enterprise privacy engineering, DPIA governance audits, and regulatory compliance programs.",
+                tradeoffs="Requires cross-functional coordination across legal, engineering, and security operations teams.",
+                provenance="nist:csrc:privacy_risk_management",
+            ),
+            ConceptNode(
+                concept_id="schema_radio_service",
+                title="Radio Broadcast Service",
+                category="engineering",
+                aliases=("schema_radio_service", "radio broadcast service"),
+                definition="A structured broadcasting service delivering audio programming over terrestrial or digital radio channels.",
+                mechanism="Models broadcast frequency, station callsign, and parent broadcast affiliate metadata using Schema.org types.",
+                applications="Media directory indexing, structured search metadata, and broadcast schedule syndication.",
+                tradeoffs="Requires accurate regional frequency and timezone synchronization across affiliate networks.",
+                provenance="schema.org:class:RadioBroadcastService",
+            ),
+            # Valid CRL concept mentioning revoked certificates must PASS
+            ConceptNode(
+                concept_id="certificate revocation list crl",
+                title="Certificate Revocation List (CRL)",
+                category="cybersecurity_networking",
+                aliases=("certificate revocation list crl", "crl"),
+                definition="A Certificate Revocation List is a signed list of digital certificates that have been revoked by the issuing CA before expiration.",
+                mechanism="Certificate authorities periodically publish ASN.1 DER signed revocation lists fetched by TLS clients during validation.",
+                applications="Public key infrastructure revocation checks, enterprise VPN gateways, and code-signing verification.",
+                tradeoffs="Large CRL files increase validation latency and introduce freshness windows between publication intervals.",
+                provenance="ietf:rfc4949:crl",
+            ),
+            # 3 deprecated phrasings that MUST be rejected natively
+            ConceptNode(
+                concept_id="flexvolume_bad",
+                title="FlexVolume",
+                category="software_engineering",
+                aliases=("flexvolume_bad",),
+                definition="FlexVolume is a deprecated interface for creating out-of-tree container volume plugins in Kubernetes.",
+                mechanism="Invoked host-installed binaries on cluster nodes before CSI replaced it.",
+                applications="Legacy Kubernetes storage driver extensions prior to Container Storage Interface adoption.",
+                tradeoffs="Requires root filesystem access on nodes and lacks dynamic provisioning support.",
+                provenance="cncf:k8s_glossary:flexvolume",
+            ),
+            ConceptNode(
+                concept_id="general_header_bad",
+                title="General Header",
+                category="cybersecurity_networking",
+                aliases=("general_header_bad",),
+                definition="General header is an outdated term used to refer to an HTTP header valid in both request and response messages.",
+                mechanism="Replaced by representation and request/response context classifications in modern HTTP RFCs.",
+                applications="Historical HTTP/1.1 specification terminology no longer used in RFC 9110.",
+                tradeoffs="Ambiguous classification compared to modern HTTP semantics.",
+                provenance="mdn:glossary:general_header",
+            ),
+            ConceptNode(
+                concept_id="hpkp_bad",
+                title="HTTP Public Key Pinning",
+                category="cybersecurity_networking",
+                aliases=("hpkp_bad",),
+                definition="HTTP Public Key Pinning (HPKP) is an obsolete security feature that told web clients to associate specific keys.",
+                mechanism="Pinned SPKI hashes via HTTP response headers before browsers removed support.",
+                applications="Deprecated TLS anti-impersonation experiment replaced by Certificate Transparency.",
+                tradeoffs="High risk of permanent domain bricking if pinned keys are lost or compromised.",
+                provenance="mdn:glossary:hpkp",
+            ),
+        ],
+        min_quality=0.78,
+        vacuum=True,
+    )
+    assert adm_sh["inserted_new"] == 3
+    assert adm_sh["rejected_low_quality"] == 3
+
+    r_prm = s_eng.route_open_ended("What is privacy risk management?")
+    assert r_prm.matched is True
+    assert r_prm.concepts_used == ("privacy risk management",)
+    assert "cross-organizational" in r_prm.response
+
+    r_rbs = s_eng.route_open_ended("What is Radio Broadcast Service?")
+    assert r_rbs.matched is True
+    assert r_rbs.concepts_used == ("schema_radio_service",)
+    assert "audio programming" in r_rbs.response
+
+    s_eng.close()
 
 
 
