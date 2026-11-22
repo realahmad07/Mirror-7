@@ -674,10 +674,11 @@ def _trigrams(text: str) -> set[str]:
     return {clean[i: i + 3] for i in range(len(clean) - 2)}
 
 
+@lru_cache(maxsize=8192)
 def _extract_surface_index_entries(
     cid: str,
     aliases: tuple[str, ...],
-) -> tuple[set[str], set[str], set[str]]:
+) -> tuple[frozenset[str], frozenset[str], frozenset[str]]:
     """Compute `(tokens, trigrams, extra_alias_cks)` for one concept's surface strings."""
     tokens: set[str] = set()
     trigrams: set[str] = set()
@@ -701,7 +702,7 @@ def _extract_surface_index_entries(
             ak = canonical_concept_key(surf)
             if ak and ak != cid_ck:
                 extra_alias_cks.add(ak)
-    return tokens, trigrams, extra_alias_cks
+    return frozenset(tokens), frozenset(trigrams), frozenset(extra_alias_cks)
 
 
 def _has_word_boundary_match(text_low: str, phrase_low: str) -> int:
