@@ -1,0 +1,69 @@
+{
+  "canary_splits": [
+    "canary_exact_memorization"
+  ],
+  "cpu_budget_seconds_per_seed_max": 30.0,
+  "demos_per_action": 6,
+  "future_itl_rdc_targets_from_pdf": {
+    "s2_beat_episode_lookup_margin_min": 0.2,
+    "s2_collateral_change_rate_max": 0.02,
+    "s2_max_demos_per_action": 8,
+    "s2_operator_recovery_precision_min": 0.9,
+    "s2_operator_recovery_recall_min": 0.9,
+    "s2_s3_exact_accuracy_depth4_min": 0.95,
+    "s2_s3_exact_accuracy_depth6_min": 0.9,
+    "s8_no_forgetting_retention_min": 0.95
+  },
+  "generator_version": "s0-relworld-v1.0",
+  "heldout_manifest_split_counts": {
+    "101": 168,
+    "202": 168,
+    "303": 168,
+    "404": 168,
+    "505": 168
+  },
+  "hidden_actions": [
+    "move",
+    "give",
+    "open",
+    "lock"
+  ],
+  "reproduce_command": "python -m research.cpu_learning.evaluation.run_experiments",
+  "s0_acceptance_gates": {
+    "deterministic_seed_replay": true,
+    "episode_lookup_canary_excluded_from_learning": true,
+    "episode_lookup_canary_retrieval_audit_rate": 1.0,
+    "hidden_oracle_collateral_rate": 0.0,
+    "hidden_oracle_exact_accuracy": 1.0,
+    "hidden_oracle_operator_recovery_f1": 1.0,
+    "pool_disjointness_verified": true
+  },
+  "schema_version": "s0-preregistration-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S0",
+  "temporal_generator_version": "s0-temporal-v2.0",
+  "train_manifest_sha256_by_seed": {
+    "101": "0c1ce736ff9dc2a41d985f05660e2d6fd92fec8f144c929645084ac3e51114b7",
+    "202": "1345cd89e36e9bfc336af4d2da7ca853ae88a81458ca60e35bfcead4152de27f",
+    "303": "f096bd049aee7eba7c038c7610f3be7537ebc5af3f8f6cf67990c26e80895fc7",
+    "404": "7f118e9ebffbf390eb1df791d0eb59a935fcf87efa847b0e0cabf88c9b95deaa",
+    "505": "062e4ec0387cc8b08e5f57e2fc9b02b3e82f61cc5544ffafbf104b04bfe98566"
+  },
+  "unseen_eval_splits": [
+    "heldout_unseen_names",
+    "heldout_role_swaps",
+    "heldout_guard_contrasts",
+    "heldout_repeated_idempotent",
+    "heldout_order_reversal",
+    "heldout_comp_depth2",
+    "heldout_comp_depth4",
+    "heldout_comp_depth6",
+    "heldout_temporal_frozen"
+  ]
+}

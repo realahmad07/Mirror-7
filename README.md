@@ -280,6 +280,7 @@ timeline
 9. [Research Governance, Intellectual Property Scope & Citation](#9-research-governance-intellectual-property-scope--citation)
 10. [Mirror Crystal & CPU-First Autonomous Engines (Zero-GPU Track)](#10-mirror-crystal--cpu-first-autonomous-engines-zero-gpu-track)
 11. [Git Remote Synchronization & Deployment Guide](#11-git-remote-synchronization--deployment-guide)
+12. [CPU-Native Learning Research (SHARD + ITL + RDC)](#cpu-native-learning-research)
 
 ---
 
@@ -1599,3 +1600,29 @@ All 13 stages above have been unified and implemented across **Phases A → E** 
 - **Frozen Benchmark (`scripts/run_frozen_benchmark.py`):** **`60 / 60` (`100.0%`), `0.0%` hallucination**
 - **Market Comparison Loop (`scripts/run_market_comparison_loop.py`):** **`24 / 24` (`100.0%`)**
 - **Multi-Shard Concept Lattice Integrity:** Exact **`74,741` ConceptNodes** preserved (`0` diff on existing `.dcrystal` vault & shard files)
+
+---
+
+## CPU-Native Learning Research
+
+Mirror 7 includes an isolated, staged CPU-native learning research track (`research/cpu_learning/`) investigating whether the core work of training—discovering reusable operations from few examples, generalizing to unseen entities and compositions, correcting mistakes via independent refutation, and compressing verified knowledge—can run on ordinary CPUs without GPU dependence, backpropagation, pretrained language models, or dense neural weight matrices.
+
+### Unified SHARD + ITL + RDC Architecture
+
+| Mechanism | Responsibility in One Combined Loop | Hard Boundary |
+|---|---|---|
+| **SHARD** | CPU-native HDC/bit representations, episodic retrieval, and candidate role/primitive proposals. | Similarity is never proof; a nearest episode is never promoted as a learned rule. |
+| **ITL** | Intervention-Transport Learning of reusable typed state-transition `OperatorCard`s (roles, preconditions, effects, preserved invariants, guards) from before/action/after observations. | Correctness is decided by held-out interventional transition tests, never compression alone. |
+| **RDC** | Refutation-Driven Consolidation: independent counterexamples, dream-refutation proposals, leave-one-operator-out blame, maximum-disagreement queries, and description-length compaction. | Self-generated probes never self-certify; compression never overrides a failed transition test. |
+| **QAAC / E-Graph** | Specialist algebraic equivalence and rewriting tool (`mirror_crystal/quotient_egraph_resonator.py`). | Not a competing fourth general learning loop unless ablation proves value. |
+
+### Verified Milestones
+
+- **Stage S0 — Benchmark Harness, Hidden Relational Simulator & Pre-Learner Baselines (`PASS`, 5 Fixed Seeds `[101, 202, 303, 404, 505]`):**
+  - **Isolated Simulator & Splits:** Deterministic relational hidden simulator (`move`, `give`, `open`, `lock`) with evaluator-only isolation (`research/cpu_learning/simulator/hidden_actions.py`), 100% lexically disjoint `TRAIN_POOL` / `HELDOUT_POOL` / `TEMPORAL_POOL` generators (`6` demos/action = `24` train episodes/seed; `9` unseen generator splits = `168` unseen tasks/seed = `840` total unseen evaluations; plus `8` exact-memorization retrieval canary tasks/seed excluded from learning scores).
+  - **5-Seed Unseen Baseline Matrix (`840` unseen tasks):** Hand-coded hidden oracle ceiling = **`100.00%`** (`0.00%` collateral, `1.00` operator recovery F1); trivial no-op floor = **`5.95%`** (blocked contrast cases only, `0.00%` on depths 2/4/6); `episode_lookup` = **`0.00%`** (`100.00%` abstention on unseen splits, `100.00%` retrieval-audit detection on exact-memorization canary); `structural_knn` = **`2.98%`** (`10.23%` collateral corruption); `shard_hdc_retrieval_no_itl` (reusing Mirror's 10,240-bit BSC HDC) = **`3.21% ± 0.40%`** (`10.22%` collateral corruption); `current_mirror_solver` (`native_chain` + `BilingualCCGHDCParser`, zero vault writes) = **`0.00%`** (`100.00%` honest abstention, `22.20%` exact parser role binding); comparison-only `small_cpu_neural_reference` = **`3.57% ± 1.05%`** (`6.39%` collateral corruption). Every non-oracle baseline scores **`0.00%`** on Depth-4, Depth-6, and Frozen Temporal compositions.
+  - **Independent 5-Seed SHARD HDC Arithmetic Canary (CPU, 0 floats, 0 backprop):** Unseen digit pairs `{0..9}^2` — `comparison (a > b)`: **`89.00% ± 9.96%`** bit-perceptron vs `71.00%` pure HDC; `carry (a + b >= 10)`: **`98.00% ± 3.40%`** bit-perceptron vs `95.00%` pure HDC; **`modular_addition ((a + b) % 10)` key canary**: **`4.00%`** pure HDC / **`7.00%`** bit-perceptron (below 10% chance), independently confirming that associative similarity and local bit readouts cannot solve discontinuous modular rules without rule induction.
+  - **Reproduce:** `PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_experiments` and `python -m pytest -v research/cpu_learning/tests`.
+  - **Detailed Documentation & Raw Artifacts:** [S0 Architecture Audit & Baseline Report](docs/39-cpu-native-learning-research-s0-audit-and-baseline.md) · [S0 Experiment Report](research/cpu_learning/reports/research_report.md) · [Raw 5-Seed Summary JSON](research/cpu_learning/reports/summary.json) · [Pre-Registration Manifest](research/cpu_learning/data/preregistration.json).
+
+*Research status note: Only Stage **S0** (audit, hidden simulator, pre-registered splits, retrieval/MDL audits, and baselines) is complete and verified. Stages **S1–S10** (state-frame ledger, ITL operator induction, contrast tests, SHARD candidate proposal, RDC refutation/consolidation, math/code transfer, language grounding, continual learning, autonomy, and broad external comparisons) remain unimplemented future gates. Prior external evaluation findings (`scripts/run_five_organ_external_eval.py`: weak long-memory retrieval, `0/20` MBPP passes, below-chance StoryCloze ranking) are preserved explicitly as baseline context.*

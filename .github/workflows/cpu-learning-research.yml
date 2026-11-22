@@ -1,0 +1,50 @@
+name: Mirror 7 | CPU-Native Learning Research (S0)
+
+on:
+  push:
+    branches:
+      - main
+      - "research/**"
+    paths:
+      - "research/cpu_learning/**"
+      - "docs/39-cpu-native-learning-research-s0-audit-and-baseline.md"
+      - ".github/workflows/cpu-learning-research.yml"
+  pull_request:
+    paths:
+      - "research/cpu_learning/**"
+      - "docs/39-cpu-native-learning-research-s0-audit-and-baseline.md"
+      - ".github/workflows/cpu-learning-research.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  cpu-learning-s0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONHASHSEED: "0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install minimal CPU test dependencies
+        run: python -m pip install --upgrade pip pytest cryptography
+
+      - name: Compile research package
+        run: python -m compileall -q research/cpu_learning
+
+      - name: Run S0 unit, isolation, edge-case, and canary tests
+        run: python -m pytest -v research/cpu_learning/tests
+
+      - name: Verify reproducible 5-seed S0 benchmark gate
+        run: python -m research.cpu_learning.evaluation.run_experiments

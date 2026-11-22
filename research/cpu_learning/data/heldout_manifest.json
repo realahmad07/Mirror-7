@@ -1,0 +1,713 @@
+{
+  "canary_splits": [
+    "canary_exact_memorization"
+  ],
+  "generator_version": "s0-relworld-v1.0",
+  "per_seed": {
+    "101": {
+      "seed": 101,
+      "splits": {
+        "canary_exact_memorization": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": true,
+          "generator_id": "gen_retrieval_canary_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "6b2750fbe2f31fac5eaee6b519f4e2fb7cfd6f772dcb490c3a03656bd36d021a",
+          "public_sha256": "09ac116e25bcc8fbcc95bb6dbcfdee3304e91d4442f582cfd0be9c2620f61cb4",
+          "task_count": 8
+        },
+        "heldout_comp_depth2": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth2_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "3893fe64a05ca31e9308aab817eeef8e0b3e30576a1ecb5365da538432db00d3",
+          "public_sha256": "c3e639ed96280fea29fe4f3381bed4ee9fa2d9f6eb38bf9422a37a97f3ccc01a",
+          "task_count": 20
+        },
+        "heldout_comp_depth4": {
+          "depths": [
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth4_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "a7af63a103f2913e475dd45e12222b604bddc1fdaa651ec68281d6157105692c",
+          "public_sha256": "de0b1c2b818941671b2d04e8fc72d8383acb7227b7c2e08a358804dc83ab6896",
+          "task_count": 20
+        },
+        "heldout_comp_depth6": {
+          "depths": [
+            6
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth6_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "11b339cc8a7257208240a1ad8a1129fd34c10ae5d3fa5a395586d452a18f3abc",
+          "public_sha256": "ba2e4d3be1a7c61bceac0bed941026da4a7d8d07b638e7ba206d3fdd4fbb5f9e",
+          "task_count": 20
+        },
+        "heldout_guard_contrasts": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_guard_contrasts_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "f99363a20f2b3febf68113affdf2013a03327783424cf5b0f33173c992499e18",
+          "public_sha256": "b2f5c06b619d65d7319d55dbcd4fca32ae989e22828750949e176d49695c89c3",
+          "task_count": 20
+        },
+        "heldout_order_reversal": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_order_reversal_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "91c4cc310f2c16c7c73f6540b1970cffc26ce7e38e180cc5587ccdd52dae7699",
+          "public_sha256": "d7565e91e2a59c40ec9e2a836ba5f37c6148f228c176491fcda7e35ba41270ae",
+          "task_count": 16
+        },
+        "heldout_repeated_idempotent": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_repeated_idempotent_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "25dab4412b0e8cb0c83456513a7a9e17b5f2639cb7a8347e5266b15678f7cf2b",
+          "public_sha256": "ae85df0e2dba124201a0bcbc120a321298d0d25e460f818f4003d97841a39462",
+          "task_count": 16
+        },
+        "heldout_role_swaps": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_role_swaps_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "96752943c29d6020bb13680274c2ca3629a7918b2a590b5f3fe884e2d83dec85",
+          "public_sha256": "ec0ada435f70af8a023fed1b7bf34b7d10a5d1e53e2b035ff0fdfac5b47c9d8f",
+          "task_count": 16
+        },
+        "heldout_temporal_frozen": {
+          "depths": [
+            2,
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_temporal_frozen_v2",
+          "generator_version": "s0-temporal-v2.0",
+          "hidden_labels_sha256": "601e377adedcb7d9e2664755ad942283500e68c5302044d33fd3e1abc3fd16dc",
+          "public_sha256": "17bd34e0b20accdd184b9200b2c33466c85b1df0d7f87187aa8dadf9392dfd69",
+          "task_count": 20
+        },
+        "heldout_unseen_names": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_unseen_names_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "8a10ab169fb0806970e3035c353ac88b2b92432015581ca5432bf51caef66f20",
+          "public_sha256": "63fc2b099f838a0e782a20c9e95eb633becafa30894311f18805ed7c2621d26a",
+          "task_count": 20
+        }
+      },
+      "total_canary_tasks": 8,
+      "total_unseen_tasks": 168
+    },
+    "202": {
+      "seed": 202,
+      "splits": {
+        "canary_exact_memorization": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": true,
+          "generator_id": "gen_retrieval_canary_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "f2eedd046913cde393c63ac1f8de8e13c4c0b58395af2ad796a90d0f30d6fc35",
+          "public_sha256": "de774f6b536736aefd62ec6a6b4508dfb804c96f564f442c08a442be232d13cc",
+          "task_count": 8
+        },
+        "heldout_comp_depth2": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth2_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "c24639cb2ff3c97933c5ce3195886867fca307febb1cf66b180ca943894f8739",
+          "public_sha256": "aca65971e067821b78290d94f5eae91a313f97d477de77f2575a67a1109fd223",
+          "task_count": 20
+        },
+        "heldout_comp_depth4": {
+          "depths": [
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth4_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "a90da9f1f330e4e561d371181406e9ffe68d990d9b94d0b7a4a6b5198147c87a",
+          "public_sha256": "75527d9ba8799133bd874f3748017f50de14110aa24fd69c9a38038896a27568",
+          "task_count": 20
+        },
+        "heldout_comp_depth6": {
+          "depths": [
+            6
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth6_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "f71dcdbc1abd5b23db83558a017ae3378633f064cb63995e5b18cbc480822c2e",
+          "public_sha256": "45613d266e9535450bc30e5986d7779650bbf9344ba00293a1bb755a605e59ef",
+          "task_count": 20
+        },
+        "heldout_guard_contrasts": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_guard_contrasts_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "1ffd59406dfd73ae085056be7e1f631a0dab8758c164b62958ede1777147f01c",
+          "public_sha256": "f5d30f65c37168ded6283dd1d941b412b114d571dcf4c95105abf3128650506e",
+          "task_count": 20
+        },
+        "heldout_order_reversal": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_order_reversal_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "f4f45b215921b1fd4ac287c7c71623bcb74dc93d1acfabd4bf8c7839dc6d4394",
+          "public_sha256": "5ba85db16a4cdd6a935646b938f9bd325017f9d47c9c60a93fdbf70ed8132533",
+          "task_count": 16
+        },
+        "heldout_repeated_idempotent": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_repeated_idempotent_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "c3dc8a4ed68cd9993f0b977a66a74b17c72543f7691ed69a58ef04dc6b7fdb75",
+          "public_sha256": "2f54819afc0a0fda536a2a1a64241d719ceb4986d4eea4157df3f672344e4e6b",
+          "task_count": 16
+        },
+        "heldout_role_swaps": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_role_swaps_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "f4a8cc4469b3392f19cd9125e867837acac39163c74b9ab86cb988f8dc8a698c",
+          "public_sha256": "90eb90bfbb004f878ed0724cc4976f652141c06106daefbf8b2d8f5ee55d006c",
+          "task_count": 16
+        },
+        "heldout_temporal_frozen": {
+          "depths": [
+            2,
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_temporal_frozen_v2",
+          "generator_version": "s0-temporal-v2.0",
+          "hidden_labels_sha256": "61a146f672c5657dcb7a634a56552998ab68d1317230a0b7f606bdd8d50ce0c3",
+          "public_sha256": "6e29e0c53a8153cf73e2c32ac7ed0317b194f48247381fd867e48bd591cf7365",
+          "task_count": 20
+        },
+        "heldout_unseen_names": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_unseen_names_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "ad43fb3f70366fff4421a6aa411c9ae16803be99ac91442edcfb28e67cce4637",
+          "public_sha256": "44a2ac351d451b6fa0dba5b2589c7b4cdda4e4ab1d0157d181a023232fe44093",
+          "task_count": 20
+        }
+      },
+      "total_canary_tasks": 8,
+      "total_unseen_tasks": 168
+    },
+    "303": {
+      "seed": 303,
+      "splits": {
+        "canary_exact_memorization": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": true,
+          "generator_id": "gen_retrieval_canary_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "e857b5c45e172d3a28c5191f30aa981be09e8a76022333824fb103e72c20714e",
+          "public_sha256": "2a047f510813406f331a36208ebb55ad874c0809585998d51aaf3c3e5a79d5c2",
+          "task_count": 8
+        },
+        "heldout_comp_depth2": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth2_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "45a24eced80b40b0d7cfbf3758b767dadbfdc8aff1bfdde19624839b71721973",
+          "public_sha256": "b6a2f0029e4cc4aed2550d2443c1b07bb918e6279071d2be2eb63465e09396f8",
+          "task_count": 20
+        },
+        "heldout_comp_depth4": {
+          "depths": [
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth4_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "523b33b96a4bc18bc77c42e86f85f29726c20d80fb88d838b7d69c21a1d335df",
+          "public_sha256": "c628bca3e70c55ba6e75cca46e6bf62265520dac9edac32534a94c9c1d375d74",
+          "task_count": 20
+        },
+        "heldout_comp_depth6": {
+          "depths": [
+            6
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth6_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "703de7b2e821eecd97379a31af71c3887eaad72b91e5396fa29e0e72dba53393",
+          "public_sha256": "aed03dd106da78f68b155b0f66d3520c2e65726d2a00bfbb085b39b5c2d523e2",
+          "task_count": 20
+        },
+        "heldout_guard_contrasts": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_guard_contrasts_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "9e25a368195ad23b27ece7e99e76996771f285d182c23397eb3d5eccd19ad592",
+          "public_sha256": "36e51183c35cb397f963478f0273303e31a1633557309a5e259974b1b192e08b",
+          "task_count": 20
+        },
+        "heldout_order_reversal": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_order_reversal_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "c34c8aab9c21f5667d6b05459934f4a6171e7035d387e2faf9338ce968050cb7",
+          "public_sha256": "1ffcbc39ce427620b02ccad4b79ef28891ae9b0374c2efec98ce8269d0f78fac",
+          "task_count": 16
+        },
+        "heldout_repeated_idempotent": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_repeated_idempotent_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "df5b651e69212859f02471ae60ca4d943cc9d702610a3b85d52d618df87a5d1e",
+          "public_sha256": "6fcf39b4d8d3635884794c7a612215c1b737a8d14bf92d45f3b57f2b1dfc85ea",
+          "task_count": 16
+        },
+        "heldout_role_swaps": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_role_swaps_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "aedb4ac73751888ae2a4748e95aaf26709a825adf4d15cf8e7401ce825b32727",
+          "public_sha256": "383c0bcbf2afb466a5aea88f4058dfd043ee93fb8c4c912fe499f10c1d912e21",
+          "task_count": 16
+        },
+        "heldout_temporal_frozen": {
+          "depths": [
+            2,
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_temporal_frozen_v2",
+          "generator_version": "s0-temporal-v2.0",
+          "hidden_labels_sha256": "6134e6369ad9842529bcc71916ecd943e90ec8cf193d9490791ff28285318a53",
+          "public_sha256": "8cec91332897a781d0fcbed23e3223318199decc2520fdb8c496d5d3952ce6d3",
+          "task_count": 20
+        },
+        "heldout_unseen_names": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_unseen_names_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "e11bfdbb13669f5adf60f1f0341170873fc54dc91de1e419ea43cab886aecd6d",
+          "public_sha256": "54115fd8c11fd8162f1ac702f9c89d20423f19064279fd7e643b11785077192a",
+          "task_count": 20
+        }
+      },
+      "total_canary_tasks": 8,
+      "total_unseen_tasks": 168
+    },
+    "404": {
+      "seed": 404,
+      "splits": {
+        "canary_exact_memorization": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": true,
+          "generator_id": "gen_retrieval_canary_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "1043c4ea0abdebc166b792004d6e947c48383e2491dfb5cd94dcfdd5e9f8e25f",
+          "public_sha256": "6877a59e2c9294d51a665efb517ab9d585b8dd2e2fa6fb5be7e9ac7979c51f5c",
+          "task_count": 8
+        },
+        "heldout_comp_depth2": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth2_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "ddf82a87b5db16600b4e61191ee5ad1ab6ef41870e7e4e5f17204a2e25990afb",
+          "public_sha256": "4410a4810343c07506dff4b2db1a8a7a6169bf83f8611eb79a25b2dcd3d4191a",
+          "task_count": 20
+        },
+        "heldout_comp_depth4": {
+          "depths": [
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth4_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "15b82d05e0f3ffbb3b08d99ede96e18a8583ec3b6faa6a61095df4bb93cfdd92",
+          "public_sha256": "6f4247a16ee46e181ff11c089be5c0b40fe72fca98facb0db937942cd4043246",
+          "task_count": 20
+        },
+        "heldout_comp_depth6": {
+          "depths": [
+            6
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth6_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "8966ed63bad7238fed1d60200aee391ad2037ba3bc031ee91bb04a2f9c257b38",
+          "public_sha256": "f511db9721a3d7d85c37db8b855ec0c2373827107d65f422aa45ed048f4093cc",
+          "task_count": 20
+        },
+        "heldout_guard_contrasts": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_guard_contrasts_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "ab913bf9926b0eb0ae0dc1719f414d8e39f0a13a40423bb596878168438df589",
+          "public_sha256": "3a6fb8c65c82ce35611fdb5dcc97e3e172538cf58a7520938ed3ea474a33eaf2",
+          "task_count": 20
+        },
+        "heldout_order_reversal": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_order_reversal_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "ed2780de1cbec20044daa7083a47154eeceb07298c5df71e37ad1d727bc869c1",
+          "public_sha256": "845b61e6c29f7ea8e3f31b29e4842b8f6ffcca536bfe21c16156c8f5ca71f971",
+          "task_count": 16
+        },
+        "heldout_repeated_idempotent": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_repeated_idempotent_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "4e60907d3847ccb3cd7ceec3e6f8e4c4f9c215a17d798a3546405896a3622c08",
+          "public_sha256": "02b6cee740f4b7beac7a9ce4fb94435c5b8c184c28656370a72c731d116eb9c8",
+          "task_count": 16
+        },
+        "heldout_role_swaps": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_role_swaps_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "7dc4e93eeea91e82e1f65b567bbd6115b38c31d734c88f42938bf5ad64c3b83f",
+          "public_sha256": "b913a07deca6f27645c04c165cc58f0b57d5f5088932d408443ca1feb7db52fa",
+          "task_count": 16
+        },
+        "heldout_temporal_frozen": {
+          "depths": [
+            2,
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_temporal_frozen_v2",
+          "generator_version": "s0-temporal-v2.0",
+          "hidden_labels_sha256": "1269d038ec9d8b1ca071b9caf2be2374f4e2688b6271cad22385ac4e9de0f415",
+          "public_sha256": "135d1f8b002ada8320185b81ddc1f0da8a08c686dc1359c2b2ebca382b858ce1",
+          "task_count": 20
+        },
+        "heldout_unseen_names": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_unseen_names_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "eb90c300e0466b19d8addd3adede50bacf624b6c357a02a4b09b1dc9c5d326b8",
+          "public_sha256": "1382c6ee12e55eb95dcc83608129f796e6ec51794a1af5a909a157b1cb331943",
+          "task_count": 20
+        }
+      },
+      "total_canary_tasks": 8,
+      "total_unseen_tasks": 168
+    },
+    "505": {
+      "seed": 505,
+      "splits": {
+        "canary_exact_memorization": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": true,
+          "generator_id": "gen_retrieval_canary_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "c205e00ff6ae871fb007d660ce21b7a36e423b6145b00f89a508f2081e46ff0d",
+          "public_sha256": "d481e7475d744076e679133671b006d9c954382f5b7f4b9818e3e1e046aba6eb",
+          "task_count": 8
+        },
+        "heldout_comp_depth2": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth2_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "7d41865eae87687404b9a5a91563bee8a549a60c87db021b8a860e68feddd15b",
+          "public_sha256": "1a9e11969bff6af3ed8c4b100faba347f7f88c48ed26969d3a8840326f88d268",
+          "task_count": 20
+        },
+        "heldout_comp_depth4": {
+          "depths": [
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth4_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "b1c4f6e54bd479a501352fce229c1dbecbfcfb1fc2eb1bb094ec7af507860aa3",
+          "public_sha256": "07609c5d6c476be9ef6df8531ce545cb2ac286df7337836ef3a5dbda7cc77b85",
+          "task_count": 20
+        },
+        "heldout_comp_depth6": {
+          "depths": [
+            6
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_comp_depth6_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "dd5acf693ba0674447dd5e9d50952a2ffd2b64aee7bc2a1daec4e25889f487ee",
+          "public_sha256": "65691d7d3663fe9f776bca598d3921785b3b96abbe6fcdfbec3a765f3159cb43",
+          "task_count": 20
+        },
+        "heldout_guard_contrasts": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_guard_contrasts_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "28e4e4af230a93fb7d4c7d5c7468b69e8a39fe6a4dd579ef77d9ea7877d84c24",
+          "public_sha256": "740b5eee1a89e965c7fc5fc3715241f8c47f16fb08b9f5fa9c742bf9d6e293b5",
+          "task_count": 20
+        },
+        "heldout_order_reversal": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_order_reversal_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "a410e1724beca5d71ea26b39d5ba805cbe73323b434eaae5644daf988a7da230",
+          "public_sha256": "30baa27d01954ee25a9059ca61a2c9786d9af8280cc6f9e73b083f9105f028ed",
+          "task_count": 16
+        },
+        "heldout_repeated_idempotent": {
+          "depths": [
+            2
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_repeated_idempotent_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "13a2193051aa5932b8d5339cab1e4ed5688b3310388376e31491629e97d03b75",
+          "public_sha256": "f4a6b9bbc00aa3cd78db2e0ce359df90b3dfb503e023a27f3ab4cab7ad1d0049",
+          "task_count": 16
+        },
+        "heldout_role_swaps": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_role_swaps_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "e550bc73c5ee66022ed5f0197996158df3b21491953424394c3d572dbbbde640",
+          "public_sha256": "6fbd98edec8d604510752e7908e58f0a43fbfe137a4ae0bc84f567db75d15a01",
+          "task_count": 16
+        },
+        "heldout_temporal_frozen": {
+          "depths": [
+            2,
+            4
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_temporal_frozen_v2",
+          "generator_version": "s0-temporal-v2.0",
+          "hidden_labels_sha256": "80b11dd21219145887543b8f4a684bbdf905aaa183cda090183b7f01f22f0b0f",
+          "public_sha256": "c340ac1e3196df7f5876154d6fed47f6b9864ef56d0da30b1f5994a0c738d52c",
+          "task_count": 20
+        },
+        "heldout_unseen_names": {
+          "depths": [
+            1
+          ],
+          "excluded_from_learning_score": false,
+          "generator_id": "gen_unseen_names_v1",
+          "generator_version": "s0-relworld-v1.0",
+          "hidden_labels_sha256": "7554a42a353337a3d208de5cac084f6789a8c2cc762e499f7c7e9e0845d70af2",
+          "public_sha256": "4e6a6883b8b146855f30c7f6296959f5b96c802a090f14fb8a495acf8f3003ed",
+          "task_count": 20
+        }
+      },
+      "total_canary_tasks": 8,
+      "total_unseen_tasks": 168
+    }
+  },
+  "pool_disjointness": {
+    "disjoint_verified": true,
+    "heldout_colors": [
+      "amber",
+      "violet",
+      "crimson",
+      "silver",
+      "obsidian",
+      "teal"
+    ],
+    "heldout_entity_roots": [
+      "altar",
+      "casket",
+      "chalice",
+      "coffer",
+      "compass",
+      "console",
+      "crystal",
+      "kieran",
+      "lantern",
+      "ledge",
+      "locker",
+      "nadia",
+      "orion",
+      "pedestal",
+      "prism",
+      "relic",
+      "satchel",
+      "scroll",
+      "selene",
+      "tariq",
+      "vault",
+      "vial",
+      "workbench",
+      "zara"
+    ],
+    "temporal_colors": [
+      "indigo",
+      "copper",
+      "ivory",
+      "jade",
+      "scarlet",
+      "bronze"
+    ],
+    "temporal_entity_roots": [
+      "amara",
+      "amulet",
+      "astrolabe",
+      "cabinet",
+      "dais",
+      "devon",
+      "farah",
+      "flask",
+      "hearth",
+      "locket",
+      "lyra",
+      "mantel",
+      "marcus",
+      "medallion",
+      "plinth",
+      "podium",
+      "pouch",
+      "reliquary",
+      "soren",
+      "strongbox",
+      "tablet",
+      "trunk"
+    ],
+    "train_colors": [
+      "red",
+      "blue",
+      "green",
+      "yellow"
+    ],
+    "train_entity_roots": [
+      "alice",
+      "bell",
+      "bob",
+      "book",
+      "box",
+      "chest",
+      "clara",
+      "coin",
+      "counter",
+      "crate",
+      "cup",
+      "david",
+      "desk",
+      "drawer",
+      "lamp",
+      "orb",
+      "shelf",
+      "table"
+    ]
+  },
+  "schema_version": "s0-manifest-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "temporal_generator_version": "s0-temporal-v2.0",
+  "unseen_eval_splits": [
+    "heldout_unseen_names",
+    "heldout_role_swaps",
+    "heldout_guard_contrasts",
+    "heldout_repeated_idempotent",
+    "heldout_order_reversal",
+    "heldout_comp_depth2",
+    "heldout_comp_depth4",
+    "heldout_comp_depth6",
+    "heldout_temporal_frozen"
+  ]
+}

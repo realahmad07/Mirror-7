@@ -1,0 +1,174 @@
+{
+  "demos_per_action": 6,
+  "generator_version": "s0-relworld-v1.0",
+  "per_seed": {
+    "101": {
+      "actions": [
+        "move",
+        "give",
+        "open",
+        "lock"
+      ],
+      "demos_per_action": 6,
+      "episode_count": 24,
+      "raw_bytes": 87954,
+      "seed": 101,
+      "sha256": "0c1ce736ff9dc2a41d985f05660e2d6fd92fec8f144c929645084ac3e51114b7"
+    },
+    "202": {
+      "actions": [
+        "move",
+        "give",
+        "open",
+        "lock"
+      ],
+      "demos_per_action": 6,
+      "episode_count": 24,
+      "raw_bytes": 88016,
+      "seed": 202,
+      "sha256": "1345cd89e36e9bfc336af4d2da7ca853ae88a81458ca60e35bfcead4152de27f"
+    },
+    "303": {
+      "actions": [
+        "move",
+        "give",
+        "open",
+        "lock"
+      ],
+      "demos_per_action": 6,
+      "episode_count": 24,
+      "raw_bytes": 88011,
+      "seed": 303,
+      "sha256": "f096bd049aee7eba7c038c7610f3be7537ebc5af3f8f6cf67990c26e80895fc7"
+    },
+    "404": {
+      "actions": [
+        "move",
+        "give",
+        "open",
+        "lock"
+      ],
+      "demos_per_action": 6,
+      "episode_count": 24,
+      "raw_bytes": 88063,
+      "seed": 404,
+      "sha256": "7f118e9ebffbf390eb1df791d0eb59a935fcf87efa847b0e0cabf88c9b95deaa"
+    },
+    "505": {
+      "actions": [
+        "move",
+        "give",
+        "open",
+        "lock"
+      ],
+      "demos_per_action": 6,
+      "episode_count": 24,
+      "raw_bytes": 87999,
+      "seed": 505,
+      "sha256": "062e4ec0387cc8b08e5f57e2fc9b02b3e82f61cc5544ffafbf104b04bfe98566"
+    }
+  },
+  "pool_disjointness": {
+    "disjoint_verified": true,
+    "heldout_colors": [
+      "amber",
+      "violet",
+      "crimson",
+      "silver",
+      "obsidian",
+      "teal"
+    ],
+    "heldout_entity_roots": [
+      "altar",
+      "casket",
+      "chalice",
+      "coffer",
+      "compass",
+      "console",
+      "crystal",
+      "kieran",
+      "lantern",
+      "ledge",
+      "locker",
+      "nadia",
+      "orion",
+      "pedestal",
+      "prism",
+      "relic",
+      "satchel",
+      "scroll",
+      "selene",
+      "tariq",
+      "vault",
+      "vial",
+      "workbench",
+      "zara"
+    ],
+    "temporal_colors": [
+      "indigo",
+      "copper",
+      "ivory",
+      "jade",
+      "scarlet",
+      "bronze"
+    ],
+    "temporal_entity_roots": [
+      "amara",
+      "amulet",
+      "astrolabe",
+      "cabinet",
+      "dais",
+      "devon",
+      "farah",
+      "flask",
+      "hearth",
+      "locket",
+      "lyra",
+      "mantel",
+      "marcus",
+      "medallion",
+      "plinth",
+      "podium",
+      "pouch",
+      "reliquary",
+      "soren",
+      "strongbox",
+      "tablet",
+      "trunk"
+    ],
+    "train_colors": [
+      "red",
+      "blue",
+      "green",
+      "yellow"
+    ],
+    "train_entity_roots": [
+      "alice",
+      "bell",
+      "bob",
+      "book",
+      "box",
+      "chest",
+      "clara",
+      "coin",
+      "counter",
+      "crate",
+      "cup",
+      "david",
+      "desk",
+      "drawer",
+      "lamp",
+      "orb",
+      "shelf",
+      "table"
+    ]
+  },
+  "schema_version": "s0-manifest-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ]
+}

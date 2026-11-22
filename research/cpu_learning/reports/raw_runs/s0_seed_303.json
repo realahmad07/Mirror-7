@@ -1,0 +1,1927 @@
+{
+  "seed": 303,
+  "solvers": {
+    "current_mirror_solver": {
+      "bit_budget": {
+        "active_bundle_bits": 0,
+        "compressed_model_mdl_bits": 0,
+        "compressed_training_data_bits": 52960,
+        "compression_ratio_vs_raw": 0.0,
+        "episode_store_bits": 0,
+        "operator_library_bits": 0,
+        "raw_training_data_bits": 704088
+      },
+      "category": "existing_mirror",
+      "comparison_only": false,
+      "evaluator_only": false,
+      "failed_examples_sample": [
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_5 move relic_5 from workbench_5 to pedestal_5"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_00"
+        },
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have selene_2 give chalice_2 over to tariq_2"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_01"
+        },
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "selene_3 open casket_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_02"
+        },
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have zara_1 lock the coffer_1"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_03"
+        },
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_3 move lantern_3 from workbench_3 to vault_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_04"
+        }
+      ],
+      "fit_seconds": 6e-06,
+      "frozen_before_temporal": true,
+      "mirror_parser_step_coverage": 0.221963,
+      "operator_recovery": {
+        "f1": 0.0,
+        "fn": 26,
+        "fp": 0,
+        "per_action": {
+          "give": {
+            "fn": 5,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "lock": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "move": {
+            "fn": 9,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "open": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          }
+        },
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0
+      },
+      "per_split": {
+        "canary_exact_memorization": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.043926,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 0,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 8,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth2": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.130774,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth4": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.156713,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth6": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.182097,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_guard_contrasts": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.124609,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_order_reversal": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.098604,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_repeated_idempotent": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.10227,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_role_swaps": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.109239,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_temporal_frozen": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.143044,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_unseen_names": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.145701,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        }
+      },
+      "predict_seconds": 1.236976,
+      "predictions_per_sec_single_core": 142.28,
+      "rss_mb": 60.957,
+      "seed": 303,
+      "solver": "current_mirror_solver",
+      "tracemalloc_peak_kb": 558.54,
+      "unseen_overall": {
+        "abstention_rate": 1.0,
+        "intermediate_step_accuracy": 0.0,
+        "learning_exact_accuracy": 0.0,
+        "learning_scored_tasks": 168,
+        "mean_collateral_rate": 0.0,
+        "raw_exact_accuracy_including_retrieval": 0.0,
+        "retrieval_hits": 0,
+        "total_collateral_changes": 0,
+        "total_tasks": 168,
+        "wrong_non_abstain_rate": 0.0
+      }
+    },
+    "episode_lookup": {
+      "bit_budget": {
+        "active_bundle_bits": 0,
+        "compressed_model_mdl_bits": 11480,
+        "compressed_training_data_bits": 52960,
+        "compression_ratio_vs_raw": 0.016305,
+        "episode_store_bits": 44584,
+        "operator_library_bits": 0,
+        "raw_training_data_bits": 704088
+      },
+      "category": "memory_baseline",
+      "comparison_only": false,
+      "evaluator_only": false,
+      "failed_examples_sample": [
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_5 move relic_5 from workbench_5 to pedestal_5"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_00"
+        },
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have selene_2 give chalice_2 over to tariq_2"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_01"
+        },
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "selene_3 open casket_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_02"
+        },
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have zara_1 lock the coffer_1"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_03"
+        },
+        {
+          "abstained": true,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_3 move lantern_3 from workbench_3 to vault_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_04"
+        }
+      ],
+      "fit_seconds": 0.011401,
+      "frozen_before_temporal": true,
+      "operator_recovery": {
+        "f1": 0.0,
+        "fn": 26,
+        "fp": 0,
+        "per_action": {
+          "give": {
+            "fn": 5,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "lock": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "move": {
+            "fn": 9,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "open": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          }
+        },
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0
+      },
+      "per_split": {
+        "canary_exact_memorization": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.008832,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 0,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 8,
+          "total_collateral_changes": 0,
+          "total_tasks": 8,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth2": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.020268,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth4": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.019967,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth6": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.020355,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_guard_contrasts": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.018526,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_order_reversal": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.016801,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_repeated_idempotent": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.015011,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_role_swaps": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.015037,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_temporal_frozen": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.02009,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_unseen_names": {
+          "abstention_rate": 1.0,
+          "elapsed_seconds": 0.023975,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        }
+      },
+      "predict_seconds": 0.178861,
+      "predictions_per_sec_single_core": 984.0,
+      "rss_mb": 60.891,
+      "seed": 303,
+      "solver": "episode_lookup",
+      "tracemalloc_peak_kb": 61.03,
+      "unseen_overall": {
+        "abstention_rate": 1.0,
+        "intermediate_step_accuracy": 0.0,
+        "learning_exact_accuracy": 0.0,
+        "learning_scored_tasks": 168,
+        "mean_collateral_rate": 0.0,
+        "raw_exact_accuracy_including_retrieval": 0.0,
+        "retrieval_hits": 0,
+        "total_collateral_changes": 0,
+        "total_tasks": 168,
+        "wrong_non_abstain_rate": 0.0
+      }
+    },
+    "hand_coded_hidden_oracle": {
+      "bit_budget": {
+        "active_bundle_bits": 0,
+        "compressed_model_mdl_bits": 2256,
+        "compressed_training_data_bits": 52960,
+        "compression_ratio_vs_raw": 0.003204,
+        "episode_store_bits": 0,
+        "operator_library_bits": 9960,
+        "raw_training_data_bits": 704088
+      },
+      "category": "evaluator_ceiling",
+      "comparison_only": false,
+      "evaluator_only": true,
+      "failed_examples_sample": [],
+      "fit_seconds": 3e-06,
+      "frozen_before_temporal": true,
+      "operator_recovery": {
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "per_action": {
+          "give": {
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 5
+          },
+          "lock": {
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 6
+          },
+          "move": {
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 9
+          },
+          "open": {
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 6
+          }
+        },
+        "precision": 1.0,
+        "recall": 1.0,
+        "tp": 26
+      },
+      "per_split": {
+        "canary_exact_memorization": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.006712,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 0,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 8,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth2": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.024928,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth4": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.031509,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth6": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.04122,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_guard_contrasts": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.017107,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_order_reversal": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.021827,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_repeated_idempotent": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.017443,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_role_swaps": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.014338,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_temporal_frozen": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.026363,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_unseen_names": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.016586,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 1.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.0
+        }
+      },
+      "predict_seconds": 0.218034,
+      "predictions_per_sec_single_core": 807.21,
+      "rss_mb": 60.871,
+      "seed": 303,
+      "solver": "hand_coded_hidden_oracle",
+      "tracemalloc_peak_kb": 97.37,
+      "unseen_overall": {
+        "abstention_rate": 0.0,
+        "intermediate_step_accuracy": 1.0,
+        "learning_exact_accuracy": 1.0,
+        "learning_scored_tasks": 168,
+        "mean_collateral_rate": 0.0,
+        "raw_exact_accuracy_including_retrieval": 1.0,
+        "retrieval_hits": 0,
+        "total_collateral_changes": 0,
+        "total_tasks": 168,
+        "wrong_non_abstain_rate": 0.0
+      }
+    },
+    "noop_identity_floor": {
+      "bit_budget": {
+        "active_bundle_bits": 0,
+        "compressed_model_mdl_bits": 0,
+        "compressed_training_data_bits": 52960,
+        "compression_ratio_vs_raw": 0.0,
+        "episode_store_bits": 0,
+        "operator_library_bits": 0,
+        "raw_training_data_bits": 704088
+      },
+      "category": "sanity_floor",
+      "comparison_only": false,
+      "evaluator_only": false,
+      "failed_examples_sample": [
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_5 move relic_5 from workbench_5 to pedestal_5"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_00"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have selene_2 give chalice_2 over to tariq_2"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_01"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "selene_3 open casket_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_02"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have zara_1 lock the coffer_1"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_03"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_3 move lantern_3 from workbench_3 to vault_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_04"
+        }
+      ],
+      "fit_seconds": 2e-06,
+      "frozen_before_temporal": true,
+      "operator_recovery": {
+        "f1": 0.0,
+        "fn": 26,
+        "fp": 0,
+        "per_action": {
+          "give": {
+            "fn": 5,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "lock": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "move": {
+            "fn": 9,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "open": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          }
+        },
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0
+      },
+      "per_split": {
+        "canary_exact_memorization": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.004841,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 0,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 8,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth2": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.012518,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth4": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.013298,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth6": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.014009,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_guard_contrasts": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.011239,
+          "intermediate_step_accuracy": 0.5,
+          "learning_exact_accuracy": 0.5,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.5,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.5
+        },
+        "heldout_order_reversal": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.00921,
+          "intermediate_step_accuracy": 0.1875,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_repeated_idempotent": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.009135,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_role_swaps": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.008623,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_temporal_frozen": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.013329,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_unseen_names": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.01136,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        }
+      },
+      "predict_seconds": 0.107563,
+      "predictions_per_sec_single_core": 1636.25,
+      "rss_mb": 60.883,
+      "seed": 303,
+      "solver": "noop_identity_floor",
+      "tracemalloc_peak_kb": 89.91,
+      "unseen_overall": {
+        "abstention_rate": 0.0,
+        "intermediate_step_accuracy": 0.038095,
+        "learning_exact_accuracy": 0.059524,
+        "learning_scored_tasks": 168,
+        "mean_collateral_rate": 0.0,
+        "raw_exact_accuracy_including_retrieval": 0.059524,
+        "retrieval_hits": 0,
+        "total_collateral_changes": 0,
+        "total_tasks": 168,
+        "wrong_non_abstain_rate": 0.940476
+      }
+    },
+    "shard_hdc_retrieval_no_itl": {
+      "bit_budget": {
+        "active_bundle_bits": 245760,
+        "compressed_model_mdl_bits": 249200,
+        "compressed_training_data_bits": 52960,
+        "compression_ratio_vs_raw": 0.353933,
+        "episode_store_bits": 277480,
+        "operator_library_bits": 0,
+        "raw_training_data_bits": 704088
+      },
+      "category": "shard_baseline",
+      "comparison_only": false,
+      "evaluator_only": false,
+      "failed_examples_sample": [
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_5 move relic_5 from workbench_5 to pedestal_5"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_00"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have selene_2 give chalice_2 over to tariq_2"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_01"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "selene_3 open casket_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_02"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have zara_1 lock the coffer_1"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_03"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_3 move lantern_3 from workbench_3 to vault_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_04"
+        }
+      ],
+      "fit_seconds": 0.021628,
+      "frozen_before_temporal": true,
+      "operator_recovery": {
+        "f1": 0.0,
+        "fn": 26,
+        "fp": 0,
+        "per_action": {
+          "give": {
+            "fn": 5,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "lock": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "move": {
+            "fn": 9,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "open": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          }
+        },
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0
+      },
+      "per_split": {
+        "canary_exact_memorization": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.041665,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 0,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 8,
+          "total_collateral_changes": 0,
+          "total_tasks": 8,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth2": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.054204,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.083333,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 30,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth4": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.100372,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.128881,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 43,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth6": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.238472,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.239167,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 75,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_guard_contrasts": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.030984,
+          "intermediate_step_accuracy": 0.3,
+          "learning_exact_accuracy": 0.3,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.034641,
+          "raw_exact_accuracy_including_retrieval": 0.3,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 12,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.7
+        },
+        "heldout_order_reversal": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.050369,
+          "intermediate_step_accuracy": 0.0625,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.089384,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 24,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_repeated_idempotent": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.040165,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.051471,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 14,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_role_swaps": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.023857,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.047794,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 13,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_temporal_frozen": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.203982,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.116074,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 40,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_unseen_names": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.029812,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.05,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 17,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        }
+      },
+      "predict_seconds": 0.813882,
+      "predictions_per_sec_single_core": 216.25,
+      "rss_mb": 60.891,
+      "seed": 303,
+      "solver": "shard_hdc_retrieval_no_itl",
+      "tracemalloc_peak_kb": 265.48,
+      "unseen_overall": {
+        "abstention_rate": 0.0,
+        "intermediate_step_accuracy": 0.019048,
+        "learning_exact_accuracy": 0.035714,
+        "learning_scored_tasks": 168,
+        "mean_collateral_rate": 0.095597,
+        "raw_exact_accuracy_including_retrieval": 0.035714,
+        "retrieval_hits": 0,
+        "total_collateral_changes": 268,
+        "total_tasks": 168,
+        "wrong_non_abstain_rate": 0.964286
+      }
+    },
+    "small_cpu_neural_reference": {
+      "bit_budget": {
+        "active_bundle_bits": 19744,
+        "compressed_model_mdl_bits": 23040,
+        "compressed_training_data_bits": 52960,
+        "compression_ratio_vs_raw": 0.032723,
+        "episode_store_bits": 26120,
+        "operator_library_bits": 0,
+        "raw_training_data_bits": 704088
+      },
+      "category": "comparison_only_neural",
+      "comparison_only": true,
+      "evaluator_only": false,
+      "failed_examples_sample": [
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_5 move relic_5 from workbench_5 to pedestal_5"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_00"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have selene_2 give chalice_2 over to tariq_2"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_01"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "selene_3 open casket_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_02"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have zara_1 lock the coffer_1"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_03"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 0,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_3 move lantern_3 from workbench_3 to vault_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_04"
+        }
+      ],
+      "fit_seconds": 3.029472,
+      "frozen_before_temporal": true,
+      "operator_recovery": {
+        "f1": 0.0,
+        "fn": 26,
+        "fp": 0,
+        "per_action": {
+          "give": {
+            "fn": 5,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "lock": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "move": {
+            "fn": 9,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "open": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          }
+        },
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0
+      },
+      "per_split": {
+        "canary_exact_memorization": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.011949,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 0,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 0,
+          "total_tasks": 8,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth2": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.040944,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.044444,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 16,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth4": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.072299,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.077002,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 26,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth6": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.109537,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.121667,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 38,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_guard_contrasts": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.024733,
+          "intermediate_step_accuracy": 0.35,
+          "learning_exact_accuracy": 0.35,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.014216,
+          "raw_exact_accuracy_including_retrieval": 0.35,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 5,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.65
+        },
+        "heldout_order_reversal": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.032228,
+          "intermediate_step_accuracy": 0.125,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.026654,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 7,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_repeated_idempotent": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.036134,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.044118,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 12,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_role_swaps": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.019741,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.047794,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 13,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_temporal_frozen": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.062493,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.088297,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 30,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_unseen_names": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.025699,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.035294,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 12,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        }
+      },
+      "predict_seconds": 0.435757,
+      "predictions_per_sec_single_core": 403.89,
+      "rss_mb": 61.047,
+      "seed": 303,
+      "solver": "small_cpu_neural_reference",
+      "tracemalloc_peak_kb": 121.99,
+      "unseen_overall": {
+        "abstention_rate": 0.0,
+        "intermediate_step_accuracy": 0.02619,
+        "learning_exact_accuracy": 0.041667,
+        "learning_scored_tasks": 168,
+        "mean_collateral_rate": 0.05664,
+        "raw_exact_accuracy_including_retrieval": 0.041667,
+        "retrieval_hits": 0,
+        "total_collateral_changes": 159,
+        "total_tasks": 168,
+        "wrong_non_abstain_rate": 0.958333
+      }
+    },
+    "structural_knn": {
+      "bit_budget": {
+        "active_bundle_bits": 0,
+        "compressed_model_mdl_bits": 30360,
+        "compressed_training_data_bits": 52960,
+        "compression_ratio_vs_raw": 0.04312,
+        "episode_store_bits": 243048,
+        "operator_library_bits": 0,
+        "raw_training_data_bits": 704088
+      },
+      "category": "memory_baseline",
+      "comparison_only": false,
+      "evaluator_only": false,
+      "failed_examples_sample": [
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_5 move relic_5 from workbench_5 to pedestal_5"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_00"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have selene_2 give chalice_2 over to tariq_2"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_01"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "selene_3 open casket_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_02"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "Have zara_1 lock the coffer_1"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_03"
+        },
+        {
+          "abstained": false,
+          "collateral_changes": 1,
+          "depth": 1,
+          "gold_block_reasons": [
+            "applied"
+          ],
+          "gold_step_applied": [
+            true
+          ],
+          "instructions": [
+            "tariq_3 move lantern_3 from workbench_3 to vault_3"
+          ],
+          "split_id": "heldout_unseen_names",
+          "task_id": "unseen_names_s303_04"
+        }
+      ],
+      "fit_seconds": 0.014684,
+      "frozen_before_temporal": true,
+      "operator_recovery": {
+        "f1": 0.0,
+        "fn": 26,
+        "fp": 0,
+        "per_action": {
+          "give": {
+            "fn": 5,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "lock": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "move": {
+            "fn": 9,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "open": {
+            "fn": 6,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          }
+        },
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0
+      },
+      "per_split": {
+        "canary_exact_memorization": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.011717,
+          "intermediate_step_accuracy": 1.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 0,
+          "mean_collateral_rate": 0.0,
+          "raw_exact_accuracy_including_retrieval": 1.0,
+          "retrieval_hits": 8,
+          "total_collateral_changes": 0,
+          "total_tasks": 8,
+          "wrong_non_abstain_rate": 0.0
+        },
+        "heldout_comp_depth2": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.047894,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.097222,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 35,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth4": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.07166,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.134395,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 45,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_comp_depth6": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.108386,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.25125,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 79,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_guard_contrasts": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.024546,
+          "intermediate_step_accuracy": 0.25,
+          "learning_exact_accuracy": 0.25,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.043301,
+          "raw_exact_accuracy_including_retrieval": 0.25,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 15,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 0.75
+        },
+        "heldout_order_reversal": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.031335,
+          "intermediate_step_accuracy": 0.0625,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.089614,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 24,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_repeated_idempotent": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.031631,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.058824,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 16,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_role_swaps": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.019574,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 16,
+          "mean_collateral_rate": 0.058824,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 16,
+          "total_tasks": 16,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_temporal_frozen": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.058875,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.119179,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 41,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        },
+        "heldout_unseen_names": {
+          "abstention_rate": 0.0,
+          "elapsed_seconds": 0.029389,
+          "intermediate_step_accuracy": 0.0,
+          "learning_exact_accuracy": 0.0,
+          "learning_scored_tasks": 20,
+          "mean_collateral_rate": 0.058824,
+          "raw_exact_accuracy_including_retrieval": 0.0,
+          "retrieval_hits": 0,
+          "total_collateral_changes": 20,
+          "total_tasks": 20,
+          "wrong_non_abstain_rate": 1.0
+        }
+      },
+      "predict_seconds": 0.435006,
+      "predictions_per_sec_single_core": 404.59,
+      "rss_mb": 60.891,
+      "seed": 303,
+      "solver": "structural_knn",
+      "tracemalloc_peak_kb": 233.17,
+      "unseen_overall": {
+        "abstention_rate": 0.0,
+        "intermediate_step_accuracy": 0.016667,
+        "learning_exact_accuracy": 0.029762,
+        "learning_scored_tasks": 168,
+        "mean_collateral_rate": 0.103569,
+        "raw_exact_accuracy_including_retrieval": 0.029762,
+        "retrieval_hits": 0,
+        "total_collateral_changes": 291,
+        "total_tasks": 168,
+        "wrong_non_abstain_rate": 0.970238
+      }
+    }
+  }
+}
