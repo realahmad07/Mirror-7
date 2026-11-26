@@ -594,6 +594,7 @@ def test_s4_committed_manifests_saved_5seed_gate_and_fresh_isolated_run(tmp_path
         "task_a_shard_cpu_speedup_ge_2x_vs_unguided_and_random",
         "task_b_shard_cpu_speedup_ge_2x_vs_bfs_and_random",
         "shard_keep_decision_confirmed",
+        "cpu_budget_within_limit",
     }
     for check_name, ok_val in fresh["s4_gate"]["checks"].items():
         if check_name not in df1_timing_keys:

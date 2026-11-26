@@ -1,0 +1,114 @@
+{
+  "ablation_configs": {
+    "ablation_1_dream_refutation": {
+      "min_ablation_support": 2,
+      "min_guard_support": 2,
+      "ood_splits": [
+        "heldout_guard_contrasts",
+        "heldout_inaccessible_source_contrast",
+        "heldout_order_reversal",
+        "heldout_comp_depth4",
+        "heldout_temporal_frozen"
+      ],
+      "probe_budget": 260
+    },
+    "ablation_2_interventional_blame": {
+      "ambiguity_multi_fault_check": true,
+      "trajectory_splits": [
+        "heldout_comp_depth2",
+        "heldout_comp_depth4",
+        "heldout_comp_depth6",
+        "heldout_temporal_frozen"
+      ]
+    },
+    "ablation_3_active_max_disagreement": {
+      "ood_splits": [
+        "heldout_unseen_names",
+        "heldout_guard_contrasts",
+        "heldout_inaccessible_source_contrast",
+        "heldout_role_swaps",
+        "heldout_repeated_idempotent"
+      ],
+      "random_pool_size": 96,
+      "target_accuracy": 0.98
+    },
+    "ablation_4_consolidation_and_cross_domain": {
+      "domain2_library_sha256": "dfe702c79c4fe2d7e4d4ea4c040145dff90d2b7ef1c667575bdea6d8a07fdd6a",
+      "domain2_version": "s5-arcane-domain2-v1.0",
+      "domain3_manifests": {
+        "101": {
+          "ood_sha256": "b02d73a00c193b740ddf7c96670d49e8c9f6913eb9ecf6897007bfd56dce02b2",
+          "ood_task_count": 44,
+          "train_episode_count": 4,
+          "train_sha256": "a8c48e6d03f61e9576f6a62ffd7629da2c90ed74aced93f1a3d4fd3a6e811902"
+        },
+        "202": {
+          "ood_sha256": "50819926d650ba866890de1c15ba7fc59026eee5c7ef110ea7c212463dec86c2",
+          "ood_task_count": 44,
+          "train_episode_count": 4,
+          "train_sha256": "14cabc9a652c1d223c3898bc412a40882be163a542934d317e9e6438f25c4d6c"
+        },
+        "303": {
+          "ood_sha256": "97abe252bf01bf98aeca5d2c2171d2258d2377574bd14678f6a7fc47ce5e7a2c",
+          "ood_task_count": 44,
+          "train_episode_count": 4,
+          "train_sha256": "574a0d268056cc631da8b874db3bb838d6e8493583fa2d62fceb02565d44dacd"
+        },
+        "404": {
+          "ood_sha256": "c4facb87f93c14c49a95849c89be0c803f10d335ced70649f6935661d299e54f",
+          "ood_task_count": 44,
+          "train_episode_count": 4,
+          "train_sha256": "9fc865b61eede9ef25749ec7b8412ead797adfcb3bea3d371168a05606417cab"
+        },
+        "505": {
+          "ood_sha256": "51bd381baf8e1bd23d322be0bd6e021097956b4918b51f035442da8a9bb03e37",
+          "ood_task_count": 44,
+          "train_episode_count": 4,
+          "train_sha256": "440e653d7b9594d2862f6fa94ad3039b9e975a539d52d4aea93935062788e462"
+        }
+      },
+      "domain3_version": "s5-logistics-domain3-v1.0"
+    }
+  },
+  "demos_per_action": 6,
+  "generator_version": "s0-relworld-v1.0",
+  "kill_test_thresholds": {
+    "ablation1_collateral_ci95_high_max": 0.02,
+    "ablation1_dream_ood_acc_ci95_low_min": 0.95,
+    "ablation1_dream_self_certified_must_be": 0,
+    "ablation1_dream_vs_plain_gain_ci95_low_min": 0.15,
+    "ablation2_ambiguity_honesty_all_seeds": true,
+    "ablation2_blame_top1_ci95_low_min": 0.9,
+    "ablation2_blame_vs_random_gain_ci95_low_min": 0.4,
+    "ablation2_blame_vs_uniform_gain_ci95_low_min": 0.4,
+    "ablation3_active_final_acc_ci95_low_min": 0.98,
+    "ablation3_active_query_reduction_ci95_low_min": 0.35,
+    "ablation4_cross_domain_bits_saved_both_positive": true,
+    "ablation4_domain3_transfer_acc_ci95_low_min": 0.9,
+    "ablation4_domain3_transfer_gain_ci95_low_min": 0.2,
+    "ablation4_intra_regression_retention_must_be": 1.0,
+    "cpu_budget_seconds_per_seed_max": 30.0
+  },
+  "mdl_hyperparameters": {
+    "beta": 10000.0,
+    "gamma": 20000.0,
+    "objective_formula": "J = L(library) + L(examples | library) + beta * verified_failures + gamma * collateral_changes"
+  },
+  "operator_card_schema_version": "s2-operator-card-v1",
+  "rdc_blame_schema_version": "s5-rdc-blame-v1",
+  "rdc_consolidation_schema_version": "s5-rdc-consolidation-v1",
+  "rdc_mdl_schema_version": "s5-rdc-mdl-v1",
+  "rdc_refuter_schema_version": "s5-rdc-refuter-v1",
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s5_experiments",
+  "schema_version": "s5-preregistration-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S5",
+  "temporal_generator_version": "s0-temporal-v2.0",
+  "title": "Stage S5 \u2014 RDC Refutation, Interventional Blame, Active Querying & Cross-Domain Consolidation"
+}

@@ -346,6 +346,38 @@ class OperatorVersionStore:
         )
         return restored
 
+    def retire_active(
+        self,
+        action_id: str,
+        *,
+        reason: str = "",
+        created_at: str = DEFAULT_VERSION_TIMESTAMP,
+    ) -> OperatorVersionRecord:
+        """Retire the currently promoted version for ``action_id`` without deleting it (reversible via rollback)."""
+        self._require_mutable()
+        hist = self._histories.get(action_id)
+        if not hist:
+            raise VersionStoreError(f"Unknown action_id {action_id!r} in OperatorVersionStore")
+        for idx, rec in enumerate(hist):
+            if rec.status == "promoted":
+                retired_rec = rec.with_lifecycle_state(
+                    "retired",
+                    extra_evidence={"retired_reason": reason} if reason else None,
+                )
+                hist[idx] = retired_rec
+                self._log_event(
+                    event_kind="retire_consolidated",
+                    action_id=action_id,
+                    version=rec.card.version,
+                    from_state="promoted",
+                    to_state="retired",
+                    card_fingerprint=rec.card.fingerprint(),
+                    timestamp=created_at,
+                    reason=reason or "retired_without_deletion",
+                )
+                return retired_rec
+        raise VersionStoreError(f"No active promoted version to retire for action_id {action_id!r}")
+
     def get_active(self, action_id: str) -> OperatorVersionRecord | None:
         """Return the currently promoted OperatorVersionRecord for ``action_id`` (or None)."""
         for rec in self._histories.get(action_id, ()):
