@@ -1,0 +1,375 @@
+{
+  "bit_budget": {
+    "active_bundle_bits": 509952,
+    "compressed_model_mdl_bits": 503624,
+    "compressed_operator_mdl_bits": 12104,
+    "compressed_training_data_bits": 51944,
+    "compression_ratio_vs_raw": 0.714798,
+    "episode_store_bits": 333824,
+    "operator_library_bits": 199528,
+    "raw_training_data_bits": 704568
+  },
+  "episodic_index_telemetry": {
+    "bucket_candidates_scanned": 1950,
+    "frozen": true,
+    "index_bits": 333824,
+    "memory_accesses": 2291,
+    "num_episodes": 16,
+    "queries": 175,
+    "schema_version": "s4-shard-lsh-index-v1"
+  },
+  "fit_seconds": 0.13991,
+  "indexes_frozen_block_insertions": true,
+  "operator_index_telemetry": {
+    "bucket_candidates_scanned": 2783,
+    "frozen": true,
+    "index_bits": 509952,
+    "memory_accesses": 2783,
+    "num_operators": 48,
+    "queries": 119,
+    "schema_version": "s4-shard-lsh-index-v1"
+  },
+  "operator_library_size": 48,
+  "seed": 202,
+  "task_a": {
+    "comparisons": {
+      "cpu_speedup_vs_random": 38.097,
+      "cpu_speedup_vs_unguided": 36.6453,
+      "proposal_factor_vs_random": 246.1429,
+      "proposal_factor_vs_unguided": 214.8036,
+      "proposal_reduction_vs_random": 0.995937,
+      "proposal_reduction_vs_unguided": 0.995345
+    },
+    "methods": {
+      "random_proposer": {
+        "elapsed_seconds": 1.093003,
+        "exact_accuracy": 1.0,
+        "mean_collateral_rate": 0.0,
+        "mean_proposals": 246.1429,
+        "memory_accesses": 0,
+        "per_split": {
+          "heldout_role_swaps": {
+            "elapsed_seconds": 0.308254,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 247.125,
+            "memory_accesses": 0,
+            "total_tasks": 16
+          },
+          "heldout_temporal_frozen": {
+            "elapsed_seconds": 0.347494,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 220.2,
+            "memory_accesses": 0,
+            "total_tasks": 20
+          },
+          "heldout_unseen_names": {
+            "elapsed_seconds": 0.437256,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 271.3,
+            "memory_accesses": 0,
+            "total_tasks": 20
+          }
+        },
+        "total_proposals": 13784,
+        "total_tasks": 56
+      },
+      "shard_guided_proposer": {
+        "elapsed_seconds": 0.02869,
+        "exact_accuracy": 1.0,
+        "mean_collateral_rate": 0.0,
+        "mean_proposals": 1.0,
+        "memory_accesses": 1805,
+        "per_split": {
+          "heldout_role_swaps": {
+            "elapsed_seconds": 0.007972,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 1.0,
+            "memory_accesses": 504,
+            "total_tasks": 16
+          },
+          "heldout_temporal_frozen": {
+            "elapsed_seconds": 0.011162,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 1.0,
+            "memory_accesses": 628,
+            "total_tasks": 20
+          },
+          "heldout_unseen_names": {
+            "elapsed_seconds": 0.009556,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 1.0,
+            "memory_accesses": 673,
+            "total_tasks": 20
+          }
+        },
+        "total_proposals": 56,
+        "total_tasks": 56
+      },
+      "shard_retrieval_only_no_itl": {
+        "elapsed_seconds": 0.011846,
+        "exact_accuracy": 0.0,
+        "mean_collateral_rate": 0.025651,
+        "mean_proposals": 1.0,
+        "memory_accesses": 896,
+        "per_split": {
+          "heldout_role_swaps": {
+            "elapsed_seconds": 0.003129,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.026316,
+            "mean_proposals": 1.0,
+            "memory_accesses": 256,
+            "total_tasks": 16
+          },
+          "heldout_temporal_frozen": {
+            "elapsed_seconds": 0.004873,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.0241,
+            "mean_proposals": 1.0,
+            "memory_accesses": 320,
+            "total_tasks": 20
+          },
+          "heldout_unseen_names": {
+            "elapsed_seconds": 0.003844,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.026671,
+            "mean_proposals": 1.0,
+            "memory_accesses": 320,
+            "total_tasks": 20
+          }
+        },
+        "total_proposals": 56,
+        "total_tasks": 56
+      },
+      "unguided_exhaustive_proposer": {
+        "elapsed_seconds": 1.051355,
+        "exact_accuracy": 1.0,
+        "mean_collateral_rate": 0.0,
+        "mean_proposals": 214.8036,
+        "memory_accesses": 0,
+        "per_split": {
+          "heldout_role_swaps": {
+            "elapsed_seconds": 0.274495,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 181.25,
+            "memory_accesses": 0,
+            "total_tasks": 16
+          },
+          "heldout_temporal_frozen": {
+            "elapsed_seconds": 0.484207,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 253.35,
+            "memory_accesses": 0,
+            "total_tasks": 20
+          },
+          "heldout_unseen_names": {
+            "elapsed_seconds": 0.292653,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_proposals": 203.1,
+            "memory_accesses": 0,
+            "total_tasks": 20
+          }
+        },
+        "total_proposals": 12029,
+        "total_tasks": 56
+      }
+    }
+  },
+  "task_b": {
+    "comparisons": {
+      "cpu_speedup_vs_bfs": 17.2178,
+      "cpu_speedup_vs_random_walk": 18.6031,
+      "proposal_factor_vs_bfs": 26.3736,
+      "proposal_factor_vs_random_walk": 26.3736,
+      "proposal_reduction_vs_bfs": 0.962083,
+      "proposal_reduction_vs_random_walk": 0.962083
+    },
+    "methods": {
+      "random_walk_planner": {
+        "elapsed_seconds": 2.652239,
+        "exact_accuracy": 0.0,
+        "mean_collateral_rate": 0.0,
+        "mean_nodes_expanded": 600.0,
+        "mean_proposals": 600.0,
+        "memory_accesses": 0,
+        "per_split": {
+          "heldout_comp_depth2": {
+            "elapsed_seconds": 0.844056,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 600.0,
+            "mean_proposals": 600.0,
+            "memory_accesses": 0,
+            "total_tasks": 8
+          },
+          "heldout_comp_depth4": {
+            "elapsed_seconds": 0.902492,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 600.0,
+            "mean_proposals": 600.0,
+            "memory_accesses": 0,
+            "total_tasks": 8
+          },
+          "heldout_temporal_frozen": {
+            "elapsed_seconds": 0.905691,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 600.0,
+            "mean_proposals": 600.0,
+            "memory_accesses": 0,
+            "total_tasks": 8
+          }
+        },
+        "total_proposals": 14400,
+        "total_tasks": 24
+      },
+      "shard_guided_planner": {
+        "elapsed_seconds": 0.14257,
+        "exact_accuracy": 1.0,
+        "mean_collateral_rate": 0.0,
+        "mean_nodes_expanded": 2.625,
+        "mean_proposals": 22.75,
+        "memory_accesses": 2373,
+        "per_split": {
+          "heldout_comp_depth2": {
+            "elapsed_seconds": 0.028188,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 2.0,
+            "mean_proposals": 13.0,
+            "memory_accesses": 574,
+            "total_tasks": 8
+          },
+          "heldout_comp_depth4": {
+            "elapsed_seconds": 0.067863,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 3.25,
+            "mean_proposals": 32.5,
+            "memory_accesses": 1008,
+            "total_tasks": 8
+          },
+          "heldout_temporal_frozen": {
+            "elapsed_seconds": 0.046519,
+            "exact_accuracy": 1.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 2.625,
+            "mean_proposals": 22.75,
+            "memory_accesses": 791,
+            "total_tasks": 8
+          }
+        },
+        "total_proposals": 546,
+        "total_tasks": 24
+      },
+      "unguided_bfs_planner": {
+        "elapsed_seconds": 2.454746,
+        "exact_accuracy": 0.0,
+        "mean_collateral_rate": 0.0,
+        "mean_nodes_expanded": 2.0,
+        "mean_proposals": 600.0,
+        "memory_accesses": 0,
+        "per_split": {
+          "heldout_comp_depth2": {
+            "elapsed_seconds": 0.75324,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 2.0,
+            "mean_proposals": 600.0,
+            "memory_accesses": 0,
+            "total_tasks": 8
+          },
+          "heldout_comp_depth4": {
+            "elapsed_seconds": 0.816286,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 2.0,
+            "mean_proposals": 600.0,
+            "memory_accesses": 0,
+            "total_tasks": 8
+          },
+          "heldout_temporal_frozen": {
+            "elapsed_seconds": 0.885219,
+            "exact_accuracy": 0.0,
+            "mean_collateral_rate": 0.0,
+            "mean_nodes_expanded": 2.0,
+            "mean_proposals": 600.0,
+            "memory_accesses": 0,
+            "total_tasks": 8
+          }
+        },
+        "total_proposals": 14400,
+        "total_tasks": 24
+      }
+    }
+  },
+  "task_c_bind_depth": {
+    "elapsed_seconds": 0.113004,
+    "per_depth": {
+      "depth_1": {
+        "codebook_size": 64,
+        "depth": 1,
+        "naive_mean_sim": 10240.0,
+        "naive_superposition_accuracy": 1.0,
+        "permuted_cleanup_accuracy": 1.0,
+        "permuted_mean_sim": 10240.0,
+        "trials": 25
+      },
+      "depth_2": {
+        "codebook_size": 64,
+        "depth": 2,
+        "naive_mean_sim": 5378.64,
+        "naive_superposition_accuracy": 0.52,
+        "permuted_cleanup_accuracy": 1.0,
+        "permuted_mean_sim": 5132.0,
+        "trials": 25
+      },
+      "depth_3": {
+        "codebook_size": 64,
+        "depth": 3,
+        "naive_mean_sim": 5211.44,
+        "naive_superposition_accuracy": 0.333333,
+        "permuted_cleanup_accuracy": 1.0,
+        "permuted_mean_sim": 5108.4,
+        "trials": 25
+      },
+      "depth_4": {
+        "codebook_size": 64,
+        "depth": 4,
+        "naive_mean_sim": 3949.68,
+        "naive_superposition_accuracy": 0.25,
+        "permuted_cleanup_accuracy": 1.0,
+        "permuted_mean_sim": 3837.6,
+        "trials": 25
+      },
+      "depth_5": {
+        "codebook_size": 64,
+        "depth": 5,
+        "naive_mean_sim": 4112.48,
+        "naive_superposition_accuracy": 0.208,
+        "permuted_cleanup_accuracy": 1.0,
+        "permuted_mean_sim": 3843.95,
+        "trials": 25
+      },
+      "depth_6": {
+        "codebook_size": 64,
+        "depth": 6,
+        "naive_mean_sim": 3961.52,
+        "naive_superposition_accuracy": 0.206667,
+        "permuted_cleanup_accuracy": 1.0,
+        "permuted_mean_sim": 3191.83,
+        "trials": 25
+      }
+    }
+  },
+  "total_seed_seconds": 7.800999
+}
