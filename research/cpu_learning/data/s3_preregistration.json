@@ -1,0 +1,70 @@
+{
+  "canary_splits": [
+    "canary_exact_memorization"
+  ],
+  "contrast_audit_schema_version": "s3-contrast-audit-v1",
+  "cpu_budget_seconds_per_seed_max": 30.0,
+  "demos_per_action": 6,
+  "inaccessible_source_split_sha256_by_seed": {
+    "101": "52669afb4145196fb0400af57a44213f32214c65a3f804807aa15f6821efa0e0",
+    "202": "2891eaaaae7df11a834f3e52b85458610e8e901eb6fb04ca381ed309a695171f",
+    "303": "09242392168781756ef1d07af3a5f2c18266e7f0bf59a1451d2790dd524fda80",
+    "404": "99b7e2f8f7eeb6a7eb2e8e44aa930553e84f272c5e41d35242f89e370d070700",
+    "505": "7df6eb3ed4ac832e66669f55a0cb59383edc78165dd555a848a3e728a21bb31f"
+  },
+  "inaccessible_source_tasks_per_seed": 16,
+  "operator_card_schema_version": "s2-operator-card-v1",
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s3_experiments",
+  "s0_generator_version": "s0-relworld-v1.0",
+  "s0_temporal_generator_version": "s0-temporal-v2.0",
+  "s3_acceptance_gates_lower_ci95_or_strict": {
+    "all_solvers_frozen_before_temporal": true,
+    "ast_strict_learner_isolation_and_zero_hardcoded_literals": true,
+    "cpu_budget_within_limit": true,
+    "demos_per_action_max": 8,
+    "five_distinct_fixed_seeds_present": true,
+    "s0_s1_s2_committed_manifests_intact": true,
+    "s3_beats_baselines_and_mdl_compresses": true,
+    "s3_beats_s2_passive_on_inaccessible_source_margin_min": 0.8,
+    "s3_collateral_rate_ci95_high_max": 0.02,
+    "s3_contrast_audit_probes_all_passed_all_seeds": true,
+    "s3_depth1_and_depth2_exact_and_intermediate_ci95_low_min": 0.95,
+    "s3_depth4_exact_and_intermediate_ci95_low_min": 0.95,
+    "s3_depth6_exact_and_intermediate_ci95_low_min": 0.9,
+    "s3_guard_contrasts_exact_and_intermediate_ci95_low_min": 0.95,
+    "s3_one_shot_guard_stays_shadow_all_seeds": true,
+    "s3_operator_recovery_precision_ci95_low_min": 0.99,
+    "s3_operator_recovery_recall_ci95_low_min": 0.99,
+    "s3_order_reversal_exact_and_intermediate_ci95_low_min": 0.95,
+    "s3_precision_strictly_beats_s2_passive": true,
+    "s3_repeated_idempotent_exact_and_intermediate_ci95_low_min": 0.95,
+    "s3_role_swaps_exact_and_intermediate_ci95_low_min": 0.95,
+    "s3_temporal_frozen_exact_and_intermediate_ci95_low_min": 0.95,
+    "s3_underconstrained_repair_ci95_low_min": 0.95,
+    "s3_version_store_promote_rollback_non_deletion_all_seeds": true,
+    "s3_zero_post_freeze_env_queries_and_zero_test_retrieval": true
+  },
+  "s3_inaccessible_source_generator_version": "s3-inacc-src-v1.0",
+  "schema_version": "s3-preregistration-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S3",
+  "unseen_eval_splits": [
+    "heldout_unseen_names",
+    "heldout_role_swaps",
+    "heldout_guard_contrasts",
+    "heldout_repeated_idempotent",
+    "heldout_order_reversal",
+    "heldout_comp_depth2",
+    "heldout_comp_depth4",
+    "heldout_comp_depth6",
+    "heldout_temporal_frozen",
+    "heldout_inaccessible_source_contrast"
+  ],
+  "version_store_schema_version": "s3-operator-version-store-v1"
+}

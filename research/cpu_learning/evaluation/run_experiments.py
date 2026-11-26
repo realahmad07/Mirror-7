@@ -55,7 +55,16 @@ from research.cpu_learning.simulator.generators import (
     generate_heldout_suite,
     generate_training_episodes,
 )
-from research.cpu_learning.simulator.hidden_actions import HIDDEN_ACTION_NAMES
+from research.cpu_learning.simulator.hidden_actions import (
+    HIDDEN_ACTION_NAMES,
+    apply_hidden_action,
+)
+from research.cpu_learning.simulator.state_graph import (
+    ActionInvocation,
+    ObservationMask,
+    SparseDelta,
+    StateGraph,
+)
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PACKAGE_ROOT / "data"
@@ -64,6 +73,48 @@ RAW_RUNS_DIR = REPORTS_DIR / "raw_runs"
 
 REPRO_COMMAND = "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_experiments"
 CPU_BUDGET_SECONDS_PER_SEED_MAX: float = 30.0
+
+
+class BlackBoxSimulatorEnvironment:
+    """Public black-box transition adapter exposing strictly (after_state, sparse_delta).
+
+    Never exposes hidden operator schemas, edit scripts, or block-reason strings to
+    learners; enforces optional freezing and tracks exact step query counts for audits.
+    """
+
+    def __init__(self) -> None:
+        self._query_count: int = 0
+        self._frozen: bool = False
+
+    @property
+    def query_count(self) -> int:
+        return self._query_count
+
+    @property
+    def is_frozen(self) -> bool:
+        return self._frozen
+
+    def freeze(self) -> None:
+        self._frozen = True
+
+    def step(
+        self,
+        state: StateGraph,
+        action: ActionInvocation,
+        mask: ObservationMask | None = None,
+    ) -> tuple[StateGraph, SparseDelta]:
+        if self._frozen:
+            raise RuntimeError(
+                "BlackBoxSimulatorEnvironment is frozen; no further step queries are permitted"
+            )
+        self._query_count += 1
+        res = apply_hidden_action(state, action, mask=mask)
+        return (res.after_state, res.delta)
+
+
+def make_blackbox_environment() -> BlackBoxSimulatorEnvironment:
+    """Create a fresh black-box transition environment adapter for Stage S3+ probing."""
+    return BlackBoxSimulatorEnvironment()
 
 
 def _get_rss_mb() -> float | None:
