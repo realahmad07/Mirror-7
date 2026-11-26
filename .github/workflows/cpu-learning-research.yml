@@ -1,4 +1,4 @@
-name: Mirror 7 | CPU-Native Learning Research (S0-S5)
+name: Mirror 7 | CPU-Native Learning Research (S0-S6)
 
 on:
   push:
@@ -13,6 +13,7 @@ on:
       - "docs/42-cpu-native-learning-research-s3-contrasts-and-versioning.md"
       - "docs/43-cpu-native-learning-research-s4-shard-proposals.md"
       - "docs/44-cpu-native-learning-research-s5-rdc-refutation-and-consolidation.md"
+      - "docs/45-cpu-native-learning-research-s6-math-list-code-transfer.md"
       - ".github/workflows/cpu-learning-research.yml"
   pull_request:
     paths:
@@ -23,6 +24,7 @@ on:
       - "docs/42-cpu-native-learning-research-s3-contrasts-and-versioning.md"
       - "docs/43-cpu-native-learning-research-s4-shard-proposals.md"
       - "docs/44-cpu-native-learning-research-s5-rdc-refutation-and-consolidation.md"
+      - "docs/45-cpu-native-learning-research-s6-math-list-code-transfer.md"
       - ".github/workflows/cpu-learning-research.yml"
   workflow_dispatch: {}
 
@@ -53,10 +55,10 @@ jobs:
       - name: Compile research package
         run: python -m compileall -q research/cpu_learning
 
-      - name: Run S0, S1, S2, S3, S4 & S5 unit, isolation, domain-agnosticism, and canary tests
+      - name: Run S0, S1, S2, S3, S4, S5 & S6 unit, isolation, domain-agnosticism, and canary tests
         run: python -m pytest -v research/cpu_learning/tests
 
-      - name: Verify committed S0, S1, S2, S3, S4 & S5 pre-registered manifests match generators bit-for-bit
+      - name: Verify committed S0, S1, S2, S3, S4, S5 & S6 pre-registered manifests match generators bit-for-bit
         run: |
           python -m research.cpu_learning.evaluation.run_experiments --verify-manifests
           python -m research.cpu_learning.evaluation.run_s1_experiments --verify-manifests
@@ -64,8 +66,9 @@ jobs:
           python -m research.cpu_learning.evaluation.run_s3_experiments --verify-manifests
           python -m research.cpu_learning.evaluation.run_s4_experiments --verify-manifests
           python -m research.cpu_learning.evaluation.run_s5_experiments --verify-manifests
+          python -m research.cpu_learning.evaluation.run_s6_experiments --verify-manifests
 
-      - name: Verify reproducible 5-seed S0, S1, S2, S3, S4 & S5 benchmark gates
+      - name: Verify reproducible 5-seed S0, S1, S2, S3, S4, S5 & S6 benchmark gates
         run: |
           python -m research.cpu_learning.evaluation.run_experiments
           python -m research.cpu_learning.evaluation.run_s1_experiments
@@ -73,3 +76,4 @@ jobs:
           python -m research.cpu_learning.evaluation.run_s3_experiments
           python -m research.cpu_learning.evaluation.run_s4_experiments
           python -m research.cpu_learning.evaluation.run_s5_experiments
+          python -m research.cpu_learning.evaluation.run_s6_experiments

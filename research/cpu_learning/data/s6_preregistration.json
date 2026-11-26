@@ -1,0 +1,103 @@
+{
+  "acceptance_thresholds": {
+    "ast_refactoring_ci95_low_min": 0.95,
+    "collateral_corruptions_max": 0,
+    "cpu_budget_seconds_per_seed_max": 30.0,
+    "humaneval_micro_pdf_gate_min": 0.5,
+    "humaneval_micro_target_ci95_low_min": 0.65,
+    "humaneval_shard_eval_reduction_ci95_low_min": 0.35,
+    "list_compositions_ci95_low_min": 0.95,
+    "list_unseen_lengths_ci95_low_min": 0.95,
+    "modular_addition_canary_ci95_low_min": 0.99,
+    "multidigit_addition_ci95_low_min": 0.98,
+    "novel_radix_base16_ci95_low_min": 0.98,
+    "novel_radix_base7_ci95_low_min": 0.98
+  },
+  "code_domain_schema_version": "s6-code-domain-v1",
+  "domain_configs": {
+    "code_domain": {
+      "ast_operators": [
+        "fold_identity_arithmetic",
+        "rename_parameter",
+        "swap_if_negated_guard",
+        "wrap_nonnegative_clamp"
+      ],
+      "humaneval_candidate_budget": 48,
+      "humaneval_hidden_tests_per_task": 12,
+      "humaneval_manifests_by_seed": {
+        "101": {
+          "suite_sha256": "dc8c7aacd5956ffda4b9c218c2c14aa548c44c56ddbaf0b46214ce92cc32eecf",
+          "task_count": 20
+        },
+        "202": {
+          "suite_sha256": "a2e70cb0ddbcc71bb092f952d5be52a0dc2e7d23817367fe9ffe873f01f51eb1",
+          "task_count": 20
+        },
+        "303": {
+          "suite_sha256": "949a8cbb13aee2e8808014bfdd78a56d310fadfc664ff5eb156f6098f021af58",
+          "task_count": 20
+        },
+        "404": {
+          "suite_sha256": "118907fdc08292ac20625ca481d5e4401bd40f661a9795c9dba2124d4fef53c6",
+          "task_count": 20
+        },
+        "505": {
+          "suite_sha256": "ea9808c68b44727dbde81cb3689bd7fa2266a4667bd34ab98dcefec88a32192a",
+          "task_count": 20
+        }
+      },
+      "humaneval_micro_task_count": 20,
+      "humaneval_public_demos_per_task": 4,
+      "prior_external_mbpp_reference": {
+        "benchmark": "MBPP_20_external_prior",
+        "pass_rate": 0.0,
+        "solved": 0,
+        "total": 20
+      }
+    },
+    "list_domain": {
+      "demos_per_op": 6,
+      "train_episode_sha256_by_seed": {
+        "101": "55f54cfba927f048dda0718e99b21b20306f5cf606c253aae0b8363158efb81a",
+        "202": "8c451e8eb37f272f980d8a5c96678453148c4c1903d053813334c2b82b28d870",
+        "303": "c4004699154a33245813b9618dc0631fc5117cc7d82bd62b22182eaa112bc884",
+        "404": "69a760f7b0c8c40cbd0550a3f952211fc2bd24b67e27402a1798ef884fb12a08",
+        "505": "eaabca8e54c7af156068fc39c70aa7e159ea6a5f5b8093afe4d90401da0bf9dd"
+      },
+      "train_max_length": 5,
+      "unseen_eval_lengths": [
+        8,
+        20
+      ]
+    },
+    "math_domain": {
+      "column_train_demos": 16,
+      "multidigit_train_demos": 0,
+      "novel_radices": [
+        7,
+        16
+      ],
+      "unseen_digit_lengths": [
+        3,
+        4,
+        6,
+        8
+      ]
+    }
+  },
+  "humaneval_micro_version": "s6-humaneval-micro-20-v1",
+  "list_domain_schema_version": "s6-list-domain-v1",
+  "math_domain_schema_version": "s6-math-domain-v1",
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s6_experiments",
+  "schema_version": "s6-preregistration-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S6",
+  "title": "Stage S6 \u2014 Mathematics, List & Code Transfer (SHARD + ITL + RDC Programmatic Operators)",
+  "transfer_inducer_schema_version": "s6-transfer-inducer-v1"
+}

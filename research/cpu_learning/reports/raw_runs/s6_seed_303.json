@@ -1,0 +1,3305 @@
+{
+  "bit_budget": {
+    "compressed_induced_library_bits": 12944,
+    "compressed_training_bits": 33776,
+    "compression_ratio_vs_compressed_train": 0.383231,
+    "compression_ratio_vs_raw": 0.034273,
+    "raw_training_bits": 377672,
+    "sum_per_card_compressed_bits": 35104
+  },
+  "code_domain": {
+    "ast_refactoring": {
+      "compile_valid_rate": 1.0,
+      "exact_verified_accuracy": 1.0,
+      "executable_cards": {
+        "fold_identity_arithmetic": {
+          "action_id": "fold_identity_arithmetic",
+          "card_id": "ast_card_fold_identity_arithmetic_v1",
+          "rule_count": 5,
+          "rules_repr": [
+            "(('AST', 'BinOp', (('left', ('$HOLE', '$H0')), ('op', ('AST', 'Add', ())), ('right', ('AST', 'Constant', (('value', ('LIT', 'int', 0)), ('kind', ('LIT', 'NoneType', None))))))), ('$HOLE', '$H0'))",
+            "(('AST', 'BinOp', (('left', ('AST', 'Constant', (('value', ('LIT', 'int', 0)), ('kind', ('LIT', 'NoneType', None))))), ('op', ('AST', 'Add', ())), ('right', ('$HOLE', '$H0')))), ('$HOLE', '$H0'))",
+            "(('AST', 'BinOp', (('left', ('$HOLE', '$H0')), ('op', ('AST', 'Sub', ())), ('right', ('AST', 'Constant', (('value', ('LIT', 'int', 0)), ('kind', ('LIT', 'NoneType', None))))))), ('$HOLE', '$H0'))",
+            "(('AST', 'BinOp', (('left', ('$HOLE', '$H0')), ('op', ('AST', 'Mult', ())), ('right', ('AST', 'Constant', (('value', ('LIT', 'int', 1)), ('kind', ('LIT', 'NoneType', None))))))), ('$HOLE', '$H0'))",
+            "(('AST', 'BinOp', (('left', ('AST', 'Constant', (('value', ('LIT', 'int', 1)), ('kind', ('LIT', 'NoneType', None))))), ('op', ('AST', 'Mult', ())), ('right', ('$HOLE', '$H0')))), ('$HOLE', '$H0'))"
+          ],
+          "single_pass": false,
+          "support_episodes": 6
+        },
+        "rename_parameter": {
+          "action_id": "rename_parameter",
+          "card_id": "ast_card_rename_parameter_v1",
+          "rule_count": 2,
+          "rules_repr": [
+            "(('AST', 'arg', (('arg', ('$PARAM', 'old_name')), ('annotation', ('LIT', 'NoneType', None)), ('type_comment', ('LIT', 'NoneType', None)))), ('AST', 'arg', (('arg', ('$PARAM', 'new_name')), ('annotation', ('LIT', 'NoneType', None)), ('type_comment', ('LIT', 'NoneType', None)))))",
+            "(('AST', 'Name', (('id', ('$PARAM', 'old_name')),)), ('AST', 'Name', (('id', ('$PARAM', 'new_name')),)))"
+          ],
+          "single_pass": false,
+          "support_episodes": 5
+        },
+        "swap_if_negated_guard": {
+          "action_id": "swap_if_negated_guard",
+          "card_id": "ast_card_swap_if_negated_guard_v1",
+          "rule_count": 1,
+          "rules_repr": [
+            "(('AST', 'If', (('test', ('AST', 'UnaryOp', (('op', ('AST', 'Not', ())), ('operand', ('$HOLE', '$H0'))))), ('body', ('$HOLE', '$H1')), ('orelse', ('$HOLE', '$H2')))), ('AST', 'If', (('test', ('$HOLE', '$H0')), ('body', ('$HOLE', '$H2')), ('orelse', ('$HOLE', '$H1')))))"
+          ],
+          "single_pass": false,
+          "support_episodes": 5
+        },
+        "wrap_nonnegative_clamp": {
+          "action_id": "wrap_nonnegative_clamp",
+          "card_id": "ast_card_wrap_nonnegative_clamp_v1",
+          "rule_count": 1,
+          "rules_repr": [
+            "(('AST', 'Return', (('value', ('$HOLE', '$H0')),)), ('AST', 'Return', (('value', ('AST', 'Call', (('func', ('AST', 'Name', (('id', ('LIT', 'str', 'max')),))), ('args', ('LIST', (('AST', 'Constant', (('value', ('LIT', 'int', 0)), ('kind', ('LIT', 'NoneType', None)))), ('$HOLE', '$H0')))), ('keywords', ('LIST', ()))))),)))"
+          ],
+          "single_pass": true,
+          "support_episodes": 5
+        }
+      },
+      "library_compressed_bits": 7696,
+      "naive_string_replace_rename_accuracy": 0.0,
+      "per_operator_accuracy": {
+        "fold_identity_arithmetic": 1.0,
+        "rename_parameter": 1.0,
+        "swap_if_negated_guard": 1.0,
+        "wrap_nonnegative_clamp": 1.0
+      },
+      "total_unseen_tasks": 24
+    },
+    "humaneval_micro": {
+      "candidate_budget": 48,
+      "methods": {
+        "io_memorization_lookup": {
+          "mean_candidates_evaluated": 0.0,
+          "pass_rate": 0.0,
+          "solved_tasks": 0,
+          "total_candidates_evaluated": 0,
+          "total_tasks": 20
+        },
+        "shard_itl_rdc_code_inducer": {
+          "mean_candidates_evaluated": 12.7,
+          "pass_rate": 0.95,
+          "per_task": {
+            "abs_sum": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 31,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1040,
+              "task_id": "he_micro_14"
+            },
+            "all_positive": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 10,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1080,
+              "task_id": "he_micro_13"
+            },
+            "alternating_sum": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 2,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1304,
+              "task_id": "he_micro_19"
+            },
+            "clamp_list": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 17,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 784,
+              "task_id": "he_micro_09"
+            },
+            "common_elements": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 16,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 992,
+              "task_id": "he_micro_20"
+            },
+            "count_greater": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 23,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 856,
+              "task_id": "he_micro_16"
+            },
+            "count_vowels": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 5,
+              "passed_hidden_12_of_12": false,
+              "program_bits": 0,
+              "task_id": "he_micro_06"
+            },
+            "dedup_order": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 14,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 560,
+              "task_id": "he_micro_07"
+            },
+            "dot_product": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 5,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1144,
+              "task_id": "he_micro_08"
+            },
+            "even_squares": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 9,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1056,
+              "task_id": "he_micro_15"
+            },
+            "factorial": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 4,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1040,
+              "task_id": "he_micro_02"
+            },
+            "gcd": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 8,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1008,
+              "task_id": "he_micro_01"
+            },
+            "is_palindrome": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 4,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 632,
+              "task_id": "he_micro_03"
+            },
+            "is_sorted_asc": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 10,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 624,
+              "task_id": "he_micro_18"
+            },
+            "max_diff": {
+              "boundary_refuted_candidates": 1,
+              "candidates_evaluated": 14,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1392,
+              "task_id": "he_micro_05"
+            },
+            "reverse_words": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 8,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 768,
+              "task_id": "he_micro_17"
+            },
+            "rotate_left": {
+              "boundary_refuted_candidates": 1,
+              "candidates_evaluated": 6,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1264,
+              "task_id": "he_micro_12"
+            },
+            "running_sum": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 2,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 888,
+              "task_id": "he_micro_10"
+            },
+            "second_largest": {
+              "boundary_refuted_candidates": 1,
+              "candidates_evaluated": 35,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 848,
+              "task_id": "he_micro_11"
+            },
+            "sum_evens": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 31,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1184,
+              "task_id": "he_micro_04"
+            }
+          },
+          "solved_executable_asts": {
+            "he_micro_01": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    "arg1"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                },
+                "_s0",
+                "_s1",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_s1"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        0
+                      ],
+                      "op": "const",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "gt",
+                  "out_type": "bool"
+                },
+                {
+                  "args": [
+                    "_s1"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_s0"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_s1"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "mod",
+                  "out_type": "int"
+                },
+                0
+              ],
+              "op": "while_pair",
+              "out_type": "int"
+            },
+            "he_micro_02": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    1
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_s0",
+                "_s1",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_s0"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        1
+                      ],
+                      "op": "const",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "gt",
+                  "out_type": "bool"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_s0"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        1
+                      ],
+                      "op": "const",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "sub",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_s1"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_s0"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "mul",
+                  "out_type": "int"
+                },
+                1
+              ],
+              "op": "while_pair",
+              "out_type": "int"
+            },
+            "he_micro_03": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "str"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "str"
+                    }
+                  ],
+                  "op": "str_reverse",
+                  "out_type": "str"
+                }
+              ],
+              "op": "eq",
+              "out_type": "bool"
+            },
+            "he_micro_04": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_x"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                2
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "mod",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            0
+                          ],
+                          "op": "const",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "eq",
+                      "out_type": "bool"
+                    }
+                  ],
+                  "op": "filter_seq",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                }
+              ],
+              "op": "fold_seq",
+              "out_type": "int"
+            },
+            "he_micro_05": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        }
+                      ],
+                      "op": "seq_len",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        0
+                      ],
+                      "op": "const",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "eq",
+                  "out_type": "bool"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        },
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "arg0"
+                              ],
+                              "op": "var",
+                              "out_type": "seq_int"
+                            },
+                            {
+                              "args": [
+                                0
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "nth_item",
+                          "out_type": "int"
+                        },
+                        "_acc",
+                        "_x",
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_acc"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                "_x"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "max2",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "fold_seq",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        },
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "arg0"
+                              ],
+                              "op": "var",
+                              "out_type": "seq_int"
+                            },
+                            {
+                              "args": [
+                                0
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "nth_item",
+                          "out_type": "int"
+                        },
+                        "_acc",
+                        "_x",
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_acc"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                "_x"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "min2",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "fold_seq",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "sub",
+                  "out_type": "int"
+                }
+              ],
+              "op": "if_else",
+              "out_type": "int"
+            },
+            "he_micro_07": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                }
+              ],
+              "op": "unique_order",
+              "out_type": "seq_int"
+            },
+            "he_micro_08": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    {
+                      "args": [
+                        "arg1"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    "_y",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "_y"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "mul",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "zip_with",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                }
+              ],
+              "op": "fold_seq",
+              "out_type": "int"
+            },
+            "he_micro_09": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg1"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg2"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "min2",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "max2",
+                  "out_type": "int"
+                }
+              ],
+              "op": "map_seq",
+              "out_type": "seq_int"
+            },
+            "he_micro_10": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                }
+              ],
+              "op": "scan_seq",
+              "out_type": "seq_int"
+            },
+            "he_micro_11": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        }
+                      ],
+                      "op": "unique_order",
+                      "out_type": "seq_int"
+                    }
+                  ],
+                  "op": "sort_seq",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    -2
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                }
+              ],
+              "op": "nth_item",
+              "out_type": "int"
+            },
+            "he_micro_12": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        }
+                      ],
+                      "op": "seq_len",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        0
+                      ],
+                      "op": "const",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "eq",
+                  "out_type": "bool"
+                },
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        },
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "arg1"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                {
+                                  "args": [
+                                    "arg0"
+                                  ],
+                                  "op": "var",
+                                  "out_type": "seq_int"
+                                }
+                              ],
+                              "op": "seq_len",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "mod",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "slice_from",
+                      "out_type": "seq_int"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        },
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "arg1"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                {
+                                  "args": [
+                                    "arg0"
+                                  ],
+                                  "op": "var",
+                                  "out_type": "seq_int"
+                                }
+                              ],
+                              "op": "seq_len",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "mod",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "slice_to",
+                      "out_type": "seq_int"
+                    }
+                  ],
+                  "op": "concat_seq",
+                  "out_type": "seq_int"
+                }
+              ],
+              "op": "if_else",
+              "out_type": "seq_int"
+            },
+            "he_micro_13": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    true
+                  ],
+                  "op": "const",
+                  "out_type": "bool"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "bool"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            0
+                          ],
+                          "op": "const",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "gt",
+                      "out_type": "bool"
+                    }
+                  ],
+                  "op": "bool_and",
+                  "out_type": "bool"
+                }
+              ],
+              "op": "fold_seq",
+              "out_type": "bool"
+            },
+            "he_micro_14": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "abs_val",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "map_seq",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                }
+              ],
+              "op": "fold_seq",
+              "out_type": "int"
+            },
+            "he_micro_15": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_x"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                2
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "mod",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            0
+                          ],
+                          "op": "const",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "eq",
+                      "out_type": "bool"
+                    }
+                  ],
+                  "op": "filter_seq",
+                  "out_type": "seq_int"
+                },
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "mul",
+                  "out_type": "int"
+                }
+              ],
+              "op": "map_seq",
+              "out_type": "seq_int"
+            },
+            "he_micro_16": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "arg1"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "gt",
+                      "out_type": "bool"
+                    }
+                  ],
+                  "op": "filter_seq",
+                  "out_type": "seq_int"
+                }
+              ],
+              "op": "seq_len",
+              "out_type": "int"
+            },
+            "he_micro_17": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "str"
+                        }
+                      ],
+                      "op": "split_words",
+                      "out_type": "seq_str"
+                    }
+                  ],
+                  "op": "reverse_seq",
+                  "out_type": "seq_str"
+                }
+              ],
+              "op": "join_space",
+              "out_type": "str"
+            },
+            "he_micro_18": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    }
+                  ],
+                  "op": "sort_seq",
+                  "out_type": "seq_int"
+                }
+              ],
+              "op": "eq",
+              "out_type": "bool"
+            },
+            "he_micro_19": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_i",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_i"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                2
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "mod",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            0
+                          ],
+                          "op": "const",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "eq",
+                      "out_type": "bool"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_acc"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "add",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_acc"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "sub",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "if_else",
+                  "out_type": "int"
+                }
+              ],
+              "op": "enumerate_fold",
+              "out_type": "int"
+            },
+            "he_micro_20": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    }
+                  ],
+                  "op": "unique_order",
+                  "out_type": "seq_int"
+                },
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg1"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "member_contains",
+                  "out_type": "bool"
+                }
+              ],
+              "op": "filter_seq",
+              "out_type": "seq_int"
+            }
+          },
+          "solved_tasks": 19,
+          "total_boundary_refuted": 3,
+          "total_candidates_evaluated": 254,
+          "total_induced_program_bits": 18464,
+          "total_tasks": 20
+        },
+        "unguided_enumerative_code_inducer": {
+          "mean_candidates_evaluated": 27.55,
+          "pass_rate": 0.85,
+          "per_task": {
+            "abs_sum": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 22,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1040,
+              "task_id": "he_micro_14"
+            },
+            "all_positive": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 10,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1080,
+              "task_id": "he_micro_13"
+            },
+            "alternating_sum": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 35,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1304,
+              "task_id": "he_micro_19"
+            },
+            "clamp_list": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 31,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 784,
+              "task_id": "he_micro_09"
+            },
+            "common_elements": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 37,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 992,
+              "task_id": "he_micro_20"
+            },
+            "count_greater": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 48,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 856,
+              "task_id": "he_micro_16"
+            },
+            "count_vowels": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 5,
+              "passed_hidden_12_of_12": false,
+              "program_bits": 0,
+              "task_id": "he_micro_06"
+            },
+            "dedup_order": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 14,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 560,
+              "task_id": "he_micro_07"
+            },
+            "dot_product": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 38,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1144,
+              "task_id": "he_micro_08"
+            },
+            "even_squares": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 44,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1056,
+              "task_id": "he_micro_15"
+            },
+            "factorial": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 23,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1040,
+              "task_id": "he_micro_02"
+            },
+            "gcd": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 48,
+              "passed_hidden_12_of_12": false,
+              "program_bits": 0,
+              "task_id": "he_micro_01"
+            },
+            "is_palindrome": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 4,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 632,
+              "task_id": "he_micro_03"
+            },
+            "is_sorted_asc": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 10,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 624,
+              "task_id": "he_micro_18"
+            },
+            "max_diff": {
+              "boundary_refuted_candidates": 1,
+              "candidates_evaluated": 34,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1392,
+              "task_id": "he_micro_05"
+            },
+            "reverse_words": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 8,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 768,
+              "task_id": "he_micro_17"
+            },
+            "rotate_left": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 48,
+              "passed_hidden_12_of_12": false,
+              "program_bits": 0,
+              "task_id": "he_micro_12"
+            },
+            "running_sum": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 35,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 888,
+              "task_id": "he_micro_10"
+            },
+            "second_largest": {
+              "boundary_refuted_candidates": 1,
+              "candidates_evaluated": 35,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 848,
+              "task_id": "he_micro_11"
+            },
+            "sum_evens": {
+              "boundary_refuted_candidates": 0,
+              "candidates_evaluated": 22,
+              "passed_hidden_12_of_12": true,
+              "program_bits": 1184,
+              "task_id": "he_micro_04"
+            }
+          },
+          "solved_executable_asts": {
+            "he_micro_02": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    1
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_s0",
+                "_s1",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_s0"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        1
+                      ],
+                      "op": "const",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "gt",
+                  "out_type": "bool"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_s0"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        1
+                      ],
+                      "op": "const",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "sub",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_s1"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_s0"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "mul",
+                  "out_type": "int"
+                },
+                1
+              ],
+              "op": "while_pair",
+              "out_type": "int"
+            },
+            "he_micro_03": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "str"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "str"
+                    }
+                  ],
+                  "op": "str_reverse",
+                  "out_type": "str"
+                }
+              ],
+              "op": "eq",
+              "out_type": "bool"
+            },
+            "he_micro_04": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_x"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                2
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "mod",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            0
+                          ],
+                          "op": "const",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "eq",
+                      "out_type": "bool"
+                    }
+                  ],
+                  "op": "filter_seq",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                }
+              ],
+              "op": "fold_seq",
+              "out_type": "int"
+            },
+            "he_micro_05": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        }
+                      ],
+                      "op": "seq_len",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        0
+                      ],
+                      "op": "const",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "eq",
+                  "out_type": "bool"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        },
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "arg0"
+                              ],
+                              "op": "var",
+                              "out_type": "seq_int"
+                            },
+                            {
+                              "args": [
+                                0
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "nth_item",
+                          "out_type": "int"
+                        },
+                        "_acc",
+                        "_x",
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_acc"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                "_x"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "max2",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "fold_seq",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        },
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "arg0"
+                              ],
+                              "op": "var",
+                              "out_type": "seq_int"
+                            },
+                            {
+                              "args": [
+                                0
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "nth_item",
+                          "out_type": "int"
+                        },
+                        "_acc",
+                        "_x",
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_acc"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                "_x"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "min2",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "fold_seq",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "sub",
+                  "out_type": "int"
+                }
+              ],
+              "op": "if_else",
+              "out_type": "int"
+            },
+            "he_micro_07": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                }
+              ],
+              "op": "unique_order",
+              "out_type": "seq_int"
+            },
+            "he_micro_08": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    {
+                      "args": [
+                        "arg1"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    "_y",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "_y"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "mul",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "zip_with",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                }
+              ],
+              "op": "fold_seq",
+              "out_type": "int"
+            },
+            "he_micro_09": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg1"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg2"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "min2",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "max2",
+                  "out_type": "int"
+                }
+              ],
+              "op": "map_seq",
+              "out_type": "seq_int"
+            },
+            "he_micro_10": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                }
+              ],
+              "op": "scan_seq",
+              "out_type": "seq_int"
+            },
+            "he_micro_11": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "seq_int"
+                        }
+                      ],
+                      "op": "unique_order",
+                      "out_type": "seq_int"
+                    }
+                  ],
+                  "op": "sort_seq",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    -2
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                }
+              ],
+              "op": "nth_item",
+              "out_type": "int"
+            },
+            "he_micro_13": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    true
+                  ],
+                  "op": "const",
+                  "out_type": "bool"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "bool"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            0
+                          ],
+                          "op": "const",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "gt",
+                      "out_type": "bool"
+                    }
+                  ],
+                  "op": "bool_and",
+                  "out_type": "bool"
+                }
+              ],
+              "op": "fold_seq",
+              "out_type": "bool"
+            },
+            "he_micro_14": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "abs_val",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "map_seq",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_acc"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                }
+              ],
+              "op": "fold_seq",
+              "out_type": "int"
+            },
+            "he_micro_15": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_x"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                2
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "mod",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            0
+                          ],
+                          "op": "const",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "eq",
+                      "out_type": "bool"
+                    }
+                  ],
+                  "op": "filter_seq",
+                  "out_type": "seq_int"
+                },
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "mul",
+                  "out_type": "int"
+                }
+              ],
+              "op": "map_seq",
+              "out_type": "seq_int"
+            },
+            "he_micro_16": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    "_x",
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "arg1"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "gt",
+                      "out_type": "bool"
+                    }
+                  ],
+                  "op": "filter_seq",
+                  "out_type": "seq_int"
+                }
+              ],
+              "op": "seq_len",
+              "out_type": "int"
+            },
+            "he_micro_17": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "arg0"
+                          ],
+                          "op": "var",
+                          "out_type": "str"
+                        }
+                      ],
+                      "op": "split_words",
+                      "out_type": "seq_str"
+                    }
+                  ],
+                  "op": "reverse_seq",
+                  "out_type": "seq_str"
+                }
+              ],
+              "op": "join_space",
+              "out_type": "str"
+            },
+            "he_micro_18": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    }
+                  ],
+                  "op": "sort_seq",
+                  "out_type": "seq_int"
+                }
+              ],
+              "op": "eq",
+              "out_type": "bool"
+            },
+            "he_micro_19": {
+              "args": [
+                {
+                  "args": [
+                    "arg0"
+                  ],
+                  "op": "var",
+                  "out_type": "seq_int"
+                },
+                {
+                  "args": [
+                    0
+                  ],
+                  "op": "const",
+                  "out_type": "int"
+                },
+                "_acc",
+                "_i",
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "args": [
+                                "_i"
+                              ],
+                              "op": "var",
+                              "out_type": "int"
+                            },
+                            {
+                              "args": [
+                                2
+                              ],
+                              "op": "const",
+                              "out_type": "int"
+                            }
+                          ],
+                          "op": "mod",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            0
+                          ],
+                          "op": "const",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "eq",
+                      "out_type": "bool"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_acc"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "add",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "_acc"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "_x"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "sub",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "if_else",
+                  "out_type": "int"
+                }
+              ],
+              "op": "enumerate_fold",
+              "out_type": "int"
+            },
+            "he_micro_20": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg0"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    }
+                  ],
+                  "op": "unique_order",
+                  "out_type": "seq_int"
+                },
+                "_x",
+                {
+                  "args": [
+                    {
+                      "args": [
+                        "arg1"
+                      ],
+                      "op": "var",
+                      "out_type": "seq_int"
+                    },
+                    {
+                      "args": [
+                        "_x"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "member_contains",
+                  "out_type": "bool"
+                }
+              ],
+              "op": "filter_seq",
+              "out_type": "seq_int"
+            }
+          },
+          "solved_tasks": 17,
+          "total_boundary_refuted": 2,
+          "total_candidates_evaluated": 551,
+          "total_induced_program_bits": 16192,
+          "total_tasks": 20
+        }
+      },
+      "prior_external_mbpp_reference": {
+        "benchmark": "MBPP_20_external_prior",
+        "pass_rate": 0.0,
+        "solved": 0,
+        "total": 20
+      },
+      "schema_version": "s6-humaneval-micro-20-v1",
+      "shard_vs_unguided_eval_reduction": 0.53902,
+      "shard_vs_unguided_pass_gain": 0.1
+    },
+    "schema_version": "s6-code-domain-v1",
+    "seed": 303
+  },
+  "list_domain": {
+    "atomic_unseen_len8_20_accuracy": 1.0,
+    "bit_budget": {
+      "active_card_count": 6,
+      "library_compressed_bits": 2568
+    },
+    "collateral_corruptions": 0,
+    "depth2_composition_accuracy": 1.0,
+    "depth3_composition_accuracy": 1.0,
+    "executable_cards": {
+      "filter_even": {
+        "action_id": "filter_even",
+        "input_slots": [
+          [
+            "items",
+            "seq_int"
+          ]
+        ],
+        "schema_version": "s6-transfer-inducer-v1",
+        "slot_programs": {
+          "items": {
+            "args": [
+              {
+                "args": [
+                  "items"
+                ],
+                "op": "var",
+                "out_type": "seq_int"
+              },
+              "_x",
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          "_x"
+                        ],
+                        "op": "var",
+                        "out_type": "int"
+                      },
+                      {
+                        "args": [
+                          2
+                        ],
+                        "op": "const",
+                        "out_type": "int"
+                      }
+                    ],
+                    "op": "mod",
+                    "out_type": "int"
+                  },
+                  {
+                    "args": [
+                      0
+                    ],
+                    "op": "const",
+                    "out_type": "int"
+                  }
+                ],
+                "op": "eq",
+                "out_type": "bool"
+              }
+            ],
+            "op": "filter_seq",
+            "out_type": "seq_int"
+          }
+        }
+      },
+      "filter_positive": {
+        "action_id": "filter_positive",
+        "input_slots": [
+          [
+            "items",
+            "seq_int"
+          ]
+        ],
+        "schema_version": "s6-transfer-inducer-v1",
+        "slot_programs": {
+          "items": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "args": [
+                      "items"
+                    ],
+                    "op": "var",
+                    "out_type": "seq_int"
+                  },
+                  "_x",
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          "_x"
+                        ],
+                        "op": "var",
+                        "out_type": "int"
+                      },
+                      {
+                        "args": [
+                          0
+                        ],
+                        "op": "const",
+                        "out_type": "int"
+                      }
+                    ],
+                    "op": "gt",
+                    "out_type": "bool"
+                  }
+                ],
+                "op": "filter_seq",
+                "out_type": "seq_int"
+              },
+              "_x",
+              {
+                "args": [
+                  {
+                    "args": [
+                      "_x"
+                    ],
+                    "op": "var",
+                    "out_type": "int"
+                  }
+                ],
+                "op": "abs_val",
+                "out_type": "int"
+              }
+            ],
+            "op": "map_seq",
+            "out_type": "seq_int"
+          }
+        }
+      },
+      "map_double": {
+        "action_id": "map_double",
+        "input_slots": [
+          [
+            "items",
+            "seq_int"
+          ]
+        ],
+        "schema_version": "s6-transfer-inducer-v1",
+        "slot_programs": {
+          "items": {
+            "args": [
+              {
+                "args": [
+                  "items"
+                ],
+                "op": "var",
+                "out_type": "seq_int"
+              },
+              "_x",
+              {
+                "args": [
+                  {
+                    "args": [
+                      "_x"
+                    ],
+                    "op": "var",
+                    "out_type": "int"
+                  },
+                  {
+                    "args": [
+                      2
+                    ],
+                    "op": "const",
+                    "out_type": "int"
+                  }
+                ],
+                "op": "mul",
+                "out_type": "int"
+              }
+            ],
+            "op": "map_seq",
+            "out_type": "seq_int"
+          }
+        }
+      },
+      "map_increment": {
+        "action_id": "map_increment",
+        "input_slots": [
+          [
+            "items",
+            "seq_int"
+          ]
+        ],
+        "schema_version": "s6-transfer-inducer-v1",
+        "slot_programs": {
+          "items": {
+            "args": [
+              {
+                "args": [
+                  "items"
+                ],
+                "op": "var",
+                "out_type": "seq_int"
+              },
+              "_x",
+              {
+                "args": [
+                  {
+                    "args": [
+                      "_x"
+                    ],
+                    "op": "var",
+                    "out_type": "int"
+                  },
+                  {
+                    "args": [
+                      1
+                    ],
+                    "op": "const",
+                    "out_type": "int"
+                  }
+                ],
+                "op": "add",
+                "out_type": "int"
+              }
+            ],
+            "op": "map_seq",
+            "out_type": "seq_int"
+          }
+        }
+      },
+      "reverse": {
+        "action_id": "reverse",
+        "input_slots": [
+          [
+            "items",
+            "seq_int"
+          ]
+        ],
+        "schema_version": "s6-transfer-inducer-v1",
+        "slot_programs": {
+          "items": {
+            "args": [
+              {
+                "args": [
+                  "items"
+                ],
+                "op": "var",
+                "out_type": "seq_int"
+              }
+            ],
+            "op": "reverse_seq",
+            "out_type": "seq_int"
+          }
+        }
+      },
+      "sort_asc": {
+        "action_id": "sort_asc",
+        "input_slots": [
+          [
+            "items",
+            "seq_int"
+          ]
+        ],
+        "schema_version": "s6-transfer-inducer-v1",
+        "slot_programs": {
+          "items": {
+            "args": [
+              {
+                "args": [
+                  "items"
+                ],
+                "op": "var",
+                "out_type": "seq_int"
+              }
+            ],
+            "op": "sort_seq",
+            "out_type": "seq_int"
+          }
+        }
+      }
+    },
+    "overall_accuracy": 1.0,
+    "per_operator_accuracy": {
+      "filter_even": 1.0,
+      "filter_positive": 1.0,
+      "map_double": 1.0,
+      "map_increment": 1.0,
+      "reverse": 1.0,
+      "sort_asc": 1.0
+    },
+    "schema_version": "s6-list-domain-v1",
+    "seed": 303,
+    "train_demos_per_op": 6,
+    "train_max_length": 5,
+    "typed_frame_bridge_verified": true
+  },
+  "math_domain": {
+    "modular_addition_canary": {
+      "card_compressed_bits": 1400,
+      "collateral_corruptions": 0,
+      "exact_canary_60_40_accuracy": 1.0,
+      "executable_card": {
+        "action_id": "digit_pair_mod_op",
+        "input_slots": [
+          [
+            "d_a",
+            "int"
+          ],
+          [
+            "d_b",
+            "int"
+          ]
+        ],
+        "schema_version": "s6-transfer-inducer-v1",
+        "slot_programs": {
+          "out_digit": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "args": [
+                      "d_a"
+                    ],
+                    "op": "var",
+                    "out_type": "int"
+                  },
+                  {
+                    "args": [
+                      "d_b"
+                    ],
+                    "op": "var",
+                    "out_type": "int"
+                  }
+                ],
+                "op": "add",
+                "out_type": "int"
+              },
+              {
+                "args": [
+                  10
+                ],
+                "op": "const",
+                "out_type": "int"
+              }
+            ],
+            "op": "mod",
+            "out_type": "int"
+          }
+        }
+      },
+      "gain_over_s0_shard_bit_perceptron": 0.925,
+      "induced_python": {
+        "out_digit": "def _slot_out_digit(d_a, d_b):\n    return ((((d_a) + (d_b))) % (10))\n"
+      },
+      "s0_shard_bit_perceptron_accuracy": 0.075,
+      "s0_shard_pure_hdc_accuracy": 0.05,
+      "sparse_16_84_accuracy": 1.0,
+      "typed_frame_bridge_verified": true
+    },
+    "multidigit_and_radix": {
+      "b10_card_compressed_bits": 1664,
+      "b16_card_compressed_bits": 1656,
+      "b7_card_compressed_bits": 1656,
+      "collateral_corruptions": 0,
+      "executable_cards": {
+        "column_step_b10": {
+          "action_id": "column_step_b10",
+          "input_slots": [
+            [
+              "d_a",
+              "int"
+            ],
+            [
+              "d_b",
+              "int"
+            ],
+            [
+              "carry_in",
+              "int"
+            ],
+            [
+              "radix",
+              "int"
+            ]
+          ],
+          "schema_version": "s6-transfer-inducer-v1",
+          "slot_programs": {
+            "carry_out": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "d_a"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "d_b"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "add",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "carry_in"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    "radix"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                }
+              ],
+              "op": "floordiv",
+              "out_type": "int"
+            },
+            "digit_out": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "d_a"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "d_b"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "add",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "carry_in"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    "radix"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                }
+              ],
+              "op": "mod",
+              "out_type": "int"
+            }
+          }
+        },
+        "column_step_b16": {
+          "action_id": "column_step_b16",
+          "input_slots": [
+            [
+              "d_a",
+              "int"
+            ],
+            [
+              "d_b",
+              "int"
+            ],
+            [
+              "carry_in",
+              "int"
+            ],
+            [
+              "radix",
+              "int"
+            ]
+          ],
+          "schema_version": "s6-transfer-inducer-v1",
+          "slot_programs": {
+            "carry_out": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "d_a"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "d_b"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "add",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "carry_in"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    "radix"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                }
+              ],
+              "op": "floordiv",
+              "out_type": "int"
+            },
+            "digit_out": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "d_a"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "d_b"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "add",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "carry_in"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    "radix"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                }
+              ],
+              "op": "mod",
+              "out_type": "int"
+            }
+          }
+        },
+        "column_step_b7": {
+          "action_id": "column_step_b7",
+          "input_slots": [
+            [
+              "d_a",
+              "int"
+            ],
+            [
+              "d_b",
+              "int"
+            ],
+            [
+              "carry_in",
+              "int"
+            ],
+            [
+              "radix",
+              "int"
+            ]
+          ],
+          "schema_version": "s6-transfer-inducer-v1",
+          "slot_programs": {
+            "carry_out": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "d_a"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "d_b"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "add",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "carry_in"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    "radix"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                }
+              ],
+              "op": "floordiv",
+              "out_type": "int"
+            },
+            "digit_out": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            "d_a"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        },
+                        {
+                          "args": [
+                            "d_b"
+                          ],
+                          "op": "var",
+                          "out_type": "int"
+                        }
+                      ],
+                      "op": "add",
+                      "out_type": "int"
+                    },
+                    {
+                      "args": [
+                        "carry_in"
+                      ],
+                      "op": "var",
+                      "out_type": "int"
+                    }
+                  ],
+                  "op": "add",
+                  "out_type": "int"
+                },
+                {
+                  "args": [
+                    "radix"
+                  ],
+                  "op": "var",
+                  "out_type": "int"
+                }
+              ],
+              "op": "mod",
+              "out_type": "int"
+            }
+          }
+        }
+      },
+      "induced_b10_python": {
+        "carry_out": "def _slot_carry_out(d_a, d_b, carry_in, radix):\n    return ((((((d_a) + (d_b))) + (carry_in))) // (radix))\n",
+        "digit_out": "def _slot_digit_out(d_a, d_b, carry_in, radix):\n    return ((((((d_a) + (d_b))) + (carry_in))) % (radix))\n"
+      },
+      "multidigit_overall_accuracy": 1.0,
+      "multidigit_per_split": {
+        "carry_cascade_stress": {
+          "exact_accuracy": 1.0,
+          "n_tasks": 12
+        },
+        "digits_3": {
+          "exact_accuracy": 1.0,
+          "n_tasks": 16
+        },
+        "digits_4": {
+          "exact_accuracy": 1.0,
+          "n_tasks": 16
+        },
+        "digits_6": {
+          "exact_accuracy": 1.0,
+          "n_tasks": 16
+        },
+        "digits_8": {
+          "exact_accuracy": 1.0,
+          "n_tasks": 16
+        }
+      },
+      "novel_base16_5digit_accuracy": 1.0,
+      "novel_base7_5digit_accuracy": 1.0,
+      "train_multidigit_demos": 0,
+      "train_single_column_demos": 16
+    },
+    "schema_version": "s6-math-domain-v1",
+    "seed": 303
+  },
+  "seed": 303,
+  "total_collateral_corruptions": 0,
+  "total_seed_seconds": 0.3102
+}

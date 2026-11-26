@@ -1,0 +1,528 @@
+{
+  "ast_isolation_audit": {
+    "hardcode_violations": [],
+    "humaneval_leak_violations": [],
+    "import_violations": [],
+    "passed": true,
+    "scanned_itl_modules": 7,
+    "scanned_learner_modules": 26,
+    "scanned_non_evaluator_modules": 45,
+    "scanned_rdc_modules": 5,
+    "scanned_shard_modules": 4,
+    "scanned_transfer_modules": 5,
+    "zero_humaneval_names_in_inducer": true
+  },
+  "bit_budget_mean": {
+    "compressed_induced_library_bits": 12944.0,
+    "compressed_training_bits": 33448.0,
+    "compression_ratio_vs_compressed_train": 0.387,
+    "compression_ratio_vs_raw": 0.034307,
+    "raw_training_bits": 377305.6,
+    "sum_per_card_compressed_bits": 35104.0
+  },
+  "code_domain": {
+    "ast_refactoring": {
+      "compile_valid_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "exact_verified_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "naive_string_replace_rename_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "humaneval_micro": {
+      "candidate_budget": 48,
+      "methods": {
+        "io_memorization_lookup": {
+          "mean_candidates_evaluated": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "pass_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.0,
+            "ci95_low": 0.0,
+            "max": 0.0,
+            "mean": 0.0,
+            "min": 0.0,
+            "n": 5,
+            "per_seed": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "shard_itl_rdc_code_inducer": {
+          "mean_candidates_evaluated": {
+            "ci95_half": 0.0,
+            "ci95_high": 12.7,
+            "ci95_low": 12.7,
+            "max": 12.7,
+            "mean": 12.7,
+            "min": 12.7,
+            "n": 5,
+            "per_seed": [
+              12.7,
+              12.7,
+              12.7,
+              12.7,
+              12.7
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "pass_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.95,
+            "ci95_low": 0.95,
+            "max": 0.95,
+            "mean": 0.95,
+            "min": 0.95,
+            "n": 5,
+            "per_seed": [
+              0.95,
+              0.95,
+              0.95,
+              0.95,
+              0.95
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        },
+        "unguided_enumerative_code_inducer": {
+          "mean_candidates_evaluated": {
+            "ci95_half": 0.0,
+            "ci95_high": 27.55,
+            "ci95_low": 27.55,
+            "max": 27.55,
+            "mean": 27.55,
+            "min": 27.55,
+            "n": 5,
+            "per_seed": [
+              27.55,
+              27.55,
+              27.55,
+              27.55,
+              27.55
+            ],
+            "se": 0.0,
+            "std": 0.0
+          },
+          "pass_rate": {
+            "ci95_half": 0.0,
+            "ci95_high": 0.85,
+            "ci95_low": 0.85,
+            "max": 0.85,
+            "mean": 0.85,
+            "min": 0.85,
+            "n": 5,
+            "per_seed": [
+              0.85,
+              0.85,
+              0.85,
+              0.85,
+              0.85
+            ],
+            "se": 0.0,
+            "std": 0.0
+          }
+        }
+      },
+      "prior_external_mbpp_reference": {
+        "benchmark": "MBPP_20_external_prior",
+        "pass_rate": 0.0,
+        "solved": 0,
+        "total": 20
+      },
+      "shard_vs_unguided_eval_reduction": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.53902,
+        "ci95_low": 0.53902,
+        "max": 0.53902,
+        "mean": 0.53902,
+        "min": 0.53902,
+        "n": 5,
+        "per_seed": [
+          0.53902,
+          0.53902,
+          0.53902,
+          0.53902,
+          0.53902
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "shard_vs_unguided_pass_gain": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.1,
+        "ci95_low": 0.1,
+        "max": 0.1,
+        "mean": 0.1,
+        "min": 0.1,
+        "n": 5,
+        "per_seed": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    }
+  },
+  "environment": {
+    "cpu_count": 8,
+    "git_branch": "research/cpu-native-learning-s0",
+    "git_commit": "eda5604b818bf258577ec830ea19b1afbf309b79",
+    "machine": "AMD64",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "python_version": "3.14.4",
+    "pythonhashseed": "0",
+    "ram_total_gb": 15.77
+  },
+  "list_domain": {
+    "atomic_unseen_len8_20_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "depth2_composition_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "depth3_composition_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "overall_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    }
+  },
+  "math_domain": {
+    "exact_canary_60_40_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "gain_over_s0_shard_bit_perceptron": {
+      "ci95_half": 0.025971,
+      "ci95_high": 0.955971,
+      "ci95_low": 0.904029,
+      "max": 0.95,
+      "mean": 0.93,
+      "min": 0.9,
+      "n": 5,
+      "per_seed": [
+        0.9,
+        0.95,
+        0.925,
+        0.925,
+        0.95
+      ],
+      "se": 0.009354,
+      "std": 0.020917
+    },
+    "multidigit_overall_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "novel_base16_5digit_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "novel_base7_5digit_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "s0_shard_bit_perceptron_accuracy": {
+      "ci95_half": 0.025971,
+      "ci95_high": 0.095971,
+      "ci95_low": 0.044029,
+      "max": 0.1,
+      "mean": 0.07,
+      "min": 0.05,
+      "n": 5,
+      "per_seed": [
+        0.1,
+        0.05,
+        0.075,
+        0.075,
+        0.05
+      ],
+      "se": 0.009354,
+      "std": 0.020917
+    },
+    "s0_shard_pure_hdc_accuracy": {
+      "ci95_half": 0.017002,
+      "ci95_high": 0.057002,
+      "ci95_low": 0.022998,
+      "max": 0.05,
+      "mean": 0.04,
+      "min": 0.025,
+      "n": 5,
+      "per_seed": [
+        0.05,
+        0.05,
+        0.05,
+        0.025,
+        0.025
+      ],
+      "se": 0.006124,
+      "std": 0.013693
+    },
+    "sparse_16_84_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    }
+  },
+  "per_seed_seconds": {
+    "ci95_half": 0.064227,
+    "ci95_high": 0.419247,
+    "ci95_low": 0.290793,
+    "max": 0.4358,
+    "mean": 0.35502,
+    "min": 0.3093,
+    "n": 5,
+    "per_seed": [
+      0.4358,
+      0.3638,
+      0.3102,
+      0.3093,
+      0.356
+    ],
+    "se": 0.023133,
+    "std": 0.051727
+  },
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s6_experiments",
+  "s6_gate": {
+    "checks": {
+      "ast_isolation_and_zero_hardcoded_s0_literals": true,
+      "code_ast_refactoring_compile_and_exec_ci95_low_ge_0.95": true,
+      "cpu_budget_within_30s_per_seed": true,
+      "humaneval_micro_beats_io_memorization_lookup": true,
+      "humaneval_micro_pdf_50pct_gate_passed": true,
+      "humaneval_micro_shard_beats_unguided_pass_rate_under_budget": true,
+      "humaneval_micro_shard_itl_rdc_ci95_low_ge_0.65": true,
+      "humaneval_micro_shard_reduces_candidate_evals_ge_35pct": true,
+      "list_depth2_compositions_ci95_low_ge_0.95": true,
+      "list_depth3_compositions_ci95_low_ge_0.95": true,
+      "list_unseen_len8_20_atomic_ci95_low_ge_0.95": true,
+      "math_beats_s0_shard_canary_by_90pp": true,
+      "math_novel_base16_5digit_transfer_ci95_low_ge_0.98": true,
+      "math_novel_base7_5digit_transfer_ci95_low_ge_0.98": true,
+      "math_s0_modular_addition_canary_ci95_low_ge_0.99": true,
+      "math_sparse_16_modular_addition_ci95_low_ge_0.99": true,
+      "math_unseen_multidigit_3_4_6_8_and_cascades_ci95_low_ge_0.98": true,
+      "mdl_compression_verified_all_seeds": true,
+      "prior_s0_s1_s2_s3_s4_s5_manifests_intact": true,
+      "zero_collateral_slot_corruptions_all_seeds": true,
+      "zero_humaneval_task_names_in_transfer_inducer": true
+    },
+    "passed": true
+  },
+  "schema_version": "s6-summary-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S6",
+  "total_elapsed_seconds": 1.7956
+}
