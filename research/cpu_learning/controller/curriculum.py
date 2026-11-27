@@ -1112,22 +1112,24 @@ class SelfCurriculumScheduler:
                 best_aid: str | None = None
                 n_pool = len(rf.candidate_probes)
 
-                check_order: list[int] = sorted(rf.active_ig_indices - rf.queried_indices)
-                scanned_new = 0
+                check_active: list[int] = sorted(rf.active_ig_indices - rf.queried_indices)
+                check_new: list[int] = []
+                r_cur = rf.scan_cursor
                 while (
-                    rf.scan_cursor < n_pool
-                    and scanned_new < self.max_probe_scans_per_tick
+                    r_cur < n_pool
+                    and len(check_new) < self.max_probe_scans_per_tick
                     and ((time.perf_counter() - t_g_rel) * 1000.0) < rel_cap_ms
                 ):
-                    c_idx = rf.scan_cursor
-                    rf.scan_cursor += 1
                     if (
-                        c_idx not in rf.queried_indices
-                        and c_idx not in rf.zero_disagreement_indices
-                        and c_idx not in rf.active_ig_indices
+                        r_cur not in rf.queried_indices
+                        and r_cur not in rf.zero_disagreement_indices
+                        and r_cur not in rf.active_ig_indices
                     ):
-                        check_order.append(c_idx)
-                        scanned_new += 1
+                        check_new.append(r_cur)
+                    r_cur += 1
+                check_order: list[int] = check_active + check_new
+                r_broke = False
+                r_scored_to = rf.scan_cursor
 
                 for idx_pos, idx in enumerate(check_order):
                     st, act, ptag = rf.candidate_probes[idx]
@@ -1135,14 +1137,17 @@ class SelfCurriculumScheduler:
                     if len(hyps) <= 1:
                         rf.zero_disagreement_indices.add(idx)
                         rf.active_ig_indices.discard(idx)
+                        if idx >= r_scored_to:
+                            r_scored_to = idx + 1
                         continue
                     est_eval_ms = 0.015 * len(hyps)
                     if (((time.perf_counter() - t_g_rel) * 1000.0) + est_eval_ms) > rel_cap_ms:
                         if idx_pos > 0 or max_sel_ms < 2.5:
-                            if idx not in rf.active_ig_indices and rf.scan_cursor > idx:
-                                rf.scan_cursor = idx
+                            r_broke = True
                             break
                     sc = score_probe_disagreement(st, act, hyps)
+                    if idx >= r_scored_to:
+                        r_scored_to = idx + 1
                     if sc <= 0.0:
                         rf.zero_disagreement_indices.add(idx)
                         rf.active_ig_indices.discard(idx)
@@ -1153,6 +1158,7 @@ class SelfCurriculumScheduler:
                         best_idx = idx
                         best_tag = ptag
                         best_aid = act.action_id
+                rf.scan_cursor = max(rf.scan_cursor, r_scored_to if r_broke else r_cur)
                 if best_idx is not None and best_ig >= budget.min_info_gain_threshold:
                     rf_has_positive_ig[rf.frontier_id] = True
                     akind: CurriculumActionKind = (
@@ -1188,29 +1194,32 @@ class SelfCurriculumScheduler:
                 best_g_reason = ""
                 n_gpool = len(gf.candidate_probes)
 
-                g_order: list[int] = sorted(gf.active_ig_indices - gf.queried_indices)
-                g_scanned = 0
+                g_active: list[int] = sorted(gf.active_ig_indices - gf.queried_indices)
+                g_new: list[int] = []
+                g_cur = gf.scan_cursor
                 while (
-                    gf.scan_cursor < n_gpool
-                    and g_scanned < self.max_probe_scans_per_tick
+                    g_cur < n_gpool
+                    and len(g_new) < self.max_probe_scans_per_tick
                     and ((time.perf_counter() - t_g_gnd) * 1000.0) < gnd_cap_ms
                 ):
-                    g_i = gf.scan_cursor
-                    gf.scan_cursor += 1
                     if (
-                        g_i not in gf.queried_indices
-                        and g_i not in gf.already_grounded_indices
-                        and g_i not in gf.active_ig_indices
+                        g_cur not in gf.queried_indices
+                        and g_cur not in gf.already_grounded_indices
+                        and g_cur not in gf.active_ig_indices
                     ):
-                        g_order.append(g_i)
-                        g_scanned += 1
+                        g_new.append(g_cur)
+                    g_cur += 1
+                g_order: list[int] = g_active + g_new
+                g_broke = False
+                g_scored_to = gf.scan_cursor
 
                 for idx_pos, idx in enumerate(g_order):
                     if idx_pos > 0 and ((time.perf_counter() - t_g_gnd) * 1000.0) >= gnd_cap_ms:
-                        if idx not in gf.active_ig_indices and gf.scan_cursor > idx:
-                            gf.scan_cursor = idx
+                        g_broke = True
                         break
                     ig, ak, rsn = gf.score_probe_information_gain(idx, executor=exec_engine)
+                    if idx >= g_scored_to:
+                        g_scored_to = idx + 1
                     if ig <= 0.0:
                         gf.active_ig_indices.discard(idx)
                         continue
@@ -1220,6 +1229,7 @@ class SelfCurriculumScheduler:
                         best_g_idx = idx
                         best_g_anom = ak or "epistemic_abstention"
                         best_g_reason = rsn
+                gf.scan_cursor = max(gf.scan_cursor, g_scored_to if g_broke else g_cur)
                 if best_g_idx is not None and best_g_ig >= budget.min_info_gain_threshold:
                     ms = self.grounding_query_cost_ms
                     candidates.append(
@@ -1249,26 +1259,31 @@ class SelfCurriculumScheduler:
                         break
                     if sstate.is_converged():
                         continue
-                    f_order: list[int] = sorted(sstate.active_ig_indices - sstate.queried_indices)
-                    f_scanned = 0
+                    f_active: list[int] = sorted(sstate.active_ig_indices - sstate.queried_indices)
+                    f_new: list[int] = []
+                    f_cur = sstate.scan_cursor
                     while (
-                        sstate.scan_cursor < len(sstate.candidate_probes)
-                        and f_scanned < per_skill_cap
+                        f_cur < len(sstate.candidate_probes)
+                        and len(f_new) < per_skill_cap
                         and ((time.perf_counter() - t_sel0) * 1000.0) < max_sel_ms
                     ):
-                        f_i = sstate.scan_cursor
-                        sstate.scan_cursor += 1
                         if (
-                            f_i not in sstate.queried_indices
-                            and f_i not in sstate.zero_disagreement_indices
-                            and f_i not in sstate.active_ig_indices
+                            f_cur not in sstate.queried_indices
+                            and f_cur not in sstate.zero_disagreement_indices
+                            and f_cur not in sstate.active_ig_indices
                         ):
-                            f_order.append(f_i)
-                            f_scanned += 1
+                            f_new.append(f_cur)
+                        f_cur += 1
+                    f_order: list[int] = f_active + f_new
+                    f_broke = False
+                    f_scored_to = sstate.scan_cursor
                     for idx_pos, idx in enumerate(f_order):
                         if idx_pos > 0 and ((time.perf_counter() - t_sel0) * 1000.0) >= max_sel_ms:
+                            f_broke = True
                             break
                         ig = sstate.score_probe_disagreement(idx)
+                        if idx >= f_scored_to:
+                            f_scored_to = idx + 1
                         if ig <= 0.0:
                             sstate.active_ig_indices.discard(idx)
                             continue
@@ -1277,6 +1292,7 @@ class SelfCurriculumScheduler:
                             best_f_ig = ig
                             best_f_sid = sid
                             best_f_idx = idx
+                    sstate.scan_cursor = max(sstate.scan_cursor, f_scored_to if f_broke else f_cur)
                 if (
                     best_f_sid is not None
                     and best_f_idx is not None

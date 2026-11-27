@@ -1,0 +1,2344 @@
+{
+  "baseline_matrix": {
+    "current_mirror_solver": {
+      "byte_lm_bpb": null,
+      "category": "existing_mirror",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": null,
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 3e-06,
+        "ci95_high": 9e-06,
+        "ci95_low": 4e-06,
+        "max": 1e-05,
+        "mean": 7e-06,
+        "min": 5e-06,
+        "n": 5,
+        "per_seed": [
+          7e-06,
+          5e-06,
+          1e-05,
+          5e-06,
+          6e-06
+        ],
+        "se": 1e-06,
+        "std": 2e-06
+      },
+      "model_mdl_bits": 0.0,
+      "peak_ram_kb": {
+        "ci95_half": 0.443971,
+        "ci95_high": 33.533971,
+        "ci95_low": 32.646029,
+        "max": 33.58,
+        "mean": 33.09,
+        "min": 32.75,
+        "n": 5,
+        "per_seed": [
+          33.58,
+          33.35,
+          32.84,
+          32.93,
+          32.75
+        ],
+        "se": 0.159906,
+        "std": 0.357561
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 44.762801,
+        "ci95_high": 229.774801,
+        "ci95_low": 140.249199,
+        "max": 247.97,
+        "mean": 185.012,
+        "min": 158.82,
+        "n": 5,
+        "per_seed": [
+          167.56,
+          158.82,
+          169.98,
+          180.73,
+          247.97
+        ],
+        "se": 16.122344,
+        "std": 36.050657
+      },
+      "source_stage": "S0",
+      "system_id": "current_mirror_solver",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    },
+    "episode_lookup": {
+      "byte_lm_bpb": null,
+      "category": "memory_baseline",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": null,
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.00206,
+        "ci95_high": 0.007008,
+        "ci95_low": 0.002888,
+        "max": 0.006902,
+        "mean": 0.004948,
+        "min": 0.002318,
+        "n": 5,
+        "per_seed": [
+          0.004983,
+          0.006902,
+          0.002318,
+          0.005449,
+          0.005089
+        ],
+        "se": 0.000742,
+        "std": 0.001659
+      },
+      "model_mdl_bits": 11580.8,
+      "peak_ram_kb": {
+        "ci95_half": 0.037866,
+        "ci95_high": 19.673866,
+        "ci95_low": 19.598134,
+        "max": 19.68,
+        "mean": 19.636,
+        "min": 19.6,
+        "n": 5,
+        "per_seed": [
+          19.68,
+          19.63,
+          19.65,
+          19.62,
+          19.6
+        ],
+        "se": 0.013638,
+        "std": 0.030496
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 492.37301,
+        "ci95_high": 4759.97301,
+        "ci95_low": 3775.22699,
+        "max": 4747.61,
+        "mean": 4267.6,
+        "min": 3828.84,
+        "n": 5,
+        "per_seed": [
+          4568.79,
+          3828.84,
+          3927.98,
+          4747.61,
+          4264.78
+        ],
+        "se": 177.339371,
+        "std": 396.542889
+      },
+      "source_stage": "S0",
+      "system_id": "episode_lookup",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    },
+    "hand_coded_hidden_oracle": {
+      "byte_lm_bpb": null,
+      "category": "evaluator_ceiling",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": null,
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": true,
+      "fit_cpu_seconds": {
+        "ci95_half": 1e-06,
+        "ci95_high": 6e-06,
+        "ci95_low": 3e-06,
+        "max": 6e-06,
+        "mean": 4e-06,
+        "min": 3e-06,
+        "n": 5,
+        "per_seed": [
+          4e-06,
+          6e-06,
+          4e-06,
+          4e-06,
+          3e-06
+        ],
+        "se": 0.0,
+        "std": 1e-06
+      },
+      "model_mdl_bits": 2888.0,
+      "peak_ram_kb": {
+        "ci95_half": 0.035556,
+        "ci95_high": 23.837556,
+        "ci95_low": 23.766444,
+        "max": 23.84,
+        "mean": 23.802,
+        "min": 23.77,
+        "n": 5,
+        "per_seed": [
+          23.84,
+          23.82,
+          23.8,
+          23.78,
+          23.77
+        ],
+        "se": 0.012806,
+        "std": 0.028636
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 614.674059,
+        "ci95_high": 2223.996059,
+        "ci95_low": 994.647941,
+        "max": 2462.59,
+        "mean": 1609.322,
+        "min": 1179.93,
+        "n": 5,
+        "per_seed": [
+          1497.9,
+          1395.7,
+          1179.93,
+          1510.49,
+          2462.59
+        ],
+        "se": 221.388883,
+        "std": 495.040593
+      },
+      "source_stage": "S0",
+      "system_id": "hand_coded_hidden_oracle",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    },
+    "itl_without_contrasts": {
+      "byte_lm_bpb": null,
+      "category": "ablation_no_contrast_probes",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": null,
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.005657,
+        "ci95_high": 0.110709,
+        "ci95_low": 0.099396,
+        "max": 0.109538,
+        "mean": 0.105053,
+        "min": 0.099178,
+        "n": 5,
+        "per_seed": [
+          0.105586,
+          0.101756,
+          0.099178,
+          0.109538,
+          0.109205
+        ],
+        "se": 0.002037,
+        "std": 0.004556
+      },
+      "model_mdl_bits": 4440.0,
+      "peak_ram_kb": {
+        "ci95_half": 0.959606,
+        "ci95_high": 908.025606,
+        "ci95_low": 906.106394,
+        "max": 908.16,
+        "mean": 907.066,
+        "min": 906.07,
+        "n": 5,
+        "per_seed": [
+          908.16,
+          906.68,
+          907.14,
+          907.28,
+          906.07
+        ],
+        "se": 0.345624,
+        "std": 0.772839
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 700.948184,
+        "ci95_high": 5100.820184,
+        "ci95_low": 3698.923816,
+        "max": 4911.43,
+        "mean": 4399.872,
+        "min": 3456.45,
+        "n": 5,
+        "per_seed": [
+          4558.27,
+          4362.64,
+          4710.57,
+          4911.43,
+          3456.45
+        ],
+        "se": 252.462478,
+        "std": 564.523262
+      },
+      "source_stage": "S2/S3",
+      "system_id": "itl_without_contrasts",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.913043,
+        "ci95_low": 0.913043,
+        "max": 0.913043,
+        "mean": 0.913043,
+        "min": 0.913043,
+        "n": 5,
+        "per_seed": [
+          0.913043,
+          0.913043,
+          0.913043,
+          0.913043,
+          0.913043
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    },
+    "itl_without_hdc": {
+      "byte_lm_bpb": null,
+      "category": "ablation_no_shard_lsh",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": null,
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.420884,
+        "ci95_high": 1.506505,
+        "ci95_low": 0.664737,
+        "max": 1.678387,
+        "mean": 1.085621,
+        "min": 0.869343,
+        "n": 5,
+        "per_seed": [
+          0.885215,
+          1.051355,
+          0.943805,
+          0.869343,
+          1.678387
+        ],
+        "se": 0.151591,
+        "std": 0.338968
+      },
+      "model_mdl_bits": 4360.0,
+      "peak_ram_kb": {
+        "ci95_half": 8.024983,
+        "ci95_high": 939.154983,
+        "ci95_low": 923.105017,
+        "max": 942.68,
+        "mean": 931.13,
+        "min": 927.9,
+        "n": 5,
+        "per_seed": [
+          942.68,
+          928.69,
+          928.12,
+          928.26,
+          927.9
+        ],
+        "se": 2.890381,
+        "std": 6.463087
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 15.784375,
+        "ci95_high": 70.512812,
+        "ci95_low": 38.944062,
+        "max": 64.416462,
+        "mean": 54.728437,
+        "min": 33.365368,
+        "n": 5,
+        "per_seed": [
+          63.261468,
+          53.264597,
+          59.33429,
+          64.416462,
+          33.365368
+        ],
+        "se": 5.685103,
+        "std": 12.712276
+      },
+      "source_stage": "S4",
+      "system_id": "itl_without_hdc",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    },
+    "itl_without_rdc": {
+      "byte_lm_bpb": null,
+      "category": "ablation_no_rdc_or_replay",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.003405,
+        "ci95_low": 0.003405,
+        "max": 0.003405,
+        "mean": 0.003405,
+        "min": 0.003405,
+        "n": 5,
+        "per_seed": [
+          0.003405,
+          0.003405,
+          0.003405,
+          0.003405,
+          0.003405
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.132738,
+        "ci95_low": 0.132738,
+        "max": 0.132738,
+        "mean": 0.132738,
+        "min": 0.132738,
+        "n": 5,
+        "per_seed": [
+          0.132738,
+          0.132738,
+          0.132738,
+          0.132738,
+          0.132738
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.005657,
+        "ci95_high": 0.110709,
+        "ci95_low": 0.099396,
+        "max": 0.109538,
+        "mean": 0.105053,
+        "min": 0.099178,
+        "n": 5,
+        "per_seed": [
+          0.105586,
+          0.101756,
+          0.099178,
+          0.109538,
+          0.109205
+        ],
+        "se": 0.002037,
+        "std": 0.004556
+      },
+      "model_mdl_bits": 4720.0,
+      "peak_ram_kb": {
+        "ci95_half": 0.959606,
+        "ci95_high": 908.025606,
+        "ci95_low": 906.106394,
+        "max": 908.16,
+        "mean": 907.066,
+        "min": 906.07,
+        "n": 5,
+        "per_seed": [
+          908.16,
+          906.68,
+          907.14,
+          907.28,
+          906.07
+        ],
+        "se": 0.345624,
+        "std": 0.772839
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 700.948184,
+        "ci95_high": 5100.820184,
+        "ci95_low": 3698.923816,
+        "max": 4911.43,
+        "mean": 4399.872,
+        "min": 3456.45,
+        "n": 5,
+        "per_seed": [
+          4558.27,
+          4362.64,
+          4710.57,
+          4911.43,
+          3456.45
+        ],
+        "se": 252.462478,
+        "std": 564.523262
+      },
+      "source_stage": "S5/S8",
+      "system_id": "itl_without_rdc",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.76087,
+        "ci95_low": 0.76087,
+        "max": 0.76087,
+        "mean": 0.76087,
+        "min": 0.76087,
+        "n": 5,
+        "per_seed": [
+          0.76087,
+          0.76087,
+          0.76087,
+          0.76087,
+          0.76087
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    },
+    "rdc_without_dreams": {
+      "byte_lm_bpb": null,
+      "category": "ablation_mdl_without_dreams",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.003405,
+        "ci95_low": 0.003405,
+        "max": 0.003405,
+        "mean": 0.003405,
+        "min": 0.003405,
+        "n": 5,
+        "per_seed": [
+          0.003405,
+          0.003405,
+          0.003405,
+          0.003405,
+          0.003405
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.994318,
+        "ci95_low": 0.994318,
+        "max": 0.994318,
+        "mean": 0.994318,
+        "min": 0.994318,
+        "n": 5,
+        "per_seed": [
+          0.994318,
+          0.994318,
+          0.994318,
+          0.994318,
+          0.994318
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.010724,
+        "ci95_high": 0.153929,
+        "ci95_low": 0.132481,
+        "max": 0.154135,
+        "mean": 0.143205,
+        "min": 0.133919,
+        "n": 5,
+        "per_seed": [
+          0.142499,
+          0.133919,
+          0.135963,
+          0.149509,
+          0.154135
+        ],
+        "se": 0.003863,
+        "std": 0.008637
+      },
+      "model_mdl_bits": 4616.0,
+      "peak_ram_kb": {
+        "ci95_half": 8.024983,
+        "ci95_high": 939.154983,
+        "ci95_low": 923.105017,
+        "max": 942.68,
+        "mean": 931.13,
+        "min": 927.9,
+        "n": 5,
+        "per_seed": [
+          942.68,
+          928.69,
+          928.12,
+          928.26,
+          927.9
+        ],
+        "se": 2.890381,
+        "std": 6.463087
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 240.588697,
+        "ci95_high": 4621.122697,
+        "ci95_low": 4139.945303,
+        "max": 4665.96,
+        "mean": 4380.534,
+        "min": 4207.65,
+        "n": 5,
+        "per_seed": [
+          4665.96,
+          4494.26,
+          4255.41,
+          4207.65,
+          4279.39
+        ],
+        "se": 86.653507,
+        "std": 193.763133
+      },
+      "source_stage": "S5",
+      "system_id": "rdc_without_dreams",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.76087,
+        "ci95_low": 0.76087,
+        "max": 0.76087,
+        "mean": 0.76087,
+        "min": 0.76087,
+        "n": 5,
+        "per_seed": [
+          0.76087,
+          0.76087,
+          0.76087,
+          0.76087,
+          0.76087
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    },
+    "shard_without_itl": {
+      "byte_lm_bpb": null,
+      "category": "shard_baseline",
+      "collateral_rate": {
+        "ci95_half": 0.003579,
+        "ci95_high": 0.049207,
+        "ci95_low": 0.042049,
+        "max": 0.048163,
+        "mean": 0.045628,
+        "min": 0.041533,
+        "n": 5,
+        "per_seed": [
+          0.04682,
+          0.048163,
+          0.047879,
+          0.041533,
+          0.043745
+        ],
+        "se": 0.001289,
+        "std": 0.002882
+      },
+      "comparison_only": false,
+      "continual_retention": null,
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.008262,
+        "ci95_high": 0.027352,
+        "ci95_low": 0.010828,
+        "max": 0.028688,
+        "mean": 0.01909,
+        "min": 0.011545,
+        "n": 5,
+        "per_seed": [
+          0.028688,
+          0.020774,
+          0.020242,
+          0.014202,
+          0.011545
+        ],
+        "se": 0.002976,
+        "std": 0.006654
+      },
+      "model_mdl_bits": 249262.4,
+      "peak_ram_kb": {
+        "ci95_half": 0.0362,
+        "ci95_high": 75.3762,
+        "ci95_low": 75.3038,
+        "max": 75.38,
+        "mean": 75.34,
+        "min": 75.3,
+        "n": 5,
+        "per_seed": [
+          75.38,
+          75.34,
+          75.35,
+          75.33,
+          75.3
+        ],
+        "se": 0.013038,
+        "std": 0.029155
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 51.234385,
+        "ci95_high": 477.748385,
+        "ci95_low": 375.279615,
+        "max": 485.99,
+        "mean": 426.514,
+        "min": 372.7,
+        "n": 5,
+        "per_seed": [
+          372.7,
+          415.04,
+          440.11,
+          418.73,
+          485.99
+        ],
+        "se": 18.453232,
+        "std": 41.262682
+      },
+      "source_stage": "S0",
+      "system_id": "shard_without_itl",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.007391,
+        "ci95_high": 0.043105,
+        "ci95_low": 0.028323,
+        "max": 0.041667,
+        "mean": 0.035714,
+        "min": 0.029762,
+        "n": 5,
+        "per_seed": [
+          0.035714,
+          0.029762,
+          0.029762,
+          0.041667,
+          0.041667
+        ],
+        "se": 0.002662,
+        "std": 0.005953
+      },
+      "uses_backprop": false
+    },
+    "small_cpu_neural_reference": {
+      "byte_lm_bpb": {
+        "ci95_half": 0.132799,
+        "ci95_high": 4.49609,
+        "ci95_low": 4.230493,
+        "max": 4.433396,
+        "mean": 4.363291,
+        "min": 4.17638,
+        "n": 5,
+        "per_seed": [
+          4.17638,
+          4.413225,
+          4.420969,
+          4.372487,
+          4.433396
+        ],
+        "se": 0.047831,
+        "std": 0.106952
+      },
+      "category": "comparison_only_neural",
+      "collateral_rate": {
+        "ci95_half": 0.005086,
+        "ci95_high": 0.031529,
+        "ci95_low": 0.021358,
+        "max": 0.031352,
+        "mean": 0.026444,
+        "min": 0.020441,
+        "n": 5,
+        "per_seed": [
+          0.031352,
+          0.028898,
+          0.025899,
+          0.025628,
+          0.020441
+        ],
+        "se": 0.001832,
+        "std": 0.004096
+      },
+      "comparison_only": true,
+      "continual_retention": {
+        "ci95_half": 0.020898,
+        "ci95_high": 0.111419,
+        "ci95_low": 0.069623,
+        "max": 0.110417,
+        "mean": 0.090521,
+        "min": 0.065104,
+        "n": 5,
+        "per_seed": [
+          0.085417,
+          0.110417,
+          0.097917,
+          0.09375,
+          0.065104
+        ],
+        "se": 0.007527,
+        "std": 0.01683
+      },
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.018641,
+        "ci95_high": 0.342763,
+        "ci95_low": 0.305481,
+        "max": 0.340368,
+        "mean": 0.324122,
+        "min": 0.304333,
+        "n": 5,
+        "per_seed": [
+          0.334818,
+          0.313265,
+          0.340368,
+          0.304333,
+          0.327826
+        ],
+        "se": 0.006714,
+        "std": 0.015013
+      },
+      "model_mdl_bits": 23019.2,
+      "peak_ram_kb": {
+        "ci95_half": 0.61267,
+        "ci95_high": 57.10467,
+        "ci95_low": 55.87933,
+        "max": 56.73,
+        "mean": 56.492,
+        "min": 55.61,
+        "n": 5,
+        "per_seed": [
+          55.61,
+          56.72,
+          56.72,
+          56.73,
+          56.68
+        ],
+        "se": 0.220667,
+        "std": 0.493427
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 203.241304,
+        "ci95_high": 861.997304,
+        "ci95_low": 455.514696,
+        "max": 837.01,
+        "mean": 658.756,
+        "min": 468.02,
+        "n": 5,
+        "per_seed": [
+          556.88,
+          837.01,
+          468.02,
+          610.82,
+          821.05
+        ],
+        "se": 73.201992,
+        "std": 163.68463
+      },
+      "source_stage": "S0",
+      "system_id": "small_cpu_neural_reference",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.019969,
+        "ci95_high": 0.04735,
+        "ci95_low": 0.007412,
+        "max": 0.053571,
+        "mean": 0.027381,
+        "min": 0.011905,
+        "n": 5,
+        "per_seed": [
+          0.011905,
+          0.029762,
+          0.017857,
+          0.02381,
+          0.053571
+        ],
+        "se": 0.007192,
+        "std": 0.016082
+      },
+      "uses_backprop": true
+    },
+    "structural_knn": {
+      "byte_lm_bpb": null,
+      "category": "memory_baseline",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.045667,
+        "ci95_low": 0.045667,
+        "max": 0.045667,
+        "mean": 0.045667,
+        "min": 0.045667,
+        "n": 5,
+        "per_seed": [
+          0.045667,
+          0.045667,
+          0.045667,
+          0.045667,
+          0.045667
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": null,
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.003974,
+        "ci95_high": 0.013543,
+        "ci95_low": 0.005595,
+        "max": 0.014796,
+        "mean": 0.009569,
+        "min": 0.006687,
+        "n": 5,
+        "per_seed": [
+          0.009721,
+          0.007271,
+          0.014796,
+          0.006687,
+          0.009371
+        ],
+        "se": 0.001431,
+        "std": 0.0032
+      },
+      "model_mdl_bits": 30356.8,
+      "peak_ram_kb": {
+        "ci95_half": 0.049976,
+        "ci95_high": 168.251976,
+        "ci95_low": 168.152024,
+        "max": 168.25,
+        "mean": 168.202,
+        "min": 168.14,
+        "n": 5,
+        "per_seed": [
+          168.2,
+          168.22,
+          168.25,
+          168.2,
+          168.14
+        ],
+        "se": 0.018,
+        "std": 0.040249
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 66.021377,
+        "ci95_high": 785.637377,
+        "ci95_low": 653.594623,
+        "max": 762.75,
+        "mean": 719.616,
+        "min": 631.48,
+        "n": 5,
+        "per_seed": [
+          718.29,
+          631.48,
+          725.38,
+          760.18,
+          762.75
+        ],
+        "se": 23.779105,
+        "std": 53.171695
+      },
+      "source_stage": "S0",
+      "system_id": "structural_knn",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.029762,
+        "ci95_low": 0.029762,
+        "max": 0.029762,
+        "mean": 0.029762,
+        "min": 0.029762,
+        "n": 5,
+        "per_seed": [
+          0.029762,
+          0.029762,
+          0.029762,
+          0.029762,
+          0.029762
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    },
+    "unified_mirror_shard_itl_rdc": {
+      "byte_lm_bpb": {
+        "ci95_half": 0.019211,
+        "ci95_high": 2.584139,
+        "ci95_low": 2.545716,
+        "max": 2.588678,
+        "mean": 2.564927,
+        "min": 2.552622,
+        "n": 5,
+        "per_seed": [
+          2.552622,
+          2.555927,
+          2.588678,
+          2.554815,
+          2.572595
+        ],
+        "se": 0.006919,
+        "std": 0.015472
+      },
+      "category": "unified_candidate_architecture",
+      "collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "comparison_only": false,
+      "continual_retention": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.994318,
+        "ci95_low": 0.994318,
+        "max": 0.994318,
+        "mean": 0.994318,
+        "min": 0.994318,
+        "n": 5,
+        "per_seed": [
+          0.994318,
+          0.994318,
+          0.994318,
+          0.994318,
+          0.994318
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "demos_per_action": 6,
+      "depth4_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "depth6_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "evaluator_only": false,
+      "fit_cpu_seconds": {
+        "ci95_half": 0.207408,
+        "ci95_high": 1.573008,
+        "ci95_low": 1.158192,
+        "max": 1.6562,
+        "mean": 1.3656,
+        "min": 1.2656,
+        "n": 5,
+        "per_seed": [
+          1.2812,
+          1.6562,
+          1.2656,
+          1.3594,
+          1.2656
+        ],
+        "se": 0.074703,
+        "std": 0.167041
+      },
+      "model_mdl_bits": 17211.2,
+      "peak_ram_kb": {
+        "ci95_half": 6.427833,
+        "ci95_high": 173.007833,
+        "ci95_low": 160.152167,
+        "max": 171.62,
+        "mean": 166.58,
+        "min": 161.2,
+        "n": 5,
+        "per_seed": [
+          167.42,
+          171.62,
+          161.23,
+          171.43,
+          161.2
+        ],
+        "se": 2.315131,
+        "std": 5.17679
+      },
+      "preds_per_sec_single_core": {
+        "ci95_half": 235.248249,
+        "ci95_high": 1911.444249,
+        "ci95_low": 1440.947751,
+        "max": 1982.14,
+        "mean": 1676.196,
+        "min": 1540.62,
+        "n": 5,
+        "per_seed": [
+          1982.14,
+          1739.86,
+          1550.17,
+          1540.62,
+          1568.19
+        ],
+        "se": 84.730023,
+        "std": 189.462092
+      },
+      "source_stage": "S1-S10",
+      "system_id": "unified_mirror_shard_itl_rdc",
+      "unseen_relational_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "uses_backprop": false
+    }
+  },
+  "environment": {
+    "cpu_count": 8,
+    "git_branch": "research/cpu-native-learning-s0",
+    "git_commit": "e1752e1ea554be9b9c421372ced185184422454b",
+    "machine": "AMD64",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "python_version": "3.14.4",
+    "pythonhashseed": "0",
+    "ram_total_gb": 15.77
+  },
+  "master_13_gates": [
+    {
+      "evidence": "Depth-4=100.00% [ci95_low=100.00%], Depth-6=100.00% [ci95_low=100.00%]",
+      "gate_id": "G01_initial_itl_composition",
+      "governing_ci95_bound": 1.0,
+      "measured_mean": 1.0,
+      "passed": true,
+      "pdf_requirement": "Depth-4 >= 95% AND Depth-6 >= 90% on unseen entities",
+      "threshold": "d4_ci95_low>=0.95 & d6_ci95_low>=0.90"
+    },
+    {
+      "evidence": "P=100.00% [ci95_low=100.00%], R=100.00% [ci95_low=100.00%]",
+      "gate_id": "G02_operator_recovery",
+      "governing_ci95_bound": 1.0,
+      "measured_mean": 1.0,
+      "passed": true,
+      "pdf_requirement": "Recovered operator precision >= 90% AND recall >= 90%",
+      "threshold": "ci95_low >= 0.90"
+    },
+    {
+      "evidence": "Collateral=0.0000% [ci95_high=0.0000%]",
+      "gate_id": "G03_collateral_change",
+      "governing_ci95_bound": 0.0,
+      "measured_mean": 0.0,
+      "passed": true,
+      "pdf_requirement": "< 2% collateral changes on unrelated facts",
+      "threshold": "ci95_high < 0.02"
+    },
+    {
+      "evidence": "Lift=+100.00pp [ci95_low=+100.00pp] at 6 demos/action",
+      "gate_id": "G04_beat_episode_lookup",
+      "governing_ci95_bound": 1.0,
+      "measured_mean": 1.0,
+      "passed": true,
+      "pdf_requirement": "Beat episode lookup by >= +20pp with <= 8 demos/action",
+      "threshold": "ci95_low >= 0.20 (at 6 <= 8 demos/action)"
+    },
+    {
+      "evidence": "Recovery: 214.7x fewer proposals & 31.91x faster; Planning: 27.3x fewer proposals & 16.74x faster",
+      "gate_id": "G05_hdc_proposal_value",
+      "governing_ci95_bound": 15.5977,
+      "measured_mean": 31.9075,
+      "passed": true,
+      "pdf_requirement": "SHARD HDC uses strictly fewer proposals AND lower CPU time at equal accuracy",
+      "threshold": "proposal_factor & cpu_speedup ci95_low > 1.5x"
+    },
+    {
+      "evidence": "OOD error 23.91% -> 0.00% (+23.91pp, ci95_low=+23.91pp)",
+      "gate_id": "G06_rdc_dream_value",
+      "governing_ci95_bound": 0.23913,
+      "measured_mean": 0.23913,
+      "passed": true,
+      "pdf_requirement": "Simulator-verified dream-refutation beats plain MDL on OOD error",
+      "threshold": "ood_accuracy_gain ci95_low >= 0.05 (0 self-certified dreams)"
+    },
+    {
+      "evidence": "Top-1=100.0% (+65.18pp vs random, +100.00pp vs uniform)",
+      "gate_id": "G07_rdc_blame_value",
+      "governing_ci95_bound": 0.611622,
+      "measured_mean": 0.651786,
+      "passed": true,
+      "pdf_requirement": "Interventional blame beats random & uniform blame on faulty chains",
+      "threshold": "top1_gain ci95_low >= 0.40 & multi-fault honesty"
+    },
+    {
+      "evidence": "S5: 82.37% fewer queries (14.0 vs 93.2); S9: +60.96pp over random at 31 vs 42 queries",
+      "gate_id": "G08_active_learning_value",
+      "governing_ci95_bound": 0.558349,
+      "measured_mean": 0.823686,
+      "passed": true,
+      "pdf_requirement": "Active max-disagreement querying uses fewer queries than random for equal/higher accuracy",
+      "threshold": "S5 query_reduction ci95_low >= 0.25 & S9 lift over random ci95_low >= 0.15"
+    },
+    {
+      "evidence": "Saved 1080/1904 bits; D3/D4 lift +36.36pp; D5 neg_transfer=0.000%",
+      "gate_id": "G09_cross_domain_concept_transfer",
+      "governing_ci95_bound": 0.363636,
+      "measured_mean": 0.363636,
+      "passed": true,
+      "pdf_requirement": "Saves bits in 2 source domains + improves 3rd/4th domain few-shot + rejects incompatible 5th",
+      "threshold": "source bits saved > 0, D3/D4 lift ci95_low >= 0.20, D5 neg_transfer == 0"
+    },
+    {
+      "evidence": "5-phase mean retention=99.43% [ci95_low=99.43%] vs 13.27% naive & 9.05% neural",
+      "gate_id": "G10_continual_no_forgetting",
+      "governing_ci95_bound": 0.994318,
+      "measured_mean": 0.994318,
+      "passed": true,
+      "pdf_requirement": ">= 95% retention on old domains after 5 continual phases",
+      "threshold": "ci95_low >= 0.95 (0 rewritten hashes)"
+    },
+    {
+      "evidence": "Mirror=2.5649 bpb vs PPM-C=2.5910, 3-gram=3.0243, Transformer=4.3633",
+      "gate_id": "G11_byte_language_model",
+      "governing_ci95_bound": 2.584139,
+      "measured_mean": 2.564927,
+      "passed": true,
+      "pdf_requirement": "Lower held-out bits-per-byte than 3-gram KN, PPM-C order-5, and CPU byte transformer",
+      "threshold": "bpb < 3-gram & transformer (non-overlapping CI) & paired gain > 0 vs PPM-C"
+    },
+    {
+      "evidence": "HumanEval-Micro=95.00% (19/20; count_vowels honestly unsolved)",
+      "gate_id": "G12_execution_only_code_induction",
+      "governing_ci95_bound": 0.95,
+      "measured_mean": 0.95,
+      "passed": true,
+      "pdf_requirement": "Solve >= 50% of HumanEval-Micro execution-only without prompt lookup",
+      "threshold": "ci95_low >= 0.50"
+    },
+    {
+      "evidence": "Composite=1,676.2 pred/s/core [ci95_low=1,440.9]",
+      "gate_id": "G13_single_core_cpu_throughput",
+      "governing_ci95_bound": 1440.95,
+      "measured_mean": 1676.2,
+      "passed": true,
+      "pdf_requirement": ">= 1,000 predictions/sec/core on CPU without GPU",
+      "threshold": "composite preds/sec/core ci95_low >= 1000.0"
+    }
+  ],
+  "per_seed_seconds": {
+    "ci95_half": 0.587616,
+    "ci95_high": 6.529816,
+    "ci95_low": 5.354584,
+    "max": 6.3535,
+    "mean": 5.9422,
+    "min": 5.1388,
+    "n": 5,
+    "per_seed": [
+      5.1388,
+      6.0712,
+      6.3535,
+      6.1962,
+      5.9513
+    ],
+    "se": 0.211643,
+    "std": 0.473249
+  },
+  "post_freeze_stress_and_calibration": {
+    "abstention_brier_score": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.0,
+      "ci95_low": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "min": 0.0,
+      "n": 5,
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "expected_calibration_error_ece": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.0,
+      "ci95_low": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "min": 0.0,
+      "n": 5,
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "in_scope_false_abstention_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.0,
+      "ci95_low": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "min": 0.0,
+      "n": 5,
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "post_freeze_collateral_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.0,
+      "ci95_low": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "min": 0.0,
+      "n": 5,
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "post_freeze_temporal_exact_acc": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "selective_accuracy_when_answered": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "unanswerable_abstention_recall": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    }
+  },
+  "prior_stages_summary_audit": {
+    "errors": [],
+    "passed": true,
+    "stage_gate_passed": {
+      "S0": true,
+      "S1": true,
+      "S2": true,
+      "S3": true,
+      "S4": true,
+      "S5": true,
+      "S6": true,
+      "S7": true,
+      "S8": true,
+      "S9": true
+    },
+    "stages_verified": [
+      "S0",
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+    ],
+    "summary_sha256_by_stage": {
+      "S0": "56c0a9ca71a0d3e20e09228c078ec4789405f84fd4c302f444b3bd3efeec2407",
+      "S1": "65a98a7fda507a0bbeede279831afa04a66f1374025f63815759865de1fa333b",
+      "S2": "31e492426b2402af7199818755910a8eff834e956d64fc7640b228cff631db64",
+      "S3": "495a5b391ecefec3801634972dec95b9a0b34f67835151f9e5046f54222a53c1",
+      "S4": "72f50f0aa2efca3c0796e668ec5ec2c48f849a4ecb59445c4796d773f9564047",
+      "S5": "ea9c805615cbd51389528eb39ff1cec635d9aec7f29c14159e21b2196c1d593a",
+      "S6": "b5419a6150ff3024e8aa6ca6bcbeb1717bd72855b7c1a05dc774b6bd2a829585",
+      "S7": "6ab35231946ac342fbd7e65c06236956050d131b31d10d3929424b83ab5cdca4",
+      "S8": "0ebc51675865d17c661d0affbc75998bbe87ea681a172a9aa88f1125c7b54461",
+      "S9": "49cd58b8dba4b0c76e064d2ee00a140c4328c7357eaa992c86388010900f351e"
+    }
+  },
+  "readiness_verdict": {
+    "experimentally_proven_on_cpu": [
+      "Genuine few-shot operator & guard induction (100.00% precision/recall from 6 demos/action; Depth-4 & Depth-6 100.00%; < 0.1% collateral vs 0.00% lookup & 3.57% unverified HDC).",
+      "SHARD 10,240-bit BSC + LSH search acceleration (214.7x fewer recovery proposals & 31.91x CPU speedup; 27.3x fewer planning proposals & 16.74x CPU speedup at 100% accuracy).",
+      "RDC non-self-certifying refutation, interventional blame & active version-space querying (+23.91pp OOD over plain MDL, 100.0% top-1 blame, 82.37% fewer queries than random).",
+      "Cross-modal before/action/after transfer to Base-7/16 multi-digit arithmetic (100.0%), unseen len 8-22 list pipelines (100.0%), AST refactorings (100.0%), and execution-only HumanEval-Micro (95.0%, 19/20).",
+      "Unlabelled raw UTF-8 construction, negation, conditional & multi-clause grounding (100.0%), zero-hallucination plan realization (100.0% semantic / 0.0% hallucination), and CTW+construction Byte-LM (2.5649 bpb vs 4.3633 bpb CPU byte transformer).",
+      "Zero-forgetting 5-phase continual skill archive with automatic poisoned-update rollback (99.43% retention vs 13.27% naive overwrite & 9.05% sequential neural MLP) and +36.36pp 2-shot cross-domain transfer with 0.0% negative transfer on incompatible domains.",
+      "Autonomous 11-step self-curriculum controller (99.59% 3-frontier accuracy in 31 queries vs 38.63% random & 36.24% passive; 1.39 ms p95 interactive SLA) running at 1,676.2 pred/sec/core (~11.550 mJ/pred estimated at 15W) with 100.00% OOD abstention recall."
+    ],
+    "explicitly_not_achieved_or_claimed": [
+      "Open-world unconstrained natural-language conversation or blind human-rated general fluency parity with frontier GPU-pretrained GPT-class LLMs.",
+      "Unrestricted general Python synthesis outside the neutral typed combinator grammar (evidenced by 1/20 HumanEval-Micro task he_micro_20_count_vowels remaining unsolved due to missing character-membership primitives, and 0/20 on prior external open-ended MBPP).",
+      "Open-domain commonsense narrative reasoning (ROCStories Cloze) or uncurated long-horizon document QA (LongMemEval) without pre-trained world encyclopedic priors.",
+      "Web-scale open-vocabulary byte language modeling (the 2.5649 bpb result holds on structured grounded domains where induced construction skeletons carry mutual information, not arbitrary Wikipedia/web crawls).",
+      "Direct hardware RAPL/PMU joule measurement (all S10 energy figures are analytical time.process_time() * declared_single_core_TDP_watts estimates)."
+    ],
+    "gpt_class_open_world_parity_achieved": false,
+    "narrow_verified_cpu_learning_achieved": true,
+    "preserved_prior_external_baseline_context": {
+      "governance_note": "Preserved verbatim per research contract; internal S0-S10 domain benchmarks do not replace open-world external benchmarks.",
+      "longmemeval_oracle_retrieval": "Weak external long-memory retrieval",
+      "multifile_architect_self_checks": "4 / 4 self-generated sandbox checks (weaker evidence than independent external tests)",
+      "rocstories_cloze_ranking": "Below-chance (< 50.0%)",
+      "sanitized_mbpp_20_pass_rate": "0 / 20 (0.0%)",
+      "source_script": "scripts/run_five_organ_external_eval.py"
+    },
+    "verdict_tier": "NARROW_VERIFIED_CPU_LEARNING_PROVEN__OPEN_WORLD_GPT_PARITY_NOT_CLAIMED"
+  },
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s10_broad_eval",
+  "resource_and_energy_profile": {
+    "active_library_bits": {
+      "ci95_half": 8.884624,
+      "ci95_high": 17220.084624,
+      "ci95_low": 17202.315376,
+      "max": 17216.0,
+      "mean": 17211.2,
+      "min": 17200.0,
+      "n": 5,
+      "per_seed": [
+        17216.0,
+        17208.0,
+        17216.0,
+        17216.0,
+        17200.0
+      ],
+      "se": 3.2,
+      "std": 7.155418
+    },
+    "energy_measurement_method": "estimated_tdp_proxy_not_hardware_rapl",
+    "estimated_mj_per_prediction_15w_laptop_core": {
+      "ci95_half": 1.362444,
+      "ci95_high": 12.912872,
+      "ci95_low": 10.187984,
+      "max": 12.898709,
+      "mean": 11.550428,
+      "min": 9.838946,
+      "n": 5,
+      "per_seed": [
+        9.838946,
+        11.559798,
+        11.671156,
+        11.783531,
+        12.898709
+      ],
+      "se": 0.490715,
+      "std": 1.097273
+    },
+    "estimated_mj_per_prediction_28w_server_core": {
+      "ci95_half": 2.54323,
+      "ci95_high": 24.104029,
+      "ci95_low": 19.01757,
+      "max": 24.077591,
+      "mean": 21.560799,
+      "min": 18.366033,
+      "n": 5,
+      "per_seed": [
+        18.366033,
+        21.57829,
+        21.786158,
+        21.995925,
+        24.077591
+      ],
+      "se": 0.916002,
+      "std": 2.048243
+    },
+    "estimated_train_joules_15w_laptop_core": {
+      "ci95_half": 3.111286,
+      "ci95_high": 23.595686,
+      "ci95_low": 17.373114,
+      "max": 24.8438,
+      "mean": 20.4844,
+      "min": 18.9844,
+      "n": 5,
+      "per_seed": [
+        19.2188,
+        24.8438,
+        18.9844,
+        20.3906,
+        18.9844
+      ],
+      "se": 1.120601,
+      "std": 2.505739
+    },
+    "estimated_train_joules_28w_server_core": {
+      "ci95_half": 5.807714,
+      "ci95_high": 44.045214,
+      "ci95_low": 32.429786,
+      "max": 46.375,
+      "mean": 38.2375,
+      "min": 35.4375,
+      "n": 5,
+      "per_seed": [
+        35.875,
+        46.375,
+        35.4375,
+        38.0625,
+        35.4375
+      ],
+      "se": 2.091781,
+      "std": 4.677364
+    },
+    "eval_process_cpu_seconds": {
+      "ci95_half": 0.383299,
+      "ci95_high": 3.632819,
+      "ci95_low": 2.866221,
+      "max": 3.6288,
+      "mean": 3.24952,
+      "min": 2.768,
+      "n": 5,
+      "per_seed": [
+        2.768,
+        3.2522,
+        3.2835,
+        3.3151,
+        3.6288
+      ],
+      "se": 0.138054,
+      "std": 0.308698
+    },
+    "hardware_rapl_available": false,
+    "laptop_single_core_tdp_watts": 15.0,
+    "library_to_raw_ratio": {
+      "ci95_half": 2e-05,
+      "ci95_high": 0.035789,
+      "ci95_low": 0.035748,
+      "max": 0.035792,
+      "mean": 0.035768,
+      "min": 0.03575,
+      "n": 5,
+      "per_seed": [
+        0.035792,
+        0.035777,
+        0.035761,
+        0.035761,
+        0.03575
+      ],
+      "se": 7e-06,
+      "std": 1.6e-05
+    },
+    "peak_tracemalloc_kb": {
+      "ci95_half": 6.427833,
+      "ci95_high": 173.007833,
+      "ci95_low": 160.152167,
+      "max": 171.62,
+      "mean": 166.58,
+      "min": 161.2,
+      "n": 5,
+      "per_seed": [
+        167.42,
+        171.62,
+        161.23,
+        171.43,
+        161.2
+      ],
+      "se": 2.315131,
+      "std": 5.17679
+    },
+    "peak_tracemalloc_mb": {
+      "ci95_half": 0.006266,
+      "ci95_high": 0.168946,
+      "ci95_low": 0.156414,
+      "max": 0.1676,
+      "mean": 0.16268,
+      "min": 0.1574,
+      "n": 5,
+      "per_seed": [
+        0.1635,
+        0.1676,
+        0.1575,
+        0.1674,
+        0.1574
+      ],
+      "se": 0.002257,
+      "std": 0.005046
+    },
+    "raw_training_bits": {
+      "ci95_half": 270.361313,
+      "ci95_high": 481459.161313,
+      "ci95_low": 480918.438687,
+      "max": 481424.0,
+      "mean": 481188.8,
+      "min": 480976.0,
+      "n": 5,
+      "per_seed": [
+        481008.0,
+        480976.0,
+        481424.0,
+        481416.0,
+        481120.0
+      ],
+      "se": 97.376794,
+      "std": 217.741131
+    },
+    "server_single_core_tdp_watts": 28.0,
+    "train_process_cpu_seconds": {
+      "ci95_half": 0.207408,
+      "ci95_high": 1.573008,
+      "ci95_low": 1.158192,
+      "max": 1.6562,
+      "mean": 1.3656,
+      "min": 1.2656,
+      "n": 5,
+      "per_seed": [
+        1.2812,
+        1.6562,
+        1.2656,
+        1.3594,
+        1.2656
+      ],
+      "se": 0.074703,
+      "std": 0.167041
+    }
+  },
+  "s10_gate": {
+    "checks": {
+      "abstention_brier_and_ece_le_005": true,
+      "all_11_pdf_p15_reference_systems_tabulated": true,
+      "all_13_pdf_p13_quantitative_gates_passed_on_ci95": true,
+      "cpu_budget_within_15s_per_seed": true,
+      "honest_verdict_and_external_context_preserved": true,
+      "in_scope_false_abstention_rate_le_002": true,
+      "live_single_core_throughput_ge_1000_preds_per_sec": true,
+      "memory_mdl_and_transparent_energy_profiled": true,
+      "post_freeze_temporal_holdout_acc_ge_095": true,
+      "post_freeze_zero_env_queries_and_zero_self_cert": true,
+      "prior_s0_through_s9_manifests_intact": true,
+      "prior_s0_through_s9_summaries_and_gates_verified": true,
+      "s10_manifest_verified": true,
+      "selective_accuracy_when_answered_ge_098": true,
+      "unanswerable_ood_abstention_recall_ge_099": true,
+      "whole_tree_ast_isolation_zero_literals_and_py311": true
+    },
+    "passed": true
+  },
+  "schema_version": "s10-broad-eval-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S10",
+  "throughput_single_core": {
+    "compiled_functional_sandbox_preds_per_sec_core": {
+      "ci95_half": 100314.619978,
+      "ci95_high": 494961.915978,
+      "ci95_low": 294332.676022,
+      "max": 463714.35,
+      "mean": 394647.296,
+      "min": 260627.07,
+      "n": 5,
+      "per_seed": [
+        416927.23,
+        463714.35,
+        447367.24,
+        384600.59,
+        260627.07
+      ],
+      "se": 36130.598653,
+      "std": 80790.474657
+    },
+    "composite_preds_per_sec_core": {
+      "ci95_half": 235.248249,
+      "ci95_high": 1911.444249,
+      "ci95_low": 1440.947751,
+      "max": 1982.14,
+      "mean": 1676.196,
+      "min": 1540.62,
+      "n": 5,
+      "per_seed": [
+        1982.14,
+        1739.86,
+        1550.17,
+        1540.62,
+        1568.19
+      ],
+      "se": 84.730023,
+      "std": 189.462092
+    },
+    "composite_preds_per_sec_wall": {
+      "ci95_half": 241.084154,
+      "ci95_high": 1904.548154,
+      "ci95_low": 1422.379846,
+      "max": 1969.29,
+      "mean": 1663.464,
+      "min": 1512.48,
+      "n": 5,
+      "per_seed": [
+        1969.29,
+        1742.58,
+        1525.96,
+        1512.48,
+        1567.01
+      ],
+      "se": 86.831957,
+      "std": 194.162159
+    },
+    "core_symbolic_and_functional_preds_per_sec_core": {
+      "ci95_half": 2067.146938,
+      "ci95_high": 10887.764938,
+      "ci95_low": 6753.471062,
+      "max": 10531.94,
+      "mean": 8820.618,
+      "min": 6688.26,
+      "n": 5,
+      "per_seed": [
+        10531.94,
+        6688.26,
+        9738.98,
+        9721.71,
+        7422.2
+      ],
+      "se": 744.530123,
+      "std": 1664.819967
+    },
+    "iterations_per_workload": 1000,
+    "raw_utf8_executor_preds_per_sec_core": {
+      "ci95_half": 192.34814,
+      "ci95_high": 1153.26414,
+      "ci95_low": 768.56786,
+      "max": 1084.75,
+      "mean": 960.916,
+      "min": 727.27,
+      "n": 5,
+      "per_seed": [
+        1066.67,
+        1049.18,
+        727.27,
+        1084.75,
+        876.71
+      ],
+      "se": 69.27857,
+      "std": 154.911592
+    },
+    "relational_operator_apply_preds_per_sec_core": {
+      "ci95_half": 1051.120915,
+      "ci95_high": 5513.644915,
+      "ci95_low": 3411.403085,
+      "max": 5333.33,
+      "mean": 4462.524,
+      "min": 3368.42,
+      "n": 5,
+      "per_seed": [
+        5333.33,
+        3368.42,
+        4923.08,
+        4923.08,
+        3764.71
+      ],
+      "se": 378.585175,
+      "std": 846.542186
+    },
+    "shard_lsh_proposal_preds_per_sec_core": {
+      "ci95_half": 203.634555,
+      "ci95_high": 1130.752555,
+      "ci95_low": 723.483445,
+      "max": 1122.81,
+      "mean": 927.118,
+      "min": 680.85,
+      "n": 5,
+      "per_seed": [
+        1122.81,
+        955.22,
+        1000.0,
+        680.85,
+        876.71
+      ],
+      "se": 73.34363,
+      "std": 164.001343
+    }
+  },
+  "total_elapsed_seconds": 45.18,
+  "whole_tree_ast_audit": {
+    "comparison_leak_violations": [],
+    "hardcode_violations": [],
+    "import_violations": [],
+    "passed": true,
+    "py312_violations": [],
+    "scanned_learner_modules": 37,
+    "scanned_non_evaluator_modules": 65,
+    "scanned_total_py_files": 71
+  }
+}

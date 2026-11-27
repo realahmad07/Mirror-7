@@ -1,0 +1,61 @@
+{
+  "freeze_isolation": {
+    "is_frozen": true,
+    "post_freeze_env_blocked": true,
+    "post_freeze_env_queries": 0,
+    "self_certified_promotions": 0
+  },
+  "post_freeze_stress_and_calibration": {
+    "abstention_brier_score": 0.0,
+    "expected_calibration_error_ece": 0.0,
+    "in_scope_false_abstention_rate": 0.0,
+    "in_scope_items": 120,
+    "post_freeze_collateral_rate": 0.0,
+    "post_freeze_temporal_exact_acc": 1.0,
+    "selective_accuracy_when_answered": 1.0,
+    "total_items": 220,
+    "unanswerable_abstention_recall": 1.0,
+    "unanswerable_ood_items": 100
+  },
+  "resource_and_energy_profile": {
+    "active_library_bits": 17208,
+    "energy_measurement_method": "estimated_tdp_proxy_not_hardware_rapl",
+    "estimated_mj_per_prediction_15w_laptop_core": 11.559798,
+    "estimated_mj_per_prediction_28w_server_core": 21.57829,
+    "estimated_train_joules_15w_laptop_core": 24.8438,
+    "estimated_train_joules_28w_server_core": 46.375,
+    "eval_process_cpu_seconds": 3.2522,
+    "hardware_rapl_available": false,
+    "library_to_raw_ratio": 0.035777,
+    "peak_tracemalloc_kb": 171.62,
+    "peak_tracemalloc_mb": 0.1676,
+    "raw_training_bits": 480976,
+    "train_process_cpu_seconds": 1.6562,
+    "train_wall_seconds": 1.6662
+  },
+  "seed": 202,
+  "throughput_single_core": {
+    "compiled_functional_sandbox": {
+      "preds_per_sec_process_core": 463714.35,
+      "preds_per_sec_wall": 463714.35
+    },
+    "composite_all_4_workloads_preds_per_sec_core": 1739.86,
+    "composite_all_4_workloads_preds_per_sec_wall": 1742.58,
+    "core_symbolic_and_functional_preds_per_sec_core": 6688.26,
+    "iterations_per_workload": 1000,
+    "raw_utf8_grounded_executor": {
+      "preds_per_sec_process_core": 1049.18,
+      "preds_per_sec_wall": 1048.14
+    },
+    "relational_operator_apply": {
+      "preds_per_sec_process_core": 3368.42,
+      "preds_per_sec_wall": 3401.93
+    },
+    "shard_lsh_proposal_and_verify": {
+      "preds_per_sec_process_core": 955.22,
+      "preds_per_sec_wall": 956.7
+    },
+    "total_live_predictions": 4000
+  },
+  "total_seed_seconds": 6.0712
+}

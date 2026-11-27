@@ -1,0 +1,61 @@
+{
+  "acceptance_thresholds": {
+    "abstention_brier_score_ci95_high_max": 0.05,
+    "cpu_budget_seconds_per_seed_max": 15.0,
+    "expected_calibration_error_ece_ci95_high_max": 0.05,
+    "gate_01_depth4_ci95_low_min": 0.95,
+    "gate_01_depth6_ci95_low_min": 0.9,
+    "gate_02_operator_precision_recall_ci95_low_min": 0.9,
+    "gate_03_collateral_ci95_high_max": 0.02,
+    "gate_04_beat_lookup_margin_ci95_low_min": 0.2,
+    "gate_04_max_demos_per_action": 8,
+    "gate_05_cpu_speedup_ci95_low_min": 1.5,
+    "gate_05_proposal_factor_ci95_low_min": 1.5,
+    "gate_06_dream_error_reduction_ci95_low_min": 0.05,
+    "gate_07_blame_gain_ci95_low_min": 0.4,
+    "gate_08_active_query_reduction_ci95_low_min": 0.25,
+    "gate_09_cross_domain_transfer_gain_ci95_low_min": 0.2,
+    "gate_10_continual_retention_ci95_low_min": 0.95,
+    "gate_11_byte_lm_beats_3gram_ppm_and_transformer": true,
+    "gate_12_code_induction_humaneval_ci95_low_min": 0.5,
+    "gate_13_single_core_preds_per_sec_ci95_low_min": 1000.0,
+    "in_scope_false_abstention_rate_ci95_high_max": 0.02,
+    "post_freeze_env_queries_must_be": 0,
+    "post_freeze_temporal_exact_acc_ci95_low_min": 0.95,
+    "selective_accuracy_when_answered_ci95_low_min": 0.98,
+    "unanswerable_abstention_recall_ci95_low_min": 0.99
+  },
+  "energy_audit_config": {
+    "energy_measurement_method": "estimated_tdp_proxy_not_hardware_rapl",
+    "hardware_rapl_available": false,
+    "laptop_single_core_tdp_watts": 15.0,
+    "server_single_core_tdp_watts": 28.0
+  },
+  "pool_disjointness_verified": true,
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s10_broad_eval",
+  "required_11_baselines": [
+    "episode_lookup",
+    "structural_knn",
+    "shard_without_itl",
+    "itl_without_hdc",
+    "itl_without_contrasts",
+    "itl_without_rdc",
+    "rdc_without_dreams",
+    "current_mirror_solver",
+    "hand_coded_hidden_oracle",
+    "small_cpu_neural_reference",
+    "unified_mirror_shard_itl_rdc"
+  ],
+  "schema_version": "s10-preregistration-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S10",
+  "throughput_iters_per_workload": 1000,
+  "title": "Broad Independent Evaluation, 11-Baseline Matrix, Throughput/Memory/Energy Audit & Honest GPT-Class Readiness Verdict",
+  "verdict_tier": "NARROW_VERIFIED_CPU_LEARNING_PROVEN__OPEN_WORLD_GPT_PARITY_NOT_CLAIMED"
+}
