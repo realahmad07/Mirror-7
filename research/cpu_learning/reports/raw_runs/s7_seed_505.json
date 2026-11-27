@@ -1,0 +1,214 @@
+{
+  "ambiguity_and_abstention": {
+    "ambiguity_minimal_contrast": {
+      "no_contrast_first_guess_ablation_acc": 0.5,
+      "post_contrast_disambiguated_exact_acc": 1.0,
+      "pre_contrast_ambiguous_preserved_rate": 1.0,
+      "pre_contrast_honest_abstention_rate": 1.0,
+      "total_probes": 16
+    },
+    "ood_and_partial_mask_abstention": {
+      "hallucinated_mutation_rate": 0.0,
+      "honest_abstention_rate": 1.0,
+      "total_probes": 24
+    }
+  },
+  "bit_budget": {
+    "compressed_induced_archive_bits": 9616,
+    "compressed_training_corpus_bits": 11648,
+    "compression_ratio_vs_compressed_train": 0.825549,
+    "compression_ratio_vs_raw_train": 0.048507,
+    "raw_training_bits": 198240
+  },
+  "byte_lm_benchmark": {
+    "corpus": {
+      "disjoint_entities_verified": true,
+      "heldout_byte_len": 9486,
+      "heldout_entity_count": 103,
+      "seed": 505,
+      "train_byte_len": 29758,
+      "train_entity_count": 272
+    },
+    "models": {
+      "byte_3gram_kneser_ney": {
+        "bits_per_byte": 3.003872,
+        "comparison_only": false,
+        "eval_byte_count": 9486,
+        "eval_seconds": 0.0464,
+        "is_frozen": true,
+        "max_consistency_error": 0.0,
+        "max_sum_prob_error": 0.0,
+        "model_bits": 40664,
+        "model_id": "byte_3gram_kneser_ney",
+        "normalization_verified": true,
+        "total_codelength_bits": 28494.73,
+        "train_seconds": 0.0672,
+        "uses_backprop": false
+      },
+      "mirror_ctw_construction_byte_lm": {
+        "bits_per_byte": 2.572595,
+        "comparison_only": false,
+        "eval_byte_count": 9486,
+        "eval_seconds": 1.0564,
+        "is_frozen": true,
+        "max_consistency_error": 0.0,
+        "max_sum_prob_error": 0.0,
+        "model_bits": 1913128,
+        "model_id": "mirror_ctw_construction_byte_lm",
+        "normalization_verified": true,
+        "total_codelength_bits": 24403.639,
+        "train_seconds": 3.7825,
+        "uses_backprop": false
+      },
+      "ppm_c_order5_byte_lm": {
+        "bits_per_byte": 2.590525,
+        "comparison_only": false,
+        "eval_byte_count": 9486,
+        "eval_seconds": 0.138,
+        "is_frozen": true,
+        "max_consistency_error": 0.0,
+        "max_sum_prob_error": 0.0,
+        "model_bits": 306352,
+        "model_id": "ppm_c_order5_byte_lm",
+        "normalization_verified": true,
+        "total_codelength_bits": 24573.722,
+        "train_seconds": 0.2041,
+        "uses_backprop": false
+      },
+      "small_cpu_byte_transformer_ref": {
+        "bits_per_byte": 4.433396,
+        "comparison_only": true,
+        "eval_byte_count": 9486,
+        "eval_seconds": 8.2469,
+        "is_frozen": true,
+        "max_consistency_error": 0.0,
+        "max_sum_prob_error": 0.0,
+        "model_bits": 111680,
+        "model_id": "small_cpu_byte_transformer_ref",
+        "normalization_verified": true,
+        "total_codelength_bits": 42055.19,
+        "train_seconds": 5.0786,
+        "uses_backprop": true
+      },
+      "uniform_byte_floor": {
+        "bits_per_byte": 8.0,
+        "comparison_only": false,
+        "eval_byte_count": 9486,
+        "eval_seconds": 0.0152,
+        "is_frozen": true,
+        "max_consistency_error": 0.0,
+        "max_sum_prob_error": 0.0,
+        "model_bits": 8,
+        "model_id": "uniform_byte_floor",
+        "normalization_verified": true,
+        "total_codelength_bits": 75888.0,
+        "train_seconds": 0.0,
+        "uses_backprop": false
+      }
+    },
+    "seed": 505,
+    "total_benchmark_seconds": 19.1743
+  },
+  "grammar_fit_summary": {
+    "clause_connectors": 3,
+    "condition_rules": 6,
+    "negation_rules": 4,
+    "promoted_constructions": 23
+  },
+  "grounding_splits": {
+    "s7_chained_multistep_depth2": {
+      "lexical_baseline_exact_acc": 0.0,
+      "mirror_byte_span_exact_rate": 1.0,
+      "mirror_collateral_rate": 0.0,
+      "mirror_exact_acc": 1.0,
+      "mirror_intermediate_acc": 1.0,
+      "task_count": 16
+    },
+    "s7_chained_multistep_depth4": {
+      "lexical_baseline_exact_acc": 0.0,
+      "mirror_byte_span_exact_rate": 1.0,
+      "mirror_collateral_rate": 0.0,
+      "mirror_exact_acc": 1.0,
+      "mirror_intermediate_acc": 1.0,
+      "task_count": 16
+    },
+    "s7_chained_multistep_depth6": {
+      "lexical_baseline_exact_acc": 0.0,
+      "mirror_byte_span_exact_rate": 1.0,
+      "mirror_collateral_rate": 0.0,
+      "mirror_exact_acc": 1.0,
+      "mirror_intermediate_acc": 1.0,
+      "task_count": 16
+    },
+    "s7_conditional_clauses": {
+      "lexical_baseline_exact_acc": 0.0,
+      "mirror_byte_span_exact_rate": 1.0,
+      "mirror_collateral_rate": 0.0,
+      "mirror_exact_acc": 1.0,
+      "mirror_intermediate_acc": 1.0,
+      "task_count": 24
+    },
+    "s7_negated_instructions": {
+      "lexical_baseline_exact_acc": 0.0,
+      "mirror_byte_span_exact_rate": 1.0,
+      "mirror_collateral_rate": 0.0,
+      "mirror_exact_acc": 1.0,
+      "mirror_intermediate_acc": 1.0,
+      "task_count": 20
+    },
+    "s7_unseen_entity_substitution": {
+      "lexical_baseline_exact_acc": 1.0,
+      "mirror_byte_span_exact_rate": 1.0,
+      "mirror_collateral_rate": 0.0,
+      "mirror_exact_acc": 1.0,
+      "mirror_intermediate_acc": 1.0,
+      "task_count": 20
+    },
+    "s7_unseen_paraphrase_novel_verbs": {
+      "lexical_baseline_exact_acc": 1.0,
+      "mirror_byte_span_exact_rate": 1.0,
+      "mirror_collateral_rate": 0.0,
+      "mirror_exact_acc": 1.0,
+      "mirror_intermediate_acc": 1.0,
+      "task_count": 20
+    },
+    "s7_unseen_word_orders_passive_sov": {
+      "lexical_baseline_exact_acc": 1.0,
+      "mirror_byte_span_exact_rate": 1.0,
+      "mirror_collateral_rate": 0.0,
+      "mirror_exact_acc": 1.0,
+      "mirror_intermediate_acc": 1.0,
+      "task_count": 24
+    }
+  },
+  "overall_collateral_rate": 0.0,
+  "overall_grounding_exact_acc": 1.0,
+  "overall_lexical_baseline_acc": 0.410256,
+  "plan_realization": {
+    "methods": {
+      "mirror_truth_locked": {
+        "hallucination_rate": 0.0,
+        "reference_perplexity_bpb": 2.7647,
+        "semantic_correctness": 1.0,
+        "surface_fluency_score": 0.957651
+      },
+      "telegraphic_tuple_dump": {
+        "hallucination_rate": 0.0,
+        "reference_perplexity_bpb": 9.5351,
+        "semantic_correctness": 1.0,
+        "surface_fluency_score": 0.307097
+      },
+      "ungated_fluent_assumer": {
+        "hallucination_rate": 0.485,
+        "reference_perplexity_bpb": 4.2331,
+        "semantic_correctness": 0.375,
+        "surface_fluency_score": 0.915939
+      }
+    },
+    "trace_count": 40
+  },
+  "pool_disjoint_verified": true,
+  "seed": 505,
+  "total_seed_seconds": 21.1312,
+  "transformer_analytical_grad_max_error": 0.0
+}

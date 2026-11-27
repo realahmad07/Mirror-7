@@ -1,0 +1,92 @@
+{
+  "byte_aligner_schema_version": "s7-byte-aligner-v1",
+  "byte_lm_models": [
+    "uniform_byte_floor",
+    "byte_3gram_kneser_ney",
+    "ppm_c_order5_byte_lm",
+    "mirror_ctw_construction_byte_lm",
+    "small_cpu_byte_transformer_ref"
+  ],
+  "byte_lm_schema_version": "s7-byte-lm-v1",
+  "construction_learner_schema_version": "s7-construction-learner-v1",
+  "gates": {
+    "ambiguity_preserved_before_contrast_min": 1.0,
+    "ambiguity_resolved_after_contrast_ci95_low_min": 0.95,
+    "byte_lm_mirror_beats_3gram_and_transformer_ci95": true,
+    "byte_lm_mirror_matches_or_beats_ppmc5": true,
+    "collateral_rate_ci95_high_max": 0.02,
+    "cpu_seconds_per_seed_max": 30.0,
+    "depth4_exact_ci95_low_min": 0.95,
+    "depth6_exact_ci95_low_min": 0.9,
+    "ood_and_partial_mask_abstention_min": 1.0,
+    "realizer_hallucination_rate_max": 0.0,
+    "realizer_semantic_correctness_ci95_low_min": 0.98,
+    "unseen_splits_ci95_low_min": 0.95
+  },
+  "grounding_splits": [
+    "s7_unseen_entity_substitution",
+    "s7_unseen_paraphrase_novel_verbs",
+    "s7_unseen_word_orders_passive_sov",
+    "s7_negated_instructions",
+    "s7_conditional_clauses",
+    "s7_chained_multistep_depth2",
+    "s7_chained_multistep_depth4",
+    "s7_chained_multistep_depth6",
+    "s7_ambiguity_minimal_contrast",
+    "s7_ood_and_partial_mask_abstention"
+  ],
+  "plan_realizer_schema_version": "s7-plan-realizer-v1",
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s7_experiments",
+  "schema_version": "s7-preregistration-v1",
+  "seed_manifests": {
+    "101": {
+      "byte_lm_heldout_bytes": 9474,
+      "byte_lm_heldout_sha256": "93ab1aea255c9aa9a299d429ed1351c6c9ae08a190e02aae5a4ab6bb309f9f17",
+      "byte_lm_train_bytes": 29681,
+      "byte_lm_train_sha256": "4975d7a55847559ac1a4e10b3386662d09a8ae18fd68eb7bd6ed22477fe0d0eb",
+      "grounding_train_episode_count": 101,
+      "grounding_train_sha256": "deb5d784ba9db458b116764e8cfc768a7f3f956e6889cb621783cc34b3e8bbdd"
+    },
+    "202": {
+      "byte_lm_heldout_bytes": 9437,
+      "byte_lm_heldout_sha256": "90f7a207eea82dced221b983af50dc58533aa2acb63fdf56610ddf567b44899d",
+      "byte_lm_train_bytes": 29666,
+      "byte_lm_train_sha256": "e38693b6be0843855f571147cfcb3c6cf2df27a53b1a3df6dbcf9c87d9507380",
+      "grounding_train_episode_count": 101,
+      "grounding_train_sha256": "ff9bb3680c4963a18c196ac451865ad77933eff2c8a81833e7fd66da1359d30d"
+    },
+    "303": {
+      "byte_lm_heldout_bytes": 9478,
+      "byte_lm_heldout_sha256": "73498792637096ab8454ca3a57ba813d0d6434182aa48a9be76e7b3340203783",
+      "byte_lm_train_bytes": 29698,
+      "byte_lm_train_sha256": "584d656f0d6c5f771c7979885eef9e2948061b7cd4aa1658642ca6fc198264c4",
+      "grounding_train_episode_count": 101,
+      "grounding_train_sha256": "29aabd767b1d804d130b0d7c9ade9d2ac5afe9ab37261d12c6c820d8f240c739"
+    },
+    "404": {
+      "byte_lm_heldout_bytes": 9475,
+      "byte_lm_heldout_sha256": "b4cc4532b75beaefa8271e6685ad247f18ea5af44f3420cdcd607114cf1377f1",
+      "byte_lm_train_bytes": 29735,
+      "byte_lm_train_sha256": "b3a5681989728c1a17bcb9850dea1cf22f2575130934282812243be2f12ca2ba",
+      "grounding_train_episode_count": 101,
+      "grounding_train_sha256": "239b1aca8a0c85eab9d93ec7178aa68dc7a0e40eafcaf4fc48d8728d6fd80953"
+    },
+    "505": {
+      "byte_lm_heldout_bytes": 9486,
+      "byte_lm_heldout_sha256": "22dc3b2d2f581d73e47512210d83c5d13cf589c060a385baa414801de64f6136",
+      "byte_lm_train_bytes": 29758,
+      "byte_lm_train_sha256": "405f0d7f40fccdd9164a9656ac091f2963687eaf0f201ee6bdd6eccaee8dd591",
+      "grounding_train_episode_count": 101,
+      "grounding_train_sha256": "e5b34d751878bb566dce2c662c1b73508a41f734fff04d53d7ff531626a0a23f"
+    }
+  },
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S7",
+  "title": "Stage S7 \u2014 Raw UTF-8 Language Grounding, Compositional Realization & Byte-LM Comparison"
+}

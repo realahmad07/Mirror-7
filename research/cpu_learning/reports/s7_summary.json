@@ -1,0 +1,1358 @@
+{
+  "ambiguity_minimal_contrast": {
+    "no_contrast_first_guess_ablation_acc": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.5,
+      "ci95_low": 0.5,
+      "max": 0.5,
+      "mean": 0.5,
+      "min": 0.5,
+      "n": 5,
+      "per_seed": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "post_contrast_disambiguated_exact_acc": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "pre_contrast_ambiguous_preserved_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "pre_contrast_honest_abstention_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    }
+  },
+  "ast_isolation_audit": {
+    "comparison_only_transformer_isolated": true,
+    "hardcode_violations": [],
+    "import_violations": [],
+    "passed": true,
+    "scanned_grounding_modules": 5,
+    "scanned_learner_modules": 31,
+    "scanned_non_evaluator_modules": 52,
+    "transformer_leak_violations": []
+  },
+  "bit_budget_mean": {
+    "compressed_induced_archive_bits": 9616.0,
+    "compressed_training_corpus_bits": 11441.6,
+    "compression_ratio_vs_compressed_train": 0.840832,
+    "compression_ratio_vs_raw_train": 0.048399,
+    "raw_training_bits": 198692.8
+  },
+  "byte_lm_benchmark": {
+    "corpus_heldout_bytes_mean": 9470.0,
+    "corpus_train_bytes_mean": 29707.6,
+    "models": {
+      "byte_3gram_kneser_ney": {
+        "bits_per_byte": {
+          "ci95_half": 0.022238,
+          "ci95_high": 3.046555,
+          "ci95_low": 3.00208,
+          "max": 3.04585,
+          "mean": 3.024318,
+          "min": 3.003872,
+          "n": 5,
+          "per_seed": [
+            3.019259,
+            3.012742,
+            3.039866,
+            3.04585,
+            3.003872
+          ],
+          "se": 0.008009,
+          "std": 0.01791
+        },
+        "comparison_only": false,
+        "eval_seconds_mean": 0.0633,
+        "model_bits_mean": 40790.4,
+        "train_seconds_mean": 0.0857,
+        "uses_backprop": false
+      },
+      "mirror_ctw_construction_byte_lm": {
+        "bits_per_byte": {
+          "ci95_half": 0.019211,
+          "ci95_high": 2.584139,
+          "ci95_low": 2.545716,
+          "max": 2.588678,
+          "mean": 2.564927,
+          "min": 2.552622,
+          "n": 5,
+          "per_seed": [
+            2.552622,
+            2.555927,
+            2.588678,
+            2.554815,
+            2.572595
+          ],
+          "se": 0.006919,
+          "std": 0.015472
+        },
+        "comparison_only": false,
+        "eval_seconds_mean": 0.6024,
+        "model_bits_mean": 1919059.2,
+        "train_seconds_mean": 3.0866,
+        "uses_backprop": false
+      },
+      "ppm_c_order5_byte_lm": {
+        "bits_per_byte": {
+          "ci95_half": 0.016369,
+          "ci95_high": 2.607403,
+          "ci95_low": 2.574665,
+          "max": 2.612195,
+          "mean": 2.591034,
+          "min": 2.577773,
+          "n": 5,
+          "per_seed": [
+            2.577773,
+            2.58265,
+            2.612195,
+            2.592028,
+            2.590525
+          ],
+          "se": 0.005896,
+          "std": 0.013183
+        },
+        "comparison_only": false,
+        "eval_seconds_mean": 0.1835,
+        "model_bits_mean": 307614.4,
+        "train_seconds_mean": 0.2611,
+        "uses_backprop": false
+      },
+      "small_cpu_byte_transformer_ref": {
+        "bits_per_byte": {
+          "ci95_half": 0.132799,
+          "ci95_high": 4.49609,
+          "ci95_low": 4.230493,
+          "max": 4.433396,
+          "mean": 4.363291,
+          "min": 4.17638,
+          "n": 5,
+          "per_seed": [
+            4.17638,
+            4.413225,
+            4.420969,
+            4.372487,
+            4.433396
+          ],
+          "se": 0.047831,
+          "std": 0.106952
+        },
+        "comparison_only": true,
+        "eval_seconds_mean": 6.9476,
+        "model_bits_mean": 111680.0,
+        "train_seconds_mean": 6.2415,
+        "uses_backprop": true
+      },
+      "uniform_byte_floor": {
+        "bits_per_byte": {
+          "ci95_half": 0.0,
+          "ci95_high": 8.0,
+          "ci95_low": 8.0,
+          "max": 8.0,
+          "mean": 8.0,
+          "min": 8.0,
+          "n": 5,
+          "per_seed": [
+            8.0,
+            8.0,
+            8.0,
+            8.0,
+            8.0
+          ],
+          "se": 0.0,
+          "std": 0.0
+        },
+        "comparison_only": false,
+        "eval_seconds_mean": 0.0149,
+        "model_bits_mean": 8.0,
+        "train_seconds_mean": 0.0,
+        "uses_backprop": false
+      }
+    }
+  },
+  "environment": {
+    "cpu_count": 8,
+    "git_branch": "research/cpu-native-learning-s0",
+    "git_commit": "20f80ab58c142e683f989cb202f0228274a40ecf",
+    "machine": "AMD64",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "python_version": "3.14.4",
+    "pythonhashseed": "0",
+    "ram_total_gb": 15.77
+  },
+  "grounding_splits": {
+    "s7_chained_multistep_depth2": {
+      "lexical_baseline_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_byte_span_exact_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_intermediate_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "task_count": 16
+    },
+    "s7_chained_multistep_depth4": {
+      "lexical_baseline_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_byte_span_exact_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_intermediate_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "task_count": 16
+    },
+    "s7_chained_multistep_depth6": {
+      "lexical_baseline_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_byte_span_exact_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_intermediate_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "task_count": 16
+    },
+    "s7_conditional_clauses": {
+      "lexical_baseline_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_byte_span_exact_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_intermediate_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "task_count": 24
+    },
+    "s7_negated_instructions": {
+      "lexical_baseline_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_byte_span_exact_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_intermediate_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "task_count": 20
+    },
+    "s7_unseen_entity_substitution": {
+      "lexical_baseline_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_byte_span_exact_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_intermediate_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "task_count": 20
+    },
+    "s7_unseen_paraphrase_novel_verbs": {
+      "lexical_baseline_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_byte_span_exact_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_intermediate_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "task_count": 20
+    },
+    "s7_unseen_word_orders_passive_sov": {
+      "lexical_baseline_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_byte_span_exact_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "mirror_intermediate_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "task_count": 24
+    }
+  },
+  "ood_and_partial_mask_abstention": {
+    "hallucinated_mutation_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.0,
+      "ci95_low": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "min": 0.0,
+      "n": 5,
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "honest_abstention_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    }
+  },
+  "overall_collateral_rate": {
+    "ci95_half": 0.0,
+    "ci95_high": 0.0,
+    "ci95_low": 0.0,
+    "max": 0.0,
+    "mean": 0.0,
+    "min": 0.0,
+    "n": 5,
+    "per_seed": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "se": 0.0,
+    "std": 0.0
+  },
+  "overall_grounding_exact_acc": {
+    "ci95_half": 0.0,
+    "ci95_high": 1.0,
+    "ci95_low": 1.0,
+    "max": 1.0,
+    "mean": 1.0,
+    "min": 1.0,
+    "n": 5,
+    "per_seed": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "se": 0.0,
+    "std": 0.0
+  },
+  "overall_lexical_baseline_acc": {
+    "ci95_half": 0.0,
+    "ci95_high": 0.410256,
+    "ci95_low": 0.410256,
+    "max": 0.410256,
+    "mean": 0.410256,
+    "min": 0.410256,
+    "n": 5,
+    "per_seed": [
+      0.410256,
+      0.410256,
+      0.410256,
+      0.410256,
+      0.410256
+    ],
+    "se": 0.0,
+    "std": 0.0
+  },
+  "per_seed_seconds": {
+    "ci95_half": 2.707623,
+    "ci95_high": 22.753063,
+    "ci95_low": 17.337817,
+    "max": 22.1716,
+    "mean": 20.04544,
+    "min": 16.5042,
+    "n": 5,
+    "per_seed": [
+      20.8129,
+      16.5042,
+      19.6073,
+      22.1716,
+      21.1312
+    ],
+    "se": 0.975212,
+    "std": 2.180641
+  },
+  "plan_realization": {
+    "methods": {
+      "mirror_truth_locked": {
+        "hallucination_rate": {
+          "ci95_half": 0.0,
+          "ci95_high": 0.0,
+          "ci95_low": 0.0,
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 5,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "se": 0.0,
+          "std": 0.0
+        },
+        "reference_perplexity_bpb": {
+          "ci95_half": 0.009918,
+          "ci95_high": 2.775798,
+          "ci95_low": 2.755962,
+          "max": 2.7768,
+          "mean": 2.76588,
+          "min": 2.7546,
+          "n": 5,
+          "per_seed": [
+            2.7546,
+            2.7684,
+            2.7649,
+            2.7768,
+            2.7647
+          ],
+          "se": 0.003572,
+          "std": 0.007987
+        },
+        "semantic_correctness": {
+          "ci95_half": 0.0,
+          "ci95_high": 1.0,
+          "ci95_low": 1.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n": 5,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "se": 0.0,
+          "std": 0.0
+        },
+        "surface_fluency_score": {
+          "ci95_half": 0.000326,
+          "ci95_high": 0.957929,
+          "ci95_low": 0.957278,
+          "max": 0.957835,
+          "mean": 0.957604,
+          "min": 0.957212,
+          "n": 5,
+          "per_seed": [
+            0.957835,
+            0.957212,
+            0.957488,
+            0.957833,
+            0.957651
+          ],
+          "se": 0.000117,
+          "std": 0.000262
+        }
+      },
+      "telegraphic_tuple_dump": {
+        "hallucination_rate": {
+          "ci95_half": 0.0,
+          "ci95_high": 0.0,
+          "ci95_low": 0.0,
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 5,
+          "per_seed": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "se": 0.0,
+          "std": 0.0
+        },
+        "reference_perplexity_bpb": {
+          "ci95_half": 0.008983,
+          "ci95_high": 9.538703,
+          "ci95_low": 9.520737,
+          "max": 9.5382,
+          "mean": 9.52972,
+          "min": 9.5211,
+          "n": 5,
+          "per_seed": [
+            9.5239,
+            9.5303,
+            9.5211,
+            9.5382,
+            9.5351
+          ],
+          "se": 0.003235,
+          "std": 0.007235
+        },
+        "semantic_correctness": {
+          "ci95_half": 0.0,
+          "ci95_high": 1.0,
+          "ci95_low": 1.0,
+          "max": 1.0,
+          "mean": 1.0,
+          "min": 1.0,
+          "n": 5,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "se": 0.0,
+          "std": 0.0
+        },
+        "surface_fluency_score": {
+          "ci95_half": 0.000184,
+          "ci95_high": 0.307448,
+          "ci95_low": 0.307079,
+          "max": 0.307447,
+          "mean": 0.307264,
+          "min": 0.307097,
+          "n": 5,
+          "per_seed": [
+            0.307205,
+            0.307447,
+            0.307179,
+            0.30739,
+            0.307097
+          ],
+          "se": 6.6e-05,
+          "std": 0.000148
+        }
+      },
+      "ungated_fluent_assumer": {
+        "hallucination_rate": {
+          "ci95_half": 0.004604,
+          "ci95_high": 0.492854,
+          "ci95_low": 0.483646,
+          "max": 0.49375,
+          "mean": 0.48825,
+          "min": 0.485,
+          "n": 5,
+          "per_seed": [
+            0.49,
+            0.485,
+            0.4875,
+            0.49375,
+            0.485
+          ],
+          "se": 0.001658,
+          "std": 0.003708
+        },
+        "reference_perplexity_bpb": {
+          "ci95_half": 0.002997,
+          "ci95_high": 4.239797,
+          "ci95_low": 4.233803,
+          "max": 4.2398,
+          "mean": 4.2368,
+          "min": 4.2331,
+          "n": 5,
+          "per_seed": [
+            4.2374,
+            4.2372,
+            4.2398,
+            4.2365,
+            4.2331
+          ],
+          "se": 0.001079,
+          "std": 0.002414
+        },
+        "semantic_correctness": {
+          "ci95_half": 0.0,
+          "ci95_high": 0.375,
+          "ci95_low": 0.375,
+          "max": 0.375,
+          "mean": 0.375,
+          "min": 0.375,
+          "n": 5,
+          "per_seed": [
+            0.375,
+            0.375,
+            0.375,
+            0.375,
+            0.375
+          ],
+          "se": 0.0,
+          "std": 0.0
+        },
+        "surface_fluency_score": {
+          "ci95_half": 0.000309,
+          "ci95_high": 0.91607,
+          "ci95_low": 0.915453,
+          "max": 0.916054,
+          "mean": 0.915762,
+          "min": 0.915469,
+          "n": 5,
+          "per_seed": [
+            0.915469,
+            0.915794,
+            0.915553,
+            0.916054,
+            0.915939
+          ],
+          "se": 0.000111,
+          "std": 0.000249
+        }
+      }
+    },
+    "trace_count_per_seed": 40
+  },
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s7_experiments",
+  "s7_gate": {
+    "checks": {
+      "ambiguity_preserved_before_contrast_100pct": true,
+      "ambiguity_resolved_after_minimal_contrast_ci95_low_ge_095": true,
+      "ast_import_and_domain_literal_isolation": true,
+      "byte_lm_mirror_matches_or_beats_ppmc_order5": true,
+      "byte_lm_mirror_strictly_beats_3gram_kneser_ney_ci95": true,
+      "byte_lm_mirror_strictly_beats_small_cpu_transformer_ci95": true,
+      "byte_lm_probability_normalization_and_transformer_grad_verified": true,
+      "chained_depth2_exact_and_inter_ci95_low_ge_095": true,
+      "chained_depth4_exact_and_inter_ci95_low_ge_095": true,
+      "chained_depth6_exact_and_inter_ci95_low_ge_090": true,
+      "comparison_only_transformer_strictly_isolated": true,
+      "conditional_clauses_exact_ci95_low_ge_095": true,
+      "cpu_budget_within_30s_per_seed": true,
+      "grounding_collateral_ci95_high_lt_002": true,
+      "mirror_strictly_beats_lexical_baseline": true,
+      "negated_instructions_exact_ci95_low_ge_095": true,
+      "ood_and_partial_mask_abstention_100pct_zero_hallucination": true,
+      "pool_disjointness_verified_all_seeds": true,
+      "prior_s0_through_s6_manifests_intact": true,
+      "realizer_dual_metrics_strictly_independent": true,
+      "realizer_semantic_ci95_low_ge_098_and_zero_hallucination": true,
+      "unseen_entity_substitution_ci95_low_ge_095": true,
+      "unseen_paraphrase_novel_verbs_ci95_low_ge_095": true,
+      "unseen_word_orders_passive_sov_ci95_low_ge_095": true
+    },
+    "passed": true
+  },
+  "schema_version": "s7-summary-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S7",
+  "total_elapsed_seconds": 109.9893
+}
