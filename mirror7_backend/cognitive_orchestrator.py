@@ -374,7 +374,12 @@ class UnifiedCognitiveOrchestrator:
                     router = NaturalLanguageUOLRouter()
                     self._default_uol_router = router
                 routed = router.route(prompt, session_id=session_id)
-                if routed.matched:
+                is_lattice_encyclopedia_fallback = (
+                    bool(routed.rule_ids)
+                    and all(str(r).startswith("concept_lattice.") for r in routed.rule_ids)
+                    and not any(str(r).startswith("concept_lattice.meta:") for r in routed.rule_ids)
+                )
+                if routed.matched and not (is_lattice_encyclopedia_fallback and evidence):
                     task_uol_verified = True
                     sources_consulted.append("uol_auto_router")
                     uol_route_payload = {
