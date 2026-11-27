@@ -109,9 +109,10 @@ python -m training.free_running_eval \
   --output artifacts/native_free_running_report.json
 ```
 
-The report records raw outputs and hashes, empty-output rate, lexical prompt
-coverage, repetition diagnostics, UTF-8 replacement characters, termination,
-and exact match when targets exist. These are generation diagnostics, not factual
+The report records the checkpoint SHA-256 and size, raw prompt-file SHA-256,
+selected-case fingerprint, raw outputs and response hashes, empty-output rate,
+lexical prompt coverage, repetition diagnostics, UTF-8 replacement characters,
+termination, and exact match when targets exist. Duplicate seed IDs are rejected. These are generation diagnostics, not factual
 or semantic correctness. Compare checkpoints only with identical frozen prompts,
 seeds, decoding settings, and evaluator. Use measured failure clusters to select
 the next training experiment (for example, scheduled-sampling sweeps); do not

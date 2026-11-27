@@ -2,6 +2,15 @@
 
 This directory contains the training and research infrastructure for learned language/response realization, native semantic-state research, knowledge transfer from teacher models, and independent evaluation.
 
+
+## Native intelligence + semantic reasoning
+
+The active research entry points are [Experiment 6](./README_EXPERIMENT6.md),
+[the three-seed screening runner](./evaluate_experiment6.py), and
+[Research Workstream A](../docs/38-track-a-native-intelligence-semantic-reasoning.md).
+Free-running generation diagnostics are available in `free_running_eval.py`;
+their lexical scores do not establish semantic or factual correctness.
+
 ## Architectural Boundaries
 
 The native neural models and reasoning discovery engines are modular layers designed to operate in harmony with Mirror 7's core symbolic runtime (`phase140_unified_cognitive_runtime`). They do **not** replace the backend runtime, nor do they create a permanent dependency on external pretrained models during production inference.
@@ -24,6 +33,41 @@ The native neural models and reasoning discovery engines are modular layers desi
 | `mirror7_backend/reasoning_discovery/` | Autonomous problem exploration, algorithmic strategy synthesis, and safety sandbox. |
 
 ---
+
+## Native free-running smoke evaluation
+
+Export the legacy 10-case repository-held-out prompt set and evaluate a V5
+checkpoint without requiring a teacher model:
+
+```bash
+python -m training.export_native_free_running_prompts \
+  --partition held_out \
+  --output artifacts/native_free_running_legacy_heldout_v1.jsonl
+
+python -m training.free_running_eval \
+  --checkpoint path/to/native_conversation_v5.pt \
+  --prompts artifacts/native_free_running_legacy_heldout_v1.jsonl \
+  --seeds 17,29,43 --temperature 0.7 \
+  --max-new-tokens 384 --device cuda \
+  --output artifacts/native_free_running_report.json
+```
+
+This bundle is a smoke set, not a source-disjoint promotion benchmark: the
+repository cannot prove that its 10 held-out prompts do not occur in external
+training data. Greedy runs are deterministic replay; stochastic seeds measure
+sampling variability only. The report's lexical/format metrics do not certify
+factual or semantic correctness.
+
+Compare a candidate report with a frozen baseline only when the prompt-file
+and selected-case fingerprints, seed list, report version, and decoding settings
+match:
+
+```bash
+python -m training.compare_free_running_reports \\
+  --baseline artifacts/native_free_running_baseline.json \\
+  --candidate artifacts/native_free_running_candidate.json \\
+  --output artifacts/native_free_running_paired_comparison.json
+```
 
 ## 1. Native Conversation V5 Architecture
 

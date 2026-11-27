@@ -13,6 +13,17 @@ The first 75+ hour construction phase is complete. The next work should be treat
 | Security guard | ✅ |
 | UI/backend contract | ✅ |
 
+## Research Workstream A — Native intelligence + semantic reasoning
+
+This is the model-research workstream being advanced in parallel with product UI/API work. It combines the native-language and semantic-state research below; it does not rename the completed public-engineering Track A above.
+
+- **Implemented now:** corrected variable-length semantic composition, deterministic seeded setup, world fingerprints, held-out candidate ranking, swapped-order controls, and a three-seed screening runner.
+- **Still gated:** run the corrected three-seed study, compare it with a frozen Experiment 5/7 baseline, and validate on natural semantic relations.
+- **Native language remains open:** the 10.57M byte model's free-running behavior was not accepted. The next model comparison must share frozen prompts, data, decoder budgets, and an independently reviewable evaluator.
+- **Product UI/API:** can proceed independently against the existing backend and is owned by the product workstream.
+
+See [Research Workstream A](38-track-a-native-intelligence-semantic-reasoning.md).
+
 ## Track B — Native language realization
 
 This is the highest-value unresolved model problem.

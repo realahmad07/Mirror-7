@@ -23,6 +23,23 @@ _STOPWORDS = {
 }
 
 
+def sha256_file(path: str | Path) -> str:
+    """Hash a file incrementally so large checkpoints do not need to fit in RAM."""
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def fingerprint_cases(cases: Iterable[dict[str, Any]]) -> str:
+    """Hash the exact normalized case list used by an evaluation run."""
+    encoded = json.dumps(
+        list(cases), ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _tokens(value: str) -> list[str]:
     return re.findall(r"[a-z0-9_]+", str(value).casefold())
 
@@ -107,7 +124,24 @@ def evaluate_checkpoint(
     max_new_tokens: int = 384,
     temperature: float = 0.0,
     top_k: int = 40,
+    prompt_file: str | Path | None = None,
 ) -> dict[str, Any]:
+    if max_new_tokens < 1 or top_k < 1 or temperature < 0:
+        raise ValueError("decoding limits must be positive and temperature non-negative")
+    case_list = list(cases)
+    seed_list = [int(item) for item in seeds]
+    if not seed_list:
+        raise ValueError("at least one seed is required")
+    if len(set(seed_list)) != len(seed_list):
+        raise ValueError("evaluation seeds must be unique")
+    if not case_list:
+        raise ValueError("at least one prompt case is required")
+
+    checkpoint_path = Path(checkpoint)
+    checkpoint_sha256 = sha256_file(checkpoint_path)
+    selected_cases_sha256 = fingerprint_cases(case_list)
+    prompt_file_sha256 = sha256_file(prompt_file) if prompt_file is not None else None
+
     import torch
     from training.native_conversation_v5 import load_checkpoint
 
@@ -115,10 +149,6 @@ def evaluate_checkpoint(
     model, payload = load_checkpoint(checkpoint, device=resolved_device)
     model.eval()
     rows: list[dict[str, Any]] = []
-    case_list = list(cases)
-    seed_list = [int(item) for item in seeds]
-    if not seed_list:
-        raise ValueError("at least one seed is required")
 
     for seed in seed_list:
         torch.manual_seed(seed)
@@ -138,6 +168,7 @@ def evaluate_checkpoint(
             rows.append({
                 "case_id": case["case_id"],
                 "seed": seed,
+                "decode_mode": "stochastic" if temperature > 0 else "greedy",
                 "prompt": case["prompt"],
                 "response": output,
                 "metrics": metrics,
@@ -172,12 +203,18 @@ def evaluate_checkpoint(
         ),
     }
     return {
-        "evaluation": "native_free_running_diagnostics_v1",
+        "evaluation": "native_free_running_diagnostics_v2",
         "checkpoint": str(checkpoint),
+        "checkpoint_sha256": checkpoint_sha256,
+        "checkpoint_size_bytes": checkpoint_path.stat().st_size,
+        "prompt_file": str(prompt_file) if prompt_file is not None else None,
+        "prompt_file_sha256": prompt_file_sha256,
+        "selected_cases_sha256": selected_cases_sha256,
         "checkpoint_format": payload.get("format"),
         "model_config": payload.get("config", {}),
         "device": resolved_device,
         "decoding": {
+            "mode": "stochastic" if temperature > 0 else "greedy",
             "max_new_tokens": max_new_tokens,
             "temperature": temperature,
             "top_k": top_k,
@@ -186,12 +223,114 @@ def evaluate_checkpoint(
             "enforce_valid_utf8": True,
         },
         "summary": summary,
+        "seed_sensitivity": {
+            "measured": temperature > 0,
+            "mode": "sampling_variation" if temperature > 0 else "not_measured_greedy_decode",
+            "note": (
+                "Seeds vary sampling only; model weights and prompts remain fixed."
+                if temperature > 0
+                else "Greedy decoding is deterministic; repeated seed IDs do not measure variability."
+            ),
+        },
         "samples": rows,
         "limitations": [
             "Prompt keyword coverage and repetition statistics are lexical diagnostics, not semantic correctness.",
             "Exact match is reported only when a target is present and is not a substitute for semantic evaluation.",
             "A checkpoint comparison is valid only with the same frozen cases, seeds, and decoding settings.",
         ],
+    }
+
+
+def compare_evaluation_reports(
+    baseline: dict[str, Any],
+    candidate: dict[str, Any],
+) -> dict[str, Any]:
+    """Compare two free-running reports only when evaluation conditions match.
+
+    The paired deltas are descriptive generation diagnostics. They are not
+    semantic-quality or factual-correctness measurements.
+    """
+    for report_name, report in (("baseline", baseline), ("candidate", candidate)):
+        for field in ("checkpoint_sha256", "selected_cases_sha256", "decoding"):
+            if not report.get(field):
+                raise ValueError(f"{report_name} report is missing {field}")
+    required_equal_fields = (
+        "selected_cases_sha256",
+        "prompt_file_sha256",
+        "decoding",
+        "evaluation",
+    )
+    for field in required_equal_fields:
+        if baseline.get(field) != candidate.get(field):
+            raise ValueError(f"reports use different {field}")
+    baseline_summary = baseline.get("summary", {})
+    candidate_summary = candidate.get("summary", {})
+    baseline_seeds = baseline_summary.get("seeds")
+    candidate_seeds = candidate_summary.get("seeds")
+    if not baseline_seeds or not candidate_seeds:
+        raise ValueError("reports must include non-empty seed lists")
+    if len(set(baseline_seeds)) != len(baseline_seeds) or len(set(candidate_seeds)) != len(candidate_seeds):
+        raise ValueError("reports must use unique seed lists")
+    if baseline_seeds != candidate_seeds:
+        raise ValueError("reports use different seed lists")
+
+    def index_rows(report: dict[str, Any]) -> dict[tuple[str, int], dict[str, Any]]:
+        indexed: dict[tuple[str, int], dict[str, Any]] = {}
+        for row in report.get("samples", []):
+            key = (str(row.get("case_id")), int(row.get("seed")))
+            if key in indexed:
+                raise ValueError(f"duplicate sample key: {key}")
+            indexed[key] = row
+        return indexed
+
+    baseline_rows = index_rows(baseline)
+    candidate_rows = index_rows(candidate)
+    if not baseline_rows or baseline_rows.keys() != candidate_rows.keys():
+        raise ValueError("reports do not contain the same case/seed sample keys")
+
+    metric_names = (
+        "prompt_keyword_coverage",
+        "char_trigram_diversity",
+        "word_fivegram_diversity",
+        "utf8_bytes",
+        "replacement_character_count",
+        "terminated",
+        "exact_match",
+    )
+    deltas: dict[str, Any] = {}
+    for name in metric_names:
+        values = []
+        for key in baseline_rows:
+            before = baseline_rows[key]["metrics"].get(name)
+            after = candidate_rows[key]["metrics"].get(name)
+            if before is None or after is None:
+                continue
+            values.append(float(after) - float(before))
+        deltas[name] = {
+            "paired_count": len(values),
+            "mean_candidate_minus_baseline": (
+                round(statistics.fmean(values), 6) if values else None
+            ),
+            "median_candidate_minus_baseline": (
+                round(statistics.median(values), 6) if values else None
+            ),
+        }
+
+    return {
+        "comparison": "native_free_running_paired_diagnostics_v1",
+        "evaluation": candidate.get("evaluation"),
+        "baseline_checkpoint_sha256": baseline.get("checkpoint_sha256"),
+        "candidate_checkpoint_sha256": candidate.get("checkpoint_sha256"),
+        "selected_cases_sha256": candidate.get("selected_cases_sha256"),
+        "prompt_file_sha256": candidate.get("prompt_file_sha256"),
+        "decoding": candidate.get("decoding"),
+        "seeds": candidate_summary.get("seeds"),
+        "paired_samples": len(baseline_rows),
+        "deltas": deltas,
+        "interpretation_boundary": (
+            "Positive or negative lexical/format deltas do not establish improved "
+            "semantic correctness, factuality, reasoning, or user preference."
+        ),
     }
 
 
@@ -219,6 +358,7 @@ def main(argv: list[str] | None = None) -> int:
         max_new_tokens=args.max_new_tokens,
         temperature=args.temperature,
         top_k=args.top_k,
+        prompt_file=args.prompts,
     )
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)

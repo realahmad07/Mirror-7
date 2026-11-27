@@ -1,0 +1,2 @@
+# Optional Parquet reader for local RuleTaker benchmark files
+pyarrow>=14.0

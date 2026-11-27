@@ -1,6 +1,32 @@
 import json
 
-from training.free_running_eval import load_prompt_cases, score_generation
+from training.compare_free_running_reports import compare_report_files
+
+from training.free_running_eval import (
+    compare_evaluation_reports,
+    evaluate_checkpoint,
+    fingerprint_cases,
+    load_prompt_cases,
+    score_generation,
+    sha256_file,
+)
+
+
+def _install_fake_torch(monkeypatch):
+    """Provide only the RNG surface used by the evaluator; fast CI need not install torch."""
+    import random
+    import sys
+    import types
+
+    rng = random.Random()
+    fake_torch = types.ModuleType("torch")
+    fake_torch.manual_seed = lambda seed: rng.seed(int(seed))
+    fake_torch.cuda = types.SimpleNamespace(
+        is_available=lambda: False,
+        manual_seed_all=lambda seed: None,
+    )
+    monkeypatch.setitem(sys.modules, "torch", fake_torch)
+    return rng
 
 
 def test_generation_diagnostics_measure_prompt_grounding_repetition_and_exact_match():
@@ -23,6 +49,88 @@ def test_empty_generation_is_not_counted_as_success():
     assert metrics["terminated"] is False
 
 
+
+def test_file_and_selected_case_fingerprints_are_stable_and_content_sensitive(tmp_path):
+    artifact = tmp_path / "checkpoint.pt"
+    artifact.write_bytes(b"checkpoint-v1")
+    first_hash = sha256_file(artifact)
+    assert first_hash == sha256_file(artifact)
+
+    artifact.write_bytes(b"checkpoint-v2")
+    assert sha256_file(artifact) != first_hash
+
+    cases = [{"case_id": "a", "prompt": "Explain state", "target": "A state."}]
+    assert fingerprint_cases(cases) == fingerprint_cases(list(cases))
+    assert fingerprint_cases(cases) != fingerprint_cases([
+        {"case_id": "a", "prompt": "Explain state", "target": "A hidden state."}
+    ])
+
+
+def test_evaluation_report_records_checkpoint_and_prompt_fingerprints(tmp_path, monkeypatch):
+    import sys
+    import types
+
+    _install_fake_torch(monkeypatch)
+    checkpoint = tmp_path / "model.pt"
+    checkpoint.write_bytes(b"minimal checkpoint fixture")
+    prompts = tmp_path / "prompts.jsonl"
+    prompts.write_text(
+        json.dumps({"case_id": "p1", "prompt": "Explain matrices", "target": "Matrices."}) + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeModel:
+        def eval(self):
+            return self
+
+        def generate_text(self, prompt, **kwargs):
+            return "Matrices organize values."
+
+    fake_module = types.ModuleType("training.native_conversation_v5")
+    fake_module.load_checkpoint = lambda path, device: (FakeModel(), {
+        "format": "test-fixture",
+        "config": {"test": True},
+    })
+    monkeypatch.setitem(sys.modules, "training.native_conversation_v5", fake_module)
+    cases = load_prompt_cases(prompts)
+    report = evaluate_checkpoint(
+        checkpoint,
+        cases,
+        seeds=(17, 29, 43),
+        device="cpu",
+        prompt_file=prompts,
+    )
+    assert report["evaluation"] == "native_free_running_diagnostics_v2"
+    assert report["seed_sensitivity"]["measured"] is False
+    assert report["seed_sensitivity"]["mode"] == "not_measured_greedy_decode"
+    assert len({row["response"] for row in report["samples"]}) == 1
+    assert report["checkpoint_sha256"] == sha256_file(checkpoint)
+    assert report["checkpoint_size_bytes"] == checkpoint.stat().st_size
+    assert report["prompt_file_sha256"] == sha256_file(prompts)
+    assert report["selected_cases_sha256"] == fingerprint_cases(cases)
+    assert len(report["samples"]) == 3
+
+
+def test_evaluation_rejects_duplicate_seed_ids(tmp_path, monkeypatch):
+    import sys
+    import types
+    import pytest
+
+    _install_fake_torch(monkeypatch)
+    checkpoint = tmp_path / "model.pt"
+    checkpoint.write_bytes(b"minimal checkpoint fixture")
+    fake_module = types.ModuleType("training.native_conversation_v5")
+    fake_module.load_checkpoint = lambda path, device: (object(), {"format": "test"})
+    monkeypatch.setitem(sys.modules, "training.native_conversation_v5", fake_module)
+
+    with pytest.raises(ValueError, match="seeds must be unique"):
+        evaluate_checkpoint(
+            checkpoint,
+            [{"case_id": "x", "prompt": "Explain matrices", "target": None}],
+            seeds=(17, 17, 29),
+            device="cpu",
+        )
+
 def test_prompt_loader_accepts_prompt_and_target_aliases(tmp_path):
     data = tmp_path / "cases.jsonl"
     data.write_text(
@@ -35,3 +143,146 @@ def test_prompt_loader_accepts_prompt_and_target_aliases(tmp_path):
         "prompt": "Explain recursion",
         "target": "A function calls itself.",
     }]
+
+def _comparison_report(checkpoint_hash, *, case_hash="same-cases", prompt_hash="same-prompts", seeds=(17, 29, 43), decoding=None, output="original"):
+    decoding = decoding or {
+        "mode": "greedy",
+        "max_new_tokens": 64,
+        "temperature": 0.0,
+        "top_k": 40,
+    }
+    samples = []
+    for seed in seeds:
+        samples.append({
+            "case_id": "case-1",
+            "seed": seed,
+            "metrics": {
+                "prompt_keyword_coverage": 0.5 if output == "original" else 0.75,
+                "char_trigram_diversity": 0.4 if output == "original" else 0.6,
+                "word_fivegram_diversity": 0.8,
+                "utf8_bytes": 20 if output == "original" else 22,
+                "replacement_character_count": 0,
+                "terminated": True,
+                "exact_match": False,
+            },
+        })
+    return {
+        "evaluation": "native_free_running_diagnostics_v2",
+        "checkpoint_sha256": checkpoint_hash,
+        "selected_cases_sha256": case_hash,
+        "prompt_file_sha256": prompt_hash,
+        "decoding": decoding,
+        "summary": {"seeds": list(seeds)},
+        "samples": samples,
+    }
+
+
+def test_paired_comparison_requires_identical_prompts_seeds_and_decoding():
+    baseline = _comparison_report("baseline")
+    candidate = _comparison_report("candidate", output="candidate")
+    comparison = compare_evaluation_reports(baseline, candidate)
+
+    assert comparison["paired_samples"] == 3
+    assert comparison["deltas"]["prompt_keyword_coverage"]["mean_candidate_minus_baseline"] == 0.25
+    assert comparison["deltas"]["char_trigram_diversity"]["mean_candidate_minus_baseline"] == 0.2
+    assert "do not establish improved" in comparison["interpretation_boundary"]
+
+
+
+def test_compare_report_files_writes_a_paired_diagnostic_report(tmp_path):
+    baseline_path = tmp_path / "baseline.json"
+    candidate_path = tmp_path / "candidate.json"
+    output_path = tmp_path / "comparison" / "paired.json"
+    baseline_path.write_text(
+        json.dumps(_comparison_report("baseline")),
+        encoding="utf-8",
+    )
+    candidate_path.write_text(
+        json.dumps(_comparison_report("candidate", output="candidate")),
+        encoding="utf-8",
+    )
+
+    report = compare_report_files(baseline_path, candidate_path, output_path)
+    saved = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert report["paired_samples"] == 3
+    assert saved["comparison"] == "native_free_running_paired_diagnostics_v1"
+    assert saved["deltas"]["prompt_keyword_coverage"]["mean_candidate_minus_baseline"] == 0.25
+
+def test_paired_comparison_rejects_different_case_fingerprints():
+    baseline = _comparison_report("baseline")
+    candidate = _comparison_report("candidate", case_hash="different")
+    import pytest
+    with pytest.raises(ValueError, match="selected_cases_sha256"):
+        compare_evaluation_reports(baseline, candidate)
+
+
+def test_paired_comparison_rejects_different_decoding_settings():
+    baseline = _comparison_report("baseline")
+    candidate = _comparison_report(
+        "candidate",
+        decoding={
+            "mode": "stochastic",
+            "max_new_tokens": 64,
+            "temperature": 0.7,
+            "top_k": 40,
+        },
+    )
+    import pytest
+    with pytest.raises(ValueError, match="decoding"):
+        compare_evaluation_reports(baseline, candidate)
+
+
+
+def test_paired_comparison_rejects_different_seed_lists():
+    baseline = _comparison_report("baseline", seeds=(17, 29, 43))
+    candidate = _comparison_report("candidate", seeds=(17, 31, 43))
+    import pytest
+    with pytest.raises(ValueError, match="different seed lists"):
+        compare_evaluation_reports(baseline, candidate)
+
+
+def test_paired_comparison_rejects_reports_without_checkpoint_fingerprints():
+    baseline = _comparison_report("baseline")
+    candidate = _comparison_report("candidate", output="candidate")
+    candidate["checkpoint_sha256"] = None
+    import pytest
+    with pytest.raises(ValueError, match="missing checkpoint_sha256"):
+        compare_evaluation_reports(baseline, candidate)
+
+
+def test_stochastic_evaluation_labels_seed_variation_as_sampling_only(tmp_path, monkeypatch):
+    import sys
+    import types
+
+    rng = _install_fake_torch(monkeypatch)
+    checkpoint = tmp_path / "model.pt"
+    checkpoint.write_bytes(b"minimal checkpoint fixture")
+
+    class FakeModel:
+        def eval(self):
+            return self
+
+        def generate_text(self, prompt, **kwargs):
+            sample = rng.randrange(100000)
+            return f"sample {sample}"
+
+    fake_module = types.ModuleType("training.native_conversation_v5")
+    fake_module.load_checkpoint = lambda path, device: (FakeModel(), {
+        "format": "test-fixture",
+        "config": {"test": True},
+    })
+    monkeypatch.setitem(sys.modules, "training.native_conversation_v5", fake_module)
+
+    report = evaluate_checkpoint(
+        checkpoint,
+        [{"case_id": "p1", "prompt": "Explain matrices", "target": None}],
+        seeds=(17, 29, 43),
+        device="cpu",
+        temperature=0.7,
+    )
+    assert report["seed_sensitivity"]["measured"] is True
+    assert report["seed_sensitivity"]["mode"] == "sampling_variation"
+    assert len({row["response"] for row in report["samples"]}) == 3
+
+
