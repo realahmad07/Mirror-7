@@ -1,0 +1,71 @@
+name: Mirror 7 | Open-World Generalization (S11.0 Foundation)
+
+on:
+  push:
+    branches:
+      - main
+      - "research/**"
+    paths:
+      - "research/open_world/**"
+      - "docs/50-open-world-generalization-s11-0-evaluation-foundation.md"
+      - "docs/51-open-world-generalization-s11-1-raw-observation-learning-design.md"
+      - ".github/workflows/open-world-s11.yml"
+  pull_request:
+    paths:
+      - "research/open_world/**"
+      - "docs/50-open-world-generalization-s11-0-evaluation-foundation.md"
+      - "docs/51-open-world-generalization-s11-1-raw-observation-learning-design.md"
+      - ".github/workflows/open-world-s11.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  open-world-s11-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONHASHSEED: "0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install minimal CPU test dependencies
+        run: python -m pip install --upgrade pip pytest cryptography
+
+      - name: Compile S11 open-world package
+        run: python -m compileall -q research/open_world
+
+      - name: Run S11.0 unit, isolation, split-disjointness, audit, and manifest tests
+        run: python -m pytest -v research/open_world/tests
+
+      - name: Verify committed S11.0 preregistration manifest
+        run: python -m research.open_world.evaluation.run_s11_0_foundation --verify-manifests
+
+      - name: Run offline smoke 5-baseline harness verification
+        run: |
+          python - <<'PY'
+          import tempfile
+          from pathlib import Path
+          from research.open_world.evaluation.run_s11_0_foundation import run_s11_0_foundation
+
+          with tempfile.TemporaryDirectory() as td:
+              root = Path(td)
+              summary = run_s11_0_foundation(
+                  data_dir=root / "data",
+                  reports_dir=root / "reports",
+                  offline_smoke=True,
+                  allow_download=False,
+              )
+              assert summary["s11_0_gate"]["passed"] is True, summary["s11_0_gate"]
+              print("Offline smoke S11.0 gate PASSED:", summary["s11_0_gate"]["checks"])
+          PY

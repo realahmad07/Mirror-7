@@ -1,0 +1,1822 @@
+{
+  "benchmarks": {
+    "balanced_copa": {
+      "benchmark_id": "balanced_copa",
+      "solvers": {
+        "evaluator_only_oracle": {
+          "category": "evaluator_ceiling",
+          "evaluator_only": true,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": null,
+              "answerable_false_abstention_rate": 0.0,
+              "answerable_total": 502,
+              "hallucination_on_unanswerable_rate": null,
+              "overall_abstention_rate": 0.0,
+              "unanswerable_abstention_recall": null,
+              "unanswerable_total": 0
+            },
+            "accuracy": {
+              "answered_coverage": 1.0,
+              "by_category": {
+                "cause": {
+                  "mean_score": 1.0,
+                  "n": 250
+                },
+                "effect": {
+                  "mean_score": 1.0,
+                  "n": 252
+                }
+              },
+              "containment_rate": 1.0,
+              "exact_match": 1.0,
+              "mirrored_pair_consistency": 1.0,
+              "primary_ci95_high": 1.0,
+              "primary_ci95_low": 1.0,
+              "primary_score": 1.0,
+              "selective_score_when_answered": 1.0,
+              "token_f1": 1.0
+            },
+            "benchmark_id": "balanced_copa",
+            "cpu_time": {
+              "calibrate_wall_s": 3e-06,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 2.4e-05,
+              "ms_per_item_cpu": 0.0232,
+              "predict_cpu_s": 0.0,
+              "predict_wall_s": 0.01163,
+              "preds_per_sec_core": 43166.09
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 502,
+              "evidence_any_hit_rate": 1.0,
+              "evidence_f1": 1.0,
+              "evidence_precision": 1.0,
+              "evidence_recall": 1.0,
+              "unsupported_answer_rate": 0.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.0,
+              "max_peak_tracemalloc_mb": 0.0109,
+              "predict_peak_tracemalloc_kb": 11.21
+            },
+            "memory_use": {
+              "active_entry_count": 0,
+              "compressed_mdl_bits": 0,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 1.0,
+              "serialized_bytes": 0,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 502,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "directions": {
+                  "cause_to_effect": 1.0,
+                  "effect_to_cause": 1.0
+                },
+                "mean_shift_score": 1.0,
+                "shift_type": "cross_relation_direction"
+              },
+              "num_unseen_source_clusters": 498,
+              "per_cluster_mean": 1.0,
+              "per_cluster_min": 1.0,
+              "per_cluster_std": 0.0,
+              "source_disjoint_heldout_score": 1.0,
+              "val_to_hidden_gap": 0.0
+            },
+            "uncertainty": {
+              "brier_score": 0.0,
+              "ece_10bin": 0.0,
+              "mean_confidence": 1.0,
+              "mean_uncertainty": 0.0
+            }
+          },
+          "solver_id": "evaluator_only_oracle",
+          "validation_summary": {
+            "abstention_rate": 0.0,
+            "mirrored_pair_consistency": 1.0,
+            "primary_score": 1.0
+          }
+        },
+        "existing_mirror_system": {
+          "category": "existing_mirror",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": null,
+              "answerable_false_abstention_rate": 0.298805,
+              "answerable_total": 502,
+              "hallucination_on_unanswerable_rate": null,
+              "overall_abstention_rate": 0.298805,
+              "unanswerable_abstention_recall": null,
+              "unanswerable_total": 0
+            },
+            "accuracy": {
+              "answered_coverage": 0.701195,
+              "by_category": {
+                "cause": {
+                  "mean_score": 0.332,
+                  "n": 250
+                },
+                "effect": {
+                  "mean_score": 0.376984,
+                  "n": 252
+                }
+              },
+              "containment_rate": 0.354582,
+              "exact_match": 0.354582,
+              "mirrored_pair_consistency": 0.0,
+              "primary_ci95_high": 0.398406,
+              "primary_ci95_low": 0.314741,
+              "primary_score": 0.354582,
+              "selective_score_when_answered": 0.505682,
+              "token_f1": 0.354582
+            },
+            "benchmark_id": "balanced_copa",
+            "cpu_time": {
+              "calibrate_wall_s": 7.3e-05,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 9.6e-05,
+              "ms_per_item_cpu": 1.4006,
+              "predict_cpu_s": 0.703125,
+              "predict_wall_s": 0.759409,
+              "preds_per_sec_core": 713.96
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 502,
+              "evidence_any_hit_rate": 1.0,
+              "evidence_f1": 0.727092,
+              "evidence_precision": 0.826693,
+              "evidence_recall": 0.677291,
+              "unsupported_answer_rate": 0.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.03,
+              "max_peak_tracemalloc_mb": 0.3466,
+              "predict_peak_tracemalloc_kb": 354.9
+            },
+            "memory_use": {
+              "active_entry_count": 4,
+              "compressed_mdl_bits": 744,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 2.0,
+              "serialized_bytes": 95,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 502,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "directions": {
+                  "cause_to_effect": 0.376984,
+                  "effect_to_cause": 0.332
+                },
+                "mean_shift_score": 0.354492,
+                "shift_type": "cross_relation_direction"
+              },
+              "num_unseen_source_clusters": 498,
+              "per_cluster_mean": 0.354083,
+              "per_cluster_min": 0.0,
+              "per_cluster_std": 0.476716,
+              "source_disjoint_heldout_score": 0.354582,
+              "val_to_hidden_gap": 0.014582
+            },
+            "uncertainty": {
+              "brier_score": 0.258837,
+              "ece_10bin": 0.191518,
+              "mean_confidence": 0.546099,
+              "mean_uncertainty": 0.453901
+            }
+          },
+          "solver_id": "existing_mirror_system",
+          "validation_summary": {
+            "abstention_rate": 0.303333,
+            "mirrored_pair_consistency": 0.0,
+            "primary_score": 0.34
+          }
+        },
+        "existing_rule_blueprint": {
+          "category": "existing_rule_blueprint",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": null,
+              "answerable_false_abstention_rate": 1.0,
+              "answerable_total": 502,
+              "hallucination_on_unanswerable_rate": null,
+              "overall_abstention_rate": 1.0,
+              "unanswerable_abstention_recall": null,
+              "unanswerable_total": 0
+            },
+            "accuracy": {
+              "answered_coverage": 0.0,
+              "by_category": {
+                "cause": {
+                  "mean_score": 0.0,
+                  "n": 250
+                },
+                "effect": {
+                  "mean_score": 0.0,
+                  "n": 252
+                }
+              },
+              "containment_rate": 0.0,
+              "exact_match": 0.0,
+              "mirrored_pair_consistency": 0.0,
+              "primary_ci95_high": 0.0,
+              "primary_ci95_low": 0.0,
+              "primary_score": 0.0,
+              "selective_score_when_answered": null,
+              "token_f1": 0.0
+            },
+            "benchmark_id": "balanced_copa",
+            "cpu_time": {
+              "calibrate_wall_s": 3e-06,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 1.6e-05,
+              "ms_per_item_cpu": 0.1556,
+              "predict_cpu_s": 0.078125,
+              "predict_wall_s": 0.077961,
+              "preds_per_sec_core": 6425.6
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 502,
+              "evidence_any_hit_rate": 0.0,
+              "evidence_f1": 0.0,
+              "evidence_precision": 0.0,
+              "evidence_recall": 0.0,
+              "unsupported_answer_rate": 0.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.0,
+              "max_peak_tracemalloc_mb": 0.0147,
+              "predict_peak_tracemalloc_kb": 15.04
+            },
+            "memory_use": {
+              "active_entry_count": 1133,
+              "compressed_mdl_bits": 21784,
+              "external_readonly_pack_entries": 1133,
+              "mean_memory_reads_per_query": 22.1614,
+              "serialized_bytes": 8989,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 502,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "directions": {
+                  "cause_to_effect": 0.0,
+                  "effect_to_cause": 0.0
+                },
+                "mean_shift_score": 0.0,
+                "shift_type": "cross_relation_direction"
+              },
+              "num_unseen_source_clusters": 498,
+              "per_cluster_mean": 0.0,
+              "per_cluster_min": 0.0,
+              "per_cluster_std": 0.0,
+              "source_disjoint_heldout_score": 0.0,
+              "val_to_hidden_gap": 0.0
+            },
+            "uncertainty": {
+              "brier_score": 0.4225,
+              "ece_10bin": 0.65,
+              "mean_confidence": 0.65,
+              "mean_uncertainty": 0.35
+            }
+          },
+          "solver_id": "existing_rule_blueprint",
+          "validation_summary": {
+            "abstention_rate": 1.0,
+            "mirrored_pair_consistency": 0.0,
+            "primary_score": 0.0
+          }
+        },
+        "retrieval_only_bm25": {
+          "category": "retrieval_only",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": null,
+              "answerable_false_abstention_rate": 0.0,
+              "answerable_total": 502,
+              "hallucination_on_unanswerable_rate": null,
+              "overall_abstention_rate": 0.0,
+              "unanswerable_abstention_recall": null,
+              "unanswerable_total": 0
+            },
+            "accuracy": {
+              "answered_coverage": 1.0,
+              "by_category": {
+                "cause": {
+                  "mean_score": 0.476,
+                  "n": 250
+                },
+                "effect": {
+                  "mean_score": 0.488095,
+                  "n": 252
+                }
+              },
+              "containment_rate": 0.482072,
+              "exact_match": 0.482072,
+              "mirrored_pair_consistency": 0.0,
+              "primary_ci95_high": 0.531873,
+              "primary_ci95_low": 0.440239,
+              "primary_score": 0.482072,
+              "selective_score_when_answered": 0.482072,
+              "token_f1": 0.482072
+            },
+            "benchmark_id": "balanced_copa",
+            "cpu_time": {
+              "calibrate_wall_s": 1.020942,
+              "fit_cpu_s": 0.3125,
+              "fit_wall_s": 0.371695,
+              "ms_per_item_cpu": 3.2993,
+              "predict_cpu_s": 1.65625,
+              "predict_wall_s": 1.733318,
+              "preds_per_sec_core": 303.09
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 502,
+              "evidence_any_hit_rate": 1.0,
+              "evidence_f1": 0.741036,
+              "evidence_precision": 0.741036,
+              "evidence_recall": 0.741036,
+              "unsupported_answer_rate": 0.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 468.62,
+              "max_peak_tracemalloc_mb": 0.4576,
+              "predict_peak_tracemalloc_kb": 14.34
+            },
+            "memory_use": {
+              "active_entry_count": 2635,
+              "compressed_mdl_bits": 74856,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 1396.0,
+              "serialized_bytes": 57248,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 502,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "directions": {
+                  "cause_to_effect": 0.480159,
+                  "effect_to_cause": 0.5
+                },
+                "mean_shift_score": 0.49008,
+                "shift_type": "cross_relation_direction"
+              },
+              "num_unseen_source_clusters": 498,
+              "per_cluster_mean": 0.483601,
+              "per_cluster_min": 0.0,
+              "per_cluster_std": 0.498781,
+              "source_disjoint_heldout_score": 0.482072,
+              "val_to_hidden_gap": -0.021261
+            },
+            "uncertainty": {
+              "brier_score": 0.291471,
+              "ece_10bin": 0.089017,
+              "mean_confidence": 0.567303,
+              "mean_uncertainty": 0.432697
+            }
+          },
+          "solver_id": "retrieval_only_bm25",
+          "validation_summary": {
+            "abstention_rate": 0.0,
+            "mirrored_pair_consistency": 0.194631,
+            "primary_score": 0.503333
+          }
+        },
+        "simple_symbolic_extractor": {
+          "category": "simple_symbolic",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": null,
+              "answerable_false_abstention_rate": 0.0,
+              "answerable_total": 502,
+              "hallucination_on_unanswerable_rate": null,
+              "overall_abstention_rate": 0.0,
+              "unanswerable_abstention_recall": null,
+              "unanswerable_total": 0
+            },
+            "accuracy": {
+              "answered_coverage": 1.0,
+              "by_category": {
+                "cause": {
+                  "mean_score": 0.468,
+                  "n": 250
+                },
+                "effect": {
+                  "mean_score": 0.47619,
+                  "n": 252
+                }
+              },
+              "containment_rate": 0.472112,
+              "exact_match": 0.472112,
+              "mirrored_pair_consistency": 0.0,
+              "primary_ci95_high": 0.521912,
+              "primary_ci95_low": 0.434263,
+              "primary_score": 0.472112,
+              "selective_score_when_answered": 0.472112,
+              "token_f1": 0.472112
+            },
+            "benchmark_id": "balanced_copa",
+            "cpu_time": {
+              "calibrate_wall_s": 0.045534,
+              "fit_cpu_s": 0.390625,
+              "fit_wall_s": 0.405195,
+              "ms_per_item_cpu": 0.3113,
+              "predict_cpu_s": 0.15625,
+              "predict_wall_s": 0.159034,
+              "preds_per_sec_core": 3212.8
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 502,
+              "evidence_any_hit_rate": 1.0,
+              "evidence_f1": 0.736056,
+              "evidence_precision": 0.736056,
+              "evidence_recall": 0.736056,
+              "unsupported_answer_rate": 0.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 1711.08,
+              "max_peak_tracemalloc_mb": 1.671,
+              "predict_peak_tracemalloc_kb": 15.85
+            },
+            "memory_use": {
+              "active_entry_count": 14844,
+              "compressed_mdl_bits": 545216,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 17.7829,
+              "serialized_bytes": 314576,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 502,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "directions": {
+                  "cause_to_effect": 0.480159,
+                  "effect_to_cause": 0.488
+                },
+                "mean_shift_score": 0.484079,
+                "shift_type": "cross_relation_direction"
+              },
+              "num_unseen_source_clusters": 498,
+              "per_cluster_mean": 0.473561,
+              "per_cluster_min": 0.0,
+              "per_cluster_std": 0.49835,
+              "source_disjoint_heldout_score": 0.472112,
+              "val_to_hidden_gap": -0.027888
+            },
+            "uncertainty": {
+              "brier_score": 0.290865,
+              "ece_10bin": 0.09127,
+              "mean_confidence": 0.560622,
+              "mean_uncertainty": 0.439378
+            }
+          },
+          "solver_id": "simple_symbolic_extractor",
+          "validation_summary": {
+            "abstention_rate": 0.0,
+            "mirrored_pair_consistency": 0.221477,
+            "primary_score": 0.5
+          }
+        }
+      },
+      "source_metadata": {
+        "dataset_id": "balanced_copa",
+        "files": {
+          "test.csv": {
+            "cache_rel_path": ".external_eval_cache/s11_open_world/balanced_copa/test.csv",
+            "sha256": "b57415ab077856be06f083fd39f72a3341e393630d6af1ce4b46a8be2a095972",
+            "size_bytes": 53898,
+            "source": "cache",
+            "url": "https://huggingface.co/datasets/pkavumba/balanced-copa/resolve/813bd03cd6e07d9bd8d7333896ad5d40abb95ea9/test.csv",
+            "verified": true
+          },
+          "train.csv": {
+            "cache_rel_path": ".external_eval_cache/s11_open_world/balanced_copa/train.csv",
+            "sha256": "650ec76d0b0b46511bcf68702f9e371cc3d9ad3074f947659d98155cc19d56ef",
+            "size_bytes": 111753,
+            "source": "cache",
+            "url": "https://huggingface.co/datasets/pkavumba/balanced-copa/resolve/813bd03cd6e07d9bd8d7333896ad5d40abb95ea9/train.csv",
+            "verified": true
+          }
+        },
+        "license": "CC-BY-4.0 (extensions) + BSD-2-Clause (original COPA)",
+        "pinned_revision": "813bd03cd6e07d9bd8d7333896ad5d40abb95ea9"
+      },
+      "split_manifest": {
+        "benchmark_id": "balanced_copa",
+        "disjointness_report": {
+          "cluster_counts": {
+            "hidden_eval": 498,
+            "train": 349,
+            "val": 149
+          },
+          "cluster_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "item_counts": {
+            "hidden_eval": 502,
+            "train": 698,
+            "val": 300
+          },
+          "item_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "resource_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "zero_leakage_verified": true
+        },
+        "disjointness_verified": true,
+        "hidden_clusters_sha256": "3f956dadd5135d20388d6d4f134b4c8822fb466de7c99c9d29a6c780b9827590",
+        "hidden_eval_count": 502,
+        "hidden_ids_sha256": "d4e25ea972e9c0221c5857cb8a5c04ff3d20898954ef240e77d189c9309e806b",
+        "train_clusters_sha256": "fbfa1984dc1af8b520ea54ec8cada7ab08b16d92bc39ae5a68f845c4e01ed837",
+        "train_count": 698,
+        "train_ids_sha256": "7bd515786dcf9fc69bc990684292b42407acb9e18325b718baac8785648def8e",
+        "val_clusters_sha256": "767355cf771f89a20c76b1e446b4b36f68afcc83423f267bd046f6fd06480330",
+        "val_count": 300,
+        "val_ids_sha256": "7da1db41b58eb04ed13a73276141536ae76f9a5a239e69a6ce7317fd08355ac9"
+      },
+      "task_kind": "causal_choice"
+    },
+    "longmemeval": {
+      "benchmark_id": "longmemeval",
+      "solvers": {
+        "evaluator_only_oracle": {
+          "category": "evaluator_ceiling",
+          "evaluator_only": true,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 1.0,
+              "answerable_false_abstention_rate": 0.0,
+              "answerable_total": 188,
+              "hallucination_on_unanswerable_rate": 0.0,
+              "overall_abstention_rate": 0.069307,
+              "unanswerable_abstention_recall": 1.0,
+              "unanswerable_total": 14
+            },
+            "accuracy": {
+              "answered_coverage": 0.930693,
+              "by_category": {
+                "knowledge-update": {
+                  "mean_score": 1.0,
+                  "n": 32
+                },
+                "multi-session": {
+                  "mean_score": 1.0,
+                  "n": 54
+                },
+                "single-session-assistant": {
+                  "mean_score": 1.0,
+                  "n": 23
+                },
+                "single-session-preference": {
+                  "mean_score": 1.0,
+                  "n": 12
+                },
+                "single-session-user": {
+                  "mean_score": 1.0,
+                  "n": 28
+                },
+                "temporal-reasoning": {
+                  "mean_score": 1.0,
+                  "n": 53
+                }
+              },
+              "containment_rate": 1.0,
+              "exact_match": 1.0,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 1.0,
+              "primary_ci95_low": 1.0,
+              "primary_score": 1.0,
+              "selective_score_when_answered": 1.0,
+              "token_f1": 1.0
+            },
+            "benchmark_id": "longmemeval",
+            "cpu_time": {
+              "calibrate_wall_s": 3e-06,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 1.8e-05,
+              "ms_per_item_cpu": 0.0085,
+              "predict_cpu_s": 0.0,
+              "predict_wall_s": 0.001721,
+              "preds_per_sec_core": 117373.62
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 188,
+              "evidence_any_hit_rate": 1.0,
+              "evidence_f1": 1.0,
+              "evidence_precision": 1.0,
+              "evidence_recall": 1.0,
+              "unsupported_answer_rate": 0.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.0,
+              "max_peak_tracemalloc_mb": 0.0111,
+              "predict_peak_tracemalloc_kb": 11.33
+            },
+            "memory_use": {
+              "active_entry_count": 0,
+              "compressed_mdl_bits": 0,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 1.0,
+              "serialized_bytes": 0,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 202,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "by_target_category": {
+                  "knowledge-update": {
+                    "mean_score": 1.0,
+                    "n": 32
+                  },
+                  "temporal-reasoning": {
+                    "mean_score": 1.0,
+                    "n": 53
+                  }
+                },
+                "mean_shift_score": 1.0,
+                "shift_type": "cross_memory_category_session_to_temporal_and_update",
+                "target_items": 85,
+                "train_items": 115
+              },
+              "num_unseen_source_clusters": 200,
+              "per_cluster_mean": 1.0,
+              "per_cluster_min": 1.0,
+              "per_cluster_std": 0.0,
+              "source_disjoint_heldout_score": 1.0,
+              "val_to_hidden_gap": 0.0
+            },
+            "uncertainty": {
+              "brier_score": 0.0,
+              "ece_10bin": 0.0,
+              "mean_confidence": 1.0,
+              "mean_uncertainty": 0.0
+            }
+          },
+          "solver_id": "evaluator_only_oracle",
+          "validation_summary": {
+            "abstention_rate": 0.050505,
+            "mirrored_pair_consistency": null,
+            "primary_score": 1.0
+          }
+        },
+        "existing_mirror_system": {
+          "category": "existing_mirror",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 0.0,
+              "answerable_false_abstention_rate": 0.18617,
+              "answerable_total": 188,
+              "hallucination_on_unanswerable_rate": 1.0,
+              "overall_abstention_rate": 0.173267,
+              "unanswerable_abstention_recall": 0.0,
+              "unanswerable_total": 14
+            },
+            "accuracy": {
+              "answered_coverage": 0.826733,
+              "by_category": {
+                "knowledge-update": {
+                  "mean_score": 0.001563,
+                  "n": 32
+                },
+                "multi-session": {
+                  "mean_score": 0.004083,
+                  "n": 54
+                },
+                "single-session-assistant": {
+                  "mean_score": 0.019029,
+                  "n": 23
+                },
+                "single-session-preference": {
+                  "mean_score": 0.060952,
+                  "n": 12
+                },
+                "single-session-user": {
+                  "mean_score": 0.050752,
+                  "n": 28
+                },
+                "temporal-reasoning": {
+                  "mean_score": 0.032843,
+                  "n": 53
+                }
+              },
+              "containment_rate": 0.009901,
+              "exact_match": 0.0,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 0.040163,
+              "primary_ci95_low": 0.011071,
+              "primary_score": 0.022779,
+              "selective_score_when_answered": 0.027553,
+              "token_f1": 0.014281
+            },
+            "benchmark_id": "longmemeval",
+            "cpu_time": {
+              "calibrate_wall_s": 3e-06,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 4.2e-05,
+              "ms_per_item_cpu": 849.7834,
+              "predict_cpu_s": 171.65625,
+              "predict_wall_s": 177.683069,
+              "preds_per_sec_core": 1.18
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 188,
+              "evidence_any_hit_rate": 0.159574,
+              "evidence_f1": 0.117655,
+              "evidence_precision": 0.159574,
+              "evidence_recall": 0.100177,
+              "unsupported_answer_rate": 0.820359
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.03,
+              "max_peak_tracemalloc_mb": 1.0901,
+              "predict_peak_tracemalloc_kb": 1116.23
+            },
+            "memory_use": {
+              "active_entry_count": 4,
+              "compressed_mdl_bits": 744,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 12.7376,
+              "serialized_bytes": 95,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 202,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "by_target_category": {
+                  "knowledge-update": {
+                    "mean_score": 0.001563,
+                    "n": 32
+                  },
+                  "temporal-reasoning": {
+                    "mean_score": 0.032843,
+                    "n": 53
+                  }
+                },
+                "mean_shift_score": 0.021067,
+                "shift_type": "cross_memory_category_session_to_temporal_and_update",
+                "target_items": 85,
+                "train_items": 115
+              },
+              "num_unseen_source_clusters": 200,
+              "per_cluster_mean": 0.022769,
+              "per_cluster_min": 0.0,
+              "per_cluster_std": 0.106879,
+              "source_disjoint_heldout_score": 0.022779,
+              "val_to_hidden_gap": -0.020527
+            },
+            "uncertainty": {
+              "brier_score": 0.269059,
+              "ece_10bin": 0.507426,
+              "mean_confidence": 0.517327,
+              "mean_uncertainty": 0.482673
+            }
+          },
+          "solver_id": "existing_mirror_system",
+          "validation_summary": {
+            "abstention_rate": 0.131313,
+            "mirrored_pair_consistency": null,
+            "primary_score": 0.043306
+          }
+        },
+        "existing_rule_blueprint": {
+          "category": "existing_rule_blueprint",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 0.12963,
+              "answerable_false_abstention_rate": 1.0,
+              "answerable_total": 188,
+              "hallucination_on_unanswerable_rate": 0.0,
+              "overall_abstention_rate": 1.0,
+              "unanswerable_abstention_recall": 1.0,
+              "unanswerable_total": 14
+            },
+            "accuracy": {
+              "answered_coverage": 0.0,
+              "by_category": {
+                "knowledge-update": {
+                  "mean_score": 0.09375,
+                  "n": 32
+                },
+                "multi-session": {
+                  "mean_score": 0.092593,
+                  "n": 54
+                },
+                "single-session-assistant": {
+                  "mean_score": 0.0,
+                  "n": 23
+                },
+                "single-session-preference": {
+                  "mean_score": 0.0,
+                  "n": 12
+                },
+                "single-session-user": {
+                  "mean_score": 0.107143,
+                  "n": 28
+                },
+                "temporal-reasoning": {
+                  "mean_score": 0.056604,
+                  "n": 53
+                }
+              },
+              "containment_rate": 0.069307,
+              "exact_match": 0.069307,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 0.108911,
+              "primary_ci95_low": 0.044554,
+              "primary_score": 0.069307,
+              "selective_score_when_answered": null,
+              "token_f1": 0.069307
+            },
+            "benchmark_id": "longmemeval",
+            "cpu_time": {
+              "calibrate_wall_s": 4e-06,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 1.7e-05,
+              "ms_per_item_cpu": 0.3094,
+              "predict_cpu_s": 0.0625,
+              "predict_wall_s": 0.063283,
+              "preds_per_sec_core": 3232.0
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 188,
+              "evidence_any_hit_rate": 0.0,
+              "evidence_f1": 0.0,
+              "evidence_precision": 0.0,
+              "evidence_recall": 0.0,
+              "unsupported_answer_rate": 0.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.0,
+              "max_peak_tracemalloc_mb": 0.0182,
+              "predict_peak_tracemalloc_kb": 18.63
+            },
+            "memory_use": {
+              "active_entry_count": 1133,
+              "compressed_mdl_bits": 21784,
+              "external_readonly_pack_entries": 1133,
+              "mean_memory_reads_per_query": 90.5842,
+              "serialized_bytes": 8989,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 202,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "by_target_category": {
+                  "knowledge-update": {
+                    "mean_score": 0.09375,
+                    "n": 32
+                  },
+                  "temporal-reasoning": {
+                    "mean_score": 0.056604,
+                    "n": 53
+                  }
+                },
+                "mean_shift_score": 0.070588,
+                "shift_type": "cross_memory_category_session_to_temporal_and_update",
+                "target_items": 85,
+                "train_items": 115
+              },
+              "num_unseen_source_clusters": 200,
+              "per_cluster_mean": 0.07,
+              "per_cluster_min": 0.0,
+              "per_cluster_std": 0.255147,
+              "source_disjoint_heldout_score": 0.069307,
+              "val_to_hidden_gap": 0.018802
+            },
+            "uncertainty": {
+              "brier_score": 0.401708,
+              "ece_10bin": 0.580693,
+              "mean_confidence": 0.65,
+              "mean_uncertainty": 0.35
+            }
+          },
+          "solver_id": "existing_rule_blueprint",
+          "validation_summary": {
+            "abstention_rate": 1.0,
+            "mirrored_pair_consistency": null,
+            "primary_score": 0.050505
+          }
+        },
+        "retrieval_only_bm25": {
+          "category": "retrieval_only",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 0.0,
+              "answerable_false_abstention_rate": 0.069149,
+              "answerable_total": 188,
+              "hallucination_on_unanswerable_rate": 1.0,
+              "overall_abstention_rate": 0.064356,
+              "unanswerable_abstention_recall": 0.0,
+              "unanswerable_total": 14
+            },
+            "accuracy": {
+              "answered_coverage": 0.935644,
+              "by_category": {
+                "knowledge-update": {
+                  "mean_score": 0.004286,
+                  "n": 32
+                },
+                "multi-session": {
+                  "mean_score": 0.009203,
+                  "n": 54
+                },
+                "single-session-assistant": {
+                  "mean_score": 0.057241,
+                  "n": 23
+                },
+                "single-session-preference": {
+                  "mean_score": 0.110971,
+                  "n": 12
+                },
+                "single-session-user": {
+                  "mean_score": 0.12218,
+                  "n": 28
+                },
+                "temporal-reasoning": {
+                  "mean_score": 0.03643,
+                  "n": 53
+                }
+              },
+              "containment_rate": 0.019802,
+              "exact_match": 0.0,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 0.063001,
+              "primary_ci95_low": 0.024416,
+              "primary_score": 0.042743,
+              "selective_score_when_answered": 0.045683,
+              "token_f1": 0.025324
+            },
+            "benchmark_id": "longmemeval",
+            "cpu_time": {
+              "calibrate_wall_s": 7.819343,
+              "fit_cpu_s": 54.328125,
+              "fit_wall_s": 58.184619,
+              "ms_per_item_cpu": 66.4449,
+              "predict_cpu_s": 13.421875,
+              "predict_wall_s": 15.630203,
+              "preds_per_sec_core": 15.05
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 188,
+              "evidence_any_hit_rate": 0.893617,
+              "evidence_f1": 0.733257,
+              "evidence_precision": 0.87766,
+              "evidence_recall": 0.67367,
+              "unsupported_answer_rate": 0.111111
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 4718.54,
+              "max_peak_tracemalloc_mb": 4.6079,
+              "predict_peak_tracemalloc_kb": 365.19
+            },
+            "memory_use": {
+              "active_entry_count": 22944,
+              "compressed_mdl_bits": 1120784,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 11.9109,
+              "serialized_bytes": 698120,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 202,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "by_target_category": {
+                  "knowledge-update": {
+                    "mean_score": 0.004286,
+                    "n": 32
+                  },
+                  "temporal-reasoning": {
+                    "mean_score": 0.03412,
+                    "n": 53
+                  }
+                },
+                "mean_shift_score": 0.022888,
+                "shift_type": "cross_memory_category_session_to_temporal_and_update",
+                "target_items": 85,
+                "train_items": 115
+              },
+              "num_unseen_source_clusters": 200,
+              "per_cluster_mean": 0.042971,
+              "per_cluster_min": 0.0,
+              "per_cluster_std": 0.150051,
+              "source_disjoint_heldout_score": 0.042743,
+              "val_to_hidden_gap": -0.024056
+            },
+            "uncertainty": {
+              "brier_score": 0.602075,
+              "ece_10bin": 0.756847,
+              "mean_confidence": 0.776649,
+              "mean_uncertainty": 0.223351
+            }
+          },
+          "solver_id": "retrieval_only_bm25",
+          "validation_summary": {
+            "abstention_rate": 0.060606,
+            "mirrored_pair_consistency": null,
+            "primary_score": 0.066799
+          }
+        },
+        "simple_symbolic_extractor": {
+          "category": "simple_symbolic",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 0.12,
+              "answerable_false_abstention_rate": 0.175532,
+              "answerable_total": 188,
+              "hallucination_on_unanswerable_rate": 0.785714,
+              "overall_abstention_rate": 0.178218,
+              "unanswerable_abstention_recall": 0.214286,
+              "unanswerable_total": 14
+            },
+            "accuracy": {
+              "answered_coverage": 0.821782,
+              "by_category": {
+                "knowledge-update": {
+                  "mean_score": 0.004577,
+                  "n": 32
+                },
+                "multi-session": {
+                  "mean_score": 0.061651,
+                  "n": 54
+                },
+                "single-session-assistant": {
+                  "mean_score": 0.058024,
+                  "n": 23
+                },
+                "single-session-preference": {
+                  "mean_score": 0.036853,
+                  "n": 12
+                },
+                "single-session-user": {
+                  "mean_score": 0.015873,
+                  "n": 28
+                },
+                "temporal-reasoning": {
+                  "mean_score": 0.048993,
+                  "n": 53
+                }
+              },
+              "containment_rate": 0.024752,
+              "exact_match": 0.014851,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 0.062115,
+              "primary_ci95_low": 0.017442,
+              "primary_score": 0.041057,
+              "selective_score_when_answered": 0.031889,
+              "token_f1": 0.031775
+            },
+            "benchmark_id": "longmemeval",
+            "cpu_time": {
+              "calibrate_wall_s": 8.973824,
+              "fit_cpu_s": 49.109375,
+              "fit_wall_s": 51.358846,
+              "ms_per_item_cpu": 105.5074,
+              "predict_cpu_s": 21.3125,
+              "predict_wall_s": 27.119445,
+              "preds_per_sec_core": 9.48
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 188,
+              "evidence_any_hit_rate": 0.787234,
+              "evidence_f1": 0.669807,
+              "evidence_precision": 0.75266,
+              "evidence_recall": 0.640603,
+              "unsupported_answer_rate": 0.108434
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 3919.53,
+              "max_peak_tracemalloc_mb": 3.8277,
+              "predict_peak_tracemalloc_kb": 149.02
+            },
+            "memory_use": {
+              "active_entry_count": 22944,
+              "compressed_mdl_bits": 1120760,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 11.9109,
+              "serialized_bytes": 698114,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 202,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "by_target_category": {
+                  "knowledge-update": {
+                    "mean_score": 0.004577,
+                    "n": 32
+                  },
+                  "temporal-reasoning": {
+                    "mean_score": 0.05079,
+                    "n": 53
+                  }
+                },
+                "mean_shift_score": 0.033392,
+                "shift_type": "cross_memory_category_session_to_temporal_and_update",
+                "target_items": 85,
+                "train_items": 115
+              },
+              "num_unseen_source_clusters": 200,
+              "per_cluster_mean": 0.04124,
+              "per_cluster_min": 0.0,
+              "per_cluster_std": 0.163137,
+              "source_disjoint_heldout_score": 0.041057,
+              "val_to_hidden_gap": -0.03366
+            },
+            "uncertainty": {
+              "brier_score": 0.459487,
+              "ece_10bin": 0.647715,
+              "mean_confidence": 0.672468,
+              "mean_uncertainty": 0.327532
+            }
+          },
+          "solver_id": "simple_symbolic_extractor",
+          "validation_summary": {
+            "abstention_rate": 0.171717,
+            "mirrored_pair_consistency": null,
+            "primary_score": 0.074717
+          }
+        }
+      },
+      "source_metadata": {
+        "dataset_id": "longmemeval",
+        "files": {
+          "longmemeval_oracle.json": {
+            "cache_rel_path": ".external_eval_cache/s11_open_world/longmemeval/longmemeval_oracle.json",
+            "sha256": "821a2034d219ab45846873dd14c14f12cfe7776e73527a483f9dac095d38620c",
+            "size_bytes": 15388478,
+            "source": "cache",
+            "url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/98d7416c24c778c2fee6e6f3006e7a073259d48f/longmemeval_oracle.json",
+            "verified": true
+          }
+        },
+        "haystack_construction": "split-internal chronological distractor augmentation (+10 distractor sessions strictly from unrelated connected components inside the same split; 0 cross-split session overlap)",
+        "license": "MIT (verified on both GitHub SPDX and Hugging Face dataset card)",
+        "pinned_revision": "98d7416c24c778c2fee6e6f3006e7a073259d48f"
+      },
+      "split_manifest": {
+        "benchmark_id": "longmemeval",
+        "disjointness_report": {
+          "cluster_counts": {
+            "hidden_eval": 200,
+            "train": 197,
+            "val": 98
+          },
+          "cluster_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "item_counts": {
+            "hidden_eval": 202,
+            "train": 199,
+            "val": 99
+          },
+          "item_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "resource_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "zero_leakage_verified": true
+        },
+        "disjointness_verified": true,
+        "hidden_clusters_sha256": "6a05a6cec27d61ce972a0be57b7714fbb4ee82c45ca06059b0a5e7ef3c8f51b5",
+        "hidden_eval_count": 202,
+        "hidden_ids_sha256": "a9be5836eb6cfbd0c5ed20bcc8e4d4457e0528932d369a92747c4cd57e03fcac",
+        "train_clusters_sha256": "d2178817fcb7c3f25fa9082d3442000ee1e394cf256b76d53d0b49299b15f767",
+        "train_count": 199,
+        "train_ids_sha256": "2be7af7b10dddc0469df9c9e9dbaf4350cc7f02fbab3e508e04055cf6dc0c898",
+        "val_clusters_sha256": "6e836ec566fa90e628e9107c2faf84591e46669619dac2aca52905712fa7dbba",
+        "val_count": 99,
+        "val_ids_sha256": "b0e3d19d238cfd5e20c53f46abeefbbea1ef81e7aee0ca9fbb991f03ffcd331f"
+      },
+      "task_kind": "long_memory_qa"
+    },
+    "squad_v2": {
+      "benchmark_id": "squad_v2",
+      "solvers": {
+        "evaluator_only_oracle": {
+          "category": "evaluator_ceiling",
+          "evaluator_only": true,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 1.0,
+              "answerable_false_abstention_rate": 0.0,
+              "answerable_total": 210,
+              "hallucination_on_unanswerable_rate": 0.0,
+              "overall_abstention_rate": 0.5,
+              "unanswerable_abstention_recall": 1.0,
+              "unanswerable_total": 210
+            },
+            "accuracy": {
+              "answered_coverage": 0.5,
+              "by_category": {
+                "answerable": {
+                  "mean_score": 1.0,
+                  "n": 210
+                },
+                "unanswerable": {
+                  "mean_score": 1.0,
+                  "n": 210
+                }
+              },
+              "containment_rate": 1.0,
+              "exact_match": 1.0,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 1.0,
+              "primary_ci95_low": 1.0,
+              "primary_score": 1.0,
+              "selective_score_when_answered": 1.0,
+              "token_f1": 1.0
+            },
+            "benchmark_id": "squad_v2",
+            "cpu_time": {
+              "calibrate_wall_s": 4e-06,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 2.7e-05,
+              "ms_per_item_cpu": 0.0372,
+              "predict_cpu_s": 0.015625,
+              "predict_wall_s": 0.006624,
+              "preds_per_sec_core": 26880.0
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 210,
+              "evidence_any_hit_rate": 1.0,
+              "evidence_f1": 1.0,
+              "evidence_precision": 1.0,
+              "evidence_recall": 1.0,
+              "unsupported_answer_rate": 0.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.0,
+              "max_peak_tracemalloc_mb": 0.0109,
+              "predict_peak_tracemalloc_kb": 11.21
+            },
+            "memory_use": {
+              "active_entry_count": 0,
+              "compressed_mdl_bits": 0,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 1.0,
+              "serialized_bytes": 0,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 420,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+                "shift_type": "cross_wikipedia_article_domain",
+                "unseen_article_count": 14
+              },
+              "num_unseen_source_clusters": 14,
+              "per_cluster_mean": 1.0,
+              "per_cluster_min": 1.0,
+              "per_cluster_std": 0.0,
+              "source_disjoint_heldout_score": 1.0,
+              "val_to_hidden_gap": 0.0
+            },
+            "uncertainty": {
+              "brier_score": 0.0,
+              "ece_10bin": 0.0,
+              "mean_confidence": 1.0,
+              "mean_uncertainty": 0.0
+            }
+          },
+          "solver_id": "evaluator_only_oracle",
+          "validation_summary": {
+            "abstention_rate": 0.5,
+            "mirrored_pair_consistency": null,
+            "primary_score": 1.0
+          }
+        },
+        "existing_mirror_system": {
+          "category": "existing_mirror",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 0.672052,
+              "answerable_false_abstention_rate": 0.957143,
+              "answerable_total": 210,
+              "hallucination_on_unanswerable_rate": 0.009524,
+              "overall_abstention_rate": 0.97381,
+              "unanswerable_abstention_recall": 0.990476,
+              "unanswerable_total": 210
+            },
+            "accuracy": {
+              "answered_coverage": 0.02619,
+              "by_category": {
+                "answerable": {
+                  "mean_score": 0.008886,
+                  "n": 210
+                },
+                "unanswerable": {
+                  "mean_score": 0.990476,
+                  "n": 210
+                }
+              },
+              "containment_rate": 0.502381,
+              "exact_match": 0.495238,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 0.553746,
+              "primary_ci95_low": 0.458015,
+              "primary_score": 0.499681,
+              "selective_score_when_answered": 0.169651,
+              "token_f1": 0.499681
+            },
+            "benchmark_id": "squad_v2",
+            "cpu_time": {
+              "calibrate_wall_s": 2e-06,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 3.5e-05,
+              "ms_per_item_cpu": 2.9018,
+              "predict_cpu_s": 1.21875,
+              "predict_wall_s": 1.31816,
+              "preds_per_sec_core": 344.62
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 210,
+              "evidence_any_hit_rate": 0.042857,
+              "evidence_f1": 0.039683,
+              "evidence_precision": 0.042857,
+              "evidence_recall": 0.038095,
+              "unsupported_answer_rate": 0.181818
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.03,
+              "max_peak_tracemalloc_mb": 0.5527,
+              "predict_peak_tracemalloc_kb": 566.0
+            },
+            "memory_use": {
+              "active_entry_count": 4,
+              "compressed_mdl_bits": 744,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 5.4929,
+              "serialized_bytes": 95,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 420,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+                "shift_type": "cross_wikipedia_article_domain",
+                "unseen_article_count": 14
+              },
+              "num_unseen_source_clusters": 14,
+              "per_cluster_mean": 0.499681,
+              "per_cluster_min": 0.433333,
+              "per_cluster_std": 0.021385,
+              "source_disjoint_heldout_score": 0.499681,
+              "val_to_hidden_gap": 0.004443
+            },
+            "uncertainty": {
+              "brier_score": 0.251137,
+              "ece_10bin": 0.00369,
+              "mean_confidence": 0.50131,
+              "mean_uncertainty": 0.49869
+            }
+          },
+          "solver_id": "existing_mirror_system",
+          "validation_summary": {
+            "abstention_rate": 0.995238,
+            "mirrored_pair_consistency": null,
+            "primary_score": 0.495238
+          }
+        },
+        "existing_rule_blueprint": {
+          "category": "existing_rule_blueprint",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 0.664547,
+              "answerable_false_abstention_rate": 1.0,
+              "answerable_total": 210,
+              "hallucination_on_unanswerable_rate": 0.004762,
+              "overall_abstention_rate": 0.997619,
+              "unanswerable_abstention_recall": 0.995238,
+              "unanswerable_total": 210
+            },
+            "accuracy": {
+              "answered_coverage": 0.002381,
+              "by_category": {
+                "answerable": {
+                  "mean_score": 0.0,
+                  "n": 210
+                },
+                "unanswerable": {
+                  "mean_score": 0.995238,
+                  "n": 210
+                }
+              },
+              "containment_rate": 0.497619,
+              "exact_match": 0.497619,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 0.554762,
+              "primary_ci95_low": 0.457143,
+              "primary_score": 0.497619,
+              "selective_score_when_answered": 0.0,
+              "token_f1": 0.497619
+            },
+            "benchmark_id": "squad_v2",
+            "cpu_time": {
+              "calibrate_wall_s": 5e-06,
+              "fit_cpu_s": 0.0,
+              "fit_wall_s": 2.3e-05,
+              "ms_per_item_cpu": 0.186,
+              "predict_cpu_s": 0.078125,
+              "predict_wall_s": 0.071718,
+              "preds_per_sec_core": 5376.0
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 210,
+              "evidence_any_hit_rate": 0.0,
+              "evidence_f1": 0.0,
+              "evidence_precision": 0.0,
+              "evidence_recall": 0.0,
+              "unsupported_answer_rate": 1.0
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 0.0,
+              "max_peak_tracemalloc_mb": 0.0149,
+              "predict_peak_tracemalloc_kb": 15.29
+            },
+            "memory_use": {
+              "active_entry_count": 1133,
+              "compressed_mdl_bits": 21784,
+              "external_readonly_pack_entries": 1133,
+              "mean_memory_reads_per_query": 32.0619,
+              "serialized_bytes": 8989,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 420,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+                "shift_type": "cross_wikipedia_article_domain",
+                "unseen_article_count": 14
+              },
+              "num_unseen_source_clusters": 14,
+              "per_cluster_mean": 0.497619,
+              "per_cluster_min": 0.466667,
+              "per_cluster_std": 0.008585,
+              "source_disjoint_heldout_score": 0.497619,
+              "val_to_hidden_gap": -0.002381
+            },
+            "uncertainty": {
+              "brier_score": 0.272589,
+              "ece_10bin": 0.151786,
+              "mean_confidence": 0.649405,
+              "mean_uncertainty": 0.350595
+            }
+          },
+          "solver_id": "existing_rule_blueprint",
+          "validation_summary": {
+            "abstention_rate": 1.0,
+            "mirrored_pair_consistency": null,
+            "primary_score": 0.5
+          }
+        },
+        "retrieval_only_bm25": {
+          "category": "retrieval_only",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 0.326667,
+              "answerable_false_abstention_rate": 0.195238,
+              "answerable_total": 210,
+              "hallucination_on_unanswerable_rate": 0.766667,
+              "overall_abstention_rate": 0.214286,
+              "unanswerable_abstention_recall": 0.233333,
+              "unanswerable_total": 210
+            },
+            "accuracy": {
+              "answered_coverage": 0.785714,
+              "by_category": {
+                "answerable": {
+                  "mean_score": 0.212924,
+                  "n": 210
+                },
+                "unanswerable": {
+                  "mean_score": 0.233333,
+                  "n": 210
+                }
+              },
+              "containment_rate": 0.259524,
+              "exact_match": 0.121429,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 0.263499,
+              "primary_ci95_low": 0.187449,
+              "primary_score": 0.223129,
+              "selective_score_when_answered": 0.135497,
+              "token_f1": 0.223129
+            },
+            "benchmark_id": "squad_v2",
+            "cpu_time": {
+              "calibrate_wall_s": 0.094299,
+              "fit_cpu_s": 0.796875,
+              "fit_wall_s": 0.903041,
+              "ms_per_item_cpu": 0.6324,
+              "predict_cpu_s": 0.265625,
+              "predict_wall_s": 0.254605,
+              "preds_per_sec_core": 1581.18
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 210,
+              "evidence_any_hit_rate": 0.704762,
+              "evidence_f1": 0.684444,
+              "evidence_precision": 0.704762,
+              "evidence_recall": 0.675,
+              "unsupported_answer_rate": 0.551515
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 991.93,
+              "max_peak_tracemalloc_mb": 0.9687,
+              "predict_peak_tracemalloc_kb": 15.76
+            },
+            "memory_use": {
+              "active_entry_count": 7265,
+              "compressed_mdl_bits": 276912,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 5.4929,
+              "serialized_bytes": 221342,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 420,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+                "shift_type": "cross_wikipedia_article_domain",
+                "unseen_article_count": 14
+              },
+              "num_unseen_source_clusters": 14,
+              "per_cluster_mean": 0.223129,
+              "per_cluster_min": 0.085303,
+              "per_cluster_std": 0.069162,
+              "source_disjoint_heldout_score": 0.223129,
+              "val_to_hidden_gap": -0.005804
+            },
+            "uncertainty": {
+              "brier_score": 0.386707,
+              "ece_10bin": 0.456525,
+              "mean_confidence": 0.675573,
+              "mean_uncertainty": 0.324427
+            }
+          },
+          "solver_id": "retrieval_only_bm25",
+          "validation_summary": {
+            "abstention_rate": 0.247619,
+            "mirrored_pair_consistency": null,
+            "primary_score": 0.228933
+          }
+        },
+        "simple_symbolic_extractor": {
+          "category": "simple_symbolic",
+          "evaluator_only": false,
+          "freeze_lock_verified": true,
+          "hidden_eval": {
+            "abstention": {
+              "abstention_f1": 0.458333,
+              "answerable_false_abstention_rate": 0.233333,
+              "answerable_total": 210,
+              "hallucination_on_unanswerable_rate": 0.633333,
+              "overall_abstention_rate": 0.3,
+              "unanswerable_abstention_recall": 0.366667,
+              "unanswerable_total": 210
+            },
+            "accuracy": {
+              "answered_coverage": 0.7,
+              "by_category": {
+                "answerable": {
+                  "mean_score": 0.252431,
+                  "n": 210
+                },
+                "unanswerable": {
+                  "mean_score": 0.366667,
+                  "n": 210
+                }
+              },
+              "containment_rate": 0.330952,
+              "exact_match": 0.233333,
+              "mirrored_pair_consistency": null,
+              "primary_ci95_high": 0.348571,
+              "primary_ci95_low": 0.268044,
+              "primary_score": 0.309549,
+              "selective_score_when_answered": 0.180308,
+              "token_f1": 0.309549
+            },
+            "benchmark_id": "squad_v2",
+            "cpu_time": {
+              "calibrate_wall_s": 0.434804,
+              "fit_cpu_s": 0.890625,
+              "fit_wall_s": 1.013453,
+              "ms_per_item_cpu": 2.5298,
+              "predict_cpu_s": 1.0625,
+              "predict_wall_s": 1.077678,
+              "preds_per_sec_core": 395.29
+            },
+            "evidence_grounding": {
+              "answerable_items_scored": 210,
+              "evidence_any_hit_rate": 0.67619,
+              "evidence_f1": 0.660317,
+              "evidence_precision": 0.67619,
+              "evidence_recall": 0.652381,
+              "unsupported_answer_rate": 0.517007
+            },
+            "memory_consumption": {
+              "fit_peak_tracemalloc_kb": 983.69,
+              "max_peak_tracemalloc_mb": 0.9606,
+              "predict_peak_tracemalloc_kb": 24.98
+            },
+            "memory_use": {
+              "active_entry_count": 7265,
+              "compressed_mdl_bits": 276848,
+              "external_readonly_pack_entries": 0,
+              "mean_memory_reads_per_query": 5.4929,
+              "serialized_bytes": 221339,
+              "total_memory_writes_during_eval": 0
+            },
+            "num_items": 420,
+            "split": "hidden_eval",
+            "transfer": {
+              "cross_shift_transfer": {
+                "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+                "shift_type": "cross_wikipedia_article_domain",
+                "unseen_article_count": 14
+              },
+              "num_unseen_source_clusters": 14,
+              "per_cluster_mean": 0.309549,
+              "per_cluster_min": 0.130303,
+              "per_cluster_std": 0.08225,
+              "source_disjoint_heldout_score": 0.309549,
+              "val_to_hidden_gap": 0.014468
+            },
+            "uncertainty": {
+              "brier_score": 0.386431,
+              "ece_10bin": 0.388232,
+              "mean_confidence": 0.692994,
+              "mean_uncertainty": 0.307006
+            }
+          },
+          "solver_id": "simple_symbolic_extractor",
+          "validation_summary": {
+            "abstention_rate": 0.347619,
+            "mirrored_pair_consistency": null,
+            "primary_score": 0.295081
+          }
+        }
+      },
+      "source_metadata": {
+        "dataset_id": "squad_v2",
+        "files": {
+          "dev-v2.0.json": {
+            "cache_rel_path": ".external_eval_cache/s11_open_world/squad_v2/dev-v2.0.json",
+            "sha256": "80a5225e94905956a6446d296ca1093975c4d3b3260f1d6c8f68bc2ab77182d8",
+            "size_bytes": 4370528,
+            "source": "cache",
+            "url": "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json",
+            "verified": true
+          }
+        },
+        "license": "CC-BY-SA-4.0",
+        "pinned_revision": "dev-v2.0.json (sha256-pinned)",
+        "sampling_rule": "balanced deterministic subsample up to 15 answerable + 15 unanswerable per Wikipedia article across all 35 articles"
+      },
+      "split_manifest": {
+        "benchmark_id": "squad_v2",
+        "disjointness_report": {
+          "cluster_counts": {
+            "hidden_eval": 14,
+            "train": 14,
+            "val": 7
+          },
+          "cluster_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "item_counts": {
+            "hidden_eval": 420,
+            "train": 420,
+            "val": 210
+          },
+          "item_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "resource_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "zero_leakage_verified": true
+        },
+        "disjointness_verified": true,
+        "hidden_clusters_sha256": "4e4f8fdaae859a6e813083da98f9baea669750014f5e3aad8c5b4efe6eac7920",
+        "hidden_eval_count": 420,
+        "hidden_ids_sha256": "169961a2a0fb781f5566c0f512322fc1447b95a1fc5ecf5960459bf2027a23be",
+        "train_clusters_sha256": "57ad2c9b0ad68ad63ef02f0b4e25e751be28e007a86c74614fc356000f9984c1",
+        "train_count": 420,
+        "train_ids_sha256": "88651885cbd3be52c0115236ce205b2427ab37b82520525d89f98f04c7b1a139",
+        "val_clusters_sha256": "75fab4c9cc6419f8d109972968928c536e4aca2091507d99e3e290f79cfd9cd9",
+        "val_count": 210,
+        "val_ids_sha256": "1971c9ebd86802ec62e7d4cf62dcd1dfff57a7d02322376f4b79bbf902972e21"
+      },
+      "task_kind": "extractive_qa"
+    }
+  },
+  "elapsed_wall_seconds": 748.287,
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "primary_seed": 101,
+    "python_version": "3.14.4"
+  },
+  "honest_verdict": {
+    "new_learning_architecture_implemented": false,
+    "open_world_generalization_claimed": false,
+    "summary": "Stage S11.0 establishes a leak-free, license-verified, source-disjoint open-world evaluation harness and five honest baselines across Balanced COPA, SQuAD 2.0, and LongMemEval. Existing Mirror organs, staged rules/blueprints, pure BM25 retrieval, and simple symbolic heuristics expose severe open-world reasoning, causal transfer, abstention, and multi-session belief-update gaps \u2014 motivating Stage S11.1.",
+    "verdict_tier": "S11_0_EVALUATION_FOUNDATION_ESTABLISHED__OPEN_WORLD_GENERALIZATION_NOT_YET_ACHIEVED"
+  },
+  "isolation_audit": {
+    "llm_gpu_violations": [],
+    "non_eval_oracle_violations": [],
+    "passed": true,
+    "py312_violations": [],
+    "scanned_baseline_files": 2,
+    "scanned_python_files": 19,
+    "solver_import_violations": []
+  },
+  "mode": "real_external_benchmarks",
+  "preregistration_sha256": "6eb2fba995a996b08e406ef45aeb396a65825a466d23a27a87c031177d0648e5",
+  "protocol_version": "s11.0-open-world-eval-v1",
+  "s11_0_gate": {
+    "checks": {
+      "all_5_required_baselines_evaluated": true,
+      "all_freeze_locks_enforced_zero_post_freeze_writes": true,
+      "all_source_disjoint_splits_zero_leakage": true,
+      "ast_isolation_zero_llm_gpu_and_py311": true,
+      "evaluator_only_oracle_verified_ceiling_100pct": true,
+      "external_dataset_licenses_verified_zero_git_redistribution": true,
+      "language_commonsense_and_long_memory_tasks_evaluated": true,
+      "pr43_audited_not_merged_and_not_passing": true,
+      "preregistration_protocol_written": true,
+      "production_dcrystal_vault_untouched": true,
+      "s0_s10_audit_completed_and_gates_preserved": true
+    },
+    "passed": true
+  },
+  "stage": "S11.0",
+  "vault_integrity": {
+    "sha256_after": "fc5adbee3e6adf640d65b67ebcc31dc65d77d235b71de90dc1abd33795de9fbc",
+    "sha256_before": "fc5adbee3e6adf640d65b67ebcc31dc65d77d235b71de90dc1abd33795de9fbc",
+    "untouched": true,
+    "vault_rel_path": "restorevalutecrytaled/mirror_crystal_all_datasets.dcrystal"
+  }
+}

@@ -1,0 +1,268 @@
+{
+  "active_s11_0_benchmarks": [
+    "balanced_copa",
+    "squad_v2",
+    "longmemeval"
+  ],
+  "audit_date": "2026-11-27",
+  "counts_by_status": {
+    "APPROVED_ACTIVE": 3,
+    "APPROVED_DEFERRED": 7,
+    "REJECTED_LICENSE": 3,
+    "REJECTED_UNAVAILABLE": 1
+  },
+  "datasets_by_status": {
+    "APPROVED_ACTIVE": [
+      "balanced_copa",
+      "squad_v2",
+      "longmemeval"
+    ],
+    "APPROVED_DEFERRED": [
+      "ruletaker",
+      "babi_qa",
+      "boolq",
+      "ai2_arc",
+      "hotpotqa",
+      "commonsenseqa",
+      "winogrande"
+    ],
+    "REJECTED_LICENSE": [
+      "clutrr",
+      "rocstories_cloze",
+      "locomo"
+    ],
+    "REJECTED_UNAVAILABLE": [
+      "hellaswag"
+    ]
+  },
+  "license_compliance_checks": {
+    "active_all_commercial_safe": true,
+    "active_all_sha256_pinned": true,
+    "active_zero_git_redistribution": true,
+    "rejected_noncommercial_or_unclear_excluded": true
+  },
+  "registry": [
+    {
+      "commercial_safe": true,
+      "dataset_id": "balanced_copa",
+      "display_name": "Balanced COPA (Kavumba et al., ACL 2019; extends Roemmele et al., 2011)",
+      "domain_role": "real_world_causal_commonsense_language",
+      "files": [
+        {
+          "name": "train.csv",
+          "sha256": "650ec76d0b0b46511bcf68702f9e371cc3d9ad3074f947659d98155cc19d56ef",
+          "size_bytes": 111753,
+          "url": "https://huggingface.co/datasets/pkavumba/balanced-copa/resolve/813bd03cd6e07d9bd8d7333896ad5d40abb95ea9/train.csv"
+        },
+        {
+          "name": "test.csv",
+          "sha256": "b57415ab077856be06f083fd39f72a3341e393630d6af1ce4b46a8be2a095972",
+          "size_bytes": 53898,
+          "url": "https://huggingface.co/datasets/pkavumba/balanced-copa/resolve/813bd03cd6e07d9bd8d7333896ad5d40abb95ea9/test.csv"
+        }
+      ],
+      "pinned_revision": "813bd03cd6e07d9bd8d7333896ad5d40abb95ea9",
+      "rationale": "Organic real-world English causal commonsense (cause/effect) with mirrored counterfactual premises that expose superficial lexical shortcuts; clean CC-BY-4.0 license; pure CSV readable by Python stdlib with zero external dependencies.",
+      "redistribution_policy": "runtime_fetch_only_zero_redistribution_in_git",
+      "share_alike": false,
+      "source_disjoint_unit": "choice_pair_cluster (keeps original + mirrored counterfactual pairs strictly in same split; official test.csv has 0 choice-pair overlap with train.csv)",
+      "source_repo": "https://huggingface.co/datasets/pkavumba/balanced-copa",
+      "status": "APPROVED_ACTIVE",
+      "verified_license": "CC-BY-4.0 (extensions) + BSD-2-Clause (original COPA)"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "squad_v2",
+      "display_name": "SQuAD 2.0 Development Set (Rajpurkar, Jia & Liang, ACL 2018)",
+      "domain_role": "real_world_evidence_grounded_qa_and_abstention",
+      "files": [
+        {
+          "name": "dev-v2.0.json",
+          "sha256": "80a5225e94905956a6446d296ca1093975c4d3b3260f1d6c8f68bc2ab77182d8",
+          "size_bytes": 4370528,
+          "url": "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json"
+        }
+      ],
+      "pinned_revision": "dev-v2.0.json (sha256-pinned)",
+      "rationale": "Real-world unstructured Wikipedia prose with exact character-offset gold evidence spans AND ~50% human-authored unanswerable questions (is_impossible=True), enabling real evidence grounding, cross-topic transfer, and non-synthetic abstention measurement. Because license is CC-BY-SA-4.0, raw text is NEVER committed into the Apache-2.0 repo.",
+      "redistribution_policy": "runtime_fetch_only_zero_redistribution_in_git_attribution_preserved",
+      "share_alike": true,
+      "source_disjoint_unit": "wikipedia_article_title (35 distinct topic domains partitioned 14 train / 7 val / 14 hidden_eval with 0 shared articles)",
+      "source_repo": "https://rajpurkar.github.io/SQuAD-explorer/ (mirror: https://huggingface.co/datasets/rajpurkar/squad_v2)",
+      "status": "APPROVED_ACTIVE",
+      "verified_license": "CC-BY-SA-4.0"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "longmemeval",
+      "display_name": "LongMemEval (Wu et al., ICLR 2025 \u2014 xiaowu0162/longmemeval-cleaned)",
+      "domain_role": "real_world_long_term_multi_session_memory",
+      "files": [
+        {
+          "name": "longmemeval_oracle.json",
+          "sha256": "821a2034d219ab45846873dd14c14f12cfe7776e73527a483f9dac095d38620c",
+          "size_bytes": 15388478,
+          "url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/98d7416c24c778c2fee6e6f3006e7a073259d48f/longmemeval_oracle.json"
+        }
+      ],
+      "optional_full_haystack_file": {
+        "name": "longmemeval_s_cleaned.json",
+        "note": "Full 277 MB ~40-session haystack audited & pinned for optional offline heavy runs; S11.0 CI uses 15.4 MB oracle file with split-internal K=10 chronological distractor-session augmentation.",
+        "size_bytes": 277383467,
+        "url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/98d7416c24c778c2fee6e6f3006e7a073259d48f/longmemeval_s_cleaned.json"
+      },
+      "pinned_revision": "98d7416c24c778c2fee6e6f3006e7a073259d48f",
+      "rationale": "Real multi-session conversational memory benchmark (500 episodes, 6 memory categories: single-session user/assistant/preference, multi-session, temporal-reasoning, knowledge-update) with session/turn gold evidence grounding (answer_session_ids + has_answer) and 30 genuine unanswerable abstention questions (*_abs). Permissive MIT license.",
+      "redistribution_policy": "runtime_fetch_only_zero_redistribution_in_git",
+      "share_alike": false,
+      "source_disjoint_unit": "connected_component_over_shared_haystack_session_ids (resolves 8 cross-question shared sessions among 940 unique sessions; zero session-ID overlap across splits)",
+      "source_repo": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned (code: https://github.com/xiaowu0162/LongMemEval)",
+      "status": "APPROVED_ACTIVE",
+      "verified_license": "MIT (verified on both GitHub SPDX and Hugging Face dataset card)"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "ruletaker",
+      "display_name": "RuleTaker (Clark, Tafjord & Richardson, IJCAI 2020 \u2014 tasksource/ruletaker)",
+      "domain_role": "controlled_natural_language_deduction_reference",
+      "pinned_revision": "64d8c52fddf8054b91b0791fe6535b9b5b6e2b96",
+      "rationale": "Clean Apache-2.0 license (also manifest-pinned in PR #43), but templated/controlled synthetic English \u2014 does not test organic open-world language. Deferred as secondary controlled-deduction diagnostic in S11.1+.",
+      "redistribution_policy": "runtime_fetch_only",
+      "share_alike": false,
+      "source_repo": "https://huggingface.co/datasets/tasksource/ruletaker",
+      "status": "APPROVED_DEFERRED",
+      "verified_license": "Apache-2.0"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "babi_qa",
+      "display_name": "bAbI QA (Weston et al., Facebook AI Research)",
+      "domain_role": "synthetic_micro_world_qa_reference",
+      "pinned_revision": "021d7aeb7307b7856dd0632f92827bc607dc2f1b",
+      "rationale": "Permissive CC-BY-3.0, already used as a narrow parser probe in five-organ external eval, but purely synthetic templated stories. Not sufficient as an open-world benchmark.",
+      "redistribution_policy": "runtime_fetch_only",
+      "share_alike": false,
+      "source_repo": "https://huggingface.co/datasets/facebook/babi_qa",
+      "status": "APPROVED_DEFERRED",
+      "verified_license": "CC-BY-3.0"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "boolq",
+      "display_name": "BoolQ (Clark et al., NAACL 2019 \u2014 google/boolq)",
+      "domain_role": "real_world_yes_no_reading_comprehension",
+      "pinned_revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+      "rationale": "Valid real-world Wikipedia QA under CC-BY-SA-3.0, but HF release uses Parquet only and lacks sentence-offset evidence spans and explicit unanswerable abstention questions compared to SQuAD 2.0.",
+      "redistribution_policy": "runtime_fetch_only_zero_redistribution_in_git",
+      "share_alike": true,
+      "source_repo": "https://huggingface.co/datasets/google/boolq",
+      "status": "APPROVED_DEFERRED",
+      "verified_license": "CC-BY-SA-3.0"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "ai2_arc",
+      "display_name": "AI2 ARC Easy & Challenge (Clark et al., 2018 \u2014 allenai/ai2_arc)",
+      "domain_role": "real_world_science_commonsense_mcqa",
+      "pinned_revision": "210d026faf9955653af8916fad021475a3f00453",
+      "rationale": "Strong real-world science commonsense benchmark under CC-BY-SA-4.0; lacks passage evidence spans in the core split and uses HF Parquet. Reserved for S11.2+ world-knowledge transfer once a verified corpus-learning loop exists.",
+      "redistribution_policy": "runtime_fetch_only_zero_redistribution_in_git",
+      "share_alike": true,
+      "source_repo": "https://huggingface.co/datasets/allenai/ai2_arc",
+      "status": "APPROVED_DEFERRED",
+      "verified_license": "CC-BY-SA-4.0"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "hotpotqa",
+      "display_name": "HotpotQA (Yang et al., EMNLP 2018 \u2014 hotpotqa/hotpot_qa)",
+      "domain_role": "multi_hop_evidence_grounded_qa",
+      "pinned_revision": "1908d6afbbead072334abe2965f91bd2709910ab",
+      "rationale": "High-value multi-hop evidence grounding benchmark, but primary CMU JSON host returned DNS resolution failure (Errno 11001) during audit and HF mirror is Parquet-only. Deferred to S11.1+ once pinned JSON mirror or optional parquet reader is approved.",
+      "redistribution_policy": "runtime_fetch_only_zero_redistribution_in_git",
+      "share_alike": true,
+      "source_repo": "https://huggingface.co/datasets/hotpotqa/hotpot_qa",
+      "status": "APPROVED_DEFERRED",
+      "verified_license": "CC-BY-SA-4.0 (dataset) / Apache-2.0 (upstream code)"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "commonsenseqa",
+      "display_name": "CommonsenseQA (Talmor et al., NAACL 2019 \u2014 tau/commonsense_qa)",
+      "domain_role": "five_way_commonsense_mcqa",
+      "pinned_revision": "94630fe30dad47192a8546eb75f094926d47e155",
+      "rationale": "HF card declares MIT, but upstream GitHub repo has no SPDX license file and questions derive from ConceptNet (CC-BY-SA-4.0). Deferred in favor of cleaner CC-BY-4.0 Balanced COPA.",
+      "redistribution_policy": "runtime_fetch_only_pending_upstream_conceptnet_sa_review",
+      "share_alike": true,
+      "source_repo": "https://huggingface.co/datasets/tau/commonsense_qa",
+      "status": "APPROVED_DEFERRED",
+      "verified_license": "MIT (HF card; upstream ConceptNet derived under CC-BY-SA-4.0; upstream GH repo has no LICENSE file)"
+    },
+    {
+      "commercial_safe": true,
+      "dataset_id": "winogrande",
+      "display_name": "WinoGrande (Sakaguchi et al., AAAI 2020 \u2014 allenai/winogrande)",
+      "domain_role": "commonsense_coreference_disambiguation",
+      "pinned_revision": "master (checksum pending)",
+      "rationale": "Clean Apache-2.0 upstream repository; HF dataset card lacked license metadata during audit. Strong S11.1+ candidate for coreference/pronoun commonsense.",
+      "redistribution_policy": "runtime_fetch_only_after_official_archive_checksum_pinning",
+      "share_alike": false,
+      "source_repo": "https://github.com/allenai/winogrande",
+      "status": "APPROVED_DEFERRED",
+      "verified_license": "Apache-2.0 (upstream GitHub allenai/winogrande; HF card missing license tag)"
+    },
+    {
+      "commercial_safe": false,
+      "dataset_id": "clutrr",
+      "display_name": "CLUTRR (Sinha et al., EMNLP 2019 \u2014 facebookresearch/clutrr)",
+      "domain_role": "kinship_relational_reasoning",
+      "pinned_revision": "excluded",
+      "rationale": "Non-commercial CC-BY-NC-4.0 restriction and missing HF license tag; consistently excluded in both PR #43 and Stage S11.0.",
+      "redistribution_policy": "FORBIDDEN",
+      "share_alike": false,
+      "source_repo": "https://github.com/facebookresearch/clutrr",
+      "status": "REJECTED_LICENSE",
+      "verified_license": "CC-BY-NC-4.0 (upstream repo; HF card: unknown; GH SPDX: NOASSERTION)"
+    },
+    {
+      "commercial_safe": false,
+      "dataset_id": "rocstories_cloze",
+      "display_name": "ROCStories / StoryCloze (Mostafazadeh et al. \u2014 qikp/rocstories-cloze)",
+      "domain_role": "narrative_commonsense_ending_ranking",
+      "pinned_revision": "excluded_from_s11",
+      "rationale": "HF mirror declares license='other' and upstream Rochester release requires non-redistributable research-only registration. Excluded from Stage S11 manifests (preserved only as historical context in scripts/run_five_organ_external_eval.py).",
+      "redistribution_policy": "FORBIDDEN_NO_REDISTRIBUTION",
+      "share_alike": false,
+      "source_repo": "https://huggingface.co/datasets/qikp/rocstories-cloze",
+      "status": "REJECTED_LICENSE",
+      "verified_license": "other / unspecified (HF mirror); upstream University of Rochester gated research terms"
+    },
+    {
+      "commercial_safe": false,
+      "dataset_id": "locomo",
+      "display_name": "LoCoMo (Maharana et al., ACL 2024 \u2014 snap-research/locomo)",
+      "domain_role": "long_term_conversational_memory",
+      "pinned_revision": "excluded",
+      "rationale": "Upstream repository lacks a verified standard SPDX license file (NOASSERTION / 404 on LICENSE). Excluded in favor of cleanly MIT-licensed LongMemEval.",
+      "redistribution_policy": "FORBIDDEN_UNTIL_VERIFIED",
+      "share_alike": false,
+      "source_repo": "https://github.com/snap-research/locomo",
+      "status": "REJECTED_LICENSE",
+      "verified_license": "NOASSERTION (GitHub API reports Other/NOASSERTION; LICENSE file HTTP 404)"
+    },
+    {
+      "commercial_safe": false,
+      "dataset_id": "hellaswag",
+      "display_name": "HellaSwag (Zellers et al., ACL 2019 \u2014 rowanz/hellaswag)",
+      "domain_role": "commonsense_grounded_continuation",
+      "pinned_revision": "excluded",
+      "rationale": "Upstream GitHub repository returned HTTP 451 (Unavailable For Legal Reasons) and HF card has no license metadata. Excluded.",
+      "redistribution_policy": "FORBIDDEN",
+      "share_alike": false,
+      "source_repo": "https://huggingface.co/datasets/Rowan/hellaswag",
+      "status": "REJECTED_UNAVAILABLE",
+      "verified_license": "UNVERIFIED (GitHub upstream returned HTTP 451 Unavailable For Legal Reasons; HF card missing license)"
+    }
+  ],
+  "total_datasets_reviewed": 14
+}

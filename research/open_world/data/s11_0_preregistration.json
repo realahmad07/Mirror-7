@@ -1,0 +1,251 @@
+{
+  "active_benchmarks": {
+    "balanced_copa": {
+      "source_metadata": {
+        "dataset_id": "balanced_copa",
+        "files": {
+          "test.csv": {
+            "cache_rel_path": ".external_eval_cache/s11_open_world/balanced_copa/test.csv",
+            "sha256": "b57415ab077856be06f083fd39f72a3341e393630d6af1ce4b46a8be2a095972",
+            "size_bytes": 53898,
+            "source": "cache",
+            "url": "https://huggingface.co/datasets/pkavumba/balanced-copa/resolve/813bd03cd6e07d9bd8d7333896ad5d40abb95ea9/test.csv",
+            "verified": true
+          },
+          "train.csv": {
+            "cache_rel_path": ".external_eval_cache/s11_open_world/balanced_copa/train.csv",
+            "sha256": "650ec76d0b0b46511bcf68702f9e371cc3d9ad3074f947659d98155cc19d56ef",
+            "size_bytes": 111753,
+            "source": "cache",
+            "url": "https://huggingface.co/datasets/pkavumba/balanced-copa/resolve/813bd03cd6e07d9bd8d7333896ad5d40abb95ea9/train.csv",
+            "verified": true
+          }
+        },
+        "license": "CC-BY-4.0 (extensions) + BSD-2-Clause (original COPA)",
+        "pinned_revision": "813bd03cd6e07d9bd8d7333896ad5d40abb95ea9"
+      },
+      "split_manifest": {
+        "benchmark_id": "balanced_copa",
+        "disjointness_report": {
+          "cluster_counts": {
+            "hidden_eval": 498,
+            "train": 349,
+            "val": 149
+          },
+          "cluster_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "item_counts": {
+            "hidden_eval": 502,
+            "train": 698,
+            "val": 300
+          },
+          "item_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "resource_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "zero_leakage_verified": true
+        },
+        "disjointness_verified": true,
+        "hidden_clusters_sha256": "3f956dadd5135d20388d6d4f134b4c8822fb466de7c99c9d29a6c780b9827590",
+        "hidden_eval_count": 502,
+        "hidden_ids_sha256": "d4e25ea972e9c0221c5857cb8a5c04ff3d20898954ef240e77d189c9309e806b",
+        "train_clusters_sha256": "fbfa1984dc1af8b520ea54ec8cada7ab08b16d92bc39ae5a68f845c4e01ed837",
+        "train_count": 698,
+        "train_ids_sha256": "7bd515786dcf9fc69bc990684292b42407acb9e18325b718baac8785648def8e",
+        "val_clusters_sha256": "767355cf771f89a20c76b1e446b4b36f68afcc83423f267bd046f6fd06480330",
+        "val_count": 300,
+        "val_ids_sha256": "7da1db41b58eb04ed13a73276141536ae76f9a5a239e69a6ce7317fd08355ac9"
+      },
+      "task_kind": "causal_choice"
+    },
+    "longmemeval": {
+      "source_metadata": {
+        "dataset_id": "longmemeval",
+        "files": {
+          "longmemeval_oracle.json": {
+            "cache_rel_path": ".external_eval_cache/s11_open_world/longmemeval/longmemeval_oracle.json",
+            "sha256": "821a2034d219ab45846873dd14c14f12cfe7776e73527a483f9dac095d38620c",
+            "size_bytes": 15388478,
+            "source": "cache",
+            "url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/98d7416c24c778c2fee6e6f3006e7a073259d48f/longmemeval_oracle.json",
+            "verified": true
+          }
+        },
+        "haystack_construction": "split-internal chronological distractor augmentation (+10 distractor sessions strictly from unrelated connected components inside the same split; 0 cross-split session overlap)",
+        "license": "MIT (verified on both GitHub SPDX and Hugging Face dataset card)",
+        "pinned_revision": "98d7416c24c778c2fee6e6f3006e7a073259d48f"
+      },
+      "split_manifest": {
+        "benchmark_id": "longmemeval",
+        "disjointness_report": {
+          "cluster_counts": {
+            "hidden_eval": 200,
+            "train": 197,
+            "val": 98
+          },
+          "cluster_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "item_counts": {
+            "hidden_eval": 202,
+            "train": 199,
+            "val": 99
+          },
+          "item_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "resource_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "zero_leakage_verified": true
+        },
+        "disjointness_verified": true,
+        "hidden_clusters_sha256": "6a05a6cec27d61ce972a0be57b7714fbb4ee82c45ca06059b0a5e7ef3c8f51b5",
+        "hidden_eval_count": 202,
+        "hidden_ids_sha256": "a9be5836eb6cfbd0c5ed20bcc8e4d4457e0528932d369a92747c4cd57e03fcac",
+        "train_clusters_sha256": "d2178817fcb7c3f25fa9082d3442000ee1e394cf256b76d53d0b49299b15f767",
+        "train_count": 199,
+        "train_ids_sha256": "2be7af7b10dddc0469df9c9e9dbaf4350cc7f02fbab3e508e04055cf6dc0c898",
+        "val_clusters_sha256": "6e836ec566fa90e628e9107c2faf84591e46669619dac2aca52905712fa7dbba",
+        "val_count": 99,
+        "val_ids_sha256": "b0e3d19d238cfd5e20c53f46abeefbbea1ef81e7aee0ca9fbb991f03ffcd331f"
+      },
+      "task_kind": "long_memory_qa"
+    },
+    "squad_v2": {
+      "source_metadata": {
+        "dataset_id": "squad_v2",
+        "files": {
+          "dev-v2.0.json": {
+            "cache_rel_path": ".external_eval_cache/s11_open_world/squad_v2/dev-v2.0.json",
+            "sha256": "80a5225e94905956a6446d296ca1093975c4d3b3260f1d6c8f68bc2ab77182d8",
+            "size_bytes": 4370528,
+            "source": "cache",
+            "url": "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json",
+            "verified": true
+          }
+        },
+        "license": "CC-BY-SA-4.0",
+        "pinned_revision": "dev-v2.0.json (sha256-pinned)",
+        "sampling_rule": "balanced deterministic subsample up to 15 answerable + 15 unanswerable per Wikipedia article across all 35 articles"
+      },
+      "split_manifest": {
+        "benchmark_id": "squad_v2",
+        "disjointness_report": {
+          "cluster_counts": {
+            "hidden_eval": 14,
+            "train": 14,
+            "val": 7
+          },
+          "cluster_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "item_counts": {
+            "hidden_eval": 420,
+            "train": 420,
+            "val": 210
+          },
+          "item_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "resource_overlaps": {
+            "train_hidden": 0,
+            "train_val": 0,
+            "val_hidden": 0
+          },
+          "zero_leakage_verified": true
+        },
+        "disjointness_verified": true,
+        "hidden_clusters_sha256": "4e4f8fdaae859a6e813083da98f9baea669750014f5e3aad8c5b4efe6eac7920",
+        "hidden_eval_count": 420,
+        "hidden_ids_sha256": "169961a2a0fb781f5566c0f512322fc1447b95a1fc5ecf5960459bf2027a23be",
+        "train_clusters_sha256": "57ad2c9b0ad68ad63ef02f0b4e25e751be28e007a86c74614fc356000f9984c1",
+        "train_count": 420,
+        "train_ids_sha256": "88651885cbd3be52c0115236ce205b2427ab37b82520525d89f98f04c7b1a139",
+        "val_clusters_sha256": "75fab4c9cc6419f8d109972968928c536e4aca2091507d99e3e290f79cfd9cd9",
+        "val_count": 210,
+        "val_ids_sha256": "1971c9ebd86802ec62e7d4cf62dcd1dfff57a7d02322376f4b79bbf902972e21"
+      },
+      "task_kind": "extractive_qa"
+    }
+  },
+  "baselines_registered": [
+    "existing_mirror_system",
+    "retrieval_only_bm25",
+    "existing_rule_blueprint",
+    "simple_symbolic_extractor",
+    "evaluator_only_oracle"
+  ],
+  "cpu_native_constraints": {
+    "external_ai_api_allowed": false,
+    "gpu_required": false,
+    "neural_training_required": false,
+    "pretrained_llm_allowed": false,
+    "production_dcrystal_vault_mutation_allowed": false,
+    "raw_external_text_redistribution_in_git": false
+  },
+  "dataset_license_compliance": {
+    "active_all_commercial_safe": true,
+    "active_all_sha256_pinned": true,
+    "active_zero_git_redistribution": true,
+    "rejected_noncommercial_or_unclear_excluded": true
+  },
+  "metrics_registered": [
+    "accuracy",
+    "evidence_grounding",
+    "transfer",
+    "uncertainty",
+    "abstention",
+    "memory_use",
+    "cpu_time",
+    "memory_consumption"
+  ],
+  "primary_seed": 101,
+  "protocol_version": "s11.0-open-world-eval-v1",
+  "registered_before_s11_1_learner": true,
+  "s11_1_promotion_gates": {
+    "registered_before_s11_1_implementation": true,
+    "rules": [
+      {
+        "benchmark": "balanced_copa",
+        "gate_id": "S11_1_G1_beat_all_non_oracle_baselines_on_causal_commonsense",
+        "requirement": "S11.1 learner must strictly beat best non-oracle S11.0 baseline on source-disjoint hidden_eval primary accuracy by >= +5.0pp (non-overlapping bootstrap 95% CI) AND achieve mirrored-pair validation consistency >= 50.0% without manual action schemas."
+      },
+      {
+        "benchmark": "squad_v2",
+        "gate_id": "S11_1_G2_beat_retrieval_and_symbolic_on_evidence_grounded_qa_and_abstention",
+        "requirement": "S11.1 learner must beat best non-oracle S11.0 baseline on source-disjoint unseen Wikipedia articles on BOTH answerable Token-F1 (>= best_baseline + 5.0pp) AND overall Token-F1 (>= best_baseline + 5.0pp), achieve evidence_f1 >= best_baseline, unanswerable_abstention_recall >= 0.70, answerable_false_abstention_rate <= 0.30, and ECE <= 0.15 (preventing trivial always-abstain gaming)."
+      },
+      {
+        "benchmark": "longmemeval",
+        "gate_id": "S11_1_G3_beat_all_non_oracle_baselines_on_long_term_memory",
+        "requirement": "S11.1 learner must beat best non-oracle S11.0 baseline on session-disjoint hidden_eval primary score by >= +5.0pp, improve knowledge-update & temporal-reasoning cross-category transfer, achieve session evidence_f1 >= best_baseline, and abstain on >= 60% of _abs items."
+      },
+      {
+        "benchmark": "all",
+        "gate_id": "S11_1_G4_cpu_native_no_llm_no_manual_schema_strict_isolation",
+        "requirement": "0 GPU, 0 pretrained LLMs, 0 external AI APIs, 0 neural training required, 0 manually supplied domain action lists or event schemas, 0 AST isolation violations, 0 post-freeze memory writes, and 0 modifications to production .dcrystal vaults."
+      }
+    ]
+  },
+  "stage": "S11.0"
+}

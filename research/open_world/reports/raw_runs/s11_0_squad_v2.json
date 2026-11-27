@@ -1,0 +1,538 @@
+{
+  "benchmark_id": "squad_v2",
+  "solvers": {
+    "evaluator_only_oracle": {
+      "category": "evaluator_ceiling",
+      "evaluator_only": true,
+      "freeze_lock_verified": true,
+      "hidden_eval": {
+        "abstention": {
+          "abstention_f1": 1.0,
+          "answerable_false_abstention_rate": 0.0,
+          "answerable_total": 210,
+          "hallucination_on_unanswerable_rate": 0.0,
+          "overall_abstention_rate": 0.5,
+          "unanswerable_abstention_recall": 1.0,
+          "unanswerable_total": 210
+        },
+        "accuracy": {
+          "answered_coverage": 0.5,
+          "by_category": {
+            "answerable": {
+              "mean_score": 1.0,
+              "n": 210
+            },
+            "unanswerable": {
+              "mean_score": 1.0,
+              "n": 210
+            }
+          },
+          "containment_rate": 1.0,
+          "exact_match": 1.0,
+          "mirrored_pair_consistency": null,
+          "primary_ci95_high": 1.0,
+          "primary_ci95_low": 1.0,
+          "primary_score": 1.0,
+          "selective_score_when_answered": 1.0,
+          "token_f1": 1.0
+        },
+        "benchmark_id": "squad_v2",
+        "cpu_time": {
+          "calibrate_wall_s": 4e-06,
+          "fit_cpu_s": 0.0,
+          "fit_wall_s": 2.7e-05,
+          "ms_per_item_cpu": 0.0372,
+          "predict_cpu_s": 0.015625,
+          "predict_wall_s": 0.006624,
+          "preds_per_sec_core": 26880.0
+        },
+        "evidence_grounding": {
+          "answerable_items_scored": 210,
+          "evidence_any_hit_rate": 1.0,
+          "evidence_f1": 1.0,
+          "evidence_precision": 1.0,
+          "evidence_recall": 1.0,
+          "unsupported_answer_rate": 0.0
+        },
+        "memory_consumption": {
+          "fit_peak_tracemalloc_kb": 0.0,
+          "max_peak_tracemalloc_mb": 0.0109,
+          "predict_peak_tracemalloc_kb": 11.21
+        },
+        "memory_use": {
+          "active_entry_count": 0,
+          "compressed_mdl_bits": 0,
+          "external_readonly_pack_entries": 0,
+          "mean_memory_reads_per_query": 1.0,
+          "serialized_bytes": 0,
+          "total_memory_writes_during_eval": 0
+        },
+        "num_items": 420,
+        "split": "hidden_eval",
+        "transfer": {
+          "cross_shift_transfer": {
+            "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+            "shift_type": "cross_wikipedia_article_domain",
+            "unseen_article_count": 14
+          },
+          "num_unseen_source_clusters": 14,
+          "per_cluster_mean": 1.0,
+          "per_cluster_min": 1.0,
+          "per_cluster_std": 0.0,
+          "source_disjoint_heldout_score": 1.0,
+          "val_to_hidden_gap": 0.0
+        },
+        "uncertainty": {
+          "brier_score": 0.0,
+          "ece_10bin": 0.0,
+          "mean_confidence": 1.0,
+          "mean_uncertainty": 0.0
+        }
+      },
+      "solver_id": "evaluator_only_oracle",
+      "validation_summary": {
+        "abstention_rate": 0.5,
+        "mirrored_pair_consistency": null,
+        "primary_score": 1.0
+      }
+    },
+    "existing_mirror_system": {
+      "category": "existing_mirror",
+      "evaluator_only": false,
+      "freeze_lock_verified": true,
+      "hidden_eval": {
+        "abstention": {
+          "abstention_f1": 0.672052,
+          "answerable_false_abstention_rate": 0.957143,
+          "answerable_total": 210,
+          "hallucination_on_unanswerable_rate": 0.009524,
+          "overall_abstention_rate": 0.97381,
+          "unanswerable_abstention_recall": 0.990476,
+          "unanswerable_total": 210
+        },
+        "accuracy": {
+          "answered_coverage": 0.02619,
+          "by_category": {
+            "answerable": {
+              "mean_score": 0.008886,
+              "n": 210
+            },
+            "unanswerable": {
+              "mean_score": 0.990476,
+              "n": 210
+            }
+          },
+          "containment_rate": 0.502381,
+          "exact_match": 0.495238,
+          "mirrored_pair_consistency": null,
+          "primary_ci95_high": 0.553746,
+          "primary_ci95_low": 0.458015,
+          "primary_score": 0.499681,
+          "selective_score_when_answered": 0.169651,
+          "token_f1": 0.499681
+        },
+        "benchmark_id": "squad_v2",
+        "cpu_time": {
+          "calibrate_wall_s": 2e-06,
+          "fit_cpu_s": 0.0,
+          "fit_wall_s": 3.5e-05,
+          "ms_per_item_cpu": 2.9018,
+          "predict_cpu_s": 1.21875,
+          "predict_wall_s": 1.31816,
+          "preds_per_sec_core": 344.62
+        },
+        "evidence_grounding": {
+          "answerable_items_scored": 210,
+          "evidence_any_hit_rate": 0.042857,
+          "evidence_f1": 0.039683,
+          "evidence_precision": 0.042857,
+          "evidence_recall": 0.038095,
+          "unsupported_answer_rate": 0.181818
+        },
+        "memory_consumption": {
+          "fit_peak_tracemalloc_kb": 0.03,
+          "max_peak_tracemalloc_mb": 0.5527,
+          "predict_peak_tracemalloc_kb": 566.0
+        },
+        "memory_use": {
+          "active_entry_count": 4,
+          "compressed_mdl_bits": 744,
+          "external_readonly_pack_entries": 0,
+          "mean_memory_reads_per_query": 5.4929,
+          "serialized_bytes": 95,
+          "total_memory_writes_during_eval": 0
+        },
+        "num_items": 420,
+        "split": "hidden_eval",
+        "transfer": {
+          "cross_shift_transfer": {
+            "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+            "shift_type": "cross_wikipedia_article_domain",
+            "unseen_article_count": 14
+          },
+          "num_unseen_source_clusters": 14,
+          "per_cluster_mean": 0.499681,
+          "per_cluster_min": 0.433333,
+          "per_cluster_std": 0.021385,
+          "source_disjoint_heldout_score": 0.499681,
+          "val_to_hidden_gap": 0.004443
+        },
+        "uncertainty": {
+          "brier_score": 0.251137,
+          "ece_10bin": 0.00369,
+          "mean_confidence": 0.50131,
+          "mean_uncertainty": 0.49869
+        }
+      },
+      "solver_id": "existing_mirror_system",
+      "validation_summary": {
+        "abstention_rate": 0.995238,
+        "mirrored_pair_consistency": null,
+        "primary_score": 0.495238
+      }
+    },
+    "existing_rule_blueprint": {
+      "category": "existing_rule_blueprint",
+      "evaluator_only": false,
+      "freeze_lock_verified": true,
+      "hidden_eval": {
+        "abstention": {
+          "abstention_f1": 0.664547,
+          "answerable_false_abstention_rate": 1.0,
+          "answerable_total": 210,
+          "hallucination_on_unanswerable_rate": 0.004762,
+          "overall_abstention_rate": 0.997619,
+          "unanswerable_abstention_recall": 0.995238,
+          "unanswerable_total": 210
+        },
+        "accuracy": {
+          "answered_coverage": 0.002381,
+          "by_category": {
+            "answerable": {
+              "mean_score": 0.0,
+              "n": 210
+            },
+            "unanswerable": {
+              "mean_score": 0.995238,
+              "n": 210
+            }
+          },
+          "containment_rate": 0.497619,
+          "exact_match": 0.497619,
+          "mirrored_pair_consistency": null,
+          "primary_ci95_high": 0.554762,
+          "primary_ci95_low": 0.457143,
+          "primary_score": 0.497619,
+          "selective_score_when_answered": 0.0,
+          "token_f1": 0.497619
+        },
+        "benchmark_id": "squad_v2",
+        "cpu_time": {
+          "calibrate_wall_s": 5e-06,
+          "fit_cpu_s": 0.0,
+          "fit_wall_s": 2.3e-05,
+          "ms_per_item_cpu": 0.186,
+          "predict_cpu_s": 0.078125,
+          "predict_wall_s": 0.071718,
+          "preds_per_sec_core": 5376.0
+        },
+        "evidence_grounding": {
+          "answerable_items_scored": 210,
+          "evidence_any_hit_rate": 0.0,
+          "evidence_f1": 0.0,
+          "evidence_precision": 0.0,
+          "evidence_recall": 0.0,
+          "unsupported_answer_rate": 1.0
+        },
+        "memory_consumption": {
+          "fit_peak_tracemalloc_kb": 0.0,
+          "max_peak_tracemalloc_mb": 0.0149,
+          "predict_peak_tracemalloc_kb": 15.29
+        },
+        "memory_use": {
+          "active_entry_count": 1133,
+          "compressed_mdl_bits": 21784,
+          "external_readonly_pack_entries": 1133,
+          "mean_memory_reads_per_query": 32.0619,
+          "serialized_bytes": 8989,
+          "total_memory_writes_during_eval": 0
+        },
+        "num_items": 420,
+        "split": "hidden_eval",
+        "transfer": {
+          "cross_shift_transfer": {
+            "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+            "shift_type": "cross_wikipedia_article_domain",
+            "unseen_article_count": 14
+          },
+          "num_unseen_source_clusters": 14,
+          "per_cluster_mean": 0.497619,
+          "per_cluster_min": 0.466667,
+          "per_cluster_std": 0.008585,
+          "source_disjoint_heldout_score": 0.497619,
+          "val_to_hidden_gap": -0.002381
+        },
+        "uncertainty": {
+          "brier_score": 0.272589,
+          "ece_10bin": 0.151786,
+          "mean_confidence": 0.649405,
+          "mean_uncertainty": 0.350595
+        }
+      },
+      "solver_id": "existing_rule_blueprint",
+      "validation_summary": {
+        "abstention_rate": 1.0,
+        "mirrored_pair_consistency": null,
+        "primary_score": 0.5
+      }
+    },
+    "retrieval_only_bm25": {
+      "category": "retrieval_only",
+      "evaluator_only": false,
+      "freeze_lock_verified": true,
+      "hidden_eval": {
+        "abstention": {
+          "abstention_f1": 0.326667,
+          "answerable_false_abstention_rate": 0.195238,
+          "answerable_total": 210,
+          "hallucination_on_unanswerable_rate": 0.766667,
+          "overall_abstention_rate": 0.214286,
+          "unanswerable_abstention_recall": 0.233333,
+          "unanswerable_total": 210
+        },
+        "accuracy": {
+          "answered_coverage": 0.785714,
+          "by_category": {
+            "answerable": {
+              "mean_score": 0.212924,
+              "n": 210
+            },
+            "unanswerable": {
+              "mean_score": 0.233333,
+              "n": 210
+            }
+          },
+          "containment_rate": 0.259524,
+          "exact_match": 0.121429,
+          "mirrored_pair_consistency": null,
+          "primary_ci95_high": 0.263499,
+          "primary_ci95_low": 0.187449,
+          "primary_score": 0.223129,
+          "selective_score_when_answered": 0.135497,
+          "token_f1": 0.223129
+        },
+        "benchmark_id": "squad_v2",
+        "cpu_time": {
+          "calibrate_wall_s": 0.094299,
+          "fit_cpu_s": 0.796875,
+          "fit_wall_s": 0.903041,
+          "ms_per_item_cpu": 0.6324,
+          "predict_cpu_s": 0.265625,
+          "predict_wall_s": 0.254605,
+          "preds_per_sec_core": 1581.18
+        },
+        "evidence_grounding": {
+          "answerable_items_scored": 210,
+          "evidence_any_hit_rate": 0.704762,
+          "evidence_f1": 0.684444,
+          "evidence_precision": 0.704762,
+          "evidence_recall": 0.675,
+          "unsupported_answer_rate": 0.551515
+        },
+        "memory_consumption": {
+          "fit_peak_tracemalloc_kb": 991.93,
+          "max_peak_tracemalloc_mb": 0.9687,
+          "predict_peak_tracemalloc_kb": 15.76
+        },
+        "memory_use": {
+          "active_entry_count": 7265,
+          "compressed_mdl_bits": 276912,
+          "external_readonly_pack_entries": 0,
+          "mean_memory_reads_per_query": 5.4929,
+          "serialized_bytes": 221342,
+          "total_memory_writes_during_eval": 0
+        },
+        "num_items": 420,
+        "split": "hidden_eval",
+        "transfer": {
+          "cross_shift_transfer": {
+            "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+            "shift_type": "cross_wikipedia_article_domain",
+            "unseen_article_count": 14
+          },
+          "num_unseen_source_clusters": 14,
+          "per_cluster_mean": 0.223129,
+          "per_cluster_min": 0.085303,
+          "per_cluster_std": 0.069162,
+          "source_disjoint_heldout_score": 0.223129,
+          "val_to_hidden_gap": -0.005804
+        },
+        "uncertainty": {
+          "brier_score": 0.386707,
+          "ece_10bin": 0.456525,
+          "mean_confidence": 0.675573,
+          "mean_uncertainty": 0.324427
+        }
+      },
+      "solver_id": "retrieval_only_bm25",
+      "validation_summary": {
+        "abstention_rate": 0.247619,
+        "mirrored_pair_consistency": null,
+        "primary_score": 0.228933
+      }
+    },
+    "simple_symbolic_extractor": {
+      "category": "simple_symbolic",
+      "evaluator_only": false,
+      "freeze_lock_verified": true,
+      "hidden_eval": {
+        "abstention": {
+          "abstention_f1": 0.458333,
+          "answerable_false_abstention_rate": 0.233333,
+          "answerable_total": 210,
+          "hallucination_on_unanswerable_rate": 0.633333,
+          "overall_abstention_rate": 0.3,
+          "unanswerable_abstention_recall": 0.366667,
+          "unanswerable_total": 210
+        },
+        "accuracy": {
+          "answered_coverage": 0.7,
+          "by_category": {
+            "answerable": {
+              "mean_score": 0.252431,
+              "n": 210
+            },
+            "unanswerable": {
+              "mean_score": 0.366667,
+              "n": 210
+            }
+          },
+          "containment_rate": 0.330952,
+          "exact_match": 0.233333,
+          "mirrored_pair_consistency": null,
+          "primary_ci95_high": 0.348571,
+          "primary_ci95_low": 0.268044,
+          "primary_score": 0.309549,
+          "selective_score_when_answered": 0.180308,
+          "token_f1": 0.309549
+        },
+        "benchmark_id": "squad_v2",
+        "cpu_time": {
+          "calibrate_wall_s": 0.434804,
+          "fit_cpu_s": 0.890625,
+          "fit_wall_s": 1.013453,
+          "ms_per_item_cpu": 2.5298,
+          "predict_cpu_s": 1.0625,
+          "predict_wall_s": 1.077678,
+          "preds_per_sec_core": 395.29
+        },
+        "evidence_grounding": {
+          "answerable_items_scored": 210,
+          "evidence_any_hit_rate": 0.67619,
+          "evidence_f1": 0.660317,
+          "evidence_precision": 0.67619,
+          "evidence_recall": 0.652381,
+          "unsupported_answer_rate": 0.517007
+        },
+        "memory_consumption": {
+          "fit_peak_tracemalloc_kb": 983.69,
+          "max_peak_tracemalloc_mb": 0.9606,
+          "predict_peak_tracemalloc_kb": 24.98
+        },
+        "memory_use": {
+          "active_entry_count": 7265,
+          "compressed_mdl_bits": 276848,
+          "external_readonly_pack_entries": 0,
+          "mean_memory_reads_per_query": 5.4929,
+          "serialized_bytes": 221339,
+          "total_memory_writes_during_eval": 0
+        },
+        "num_items": 420,
+        "split": "hidden_eval",
+        "transfer": {
+          "cross_shift_transfer": {
+            "note": "Every hidden_eval item comes from 100% unseen Wikipedia articles disjoint from train/val.",
+            "shift_type": "cross_wikipedia_article_domain",
+            "unseen_article_count": 14
+          },
+          "num_unseen_source_clusters": 14,
+          "per_cluster_mean": 0.309549,
+          "per_cluster_min": 0.130303,
+          "per_cluster_std": 0.08225,
+          "source_disjoint_heldout_score": 0.309549,
+          "val_to_hidden_gap": 0.014468
+        },
+        "uncertainty": {
+          "brier_score": 0.386431,
+          "ece_10bin": 0.388232,
+          "mean_confidence": 0.692994,
+          "mean_uncertainty": 0.307006
+        }
+      },
+      "solver_id": "simple_symbolic_extractor",
+      "validation_summary": {
+        "abstention_rate": 0.347619,
+        "mirrored_pair_consistency": null,
+        "primary_score": 0.295081
+      }
+    }
+  },
+  "source_metadata": {
+    "dataset_id": "squad_v2",
+    "files": {
+      "dev-v2.0.json": {
+        "cache_rel_path": ".external_eval_cache/s11_open_world/squad_v2/dev-v2.0.json",
+        "sha256": "80a5225e94905956a6446d296ca1093975c4d3b3260f1d6c8f68bc2ab77182d8",
+        "size_bytes": 4370528,
+        "source": "cache",
+        "url": "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json",
+        "verified": true
+      }
+    },
+    "license": "CC-BY-SA-4.0",
+    "pinned_revision": "dev-v2.0.json (sha256-pinned)",
+    "sampling_rule": "balanced deterministic subsample up to 15 answerable + 15 unanswerable per Wikipedia article across all 35 articles"
+  },
+  "split_manifest": {
+    "benchmark_id": "squad_v2",
+    "disjointness_report": {
+      "cluster_counts": {
+        "hidden_eval": 14,
+        "train": 14,
+        "val": 7
+      },
+      "cluster_overlaps": {
+        "train_hidden": 0,
+        "train_val": 0,
+        "val_hidden": 0
+      },
+      "item_counts": {
+        "hidden_eval": 420,
+        "train": 420,
+        "val": 210
+      },
+      "item_overlaps": {
+        "train_hidden": 0,
+        "train_val": 0,
+        "val_hidden": 0
+      },
+      "resource_overlaps": {
+        "train_hidden": 0,
+        "train_val": 0,
+        "val_hidden": 0
+      },
+      "zero_leakage_verified": true
+    },
+    "disjointness_verified": true,
+    "hidden_clusters_sha256": "4e4f8fdaae859a6e813083da98f9baea669750014f5e3aad8c5b4efe6eac7920",
+    "hidden_eval_count": 420,
+    "hidden_ids_sha256": "169961a2a0fb781f5566c0f512322fc1447b95a1fc5ecf5960459bf2027a23be",
+    "train_clusters_sha256": "57ad2c9b0ad68ad63ef02f0b4e25e751be28e007a86c74614fc356000f9984c1",
+    "train_count": 420,
+    "train_ids_sha256": "88651885cbd3be52c0115236ce205b2427ab37b82520525d89f98f04c7b1a139",
+    "val_clusters_sha256": "75fab4c9cc6419f8d109972968928c536e4aca2091507d99e3e290f79cfd9cd9",
+    "val_count": 210,
+    "val_ids_sha256": "1971c9ebd86802ec62e7d4cf62dcd1dfff57a7d02322376f4b79bbf902972e21"
+  },
+  "task_kind": "extractive_qa"
+}

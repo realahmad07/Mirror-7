@@ -1,0 +1,275 @@
+{
+  "pr43_audit": {
+    "branch": "research-track-a-native-semantic-gate",
+    "ci_check_runs_at_head": {
+      "fast-ci": "success",
+      "native-brain": "failure",
+      "source-guard": "success"
+    },
+    "failed_semantic_reasoning_gates": [
+      {
+        "details": "At 60 epochs with intermediate supervision: MLP top-1=2.61%, mean_margin=-0.3131; Linear operator top-1=2.06%, mean_margin=-0.3037. All 6 seed runs failed the positive held-out candidate-margin gate.",
+        "gate_id": "PR43_G1_exp6_60ep_positive_heldout_margin",
+        "status": "FAIL (0/3 seeds for both MLP and Linear Operator)"
+      },
+      {
+        "details": "At 240 epochs (pre-correction historical evaluator): MLP top-1=34.96%, mean_margin=-0.0852; Linear operator top-1=40.72%, mean_margin=-0.0649. Both beat chance (~0.75-0.81%), passed order control and no-collapse, but ALL 6 runs failed positive held-out candidate margin.",
+        "gate_id": "PR43_G2_exp6_240ep_positive_heldout_margin",
+        "status": "FAIL (0/3 seeds for both MLP and Linear Operator)"
+      },
+      {
+        "details": "Linear operator contrastive weight 0.25 worsened metrics: top-1=34.10%, mean_margin=-0.1024, order_margin=0.2583. Failed all 3 seeds and rejected.",
+        "gate_id": "PR43_G3_contrastive_weight_0_25_ablation",
+        "status": "FAIL (0/3 seeds, rejected)"
+      },
+      {
+        "details": "Self-fed rollout supervision weight 1.0 fell below the 0.10 operator baseline (top-1=31.98%, mean_margin=-0.1112). Failed all 3 seeds and rejected.",
+        "gate_id": "PR43_G4_rollout_supervision_weight_1_0_ablation",
+        "status": "FAIL (0/3 seeds, rejected)"
+      },
+      {
+        "details": "After fixing equivalent-target false negatives, all 4 matched 3-seed configs still failed positive held-out margin on seeds 17/29/43: MLP c=0.10 (-0.1182/-0.0770/-0.0602; 31.34%/35.34%/38.21%); Linear c=0.10 (-0.0863/-0.0301/-0.0783; 35.82%/48.12%/38.21%); Linear c=0.25 (-0.1215/-0.0690/-0.1167; 28.36%/40.60%/33.33%); Linear rollout=1.0 (-0.1410/-0.0733/-0.1194; 26.12%/41.35%/28.46%).",
+        "gate_id": "PR43_G5_equivalent_target_corrected_evaluator_reruns",
+        "status": "FAIL (0/3 seeds across all 4 tested configurations)"
+      },
+      {
+        "details": "Stratified subgroup diagnostics (commit 0ee5859, Linear c=0.10): Unseen concept margin=-0.0694 (40.3%), Seen concept margin=-0.0625 (39.7%), Held-out prefix 0->1 margin=-0.0222 (44.4%), Held-out suffix 4->5 margin=-0.1314 (28.3%), Chain len 3=+0.0097 (62.3%), len 4=-0.0465 (41.0%), len 5=-0.1175 (29.0%; every seed negative between -0.1326 and -0.1015).",
+        "gate_id": "PR43_G6_composition_depth_and_suffix_degradation",
+        "status": "FAIL (localized compositional collapse on longer chains)"
+      },
+      {
+        "details": "CI intentionally fails the native-brain research check when no predeclared operator configuration passes all 3 seeds on the unchanged semantic gate.",
+        "gate_id": "PR43_G7_native_brain_ci_gate",
+        "status": "FAIL (GitHub Actions check native-brain concluded failure)"
+      }
+    ],
+    "governance_invariant_passed": true,
+    "head_sha": "2d70a161ba74c7dacdd884134ec7ce3267db29b3",
+    "lessons_carried_into_s11": [
+      "Never weaken a failing gate threshold; localize failure by stratum (depth, composition, unseen concept).",
+      "Always check for target-equivalence / false-negative evaluator bugs and version evaluator schemas.",
+      "Require explicit source-disjointness proofs and license verification before touching any external dataset.",
+      "Keep neural-latent Track A research strictly separate from Mirror's CPU-native S11 open-world track."
+    ],
+    "live_git_verification": {
+      "checked": true,
+      "note": "Confirmed: PR #43 head commit and exclusive Track A files are NOT merged into HEAD",
+      "pr43_merged_into_head": false
+    },
+    "merged_into_main": false,
+    "pr_number": 43,
+    "primary_doc_inspected": "docs/38-track-a-native-intelligence-semantic-reasoning.md",
+    "state_at_audit": "open_not_merged",
+    "treated_as_passing_capability": false,
+    "unresolved_gates_and_open_blockers": [
+      {
+        "details": "Low-dose rollout supervision ablations (weights 0.10 and 0.25) were added to CI to test accumulated rollout drift on 4->5 suffixes; no passing 3-seed result exists.",
+        "gate_id": "PR43_U1_rollout_dose_0_10_and_0_25_pending",
+        "status": "UNRESOLVED / PENDING"
+      },
+      {
+        "details": "Required matched comparison against frozen Experiment 5/7 baselines under identical data, parameter budget, and compute budget has not been completed.",
+        "gate_id": "PR43_U2_frozen_exp5_exp7_matched_comparison",
+        "status": "UNRESOLVED"
+      },
+      {
+        "details": "CLUTRR was correctly excluded due to CC-BY-NC 4.0 vs unknown HF license. RuleTaker (Apache-2.0) was pinned in training/ruletaker_v1.manifest.json with an explicit boundary that it is templated/controlled language and does NOT establish organic natural-text reasoning.",
+        "gate_id": "PR43_U3_natural_semantic_benchmark_and_license_boundaries",
+        "status": "UNRESOLVED (partially addressed via RuleTaker controlled manifest only)"
+      },
+      {
+        "details": "The 10-case legacy held-out V5 smoke prompt export explicitly sets promotion_eligible=false because source-disjointness from Drive training data is unaudited, and lexical/format metrics do not measure factual or semantic correctness.",
+        "gate_id": "PR43_U4_v5_free_running_prompt_disjointness_and_semantic_labels",
+        "status": "UNRESOLVED (promotion_eligible=false)"
+      },
+      {
+        "details": "Independent verification of exact-answer tasks and blinded/external reproduction remain incomplete; no checkpoint is promoted.",
+        "gate_id": "PR43_U5_independent_external_reproduction",
+        "status": "UNRESOLVED"
+      }
+    ]
+  },
+  "s0_s10_audit": {
+    "all_s0_s10_gates_passed": true,
+    "audit_conclusion": "Stages S0-S10 form a verified, reproducible CPU-native foundation for narrow controlled relational/functional/grounded learning, NOT open-world intelligence. Eight structural gaps (L01-L08) block direct open-world transfer and motivate Stage S11.0 evaluation + S11.1 design.",
+    "committed_manifest_count": 14,
+    "committed_manifest_files": [
+      "heldout_manifest.json",
+      "preregistration.json",
+      "s10_preregistration.json",
+      "s1_parser_manifest.json",
+      "s1_preregistration.json",
+      "s2_preregistration.json",
+      "s3_preregistration.json",
+      "s4_preregistration.json",
+      "s5_preregistration.json",
+      "s6_preregistration.json",
+      "s7_preregistration.json",
+      "s8_preregistration.json",
+      "s9_preregistration.json",
+      "train_manifest.json"
+    ],
+    "open_world_limitations": [
+      {
+        "affected_stages": "S0-S5, S8, S9",
+        "limitation_id": "L01_presegmented_state_transitions",
+        "open_world_consequence": "Without an upstream raw-observation -> evidence -> entity/event/relation extractor, S0-S10 ITL cards cannot even parse or ingest organic Wikipedia passages, causal prose, or multi-turn user dialogues.",
+        "severity": "critical_blocker_for_open_world",
+        "summary": "ITL operator induction assumes clean pre-segmented (before_state, action, after_state) relational state-graph tuples produced by a deterministic black-box simulator. Real-world text, documents, and multi-session dialogues do not come with explicit structured state graphs or pre-labeled action invocations."
+      },
+      {
+        "affected_stages": "S1-S5, S7, S8",
+        "limitation_id": "L02_closed_predicate_and_role_schemas",
+        "open_world_consequence": "Open-world observations introduce unbounded open-vocabulary entities, paraphrases, implicit causal links, and latent events that have no pre-registered state-delta oracle.",
+        "severity": "critical_blocker_for_open_world",
+        "summary": "S1 TypedStateFrame and S2/S3 OperatorCard assume a discrete finite set of typed predicates and deterministic entity-type tags per world. Even in S7 raw UTF-8 grounding, constructions are aligned strictly against already-verified discrete OperatorCard state deltas."
+      },
+      {
+        "affected_stages": "S3, S5, S9",
+        "limitation_id": "L03_simulator_oracle_dependence_for_refutation",
+        "open_world_consequence": "In passive open-world corpora (documents, conversations, commonsense narratives), the learner cannot query a noise-free world simulator to test arbitrary counterfactual actions; verification must instead rely on observational consistency, source-disjoint cross-evidence corroboration, temporal contradiction detection, and executable checks where available.",
+        "severity": "major_architectural_gap",
+        "summary": "S3 contrast refinement, S5 RDC dream-refutation/active querying, and S9 autonomous curriculum rely on an interactive black-box TransitionEnvironment.step() oracle that answers synthetic counterfactual queries on demand with zero noise."
+      },
+      {
+        "affected_stages": "S6, S10",
+        "limitation_id": "L04_bounded_dsl_and_external_code_gap",
+        "open_world_consequence": "Synthesizing general open-world capabilities from unstructured specifications requires expanding beyond fixed micro-DSL combinators without leaking task-specific templates.",
+        "severity": "major_capability_boundary",
+        "summary": "S6 achieved 19/20 on HumanEval-Micro within a compact typed combinator grammar (honestly leaving he_micro_20_count_vowels unsolved), while Mirror's external MBPP evaluation (scripts/run_five_organ_external_eval.py) remains 0/20."
+      },
+      {
+        "affected_stages": "S7, S10",
+        "limitation_id": "L05_structured_grounding_vs_open_world_language",
+        "open_world_consequence": "Unseen lexical paraphrases, implicit world causality, pragmatic implicature, and adversarial unanswerable questions in natural prose defeat exact construction alignment.",
+        "severity": "critical_blocker_for_open_world",
+        "summary": "S7's 2.5649 bpb CTW+construction Byte-LM and 100% UTF-8 instruction execution hold on controlled grounded synthetic worlds where constructions map cleanly onto discrete operators, not on organic natural-language commonsense (e.g. Balanced COPA, StoryCloze) or open-domain reading comprehension (SQuAD v2)."
+      },
+      {
+        "affected_stages": "S1, S8, Organ 3 (KanervaSDMInt8)",
+        "limitation_id": "L06_long_horizon_noisy_memory_and_updates",
+        "open_world_consequence": "In real multi-session memory benchmarks (LongMemEval), user facts evolve over weeks (knowledge-update), span multiple sessions (multi-session), require date arithmetic (temporal-reasoning), or are genuinely absent (_abs abstention).",
+        "severity": "major_architectural_gap",
+        "summary": "S1's append-only EpisodeLedger and S8's ContinualKnowledgeBase preserve verified structured skills with 99.43% retention, but neither performs temporal belief revision, multi-session coreference resolution, or contradiction tracking over raw unstructured conversational transcripts with distractor sessions."
+      },
+      {
+        "affected_stages": "Mirror Crystal / rules_and_blueprints / research/rule_packs",
+        "limitation_id": "L07_unverified_legacy_rule_and_blueprint_packs",
+        "open_world_consequence": "Existing staged rule/blueprint packs cannot be promoted without independent verification and provide near-zero grounded coverage on unseen open-world instances.",
+        "severity": "governance_and_coverage_gap",
+        "summary": "Staged blueprints (997 unambiguous + 17 collision clusters), general reasoning candidates (10,240 unverified + 26 source-supported with tests not_run), and 110 authored domain seeds are mostly generic textbook/prompt templates with evidence_status=unverified."
+      },
+      {
+        "affected_stages": "S10",
+        "limitation_id": "L08_analytical_tdp_energy_not_hardware_rapl",
+        "open_world_consequence": "CPU time and peak heap measurements remain directly comparable across pure-CPU baselines.",
+        "severity": "measurement_boundary",
+        "summary": "S10 energy numbers are analytical process-time * single-core TDP proxies, not direct hardware RAPL/PMU readings. Stage S11.0 therefore reports raw process CPU time, wall time, throughput, and tracemalloc peak heap directly without over-claiming hardware energy."
+      }
+    ],
+    "package_path": "research/cpu_learning",
+    "python_module_count": 71,
+    "reusable_assets_for_s11": [
+      "Append-only hash-chained SQLite EpisodeLedger with freeze locks (S1)",
+      "10,240-bit BSC + Multi-Table LSH SHARD candidate proposer (S4)",
+      "ITL role-unification & invariant/guard induction over structured deltas (S2-S3)",
+      "RDC refutation, leave-one-out blame & MDL library compaction without self-certification (S5)",
+      "Zero-forgetting ContinualKnowledgeBase with mandatory regression replay & poison rollback (S8)",
+      "Anti-forgery IndependentVerificationReceipt & non-starvation budget controller (S9)",
+      "Mirror Crystal QuotientEGraph, TwinEGraphDoCalculus, KanervaSDMInt8 & MengerProvenanceVerifier"
+    ],
+    "s10_honest_verdict_tier": "NARROW_VERIFIED_CPU_LEARNING_PROVEN__OPEN_WORLD_GPT_PARITY_NOT_CLAIMED",
+    "s10_master_13_gates_passed": 13,
+    "s10_master_13_gates_total": 13,
+    "stage_summaries": [
+      {
+        "checks_passed": 11,
+        "checks_total": 11,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S0",
+        "summary_file": "summary.json"
+      },
+      {
+        "checks_passed": 16,
+        "checks_total": 16,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S1",
+        "summary_file": "s1_summary.json"
+      },
+      {
+        "checks_passed": 19,
+        "checks_total": 19,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S2",
+        "summary_file": "s2_summary.json"
+      },
+      {
+        "checks_passed": 25,
+        "checks_total": 25,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S3",
+        "summary_file": "s3_summary.json"
+      },
+      {
+        "checks_passed": 20,
+        "checks_total": 20,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S4",
+        "summary_file": "s4_summary.json"
+      },
+      {
+        "checks_passed": 24,
+        "checks_total": 24,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S5",
+        "summary_file": "s5_summary.json"
+      },
+      {
+        "checks_passed": 21,
+        "checks_total": 21,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S6",
+        "summary_file": "s6_summary.json"
+      },
+      {
+        "checks_passed": 24,
+        "checks_total": 24,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S7",
+        "summary_file": "s7_summary.json"
+      },
+      {
+        "checks_passed": 19,
+        "checks_total": 19,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S8",
+        "summary_file": "s8_summary.json"
+      },
+      {
+        "checks_passed": 21,
+        "checks_total": 21,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S9",
+        "summary_file": "s9_summary.json"
+      },
+      {
+        "checks_passed": 16,
+        "checks_total": 16,
+        "gate_passed": true,
+        "present": true,
+        "stage": "S10",
+        "summary_file": "s10_summary.json"
+      }
+    ]
+  }
+}

@@ -29,3 +29,6 @@ training/data/
 *.sqlite-shm
 *.dcrystal-wal
 *.dcrystal-shm
+
+# Runtime-downloaded external evaluation dataset cache (never redistributed in git)
+.external_eval_cache/
