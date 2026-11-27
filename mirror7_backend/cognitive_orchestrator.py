@@ -29,6 +29,7 @@ class UnifiedCognitiveOrchestrator:
         synthesis_provider: Callable[[dict[str, Any]], Any] | None = None,
         universal_intelligence_provider: Callable[[], Any] | None = None,
         uol_router_provider: Callable[[], Any] | None = None,
+        prefer_vault_evidence_over_lattice: bool = False,
     ) -> None:
         if not 0.0 <= math_confidence_threshold <= 1.0:
             raise ValueError("math_confidence_threshold must be between 0 and 1")
@@ -40,6 +41,7 @@ class UnifiedCognitiveOrchestrator:
         self._synthesis_provider = synthesis_provider
         self._universal_intelligence_provider = universal_intelligence_provider
         self._uol_router_provider = uol_router_provider
+        self._prefer_vault_evidence_over_lattice = bool(prefer_vault_evidence_over_lattice)
         self._default_uol_router: Any | None = None
         self.metrics = metrics
         self.math_confidence_threshold = math_confidence_threshold
@@ -379,7 +381,11 @@ class UnifiedCognitiveOrchestrator:
                     and all(str(r).startswith("concept_lattice.") for r in routed.rule_ids)
                     and not any(str(r).startswith("concept_lattice.meta:") for r in routed.rule_ids)
                 )
-                if routed.matched and not (is_lattice_encyclopedia_fallback and evidence):
+                if routed.matched and not (
+                    self._prefer_vault_evidence_over_lattice
+                    and is_lattice_encyclopedia_fallback
+                    and evidence
+                ):
                     task_uol_verified = True
                     sources_consulted.append("uol_auto_router")
                     uol_route_payload = {

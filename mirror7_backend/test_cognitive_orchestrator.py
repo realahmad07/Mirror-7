@@ -325,3 +325,51 @@ def test_missing_container_runtime_reports_transparent_sandbox_diagnostic():
     assert result["answer_qualification"] == "sandbox_unavailable"
     assert "Docker or Podman" in result["answer"]
     assert "MIRROR_SANDBOX_MODE=process" in result["answer"]
+
+
+def test_concept_lattice_fallback_respects_isolated_vault_precedence():
+    vault = Vault(SimpleNamespace(
+        answer="Custom isolated vault answer about quantum computing.",
+        confidence=0.92,
+        mode="direct_crystal_lock",
+        matched_rule_id=7,
+        sandbox_verified=False,
+        epistemic_tier="unverified_knowledge",
+        reasoning_trace=[],
+    ))
+
+    class FakeLatticeRouter:
+        def route(self, prompt, session_id="default"):
+            return SimpleNamespace(
+                matched=True,
+                rule_ids=["concept_lattice.quantum_computing"],
+                inputs={},
+                output="Concept Lattice encyclopedia explanation.",
+                unit="",
+                explanation="Concept Lattice encyclopedia explanation.",
+                steps=["lattice_lookup"],
+            )
+
+    isolated = UnifiedCognitiveOrchestrator(
+        vault_provider=lambda: vault,
+        memory_provider=lambda: Memory(),
+        reasoning_provider=lambda: Reasoner({"ok": False}),
+        code_provider=lambda: Code({"verified": False}),
+        uol_router_provider=lambda: FakeLatticeRouter(),
+        prefer_vault_evidence_over_lattice=True,
+    ).ask("What is quantum computing?")
+    assert isolated["abstained"] is True
+    assert isolated["answer_qualification"] == "unverified_candidate"
+    assert "Custom isolated vault answer about quantum computing." in isolated["answer"]
+
+    autoloaded = UnifiedCognitiveOrchestrator(
+        vault_provider=lambda: vault,
+        memory_provider=lambda: Memory(),
+        reasoning_provider=lambda: Reasoner({"ok": False}),
+        code_provider=lambda: Code({"verified": False}),
+        uol_router_provider=lambda: FakeLatticeRouter(),
+        prefer_vault_evidence_over_lattice=False,
+    ).ask("What is quantum computing?")
+    assert autoloaded["abstained"] is False
+    assert autoloaded["task_result_verified"] is True
+    assert "Concept Lattice encyclopedia explanation." in autoloaded["answer"]

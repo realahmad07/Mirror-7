@@ -58,6 +58,7 @@ class BackendService:
         self._closing: set[str] = set()
         self._condition = Condition(RLock())
 
+        self._enable_crystal_auto_load: bool = bool(enable_crystal_auto_load)
         self.crystal_vault = crystal_vault
         self.crystal_node = crystal_node
         self.capability_execution_engine = capability_execution_engine
@@ -198,6 +199,7 @@ class BackendService:
                 code_generation_provider=self.code_generation_provider,
                 synthesis_provider=self.evidence_synthesis_provider,
                 universal_intelligence_provider=lambda: self.universal_intelligence_pipeline,
+                prefer_vault_evidence_over_lattice=(not self._enable_crystal_auto_load),
             )
         return self._cognitive_orchestrator
 
