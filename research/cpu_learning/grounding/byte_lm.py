@@ -22,6 +22,7 @@ STRICT ISOLATION & SCIENTIFIC FAIRNESS:
 from __future__ import annotations
 
 import math
+import operator
 import random
 import re
 import struct
@@ -29,9 +30,30 @@ import time
 import zlib
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Sequence
 
 from research.cpu_learning.simulator.state_graph import canonical_json_bytes
+
+_MUL = operator.mul
+
+
+def _dot_py311(a: Sequence[float], b: Sequence[float]) -> float:
+    """Python <=3.11-compatible dot-product fallback for ``math.sumprod``."""
+    if len(a) == 8:
+        return (
+            a[0] * b[0]
+            + a[1] * b[1]
+            + a[2] * b[2]
+            + a[3] * b[3]
+            + a[4] * b[4]
+            + a[5] * b[5]
+            + a[6] * b[6]
+            + a[7] * b[7]
+        )
+    return sum(map(_MUL, a, b))
+
+
+_SUMPROD = getattr(math, "sumprod", _dot_py311)
 
 BYTE_LM_SCHEMA_VERSION: str = "s7-byte-lm-v1"
 
@@ -861,7 +883,7 @@ class SmallCPUByteTransformerRef(BaseByteLM):
         w_q = self.w_q
         w_k = self.w_k
         w_v = self.w_v
-        sumprod = math.sumprod
+        sumprod = _SUMPROD
 
         q = [sumprod(w_q[r], e_last) for r in range(d)]
 
@@ -886,7 +908,6 @@ class SmallCPUByteTransformerRef(BaseByteLM):
 
         w_out = self.w_out
         b_out = self.b_out
-        sumprod = math.sumprod
         logits = [b_out[v] + sumprod(w_out[v], h) for v in range(256)]
 
         probs = _softmax_list(logits)
