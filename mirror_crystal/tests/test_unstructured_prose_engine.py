@@ -1031,12 +1031,19 @@ def test_multi_shard_discovery_zero_dup_quality_gate_and_slas(tmp_path):
     assert hashlib.sha256(primary_path.read_bytes()).hexdigest() == primary_sha_before
     eng.close()
 
-    # 5. Cold-start SLA (< 50 ms) & Peak RAM SLA (< 25 MB) across Primary + 2 auto-discovered shards
+    # 5. Cold-start SLA (< 50 ms) & Peak RAM SLA (< 25 MB) across Primary + 2 auto-discovered shards.
+    # Measure latency without tracemalloc: allocation tracing materially distorts wall-clock
+    # timing. Then clear the metadata snapshot cache and perform a separate cold allocation
+    # measurement so both checks exercise the uncached initialization path independently.
+    _VAULT_SNAPSHOT_CACHE.clear()
+    t0 = time.perf_counter()
+    timed_fresh = OpenEndedConceptLatticeEngine(vault_path=primary_path)
+    cold_ms = (time.perf_counter() - t0) * 1000.0
+    timed_fresh.close()
+
     _VAULT_SNAPSHOT_CACHE.clear()
     tracemalloc.start()
-    t0 = time.perf_counter()
     fresh = OpenEndedConceptLatticeEngine(vault_path=primary_path)
-    cold_ms = (time.perf_counter() - t0) * 1000.0
     _, peak_bytes = tracemalloc.get_traced_memory()
     tracemalloc.stop()
     peak_mb = peak_bytes / (1024 * 1024)
