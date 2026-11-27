@@ -1,0 +1,718 @@
+{
+  "cross_domain_transfer": {
+    "domain3_logistics": {
+      "accuracy_lift_over_cold_start": 0.363636,
+      "cold_start_collateral_rate": 0.008264,
+      "cold_start_exact_acc": 0.636364,
+      "eval_task_count": 44,
+      "local_fallback_action_ids": [],
+      "marginal_bit_savings": 1872,
+      "marginal_bits_cold_start": 3552,
+      "marginal_bits_with_transfer": 1680,
+      "mirror_transfer_collateral_rate": 0.0,
+      "mirror_transfer_exact_acc": 1.0,
+      "negative_transfer_rate": 0.0,
+      "target_domain_id": "domain3_logistics",
+      "train_episode_count": 4,
+      "transferred_action_ids": [
+        "dispatch",
+        "reassign"
+      ],
+      "ungated_forced_ablation_acc": 1.0,
+      "ungated_negative_transfer_rate": 0.0
+    },
+    "domain4_biolab": {
+      "accuracy_lift_over_cold_start": 0.363636,
+      "cold_start_collateral_rate": 0.008264,
+      "cold_start_exact_acc": 0.636364,
+      "eval_task_count": 44,
+      "local_fallback_action_ids": [],
+      "marginal_bit_savings": 1872,
+      "marginal_bits_cold_start": 3720,
+      "marginal_bits_with_transfer": 1848,
+      "mirror_transfer_collateral_rate": 0.0,
+      "mirror_transfer_exact_acc": 1.0,
+      "negative_transfer_rate": 0.0,
+      "target_domain_id": "domain4_biolab",
+      "train_episode_count": 4,
+      "transferred_action_ids": [
+        "hand_off_sample",
+        "relocate_sample"
+      ],
+      "ungated_forced_ablation_acc": 1.0,
+      "ungated_negative_transfer_rate": 0.0
+    },
+    "domain5_incompatible_reactor": {
+      "accuracy_lift_over_cold_start": 0.0,
+      "cold_start_collateral_rate": 0.0,
+      "cold_start_exact_acc": 1.0,
+      "eval_task_count": 24,
+      "local_fallback_action_ids": [
+        "reset_gauge",
+        "toggle_valve"
+      ],
+      "marginal_bit_savings": 0,
+      "marginal_bits_cold_start": 2328,
+      "marginal_bits_with_transfer": 2328,
+      "mirror_transfer_collateral_rate": 0.0,
+      "mirror_transfer_exact_acc": 1.0,
+      "negative_transfer_rate": 0.0,
+      "target_domain_id": "domain5_reactor_local",
+      "train_episode_count": 10,
+      "transferred_action_ids": [],
+      "ungated_forced_ablation_acc": 0.5,
+      "ungated_negative_transfer_rate": 0.5
+    },
+    "domain_local_schemas_rejected": 3,
+    "four_domain_bits_with_concepts": 7424,
+    "four_domain_bits_without_concepts": 10312,
+    "four_domain_joint_bits_saved": 2888,
+    "scoped_rejection_rate": 1.0,
+    "source_abstraction": {
+      "concept_ids": [
+        "xdom_0df2224f97",
+        "xdom_3104a1089d"
+      ],
+      "concepts": [
+        {
+          "add_facts": [
+            [
+              "$R0",
+              "$P0",
+              "$R2"
+            ]
+          ],
+          "attribute_edits": [],
+          "attribute_guards": [
+            [
+              "$R0",
+              "$A0",
+              "$AV0"
+            ]
+          ],
+          "concept_id": "xdom_0df2224f97",
+          "conditional_fact_guards": [],
+          "delete_facts": [
+            [
+              "$R0",
+              "$P0",
+              "$R1"
+            ]
+          ],
+          "indirect_fact_guards": [
+            [
+              "$R0",
+              "$P1",
+              "$T2",
+              "$P2",
+              "$V0"
+            ],
+            [
+              "$R0",
+              "$P1",
+              "$T2",
+              "$P3",
+              "$V1"
+            ]
+          ],
+          "inequality_guards": [
+            [
+              "$R1",
+              "$R2"
+            ]
+          ],
+          "required_facts": [
+            [
+              "$R0",
+              "$P0",
+              "$R1"
+            ]
+          ],
+          "role_slots": [
+            "$R0",
+            "$R1",
+            "$R2"
+          ],
+          "source_domains": [
+            "phase1_relational",
+            "domain2_arcane"
+          ],
+          "type_slots": {
+            "$R0": [
+              "$T0"
+            ],
+            "$R1": [
+              "$T1"
+            ],
+            "$R2": [
+              "$T1"
+            ]
+          }
+        },
+        {
+          "add_facts": [
+            [
+              "$R0",
+              "$P0",
+              "$R2"
+            ]
+          ],
+          "attribute_edits": [],
+          "attribute_guards": [
+            [
+              "$R0",
+              "$A0",
+              "$AV0"
+            ]
+          ],
+          "concept_id": "xdom_3104a1089d",
+          "conditional_fact_guards": [
+            [
+              "$R1",
+              "$T3",
+              "$P3",
+              "$V0"
+            ],
+            [
+              "$R1",
+              "$T3",
+              "$P4",
+              "$V1"
+            ],
+            [
+              "$R2",
+              "$T3",
+              "$P3",
+              "$V0"
+            ],
+            [
+              "$R2",
+              "$T3",
+              "$P4",
+              "$V1"
+            ]
+          ],
+          "delete_facts": [
+            [
+              "$R0",
+              "$P0",
+              "$R1"
+            ]
+          ],
+          "indirect_fact_guards": [],
+          "inequality_guards": [
+            [
+              "$R1",
+              "$R2"
+            ]
+          ],
+          "required_facts": [
+            [
+              "$R0",
+              "$P0",
+              "$R1"
+            ],
+            [
+              "$R0",
+              "$P1",
+              "$R3"
+            ],
+            [
+              "$R2",
+              "$P2",
+              "$V0"
+            ]
+          ],
+          "role_slots": [
+            "$R0",
+            "$R1",
+            "$R2",
+            "$R3"
+          ],
+          "source_domains": [
+            "phase1_relational",
+            "domain2_arcane"
+          ],
+          "type_slots": {
+            "$R0": [
+              "$T0"
+            ],
+            "$R1": [
+              "$T1",
+              "$T3"
+            ],
+            "$R2": [
+              "$T1",
+              "$T3"
+            ],
+            "$R3": [
+              "$T2"
+            ]
+          }
+        }
+      ],
+      "domain1_bits_saved": 1080,
+      "domain1_bits_with_concept": 3208,
+      "domain1_bits_without_concept": 4288,
+      "domain2_bits_saved": 1904,
+      "domain2_bits_with_concept": 1544,
+      "domain2_bits_without_concept": 3448,
+      "joint_bits_saved": 752,
+      "joint_bits_with_concepts": 5488,
+      "joint_bits_without_concepts": 6240,
+      "reversibility_verified": true
+    },
+    "universal_concepts_promoted": 2
+  },
+  "final_growth": {
+    "active_library_bits": 29960,
+    "active_skill_count": 64,
+    "cumulative_compressed_training_bits": 129744,
+    "cumulative_raw_training_bits": 1656528,
+    "domains_registered": [
+      "phase1_relational",
+      "phase2_math_and_lists",
+      "phase3_code_and_ast",
+      "phase4_utf8_grounding",
+      "domain2_arcane",
+      "domain3_logistics",
+      "domain4_biolab"
+    ],
+    "episode_ledger_bits": 5664,
+    "library_to_compressed_train_ratio": 0.230916,
+    "library_to_raw_ratio": 0.018086,
+    "phase_index": 5,
+    "phase_name": "Phase 5: Cross-Domain & Poison Rollbacks"
+  },
+  "final_mean_retention": {
+    "mirror_continual_kb": 0.994318,
+    "naive_overwrite_no_replay": 0.132738,
+    "small_cpu_neural_continual_ref": 0.097917
+  },
+  "final_phase5_domain_accuracy": {
+    "mirror_continual_kb": {
+      "phase1_relational": 1.0,
+      "phase2_math_and_lists": 1.0,
+      "phase3_code_and_ast": 0.977273,
+      "phase4_utf8_grounding": 1.0
+    },
+    "naive_overwrite_no_replay": {
+      "phase1_relational": 0.214286,
+      "phase2_math_and_lists": 0.0,
+      "phase3_code_and_ast": 0.0,
+      "phase4_utf8_grounding": 0.316667
+    },
+    "small_cpu_neural_continual_ref": {
+      "phase1_relational": 0.125,
+      "phase2_math_and_lists": 0.0,
+      "phase3_code_and_ast": 0.0,
+      "phase4_utf8_grounding": 0.266667
+    }
+  },
+  "forgetting_drop_by_domain": {
+    "phase1_relational": 0.0,
+    "phase2_math_and_lists": 0.0,
+    "phase3_code_and_ast": 0.0,
+    "phase4_utf8_grounding": 0.0
+  },
+  "freeze_guard_verified": true,
+  "hash_immutability_audit": {
+    "active_promoted_skills": 64,
+    "deleted_versions": 0,
+    "displaced_prior_skills": 0,
+    "non_destructive_verified": true,
+    "quarantined_candidates": 3,
+    "rewritten_prior_skills": 0,
+    "rewritten_versions": 0,
+    "total_versions_archived": 67
+  },
+  "library_growth_timeline": [
+    {
+      "active_library_bits": 4992,
+      "active_skill_count": 4,
+      "cumulative_compressed_training_bits": 52728,
+      "cumulative_raw_training_bits": 704512,
+      "domains_registered": [
+        "phase1_relational"
+      ],
+      "episode_ledger_bits": 4600,
+      "library_to_compressed_train_ratio": 0.094675,
+      "library_to_raw_ratio": 0.007086,
+      "phase_index": 1,
+      "phase_name": "Phase 1: Relational World"
+    },
+    {
+      "active_library_bits": 8344,
+      "active_skill_count": 12,
+      "cumulative_compressed_training_bits": 75648,
+      "cumulative_raw_training_bits": 1046088,
+      "domains_registered": [
+        "phase1_relational",
+        "phase2_math_and_lists"
+      ],
+      "episode_ledger_bits": 4920,
+      "library_to_compressed_train_ratio": 0.1103,
+      "library_to_raw_ratio": 0.007976,
+      "phase_index": 2,
+      "phase_name": "Phase 2: Mathematics & Lists"
+    },
+    {
+      "active_library_bits": 18360,
+      "active_skill_count": 35,
+      "cumulative_compressed_training_bits": 87784,
+      "cumulative_raw_training_bits": 1086280,
+      "domains_registered": [
+        "phase1_relational",
+        "phase2_math_and_lists",
+        "phase3_code_and_ast"
+      ],
+      "episode_ledger_bits": 5064,
+      "library_to_compressed_train_ratio": 0.20915,
+      "library_to_raw_ratio": 0.016902,
+      "phase_index": 3,
+      "phase_name": "Phase 3: Python AST & Code"
+    },
+    {
+      "active_library_bits": 24872,
+      "active_skill_count": 58,
+      "cumulative_compressed_training_bits": 99032,
+      "cumulative_raw_training_bits": 1283440,
+      "domains_registered": [
+        "phase1_relational",
+        "phase2_math_and_lists",
+        "phase3_code_and_ast",
+        "phase4_utf8_grounding"
+      ],
+      "episode_ledger_bits": 5280,
+      "library_to_compressed_train_ratio": 0.251151,
+      "library_to_raw_ratio": 0.019379,
+      "phase_index": 4,
+      "phase_name": "Phase 4: Raw UTF-8 Grounding"
+    },
+    {
+      "active_library_bits": 29960,
+      "active_skill_count": 64,
+      "cumulative_compressed_training_bits": 129744,
+      "cumulative_raw_training_bits": 1656528,
+      "domains_registered": [
+        "phase1_relational",
+        "phase2_math_and_lists",
+        "phase3_code_and_ast",
+        "phase4_utf8_grounding",
+        "domain2_arcane",
+        "domain3_logistics",
+        "domain4_biolab"
+      ],
+      "episode_ledger_bits": 5664,
+      "library_to_compressed_train_ratio": 0.230916,
+      "library_to_raw_ratio": 0.018086,
+      "phase_index": 5,
+      "phase_name": "Phase 5: Cross-Domain & Poison Rollbacks"
+    }
+  ],
+  "max_forgetting_drop": 0.0,
+  "neural_analytical_grad_max_error": 0.0,
+  "poison_rollback_tests": {
+    "caught_and_rolled_back_rate": 1.0,
+    "list_reverse_poison": {
+      "accepted": false,
+      "active_sha256_after": "45d52dffb24af35b0e2413e15330b39f9bf27feee3ec3bf328fbcbac2694191d",
+      "active_version_after": 1,
+      "candidate_version": 2,
+      "domain_id": "phase2_math_and_lists",
+      "quarantine_record": {
+        "candidate_sha256": "9cc76415ffe276509e96f81dddbef1a6f83c358849326104a2d03be264a2edd9",
+        "candidate_version": 2,
+        "domain_id": "phase2_math_and_lists",
+        "failed_domains": [
+          "phase2_math_and_lists"
+        ],
+        "failure_reasons": [
+          "phase2_math_and_lists:reg_p2_lists:list_pipelines_check"
+        ],
+        "kind": "functional_operator",
+        "notes": "injected_poison_corrupted_reverse_noop",
+        "offending_case_ids": [
+          "reg_p2_lists"
+        ],
+        "phase_index": 5,
+        "quarantine_id": "quarantine_0002",
+        "restored_sha256": "45d52dffb24af35b0e2413e15330b39f9bf27feee3ec3bf328fbcbac2694191d",
+        "restored_version": 1,
+        "skill_id": "reverse"
+      },
+      "quarantined": true,
+      "replay_after_resolution": {
+        "failed_domains": [],
+        "failure_reasons": [],
+        "offending_case_ids": [],
+        "passed": true,
+        "per_domain_pass_rate": {
+          "domain2_arcane": 1.0,
+          "domain3_logistics": 1.0,
+          "domain4_biolab": 1.0,
+          "phase1_relational": 1.0,
+          "phase2_math_and_lists": 1.0,
+          "phase3_code_and_ast": 1.0,
+          "phase4_utf8_grounding": 1.0
+        },
+        "total_cases_checked": 32,
+        "total_failures": 0
+      },
+      "replay_on_candidate": {
+        "failed_domains": [
+          "phase2_math_and_lists"
+        ],
+        "failure_reasons": [
+          "phase2_math_and_lists:reg_p2_lists:list_pipelines_check"
+        ],
+        "offending_case_ids": [
+          "reg_p2_lists"
+        ],
+        "passed": false,
+        "per_domain_pass_rate": {
+          "domain2_arcane": 1.0,
+          "domain3_logistics": 1.0,
+          "domain4_biolab": 1.0,
+          "phase1_relational": 1.0,
+          "phase2_math_and_lists": 0.666667,
+          "phase3_code_and_ast": 1.0,
+          "phase4_utf8_grounding": 1.0
+        },
+        "total_cases_checked": 32,
+        "total_failures": 1
+      },
+      "rolled_back": true,
+      "skill_id": "reverse"
+    },
+    "quarantine_count": 3,
+    "relational_move_poison": {
+      "accepted": false,
+      "active_sha256_after": "e15c266274ea81a8e7be1298d42a442cf470dbec5621e07fa54c3c3b3d7d6df7",
+      "active_version_after": 1,
+      "candidate_version": 2,
+      "domain_id": "phase1_relational",
+      "quarantine_record": {
+        "candidate_sha256": "f0ad05d1772815282eb54b441f2ccf6d0ba5532628385353faf3fd9e0a9f492f",
+        "candidate_version": 2,
+        "domain_id": "phase1_relational",
+        "failed_domains": [
+          "phase1_relational"
+        ],
+        "failure_reasons": [
+          "phase1_relational:reg_p1_05:mismatch_on_move"
+        ],
+        "kind": "relational_operator",
+        "notes": "injected_poison_overgeneralized_move_no_container_guards",
+        "offending_case_ids": [
+          "reg_p1_05"
+        ],
+        "phase_index": 5,
+        "quarantine_id": "quarantine_0001",
+        "restored_sha256": "e15c266274ea81a8e7be1298d42a442cf470dbec5621e07fa54c3c3b3d7d6df7",
+        "restored_version": 1,
+        "skill_id": "move"
+      },
+      "quarantined": true,
+      "replay_after_resolution": {
+        "failed_domains": [],
+        "failure_reasons": [],
+        "offending_case_ids": [],
+        "passed": true,
+        "per_domain_pass_rate": {
+          "domain2_arcane": 1.0,
+          "domain3_logistics": 1.0,
+          "domain4_biolab": 1.0,
+          "phase1_relational": 1.0,
+          "phase2_math_and_lists": 1.0,
+          "phase3_code_and_ast": 1.0,
+          "phase4_utf8_grounding": 1.0
+        },
+        "total_cases_checked": 32,
+        "total_failures": 0
+      },
+      "replay_on_candidate": {
+        "failed_domains": [
+          "phase1_relational"
+        ],
+        "failure_reasons": [
+          "phase1_relational:reg_p1_05:mismatch_on_move"
+        ],
+        "offending_case_ids": [
+          "reg_p1_05"
+        ],
+        "passed": false,
+        "per_domain_pass_rate": {
+          "domain2_arcane": 1.0,
+          "domain3_logistics": 1.0,
+          "domain4_biolab": 1.0,
+          "phase1_relational": 0.958333,
+          "phase2_math_and_lists": 1.0,
+          "phase3_code_and_ast": 1.0,
+          "phase4_utf8_grounding": 1.0
+        },
+        "total_cases_checked": 32,
+        "total_failures": 1
+      },
+      "rolled_back": true,
+      "skill_id": "move"
+    },
+    "utf8_passive_poison": {
+      "accepted": false,
+      "active_sha256_after": "8b9afbeac62c2c5fa6f1d12df940e7e1ad7f8231d372127008cb0e1b42681d89",
+      "active_version_after": 1,
+      "candidate_version": 2,
+      "domain_id": "phase4_utf8_grounding",
+      "quarantine_record": {
+        "candidate_sha256": "182c3cf7c241002447302f3a698a1c311edfffb635fac5309babd3ed411cedb5",
+        "candidate_version": 2,
+        "domain_id": "phase4_utf8_grounding",
+        "failed_domains": [
+          "phase4_utf8_grounding"
+        ],
+        "failure_reasons": [
+          "phase4_utf8_grounding:reg_p4_utf8_compositional:utf8_compositional_replay"
+        ],
+        "kind": "utf8_construction",
+        "notes": "injected_poison_conflicting_utf8_passive_role_swap",
+        "offending_case_ids": [
+          "reg_p4_utf8_compositional"
+        ],
+        "phase_index": 5,
+        "quarantine_id": "quarantine_0003",
+        "restored_sha256": "8b9afbeac62c2c5fa6f1d12df940e7e1ad7f8231d372127008cb0e1b42681d89",
+        "restored_version": 1,
+        "skill_id": "cx_move_0014"
+      },
+      "quarantined": true,
+      "replay_after_resolution": {
+        "failed_domains": [],
+        "failure_reasons": [],
+        "offending_case_ids": [],
+        "passed": true,
+        "per_domain_pass_rate": {
+          "domain2_arcane": 1.0,
+          "domain3_logistics": 1.0,
+          "domain4_biolab": 1.0,
+          "phase1_relational": 1.0,
+          "phase2_math_and_lists": 1.0,
+          "phase3_code_and_ast": 1.0,
+          "phase4_utf8_grounding": 1.0
+        },
+        "total_cases_checked": 32,
+        "total_failures": 0
+      },
+      "replay_on_candidate": {
+        "failed_domains": [
+          "phase4_utf8_grounding"
+        ],
+        "failure_reasons": [
+          "phase4_utf8_grounding:reg_p4_utf8_compositional:utf8_compositional_replay"
+        ],
+        "offending_case_ids": [
+          "reg_p4_utf8_compositional"
+        ],
+        "passed": false,
+        "per_domain_pass_rate": {
+          "domain2_arcane": 1.0,
+          "domain3_logistics": 1.0,
+          "domain4_biolab": 1.0,
+          "phase1_relational": 1.0,
+          "phase2_math_and_lists": 1.0,
+          "phase3_code_and_ast": 1.0,
+          "phase4_utf8_grounding": 0.0
+        },
+        "total_cases_checked": 32,
+        "total_failures": 1
+      },
+      "rolled_back": true,
+      "skill_id": "cx_move_0014"
+    }
+  },
+  "retention_matrix": {
+    "phase_1": {
+      "mirror_continual_kb": {
+        "phase1_relational": 1.0
+      },
+      "naive_overwrite_no_replay": {
+        "phase1_relational": 1.0
+      },
+      "small_cpu_neural_continual_ref": {
+        "phase1_relational": 0.78125
+      }
+    },
+    "phase_2": {
+      "mirror_continual_kb": {
+        "phase1_relational": 1.0,
+        "phase2_math_and_lists": 1.0
+      },
+      "naive_overwrite_no_replay": {
+        "phase1_relational": 0.0,
+        "phase2_math_and_lists": 1.0
+      },
+      "small_cpu_neural_continual_ref": {
+        "phase1_relational": 0.5,
+        "phase2_math_and_lists": 1.0
+      }
+    },
+    "phase_3": {
+      "mirror_continual_kb": {
+        "phase1_relational": 1.0,
+        "phase2_math_and_lists": 1.0,
+        "phase3_code_and_ast": 0.9772727272727273
+      },
+      "naive_overwrite_no_replay": {
+        "phase1_relational": 0.0,
+        "phase2_math_and_lists": 0.0,
+        "phase3_code_and_ast": 0.9772727272727273
+      },
+      "small_cpu_neural_continual_ref": {
+        "phase1_relational": 0.375,
+        "phase2_math_and_lists": 1.0,
+        "phase3_code_and_ast": 1.0
+      }
+    },
+    "phase_4": {
+      "mirror_continual_kb": {
+        "phase1_relational": 1.0,
+        "phase2_math_and_lists": 1.0,
+        "phase3_code_and_ast": 0.9772727272727273,
+        "phase4_utf8_grounding": 1.0
+      },
+      "naive_overwrite_no_replay": {
+        "phase1_relational": 0.0,
+        "phase2_math_and_lists": 0.0,
+        "phase3_code_and_ast": 0.0,
+        "phase4_utf8_grounding": 1.0
+      },
+      "small_cpu_neural_continual_ref": {
+        "phase1_relational": 0.0,
+        "phase2_math_and_lists": 0.3333333333333333,
+        "phase3_code_and_ast": 0.0,
+        "phase4_utf8_grounding": 0.85
+      }
+    },
+    "phase_5": {
+      "mirror_continual_kb": {
+        "phase1_relational": 1.0,
+        "phase2_math_and_lists": 1.0,
+        "phase3_code_and_ast": 0.9772727272727273,
+        "phase4_utf8_grounding": 1.0
+      },
+      "naive_overwrite_no_replay": {
+        "phase1_relational": 0.21428571428571427,
+        "phase2_math_and_lists": 0.0,
+        "phase3_code_and_ast": 0.0,
+        "phase4_utf8_grounding": 0.31666666666666665
+      },
+      "small_cpu_neural_continual_ref": {
+        "phase1_relational": 0.125,
+        "phase2_math_and_lists": 0.0,
+        "phase3_code_and_ast": 0.0,
+        "phase4_utf8_grounding": 0.26666666666666666
+      }
+    }
+  },
+  "seed": 303,
+  "total_seed_seconds": 5.4415
+}

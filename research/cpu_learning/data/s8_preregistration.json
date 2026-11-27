@@ -1,0 +1,73 @@
+{
+  "cross_domain_schema_version": "s8-cross-domain-v1",
+  "domain2_arcane_sha256": "dfe702c79c4fe2d7e4d4ea4c040145dff90d2b7ef1c667575bdea6d8a07fdd6a",
+  "domain4_biolab_version": "s8-domain4-biolab-v1",
+  "domain5_reactor_version": "s8-domain5-reactor-local-v1",
+  "gates": {
+    "cpu_seconds_per_seed_max": 15.0,
+    "cross_domain_d3_and_d4_2shot_ci95_low_min": 0.95,
+    "cross_domain_lift_over_cold_start_ci95_low_min": 0.2,
+    "library_to_raw_bits_ratio_max": 0.25,
+    "mirror_vs_baselines_retention_margin_min": 0.25,
+    "phase_1_to_4_retention_ci95_low_min": 0.95,
+    "poisoned_update_rollback_rate_ci95_low_min": 0.999,
+    "rewritten_prior_skills_max": 0,
+    "scoped_negative_transfer_rate_max": 0.0
+  },
+  "phases": [
+    "phase1_relational",
+    "phase2_math_and_lists",
+    "phase3_code_and_ast",
+    "phase4_utf8_grounding",
+    "phase5_novel_domains_and_poison_tests"
+  ],
+  "replay_manager_schema_version": "s8-replay-manager-v1",
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s8_experiments",
+  "schema_version": "s8-preregistration-v1",
+  "seed_manifests": {
+    "101": {
+      "d4_biolab_ood_count": 44,
+      "d4_biolab_train_count": 4,
+      "d4_biolab_train_sha256": "8e318269057b8377dd7e93754252f2a537074607365e9c9e39fd39a3c13ade47",
+      "d5_reactor_ood_count": 24,
+      "d5_reactor_train_count": 10
+    },
+    "202": {
+      "d4_biolab_ood_count": 44,
+      "d4_biolab_train_count": 4,
+      "d4_biolab_train_sha256": "5ab4775d194f8f1cb16067dcfb2fc083d0f4cfd606ad2769e1e771cfe57fef4c",
+      "d5_reactor_ood_count": 24,
+      "d5_reactor_train_count": 10
+    },
+    "303": {
+      "d4_biolab_ood_count": 44,
+      "d4_biolab_train_count": 4,
+      "d4_biolab_train_sha256": "9739a72e2c643bdd978bda991ae7c55fd24f663d78d280080d9b53ff89c53336",
+      "d5_reactor_ood_count": 24,
+      "d5_reactor_train_count": 10
+    },
+    "404": {
+      "d4_biolab_ood_count": 44,
+      "d4_biolab_train_count": 4,
+      "d4_biolab_train_sha256": "3a848f6aa1d26c9f26247ad4b5c8f008dff8f7667b6154c55dfa87b173745f8f",
+      "d5_reactor_ood_count": 24,
+      "d5_reactor_train_count": 10
+    },
+    "505": {
+      "d4_biolab_ood_count": 44,
+      "d4_biolab_train_count": 4,
+      "d4_biolab_train_sha256": "c5f1ef4b054505c58e458114e7e3461938eab475005983aa43ecf79b2310f6c5",
+      "d5_reactor_ood_count": 24,
+      "d5_reactor_train_count": 10
+    }
+  },
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S8",
+  "title": "Stage S8 \u2014 Continual Learning, Regression Replay & Cross-Domain Transfer"
+}

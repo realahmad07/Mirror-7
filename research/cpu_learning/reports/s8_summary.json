@@ -1,0 +1,808 @@
+{
+  "ast_isolation_audit": {
+    "comparison_only_neural_isolated": true,
+    "hardcode_violations": [],
+    "import_violations": [],
+    "neural_leak_violations": [],
+    "passed": true,
+    "scanned_continual_modules": 3,
+    "scanned_learner_modules": 34,
+    "scanned_non_evaluator_modules": 57
+  },
+  "cross_domain_transfer": {
+    "domain3_logistics": {
+      "accuracy_lift_over_cold_start": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.363636,
+        "ci95_low": 0.363636,
+        "max": 0.363636,
+        "mean": 0.363636,
+        "min": 0.363636,
+        "n": 5,
+        "per_seed": [
+          0.363636,
+          0.363636,
+          0.363636,
+          0.363636,
+          0.363636
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "cold_start_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.636364,
+        "ci95_low": 0.636364,
+        "max": 0.636364,
+        "mean": 0.636364,
+        "min": 0.636364,
+        "n": 5,
+        "per_seed": [
+          0.636364,
+          0.636364,
+          0.636364,
+          0.636364,
+          0.636364
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "marginal_bit_savings_mean": 1872.0,
+      "marginal_bits_cold_start_mean": 3552.0,
+      "marginal_bits_with_transfer_mean": 1680.0,
+      "mirror_transfer_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "negative_transfer_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "ungated_forced_ablation_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "ungated_negative_transfer_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "domain4_biolab": {
+      "accuracy_lift_over_cold_start": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.363636,
+        "ci95_low": 0.363636,
+        "max": 0.363636,
+        "mean": 0.363636,
+        "min": 0.363636,
+        "n": 5,
+        "per_seed": [
+          0.363636,
+          0.363636,
+          0.363636,
+          0.363636,
+          0.363636
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "cold_start_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.636364,
+        "ci95_low": 0.636364,
+        "max": 0.636364,
+        "mean": 0.636364,
+        "min": 0.636364,
+        "n": 5,
+        "per_seed": [
+          0.636364,
+          0.636364,
+          0.636364,
+          0.636364,
+          0.636364
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "marginal_bit_savings_mean": 1872.0,
+      "marginal_bits_cold_start_mean": 3720.0,
+      "marginal_bits_with_transfer_mean": 1848.0,
+      "mirror_transfer_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "negative_transfer_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "ungated_forced_ablation_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "ungated_negative_transfer_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "domain5_incompatible_reactor": {
+      "accuracy_lift_over_cold_start": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "cold_start_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "marginal_bit_savings_mean": 0.0,
+      "marginal_bits_cold_start_mean": 2328.0,
+      "marginal_bits_with_transfer_mean": 2328.0,
+      "mirror_transfer_exact_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "negative_transfer_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "ungated_forced_ablation_acc": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.5,
+        "ci95_low": 0.5,
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5,
+        "n": 5,
+        "per_seed": [
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "ungated_negative_transfer_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.5,
+        "ci95_low": 0.5,
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5,
+        "n": 5,
+        "per_seed": [
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "domain_local_schemas_rejected": 3,
+    "scoped_rejection_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "source_domain1_bits_saved_mean": 1080.0,
+    "source_domain2_bits_saved_mean": 1904.0,
+    "universal_concepts_promoted": 2
+  },
+  "environment": {
+    "cpu_count": 8,
+    "git_branch": "research/cpu-native-learning-s0",
+    "git_commit": "c156a4fc38178bb9fc24031f4b938cc9a2cabba8",
+    "machine": "AMD64",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "python_version": "3.14.4",
+    "pythonhashseed": "unset",
+    "ram_total_gb": 15.77
+  },
+  "final_domain_retention": {
+    "mirror_continual_kb": {
+      "phase1_relational": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "phase2_math_and_lists": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "phase3_code_and_ast": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.977273,
+        "ci95_low": 0.977273,
+        "max": 0.977273,
+        "mean": 0.977273,
+        "min": 0.977273,
+        "n": 5,
+        "per_seed": [
+          0.977273,
+          0.977273,
+          0.977273,
+          0.977273,
+          0.977273
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "phase4_utf8_grounding": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "naive_overwrite_no_replay": {
+      "phase1_relational": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.214286,
+        "ci95_low": 0.214286,
+        "max": 0.214286,
+        "mean": 0.214286,
+        "min": 0.214286,
+        "n": 5,
+        "per_seed": [
+          0.214286,
+          0.214286,
+          0.214286,
+          0.214286,
+          0.214286
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "phase2_math_and_lists": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "phase3_code_and_ast": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "phase4_utf8_grounding": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.316667,
+        "ci95_low": 0.316667,
+        "max": 0.316667,
+        "mean": 0.316667,
+        "min": 0.316667,
+        "n": 5,
+        "per_seed": [
+          0.316667,
+          0.316667,
+          0.316667,
+          0.316667,
+          0.316667
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "small_cpu_neural_continual_ref": {
+      "phase1_relational": {
+        "ci95_half": 0.017353,
+        "ci95_high": 0.136103,
+        "ci95_low": 0.101397,
+        "max": 0.125,
+        "mean": 0.11875,
+        "min": 0.09375,
+        "n": 5,
+        "per_seed": [
+          0.125,
+          0.125,
+          0.125,
+          0.125,
+          0.09375
+        ],
+        "se": 0.00625,
+        "std": 0.013975
+      },
+      "phase2_math_and_lists": {
+        "ci95_half": 0.092548,
+        "ci95_high": 0.125882,
+        "ci95_low": -0.059215,
+        "max": 0.166667,
+        "mean": 0.033333,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.166667,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.033333,
+        "std": 0.074536
+      },
+      "phase3_code_and_ast": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "phase4_utf8_grounding": {
+        "ci95_half": 0.063109,
+        "ci95_high": 0.27311,
+        "ci95_low": 0.146891,
+        "max": 0.266667,
+        "mean": 0.21,
+        "min": 0.15,
+        "n": 5,
+        "per_seed": [
+          0.216667,
+          0.15,
+          0.266667,
+          0.25,
+          0.166667
+        ],
+        "se": 0.02273,
+        "std": 0.050827
+      }
+    }
+  },
+  "final_library_growth_mean": {
+    "active_library_bits": 29960.0,
+    "active_skill_count": 64.0,
+    "cumulative_compressed_training_bits": 129569.6,
+    "cumulative_raw_training_bits": 1657507.2,
+    "episode_ledger_bits": 5619.2,
+    "library_to_compressed_train_ratio": 0.231228,
+    "library_to_raw_ratio": 0.018075,
+    "phase_index": 5,
+    "phase_name": "Phase 5: Cross-Domain & Poison Rollbacks"
+  },
+  "final_mean_retention": {
+    "mirror_continual_kb": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.994318,
+      "ci95_low": 0.994318,
+      "max": 0.994318,
+      "mean": 0.994318,
+      "min": 0.994318,
+      "n": 5,
+      "per_seed": [
+        0.994318,
+        0.994318,
+        0.994318,
+        0.994318,
+        0.994318
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "naive_overwrite_no_replay": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.132738,
+      "ci95_low": 0.132738,
+      "max": 0.132738,
+      "mean": 0.132738,
+      "min": 0.132738,
+      "n": 5,
+      "per_seed": [
+        0.132738,
+        0.132738,
+        0.132738,
+        0.132738,
+        0.132738
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "small_cpu_neural_continual_ref": {
+      "ci95_half": 0.020898,
+      "ci95_high": 0.111419,
+      "ci95_low": 0.069623,
+      "max": 0.110417,
+      "mean": 0.090521,
+      "min": 0.065104,
+      "n": 5,
+      "per_seed": [
+        0.085417,
+        0.110417,
+        0.097917,
+        0.09375,
+        0.065104
+      ],
+      "se": 0.007527,
+      "std": 0.01683
+    }
+  },
+  "library_growth_timeline_mean": [
+    {
+      "active_library_bits": 4992.0,
+      "active_skill_count": 4.0,
+      "cumulative_compressed_training_bits": 52446.4,
+      "cumulative_raw_training_bits": 704316.8,
+      "episode_ledger_bits": 4579.2,
+      "library_to_compressed_train_ratio": 0.095186,
+      "library_to_raw_ratio": 0.007088,
+      "phase_index": 1,
+      "phase_name": "Phase 1: Relational World"
+    },
+    {
+      "active_library_bits": 8344.0,
+      "active_skill_count": 12.0,
+      "cumulative_compressed_training_bits": 75041.6,
+      "cumulative_raw_training_bits": 1045526.4,
+      "episode_ledger_bits": 4886.4,
+      "library_to_compressed_train_ratio": 0.111195,
+      "library_to_raw_ratio": 0.007981,
+      "phase_index": 2,
+      "phase_name": "Phase 2: Mathematics & Lists"
+    },
+    {
+      "active_library_bits": 18360.0,
+      "active_skill_count": 35.0,
+      "cumulative_compressed_training_bits": 87179.2,
+      "cumulative_raw_training_bits": 1085718.4,
+      "episode_ledger_bits": 5030.4,
+      "library_to_compressed_train_ratio": 0.210605,
+      "library_to_raw_ratio": 0.016911,
+      "phase_index": 3,
+      "phase_name": "Phase 3: Python AST & Code"
+    },
+    {
+      "active_library_bits": 24872.0,
+      "active_skill_count": 58.0,
+      "cumulative_compressed_training_bits": 98852.8,
+      "cumulative_raw_training_bits": 1284419.2,
+      "episode_ledger_bits": 5240.0,
+      "library_to_compressed_train_ratio": 0.251609,
+      "library_to_raw_ratio": 0.019364,
+      "phase_index": 4,
+      "phase_name": "Phase 4: Raw UTF-8 Grounding"
+    },
+    {
+      "active_library_bits": 29960.0,
+      "active_skill_count": 64.0,
+      "cumulative_compressed_training_bits": 129569.6,
+      "cumulative_raw_training_bits": 1657507.2,
+      "episode_ledger_bits": 5619.2,
+      "library_to_compressed_train_ratio": 0.231228,
+      "library_to_raw_ratio": 0.018075,
+      "phase_index": 5,
+      "phase_name": "Phase 5: Cross-Domain & Poison Rollbacks"
+    }
+  ],
+  "per_seed_seconds": {
+    "ci95_half": 0.281792,
+    "ci95_high": 5.770272,
+    "ci95_low": 5.206688,
+    "max": 5.747,
+    "mean": 5.48848,
+    "min": 5.1581,
+    "n": 5,
+    "per_seed": [
+      5.6498,
+      5.1581,
+      5.4415,
+      5.747,
+      5.446
+    ],
+    "se": 0.101494,
+    "std": 0.226947
+  },
+  "poison_rollback_summary": {
+    "caught_and_rolled_back_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "quarantine_count_per_seed": 3
+  },
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s8_experiments",
+  "s8_gate": {
+    "checks": {
+      "ast_isolation_and_zero_hardcoded_literals": true,
+      "baselines_genuinely_learn_each_phase_before_forgetting": true,
+      "comparison_only_neural_continual_ref_isolated": true,
+      "cpu_budget_within_15s_per_seed": true,
+      "cross_domain_source_bit_savings_positive": true,
+      "domain3_logistics_2shot_transfer_ci95_low_ge_095_and_lift_ge_20pp": true,
+      "domain4_biolab_2shot_transfer_ci95_low_ge_095_and_lift_ge_20pp": true,
+      "mirror_strictly_beats_naive_overwrite_ci95_by_25pp": true,
+      "mirror_strictly_beats_neural_continual_ref_ci95_by_25pp": true,
+      "phase1_relational_retention_ci95_low_ge_095": true,
+      "phase2_math_and_lists_retention_ci95_low_ge_095": true,
+      "phase3_code_and_ast_retention_ci95_low_ge_095": true,
+      "phase4_utf8_grounding_retention_ci95_low_ge_095": true,
+      "poisoned_updates_100pct_caught_quarantined_and_rolled_back": true,
+      "prior_s0_through_s7_manifests_intact": true,
+      "s8_manifest_verified": true,
+      "scoped_domain_local_rejection_100pct_and_zero_negative_transfer": true,
+      "sublinear_library_growth_verified": true,
+      "zero_forgetting_and_zero_rewritten_prior_skills": true
+    },
+    "passed": true
+  },
+  "schema_version": "s8-summary-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S8",
+  "total_elapsed_seconds": 31.8067
+}
