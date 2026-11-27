@@ -1,0 +1,66 @@
+{
+  "anchor_domains": [
+    "anchor_arcane_d2",
+    "anchor_code_ast"
+  ],
+  "closed_loop_steps": [
+    "L0_observe",
+    "L1_frame",
+    "L2_difference",
+    "L3_shard_propose",
+    "L4_itl_generalise",
+    "L5_contrast",
+    "L6_independent_verify",
+    "L6_correct",
+    "L6_compose",
+    "L7_rdc_mdl_consolidate",
+    "L7_continual_regression_replay"
+  ],
+  "controllers_compared": [
+    "autonomous_meta_controller",
+    "random_curriculum_controller",
+    "passive_stream_controller"
+  ],
+  "curriculum_schema_version": "s9-self-curriculum-v1",
+  "frontiers": [
+    "s9_relational_world",
+    "s9_utf8_grounding",
+    "s9_functional_math_lists"
+  ],
+  "gate_thresholds": {
+    "anchor_retention_ci95_low_min": 0.95,
+    "collateral_rate_ci95_high_max": 0.02,
+    "cpu_budget_seconds_per_seed_max": 15.0,
+    "functional_math_list_final_acc_ci95_low_min": 0.95,
+    "interactive_p95_ms_max": 5.0,
+    "min_accuracy_gain_over_passive_ci95_low": 0.15,
+    "min_accuracy_gain_over_random_ci95_low": 0.15,
+    "post_freeze_env_queries_must_be": 0,
+    "relational_depth4_depth6_ci95_low_min": 0.9,
+    "relational_final_acc_ci95_low_min": 0.95,
+    "self_certified_promotions_must_be": 0,
+    "starved_interactive_must_be": 0,
+    "utf8_grounding_final_acc_ci95_low_min": 0.95
+  },
+  "meta_controller_schema_version": "s9-autonomous-meta-controller-v1",
+  "pool_disjointness_verified": true,
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s9_experiments",
+  "schema_version": "s9-preregistration-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "shared_budget_config": {
+    "autonomous_max_ticks": 64,
+    "interactive_queries_per_seed": 120,
+    "interactive_sla_ms": 5.0,
+    "learning_slice_ms": 120.0,
+    "max_active_env_queries": 42,
+    "max_total_cpu_ms": 10000.0
+  },
+  "stage": "S9",
+  "title": "Autonomous Learning Controller, Anomaly-Triggered Self-Curriculum & Non-Starvation Tick Arbitration"
+}

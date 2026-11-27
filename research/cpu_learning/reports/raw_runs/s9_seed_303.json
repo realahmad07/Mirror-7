@@ -1,0 +1,228 @@
+{
+  "cold_start_evaluation": {
+    "anchor_arcane_accuracy": 1.0,
+    "anchor_ast_accuracy": 1.0,
+    "anchor_overall_retention": 1.0,
+    "functional_math_list_accuracy": 0.333333,
+    "overall_frontier_accuracy": 0.332643,
+    "relational_accuracy": 0.664596,
+    "relational_collateral_rate": 0.032215,
+    "relational_depth4_accuracy": 0.636364,
+    "relational_depth6_accuracy": 0.454545,
+    "rewritten_anchor_hashes": 0,
+    "utf8_grounding_accuracy": 0.0
+  },
+  "controllers": {
+    "autonomous_meta_controller": {
+      "budget": {
+        "cpu_ms_remaining": 9441.4988,
+        "cpu_ms_spent": 558.5012,
+        "exhausted": false,
+        "learning_slice_ms": 120.0,
+        "max_env_queries": 42,
+        "max_total_cpu_ms": 10000.0,
+        "min_info_gain_threshold": 0.0001,
+        "queries_remaining": 11,
+        "queries_spent": 31,
+        "slices_executed": 64
+      },
+      "consolidation_accepted": [
+        {
+          "accepted": true,
+          "canonical_action_id": "move",
+          "duplicate_action_id": "move_dup_alias",
+          "equivalence_report": {
+            "card_a_id": "op_move_v247",
+            "card_b_id": "op_move_dup_alias_v1",
+            "divergences": 0,
+            "equivalent": true,
+            "probes_checked": 4,
+            "reason": "behaviorally_equivalent"
+          },
+          "j_after": 4424.0,
+          "j_before": 4712.0,
+          "library_bits_after": 4424,
+          "library_bits_before": 4712,
+          "reason": "consolidated_behaviorally_equivalent_mdl_improved",
+          "regression_failures_after": 0,
+          "retired_version": 1
+        }
+      ],
+      "evaluation": {
+        "anchor_arcane_accuracy": 1.0,
+        "anchor_ast_accuracy": 1.0,
+        "anchor_overall_retention": 1.0,
+        "functional_math_list_accuracy": 1.0,
+        "overall_frontier_accuracy": 0.995859,
+        "relational_accuracy": 0.987578,
+        "relational_collateral_rate": 0.000801,
+        "relational_depth4_accuracy": 1.0,
+        "relational_depth6_accuracy": 1.0,
+        "rewritten_anchor_hashes": 0,
+        "utf8_grounding_accuracy": 1.0
+      },
+      "idle_baseline_latency": {
+        "dropped_interactive_count": 0,
+        "exec_p95_ms": 1.1678,
+        "interactive_accuracy": 1.0,
+        "max_ms": 2.2242,
+        "mean_ms": 0.4532,
+        "p50_ms": 0.3377,
+        "p95_ms": 1.1678,
+        "queries_served": 120,
+        "sla_ms": 5.0,
+        "starved_interactive_count": 0
+      },
+      "interactive_latency": {
+        "dropped_interactive_count": 0,
+        "exec_p95_ms": 1.1302,
+        "interactive_accuracy": 1.0,
+        "max_ms": 1.815,
+        "mean_ms": 0.4363,
+        "p50_ms": 0.3387,
+        "p95_ms": 1.1348,
+        "queries_served": 120,
+        "sla_ms": 5.0,
+        "starved_interactive_count": 0
+      },
+      "mdl_compression": {
+        "active_library_bits": 17256,
+        "cumulative_raw_training_bits": 481424,
+        "library_to_raw_ratio": 0.035844
+      },
+      "observed_actions": [
+        "consolidate_mdl",
+        "contrast_probe",
+        "dream_refutation",
+        "idle_noop",
+        "induce_or_repair",
+        "max_disagreement_query",
+        "regression_replay"
+      ],
+      "observed_anomalies": [
+        "epistemic_abstention",
+        "hypothesis_ambiguity",
+        "library_bloat_high",
+        "prediction_mismatch",
+        "unresolved_guard_uncertainty"
+      ],
+      "observed_loop_steps": [
+        "L0_observe",
+        "L1_frame",
+        "L2_difference",
+        "L3_shard_propose",
+        "L4_itl_generalise",
+        "L5_contrast",
+        "L6_independent_verify",
+        "L6_correct",
+        "L6_compose",
+        "L7_rdc_mdl_consolidate",
+        "L7_continual_regression_replay"
+      ],
+      "quarantine_audit": {
+        "faulty_candidate_quarantined": true,
+        "post_quarantine_replay_passed": true,
+        "quarantine_count": 1
+      },
+      "queries_by_frontier": {
+        "frontier_math_lists": 7,
+        "frontier_relational": 11,
+        "frontier_utf8_grounding": 13
+      },
+      "queries_to_095_target": 29,
+      "safety_invariants": {
+        "all_slices_within_budget": true,
+        "post_freeze_env_queries": 0,
+        "post_freeze_env_raised": true,
+        "post_freeze_tick_raised": true,
+        "self_certified_promotions": 0,
+        "unverified_promotion_rejected": true
+      },
+      "subsystem_cpu_ms": {
+        "consolidation_ms": 6.1752,
+        "induction_ms": 59.3255,
+        "interactive_slice_ms": 53.8328,
+        "query_selection_ms": 311.77,
+        "replay_ms": 163.2521,
+        "retrieval_ms": 11.8081,
+        "total_learning_slice_ms": 558.5012,
+        "verification_ms": 5.5704
+      }
+    },
+    "passive_stream_controller": {
+      "budget": {
+        "cpu_ms_remaining": 9929.7944,
+        "cpu_ms_spent": 70.2056,
+        "exhausted": false,
+        "learning_slice_ms": 120.0,
+        "max_env_queries": 42,
+        "max_total_cpu_ms": 10000.0,
+        "min_info_gain_threshold": 0.0001,
+        "queries_remaining": 42,
+        "queries_spent": 0,
+        "slices_executed": 1
+      },
+      "evaluation": {
+        "anchor_arcane_accuracy": 1.0,
+        "anchor_ast_accuracy": 1.0,
+        "anchor_overall_retention": 1.0,
+        "functional_math_list_accuracy": 0.333333,
+        "overall_frontier_accuracy": 0.355418,
+        "relational_accuracy": 0.732919,
+        "relational_collateral_rate": 0.022487,
+        "relational_depth4_accuracy": 0.818182,
+        "relational_depth6_accuracy": 0.454545,
+        "rewritten_anchor_hashes": 0,
+        "utf8_grounding_accuracy": 0.0
+      },
+      "freeze_enforced": true,
+      "run_info": {
+        "controller": "passive_stream_controller",
+        "cpu_ms_spent": 70.2056,
+        "promoted_skills": 13,
+        "queries_spent": 0
+      }
+    },
+    "random_curriculum_controller": {
+      "budget": {
+        "cpu_ms_remaining": 9828.1349,
+        "cpu_ms_spent": 171.8651,
+        "exhausted": true,
+        "learning_slice_ms": 120.0,
+        "max_env_queries": 42,
+        "max_total_cpu_ms": 10000.0,
+        "min_info_gain_threshold": 0.0001,
+        "queries_remaining": 0,
+        "queries_spent": 42,
+        "slices_executed": 43
+      },
+      "evaluation": {
+        "anchor_arcane_accuracy": 1.0,
+        "anchor_ast_accuracy": 1.0,
+        "anchor_overall_retention": 1.0,
+        "functional_math_list_accuracy": 0.5,
+        "overall_frontier_accuracy": 0.458592,
+        "relational_accuracy": 0.875776,
+        "relational_collateral_rate": 0.007157,
+        "relational_depth4_accuracy": 0.818182,
+        "relational_depth6_accuracy": 0.818182,
+        "rewritten_anchor_hashes": 0,
+        "utf8_grounding_accuracy": 0.0
+      },
+      "freeze_enforced": true,
+      "run_info": {
+        "controller": "random_curriculum_controller",
+        "cpu_ms_spent": 171.8651,
+        "queries_spent": 42,
+        "queries_to_target": null
+      }
+    }
+  },
+  "lifts": {
+    "over_cold_start": 0.663216,
+    "over_passive_stream": 0.640441,
+    "over_random_curriculum": 0.537267
+  },
+  "seed": 303,
+  "total_seed_seconds": 4.2303
+}

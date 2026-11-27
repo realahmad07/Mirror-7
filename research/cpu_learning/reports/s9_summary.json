@@ -1,0 +1,782 @@
+{
+  "ast_isolation_audit": {
+    "comparison_leak_violations": [],
+    "hardcode_violations": [],
+    "import_violations": [],
+    "passed": true,
+    "py312_violations": [],
+    "scanned_controller_modules": 3,
+    "scanned_learner_modules": 37,
+    "scanned_non_evaluator_modules": 62
+  },
+  "cold_start_metrics": {
+    "anchor_overall_retention": {
+      "ci95_half": 0.0,
+      "ci95_high": 1.0,
+      "ci95_low": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "min": 1.0,
+      "n": 5,
+      "per_seed": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "functional_math_list_accuracy": {
+      "ci95_half": 0.036583,
+      "ci95_high": 0.390749,
+      "ci95_low": 0.317583,
+      "max": 0.395833,
+      "mean": 0.354166,
+      "min": 0.333333,
+      "n": 5,
+      "per_seed": [
+        0.333333,
+        0.375,
+        0.333333,
+        0.333333,
+        0.395833
+      ],
+      "se": 0.013176,
+      "std": 0.029463
+    },
+    "overall_frontier_accuracy": {
+      "ci95_half": 0.012195,
+      "ci95_high": 0.351782,
+      "ci95_low": 0.327393,
+      "max": 0.353477,
+      "mean": 0.339588,
+      "min": 0.332643,
+      "n": 5,
+      "per_seed": [
+        0.332643,
+        0.346532,
+        0.332643,
+        0.332643,
+        0.353477
+      ],
+      "se": 0.004392,
+      "std": 0.009821
+    },
+    "relational_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.664596,
+      "ci95_low": 0.664596,
+      "max": 0.664596,
+      "mean": 0.664596,
+      "min": 0.664596,
+      "n": 5,
+      "per_seed": [
+        0.664596,
+        0.664596,
+        0.664596,
+        0.664596,
+        0.664596
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "relational_collateral_rate": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.032215,
+      "ci95_low": 0.032215,
+      "max": 0.032215,
+      "mean": 0.032215,
+      "min": 0.032215,
+      "n": 5,
+      "per_seed": [
+        0.032215,
+        0.032215,
+        0.032215,
+        0.032215,
+        0.032215
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "relational_depth4_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.636364,
+      "ci95_low": 0.636364,
+      "max": 0.636364,
+      "mean": 0.636364,
+      "min": 0.636364,
+      "n": 5,
+      "per_seed": [
+        0.636364,
+        0.636364,
+        0.636364,
+        0.636364,
+        0.636364
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "relational_depth6_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.454545,
+      "ci95_low": 0.454545,
+      "max": 0.454545,
+      "mean": 0.454545,
+      "min": 0.454545,
+      "n": 5,
+      "per_seed": [
+        0.454545,
+        0.454545,
+        0.454545,
+        0.454545,
+        0.454545
+      ],
+      "se": 0.0,
+      "std": 0.0
+    },
+    "utf8_grounding_accuracy": {
+      "ci95_half": 0.0,
+      "ci95_high": 0.0,
+      "ci95_low": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "min": 0.0,
+      "n": 5,
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "se": 0.0,
+      "std": 0.0
+    }
+  },
+  "controller_metrics": {
+    "autonomous_meta_controller": {
+      "anchor_overall_retention": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "functional_math_list_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "overall_frontier_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.995859,
+        "ci95_low": 0.995859,
+        "max": 0.995859,
+        "mean": 0.995859,
+        "min": 0.995859,
+        "n": 5,
+        "per_seed": [
+          0.995859,
+          0.995859,
+          0.995859,
+          0.995859,
+          0.995859
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "relational_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.987578,
+        "ci95_low": 0.987578,
+        "max": 0.987578,
+        "mean": 0.987578,
+        "min": 0.987578,
+        "n": 5,
+        "per_seed": [
+          0.987578,
+          0.987578,
+          0.987578,
+          0.987578,
+          0.987578
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "relational_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.000801,
+        "ci95_low": 0.000801,
+        "max": 0.000801,
+        "mean": 0.000801,
+        "min": 0.000801,
+        "n": 5,
+        "per_seed": [
+          0.000801,
+          0.000801,
+          0.000801,
+          0.000801,
+          0.000801
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "relational_depth4_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "relational_depth6_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "utf8_grounding_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "passive_stream_controller": {
+      "anchor_overall_retention": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "functional_math_list_accuracy": {
+        "ci95_half": 0.036583,
+        "ci95_high": 0.390749,
+        "ci95_low": 0.317583,
+        "max": 0.395833,
+        "mean": 0.354166,
+        "min": 0.333333,
+        "n": 5,
+        "per_seed": [
+          0.333333,
+          0.375,
+          0.333333,
+          0.333333,
+          0.395833
+        ],
+        "se": 0.013176,
+        "std": 0.029463
+      },
+      "overall_frontier_accuracy": {
+        "ci95_half": 0.012194,
+        "ci95_high": 0.374556,
+        "ci95_low": 0.350168,
+        "max": 0.376251,
+        "mean": 0.362362,
+        "min": 0.355418,
+        "n": 5,
+        "per_seed": [
+          0.355418,
+          0.369306,
+          0.355418,
+          0.355418,
+          0.376251
+        ],
+        "se": 0.004392,
+        "std": 0.009821
+      },
+      "relational_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.732919,
+        "ci95_low": 0.732919,
+        "max": 0.732919,
+        "mean": 0.732919,
+        "min": 0.732919,
+        "n": 5,
+        "per_seed": [
+          0.732919,
+          0.732919,
+          0.732919,
+          0.732919,
+          0.732919
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "relational_collateral_rate": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.022487,
+        "ci95_low": 0.022487,
+        "max": 0.022487,
+        "mean": 0.022487,
+        "min": 0.022487,
+        "n": 5,
+        "per_seed": [
+          0.022487,
+          0.022487,
+          0.022487,
+          0.022487,
+          0.022487
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "relational_depth4_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.818182,
+        "ci95_low": 0.818182,
+        "max": 0.818182,
+        "mean": 0.818182,
+        "min": 0.818182,
+        "n": 5,
+        "per_seed": [
+          0.818182,
+          0.818182,
+          0.818182,
+          0.818182,
+          0.818182
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "relational_depth6_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.454545,
+        "ci95_low": 0.454545,
+        "max": 0.454545,
+        "mean": 0.454545,
+        "min": 0.454545,
+        "n": 5,
+        "per_seed": [
+          0.454545,
+          0.454545,
+          0.454545,
+          0.454545,
+          0.454545
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "utf8_grounding_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    },
+    "random_curriculum_controller": {
+      "anchor_overall_retention": {
+        "ci95_half": 0.0,
+        "ci95_high": 1.0,
+        "ci95_low": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "n": 5,
+        "per_seed": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "functional_math_list_accuracy": {
+        "ci95_half": 0.085011,
+        "ci95_high": 0.472511,
+        "ci95_low": 0.302489,
+        "max": 0.5,
+        "mean": 0.3875,
+        "min": 0.333333,
+        "n": 5,
+        "per_seed": [
+          0.333333,
+          0.375,
+          0.5,
+          0.333333,
+          0.395833
+        ],
+        "se": 0.030619,
+        "std": 0.068465
+      },
+      "overall_frontier_accuracy": {
+        "ci95_half": 0.051201,
+        "ci95_high": 0.43751,
+        "ci95_low": 0.335109,
+        "max": 0.458592,
+        "mean": 0.386309,
+        "min": 0.357488,
+        "n": 5,
+        "per_seed": [
+          0.365769,
+          0.369306,
+          0.458592,
+          0.357488,
+          0.380392
+        ],
+        "se": 0.018441,
+        "std": 0.041236
+      },
+      "relational_accuracy": {
+        "ci95_half": 0.073852,
+        "ci95_high": 0.84528,
+        "ci95_low": 0.697576,
+        "max": 0.875776,
+        "mean": 0.771428,
+        "min": 0.732919,
+        "n": 5,
+        "per_seed": [
+          0.763975,
+          0.732919,
+          0.875776,
+          0.73913,
+          0.745342
+        ],
+        "se": 0.026599,
+        "std": 0.059478
+      },
+      "relational_collateral_rate": {
+        "ci95_half": 0.008187,
+        "ci95_high": 0.027088,
+        "ci95_low": 0.010714,
+        "max": 0.022487,
+        "mean": 0.018901,
+        "min": 0.007157,
+        "n": 5,
+        "per_seed": [
+          0.02085,
+          0.022487,
+          0.007157,
+          0.022166,
+          0.021846
+        ],
+        "se": 0.002949,
+        "std": 0.006594
+      },
+      "relational_depth4_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.818182,
+        "ci95_low": 0.818182,
+        "max": 0.818182,
+        "mean": 0.818182,
+        "min": 0.818182,
+        "n": 5,
+        "per_seed": [
+          0.818182,
+          0.818182,
+          0.818182,
+          0.818182,
+          0.818182
+        ],
+        "se": 0.0,
+        "std": 0.0
+      },
+      "relational_depth6_accuracy": {
+        "ci95_half": 0.201924,
+        "ci95_high": 0.729196,
+        "ci95_low": 0.325349,
+        "max": 0.818182,
+        "mean": 0.527272,
+        "min": 0.454545,
+        "n": 5,
+        "per_seed": [
+          0.454545,
+          0.454545,
+          0.818182,
+          0.454545,
+          0.454545
+        ],
+        "se": 0.072727,
+        "std": 0.162623
+      },
+      "utf8_grounding_accuracy": {
+        "ci95_half": 0.0,
+        "ci95_high": 0.0,
+        "ci95_low": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "n": 5,
+        "per_seed": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "se": 0.0,
+        "std": 0.0
+      }
+    }
+  },
+  "environment": {
+    "cpu_count": 8,
+    "git_branch": "research/cpu-native-learning-s0",
+    "git_commit": "5e1f97eb2930ffd9ca7cc7f547b257ae3433d5cd",
+    "machine": "AMD64",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "python_version": "3.14.4",
+    "pythonhashseed": "0",
+    "ram_total_gb": 15.77
+  },
+  "interactive_sla": {
+    "concurrent_p95_ms": {
+      "ci95_half": 0.461435,
+      "ci95_high": 1.851715,
+      "ci95_low": 0.928845,
+      "max": 1.9008,
+      "mean": 1.39028,
+      "min": 0.9573,
+      "n": 5,
+      "per_seed": [
+        1.587,
+        1.3715,
+        1.1348,
+        1.9008,
+        0.9573
+      ],
+      "se": 0.166196,
+      "std": 0.371626
+    },
+    "dropped_interactive_total": 0,
+    "idle_baseline_p95_ms": {
+      "ci95_half": 0.37591,
+      "ci95_high": 1.49181,
+      "ci95_low": 0.73999,
+      "max": 1.6196,
+      "mean": 1.1159,
+      "min": 0.8899,
+      "n": 5,
+      "per_seed": [
+        0.8899,
+        0.902,
+        1.1678,
+        1.0002,
+        1.6196
+      ],
+      "se": 0.135393,
+      "std": 0.302747
+    },
+    "queries_served_per_seed": 120,
+    "sla_ms": 5.0,
+    "starved_interactive_total": 0
+  },
+  "lifts": {
+    "over_cold_start": {
+      "ci95_half": 0.012195,
+      "ci95_high": 0.668466,
+      "ci95_low": 0.644077,
+      "max": 0.663216,
+      "mean": 0.656271,
+      "min": 0.642382,
+      "n": 5,
+      "per_seed": [
+        0.663216,
+        0.649327,
+        0.663216,
+        0.663216,
+        0.642382
+      ],
+      "se": 0.004392,
+      "std": 0.009821
+    },
+    "over_passive_stream": {
+      "ci95_half": 0.012194,
+      "ci95_high": 0.645691,
+      "ci95_low": 0.621303,
+      "max": 0.640441,
+      "mean": 0.633497,
+      "min": 0.619608,
+      "n": 5,
+      "per_seed": [
+        0.640441,
+        0.626553,
+        0.640441,
+        0.640441,
+        0.619608
+      ],
+      "se": 0.004392,
+      "std": 0.009821
+    },
+    "over_random_curriculum": {
+      "ci95_half": 0.051201,
+      "ci95_high": 0.66075,
+      "ci95_low": 0.558349,
+      "max": 0.638371,
+      "mean": 0.60955,
+      "min": 0.537267,
+      "n": 5,
+      "per_seed": [
+        0.63009,
+        0.626553,
+        0.537267,
+        0.638371,
+        0.615467
+      ],
+      "se": 0.018441,
+      "std": 0.041236
+    }
+  },
+  "mdl_compression_mean": {
+    "active_library_bits": 17251.2,
+    "cumulative_raw_training_bits": 481188.8,
+    "library_to_raw_ratio": 0.035851
+  },
+  "per_seed_seconds": {
+    "ci95_half": 0.53346,
+    "ci95_high": 4.6886,
+    "ci95_low": 3.62168,
+    "max": 4.7118,
+    "mean": 4.15514,
+    "min": 3.6668,
+    "n": 5,
+    "per_seed": [
+      3.6668,
+      3.7884,
+      4.2303,
+      4.3784,
+      4.7118
+    ],
+    "se": 0.192138,
+    "std": 0.429633
+  },
+  "queries_spent_mean": {
+    "autonomous_meta_controller": 31.0,
+    "passive_stream_controller": 0.0,
+    "random_curriculum_controller": 42.0
+  },
+  "reproduce_command": "PYTHONHASHSEED=0 python -m research.cpu_learning.evaluation.run_s9_experiments",
+  "s9_gate": {
+    "checks": {
+      "anchor_skill_retention_ge_095_zero_forgetting": true,
+      "ast_isolation_and_zero_hardcoded_literals": true,
+      "beats_passive_stream_by_ge_15pp_non_overlapping_ci": true,
+      "beats_random_curriculum_by_ge_15pp_non_overlapping_ci": true,
+      "closed_loop_11_steps_and_mdl_consolidation_verified": true,
+      "collateral_damage_below_002": true,
+      "cpu_budget_within_15s_per_seed": true,
+      "faulty_candidate_caught_and_quarantined": true,
+      "freeze_enforced_zero_post_freeze_queries": true,
+      "functional_math_list_frontier_final_acc_ge_095": true,
+      "interactive_non_starvation_sla_p95_le_5ms": true,
+      "learning_slices_within_tick_budget": true,
+      "overall_frontier_lift_over_cold_start_ge_035": true,
+      "prior_s0_through_s8_manifests_intact": true,
+      "relational_depth4_and_depth6_acc_ge_090": true,
+      "relational_frontier_final_acc_ge_095": true,
+      "s9_manifest_verified": true,
+      "stops_querying_verified_frontiers_early": true,
+      "strictly_lower_queries_to_target_than_random": true,
+      "utf8_grounding_frontier_final_acc_ge_095": true,
+      "zero_self_certified_promotions": true
+    },
+    "passed": true
+  },
+  "schema_version": "s9-summary-v1",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
+  ],
+  "stage": "S9",
+  "subsystem_cpu_ms_mean": {
+    "consolidation_ms": 7.9385,
+    "induction_ms": 72.7547,
+    "interactive_slice_ms": 63.5616,
+    "query_selection_ms": 345.8287,
+    "replay_ms": 199.8939,
+    "retrieval_ms": 11.8177,
+    "total_learning_slice_ms": 645.0928,
+    "verification_ms": 6.1743
+  },
+  "total_elapsed_seconds": 25.7951
+}
