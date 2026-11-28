@@ -18,6 +18,7 @@ Evaluates:
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import json
 from pathlib import Path
@@ -65,6 +66,51 @@ from research.open_world.learner import (
 
 S11_1_STAGE_ID: str = "S11.1"
 S11_1_PROTOCOL_VERSION: str = "s11.1-raw-observation-learning-v1"
+
+FORBIDDEN_MANUAL_SCHEMA_IMPORTS: frozenset[str] = frozenset(
+    {
+        "research.cpu_learning.env",
+        "research.cpu_learning.domains",
+        "mirror_crystal.blueprint_runtime",
+        "mirror_crystal.seed_rules",
+    }
+)
+FORBIDDEN_DATASET_HACK_LITERALS: tuple[str, ...] = (
+    "no known case",
+    "there is no known case",
+    "postcards",
+    "router|playlist",
+)
+
+
+def audit_zero_manual_domain_schemas(learner_root: Path) -> dict[str, Any]:
+    """Programmatically audit ``research/open_world/learner/`` for zero manual domain schemas or dataset hacks."""
+    violations: list[str] = []
+    scanned = 0
+    for py_file in sorted(learner_root.rglob("*.py")):
+        scanned += 1
+        text = py_file.read_text(encoding="utf-8")
+        low = text.casefold()
+        for bad_lit in FORBIDDEN_DATASET_HACK_LITERALS:
+            if bad_lit in low:
+                violations.append(f"{py_file.name}: forbidden dataset-specific literal {bad_lit!r}")
+        tree = ast.parse(text, filename=str(py_file))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    for forb in FORBIDDEN_MANUAL_SCHEMA_IMPORTS:
+                        if alias.name == forb or alias.name.startswith(forb + "."):
+                            violations.append(f"{py_file.name}: forbidden domain-schema import {alias.name!r}")
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                for forb in FORBIDDEN_MANUAL_SCHEMA_IMPORTS:
+                    if node.module == forb or node.module.startswith(forb + "."):
+                        violations.append(f"{py_file.name}: forbidden domain-schema import {node.module!r}")
+    return {
+        "passed": len(violations) == 0,
+        "scanned_learner_files": scanned,
+        "violations": violations,
+    }
+
 
 REQUIRED_ABLATIONS: tuple[tuple[str, AblationConfig], ...] = (
     ("A1_no_evidence_grounding_verifier", AblationConfig(enable_evidence_grounding_verifier=False)),
@@ -122,7 +168,7 @@ def _run_learner_on_bundle(
     if measure_fit_heap:
         probe_solver = solver_factory()
         tracemalloc.start()
-        probe_solver.fit(bundle.benchmark_id, bundle.train_examples[: min(80, len(bundle.train_examples))])
+        probe_solver.fit(bundle.benchmark_id, bundle.train_examples)
         _, fit_peak_bytes = tracemalloc.get_traced_memory()
         tracemalloc.stop()
         del probe_solver
@@ -153,9 +199,9 @@ def _run_learner_on_bundle(
         peak_heap={"fit_peak_kb": fit_peak_bytes / 1024.0, "predict_peak_kb": 0.0},
     )
 
-    # Separate tracemalloc probe from clean CPU timing
+    # Separate FULL hidden_eval tracemalloc probe from clean CPU timing (zero truncation!)
     tracemalloc.start()
-    _probe = [solver.predict(obs) for obs in bundle.hidden_observations[: min(30, len(bundle.hidden_observations))]]
+    _probe = [solver.predict(obs) for obs in bundle.hidden_observations]
     _, pred_peak_bytes = tracemalloc.get_traced_memory()
     tracemalloc.stop()
     del _probe
@@ -200,10 +246,18 @@ def _run_learner_on_bundle(
         transfer_shift_summary=transfer_shift,
     )
 
+    cpu_native_flags_ok = (
+        (not solver.uses_gpu)
+        and (not solver.uses_pretrained_llm)
+        and (not solver.uses_external_api)
+        and (not solver.uses_neural_training)
+        and (not solver.evaluator_only)
+    )
     return {
         "solver_id": solver.solver_id,
         "ablation": solver.config.ablation_id(),
         "category": solver.category,
+        "cpu_native_flags_verified": cpu_native_flags_ok,
         "freeze_lock_verified": freeze_blocked,
         "zero_eval_memory_writes": (eval_mem_writes == 0 and internal_pf_writes == 0),
         "diagnostics": diag,
@@ -251,8 +305,13 @@ def run_unseen_combination_probe_suite(
     bt.ingest_units(extract_evidence_units(obs_cur))
     cur_ok = (not p_cur.abstained) and ("attic" in (p_cur.predicted_answer or "").casefold())
     init_ok = (not p_init.abstained) and ("garage" in (p_init.predicted_answer or "").casefold())
+    bt_st = bt.stats()
     checks["unseen_bitemporal_supersession_latest_and_historical"] = bool(
-        cur_ok and init_ok and bt.stats()["num_supersedes_edges"] >= 1
+        cur_ok
+        and init_ok
+        and bt_st["num_supersedes_edges"] >= 1
+        and bt_st["jtms_defeated_relations"] >= 1
+        and bt_st["num_entity_clusters"] >= 1
     )
     details["supersession"] = {
         "cur_pred": p_cur.predicted_answer, "init_pred": p_init.predicted_answer, "graph_stats": bt.stats()
@@ -270,10 +329,19 @@ def run_unseen_combination_probe_suite(
     )
     bt_conf = BiTemporalGraph(enable_bitemporal_supersession=True)
     bt_conf.ingest_units(extract_evidence_units(obs_conf))
-    checks["unseen_contradictory_observation_marked_contested"] = (
-        bt_conf.stats()["num_contested_edges"] >= 1 and len(bt_conf.relations) >= 2
+    p_conf = trained_mem_learner.predict(obs_conf)
+    checks["unseen_contradictory_observation_marked_contested_and_abstained"] = bool(
+        bt_conf.stats()["num_contested_edges"] >= 1
+        and len(bt_conf.relations) >= 2
+        and p_conf.abstained is True
+        and p_conf.metadata.get("verification", {}).get("bitemporal_contested") is True
     )
-    details["contested"] = bt_conf.stats()
+    details["contested"] = {
+        "graph_stats": bt_conf.stats(),
+        "abstained": p_conf.abstained,
+        "abstain_reason": p_conf.abstain_reason,
+        "bitemporal_contested": p_conf.metadata.get("verification", {}).get("bitemporal_contested"),
+    }
 
     # 3. Unseen Exact Date-Difference Arithmetic (with 'yesterday' relative event time!)
     date_sessions = (
@@ -345,6 +413,34 @@ def run_unseen_combination_probe_suite(
         "rollback_count": store.rollback_count,
     }
 
+    # 6. Unseen Non-Latin UTF-8 & 3-Choice Causal Robustness Probe
+    obs_uni = OpenWorldObservation(
+        task_id="probe_utf8_jp", benchmark_id=qa_bid, split="hidden_eval", task_kind="extractive_qa",
+        prompt_text="東京は日本の首都です。人口は約1400万人です。",
+        question_text="日本の首都はどこですか？",
+        evidence_units=(EvidenceSentence("probe_utf8_jp:s0", "東京は日本の首都です。", 0, 10),),
+    )
+    p_uni = trained_qa_learner.predict(obs_uni)
+    obs_3c = OpenWorldObservation(
+        task_id="probe_causal_3choice", benchmark_id="balanced_copa", split="hidden_eval", task_kind="causal_choice",
+        prompt_text="A heavy cyclone hit the coastal town.",
+        question_text="What happened as a result?",
+        candidate_choices=("Nothing changed.", "A cat slept quietly.", "Severe cyclone flooding damaged coastal homes."),
+        relation_direction="effect",
+    )
+    p_3c = trained_qa_learner.predict(obs_3c)
+    checks["unseen_utf8_nonlatin_and_multichoice_causal_robustness"] = bool(
+        p_uni.memory_writes == 0
+        and p_3c.memory_writes == 0
+        and p_3c.predicted_choice_index == 2
+    )
+    details["utf8_and_3choice"] = {
+        "utf8_abstained": p_uni.abstained,
+        "utf8_pred": p_uni.predicted_answer,
+        "causal_3choice_idx": p_3c.predicted_choice_index,
+        "causal_3choice_pred": p_3c.predicted_answer,
+    }
+
     return {
         "passed": all(checks.values()),
         "checks": checks,
@@ -356,6 +452,8 @@ def _evaluate_preregistered_s11_1_gates(
     s11_1_results: dict[str, Any],
     s11_0_summary: dict[str, Any] | None,
     isolation_audit: dict[str, Any],
+    schema_audit: dict[str, Any],
+    all_cpu_native_flags_ok: bool,
     vault_untouched: bool,
     all_freeze_locks_ok: bool,
     all_zero_eval_writes: bool,
@@ -369,8 +467,8 @@ def _evaluate_preregistered_s11_1_gates(
             for b in s11_1_results.values()
         )
         g4_checks = {
-            "zero_gpu_llm_api_neural": True,
-            "zero_manual_domain_schemas": True,
+            "zero_gpu_llm_api_neural": bool(all_cpu_native_flags_ok and isolation_audit["llm_gpu_violations"] == []),
+            "zero_manual_domain_schemas": bool(schema_audit["passed"]),
             "ast_isolation_passed": bool(isolation_audit["passed"]),
             "all_freeze_locks_enforced": bool(all_freeze_locks_ok),
             "zero_post_freeze_memory_writes": bool(all_zero_eval_writes),
@@ -405,7 +503,7 @@ def _evaluate_preregistered_s11_1_gates(
         "beats_best_non_oracle_by_5pp": (copa_acc - best_copa_acc) >= 0.05 - 1e-9,
         "non_overlapping_bootstrap_ci95": copa_ci_lo > best_copa_ci_hi,
         "val_mirrored_pair_consistency_ge_50pct": copa_val_mirr >= 0.50 - 1e-9,
-        "zero_manual_schemas": True,
+        "zero_manual_schemas": bool(schema_audit["passed"]),
     }
     g1 = {
         "gate_id": "S11_1_G1_beat_all_non_oracle_baselines_on_causal_commonsense",
@@ -517,12 +615,18 @@ def _evaluate_preregistered_s11_1_gates(
 
     # --- Gate S11_1_G4: CPU-Native Governance & Isolation ---
     max_peak_mb = max(
-        b["full_s11_1"]["hidden_eval"]["memory_consumption"]["max_peak_tracemalloc_mb"]
+        max(
+            b["full_s11_1"]["hidden_eval"]["memory_consumption"]["max_peak_tracemalloc_mb"],
+            max(
+                (ab["hidden_eval"]["memory_consumption"]["max_peak_tracemalloc_mb"] for ab in b["ablations"].values()),
+                default=0.0,
+            ),
+        )
         for b in s11_1_results.values()
     )
     g4_checks = {
-        "zero_gpu_llm_api_neural": True,
-        "zero_manual_domain_schemas": True,
+        "zero_gpu_llm_api_neural": bool(all_cpu_native_flags_ok and isolation_audit["llm_gpu_violations"] == []),
+        "zero_manual_domain_schemas": bool(schema_audit["passed"]),
         "ast_isolation_passed": bool(isolation_audit["passed"]),
         "all_freeze_locks_enforced": bool(all_freeze_locks_ok),
         "zero_post_freeze_memory_writes": bool(all_zero_eval_writes),
@@ -653,6 +757,7 @@ def run_s11_1_experiment(
     t0_wall = time.perf_counter()
     vault_before = _vault_sha256(repo_root)
     isolation_audit = audit_s11_isolation_and_constraints(S11_PACKAGE_ROOT)
+    schema_audit = audit_zero_manual_domain_schemas(S11_PACKAGE_ROOT / "learner")
 
     s11_0_summary: dict[str, Any] | None = None
     if not offline_smoke:
@@ -680,6 +785,7 @@ def run_s11_1_experiment(
     raw_dir.mkdir(parents=True, exist_ok=True)
 
     benchmark_results: dict[str, Any] = {}
+    all_cpu_native_flags_ok = True
     all_freeze_locks_ok = True
     all_zero_eval_writes = True
 
@@ -693,6 +799,8 @@ def run_s11_1_experiment(
             seed=PRIMARY_SEED, config=AblationConfig(), shared_unlabeled_train_texts=sh
         )
         full_res = _run_learner_on_bundle(full_factory, bundle, run_cross_shift=True, measure_fit_heap=True)
+        if not full_res["cpu_native_flags_verified"]:
+            all_cpu_native_flags_ok = False
         if not full_res["freeze_lock_verified"]:
             all_freeze_locks_ok = False
         if not full_res["zero_eval_memory_writes"]:
@@ -719,7 +827,9 @@ def run_s11_1_experiment(
             do_shift = (ab_id == "A3_no_asymmetric_causal_lift" and bundle.task_kind == "causal_choice") or (
                 ab_id == "A2_no_bitemporal_supersession" and bundle.task_kind == "long_memory_qa"
             )
-            ab_res = _run_learner_on_bundle(ab_factory, bundle, run_cross_shift=do_shift, measure_fit_heap=False)
+            ab_res = _run_learner_on_bundle(ab_factory, bundle, run_cross_shift=do_shift, measure_fit_heap=True)
+            if not ab_res["cpu_native_flags_verified"]:
+                all_cpu_native_flags_ok = False
             if not ab_res["freeze_lock_verified"]:
                 all_freeze_locks_ok = False
             if not ab_res["zero_eval_memory_writes"]:
@@ -749,6 +859,8 @@ def run_s11_1_experiment(
         s11_1_results=benchmark_results,
         s11_0_summary=s11_0_summary,
         isolation_audit=isolation_audit,
+        schema_audit=schema_audit,
+        all_cpu_native_flags_ok=all_cpu_native_flags_ok,
         vault_untouched=vault_untouched,
         all_freeze_locks_ok=all_freeze_locks_ok,
         all_zero_eval_writes=all_zero_eval_writes,
@@ -783,6 +895,7 @@ def run_s11_1_experiment(
             "untouched": vault_untouched,
         },
         "isolation_audit": isolation_audit,
+        "schema_audit": schema_audit,
         "unseen_combination_probes": unseen_probes,
         "benchmarks": benchmark_results,
         "gate_evaluation": gate_eval,

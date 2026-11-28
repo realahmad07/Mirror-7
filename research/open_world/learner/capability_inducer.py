@@ -51,6 +51,8 @@ from research.open_world.learner.extraction import (
     detect_polarity_and_modality,
     extract_candidate_spans,
     morph_stem,
+    unicode_content_tokens,
+    unicode_tokenize,
 )
 from research.open_world.learner.temporal_graph import HISTORICAL_CUES, UPDATE_REVISION_CUES
 
@@ -122,7 +124,7 @@ def encode_query_signature_hv(
 def extract_query_signature(question: str, *, task_kind: str = "extractive_qa") -> tuple[tuple[str, str], ...]:
     """Extract a 100% domain-agnostic structural query signature from raw UTF-8 question text."""
     ql = question.strip().casefold()
-    raw_toks = set(tokenize(question))
+    raw_toks = set(unicode_tokenize(question))
 
     # 1. Purely grammatical WH-interrogative class
     if re.search(r"\b(?:when|what year|which year|what date|in what year|in what century|what month|what day)\b", ql):
@@ -139,7 +141,7 @@ def extract_query_signature(question: str, *, task_kind: str = "extractive_qa") 
         wh = "reason_clause"
     elif re.search(r"\b(?:how\s+(?:are|is|was|were|did|do|does|can|could|would|should))\b", ql):
         wh = "manner_clause"
-    elif re.search(r"\b(?:what\s+(?:is|was)\s+the\s+name|which\s+(?:company|organization|group|team|person|city|country|book|movie|song|brand|model|title|system|router|playlist))\b", ql):
+    elif re.search(r"\b(?:what\s+(?:is|was)\s+the\s+name|which\s+(?:company|organization|group|team|person|city|country|title|brand|model|system))\b", ql):
         wh = "named_entity"
     elif re.search(r"^(?:did|do|does|is|are|was|were|has|have|had|can|could|will|would)\b", ql):
         wh = "boolean_verify"
@@ -159,7 +161,7 @@ def extract_query_signature(question: str, *, task_kind: str = "extractive_qa") 
     # 3. Aggregation mode (purely syntactic quantifiers)
     if re.search(r"\b(?:how much more|how many more|difference|fewer|less than|more than|compared to|left to)\b", ql):
         agg = "difference"
-    elif re.search(r"\b(?:total|altogether|combined|in total|all|each|how many times|how many days|how many hours|how many books|how many)\b", ql):
+    elif re.search(r"\b(?:total|altogether|combined|in total|all|each|how many times|how many days|how many hours|how many)\b", ql):
         agg = "sum_or_count"
     else:
         agg = "single_fact"
@@ -362,7 +364,7 @@ def _infer_target_span_shape(answer: str) -> str:
         return "NOUN_CHUNK"
     if re.search(r"\b(?:1[0-9]{3}|20[0-9]{2}|century|january|february|march|april|may|june|july|august|september|october|november|december)\b", s, re.I):
         return "DATE_TIME"
-    if re.search(r"(?:^[$€£]?\d|\d+\s*(?:%|percent|million|billion|thousand|days?|weeks?|months?|years?|km|miles?|subjects|maps|pages|hours?))", s, re.I):
+    if re.search(r"(?:^[$€£]?\d|\d+\s*(?:%|percent|million|billion|thousand|days?|weeks?|months?|years?|km|miles?|hours?|minutes?|seconds?))", s, re.I):
         return "QUANTITY_NUM"
     words = s.split()
     cap_words = sum(1 for w in words if w and w[0].isupper())
@@ -383,7 +385,7 @@ def _extract_training_traces(
         if ex.is_unanswerable:
             continue
         qsig = extract_query_signature(obs.question_text, task_kind=obs.task_kind)
-        qtoks = tuple(sorted(set(morph_stem(t) for t in content_tokens(obs.question_text)))[:8])
+        qtoks = tuple(sorted(set(morph_stem(t) for t in unicode_content_tokens(obs.question_text)))[:8])
         # Cluster provenance derived strictly from public source/task prefix (zero hidden labels)
         if obs.task_kind == "extractive_qa":
             units = extract_evidence_units(obs)
@@ -396,14 +398,14 @@ def _extract_training_traces(
             lp = "<BOS>"
             rp = "<EOS>"
             anchor_pat = "BOTH_ANCHORS"
-            q_stems = set(morph_stem(t) for t in content_tokens(obs.question_text))
+            q_stems = set(morph_stem(t) for t in unicode_content_tokens(obs.question_text))
             for u in units:
                 pos = u.text.casefold().find(ans_low)
                 if pos >= 0:
                     before = u.text[:pos]
                     after = u.text[pos + len(ans) :]
-                    bt = tokenize(before)
-                    at = tokenize(after)
+                    bt = unicode_tokenize(before)
+                    at = unicode_tokenize(after)
                     lp = bt[-1] if bt else "<BOS>"
                     rp = at[0] if at else "<EOS>"
                     l_hits = len(q_stems & {morph_stem(w) for w in bt[-8:]})
@@ -744,7 +746,7 @@ class CapabilityVersionStore:
         """Propose top-K verified capability cards via SHARD 10,240-bit LSH (read-only after freeze)."""
         qsig = extract_query_signature(question, task_kind=task_kind)
         if not self.enable_anti_unification:
-            extra = tuple(sorted(set(morph_stem(t) for t in content_tokens(question)))[:8])
+            extra = tuple(sorted(set(morph_stem(t) for t in unicode_content_tokens(question)))[:8])
             q_hv = encode_query_signature_hv(qsig, extra_tokens=extra)
         else:
             q_hv = encode_query_signature_hv(qsig)

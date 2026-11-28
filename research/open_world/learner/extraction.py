@@ -59,7 +59,14 @@ CLAUSE_PIVOTS: frozenset[str] = frozenset(
         "during", "before", "after", "since", "until", "about", "against", "among",
         "and", "or", "but", "so", "yet", "nor", "because", "although", "though",
         "while", "when", "where", "which", "who", "whom", "whose", "what", "how",
-        "if", "than", "as", "there", "here", "then", "also", "still", "very", "last", "next", "yesterday", "today", "tonight", "recently", "currently", "initially", "originally", "previously", "actually",
+        "if", "than", "as", "there", "here", "then", "also", "still", "very", "last", "next",
+        "yesterday", "today", "tonight", "recently", "currently", "initially", "originally",
+        "previously", "actually",
+        "i'm", "i've", "i'd", "i'll", "you're", "you've", "you'd", "you'll", "he's", "she's",
+        "it's", "we're", "we've", "we'd", "we'll", "they're", "they've", "they'd", "they'll",
+        "that's", "there's", "here's", "what's", "who's", "let's",
+        "don't", "doesn't", "didn't", "isn't", "aren't", "wasn't", "weren't", "haven't",
+        "hasn't", "hadn't", "won't", "wouldn't", "can't", "couldn't", "shouldn't",
     }
 )
 _SENT_START_NON_PROPER: frozenset[str] = STOPWORDS | frozenset(
@@ -74,6 +81,12 @@ _SENT_START_NON_PROPER: frozenset[str] = STOPWORDS | frozenset(
         "around", "across", "behind", "inside", "outside", "towards", "toward",
         "former", "latter", "smaller", "larger", "higher", "lower", "older", "newer",
         "escalating", "expanding", "increasing", "decreasing", "starting", "ending",
+        "thus", "hence", "consequently", "similarly", "likewise", "notably", "additionally",
+        "alternatively", "specifically", "ultimately", "eventually", "initially", "originally",
+        "previously", "formerly", "subsequently", "indeed", "nevertheless", "nonetheless",
+        "thereby", "thereafter", "overall", "finally", "first", "second", "third", "next",
+        "then", "yes", "no", "well", "sure", "certainly", "absolutely", "unfortunately",
+        "fortunately", "today", "yesterday", "tonight", "tomorrow", "now", "here", "there",
     }
 )
 
@@ -110,12 +123,16 @@ _NUM_WORDS_RE = (
 )
 _QUANTITY_SPAN_RE = re.compile(
     rf"(?:[$€£]\s*\d+(?:[.,]\d+)?(?:\s*(?:million|billion|thousand|trillion|k|m|b))?"
-    rf"|\b\d+(?:[.,]\d+)?\s*(?:°[NSEW]?|%|percent|per\s+cent|million|billion|thousand|trillion|km|kilometres?|kilometers?|miles?|meters?|metres?|feet|ft|inches?|cm|mm|kg|lbs?|pounds?|grams?|oz|hours?|hrs?|minutes?|mins?|seconds?|days?|weeks?|months?|years?|decades?|centuries|people|subjects|times|pages|books|items|maps|dollars|euros)\b"
-    rf"|\b(?:about\s+|over\s+|nearly\s+|around\s+|approximately\s+)?(?:{_NUM_WORDS_RE}(?:[- ]{_NUM_WORDS_RE}){{0,2}})\s*(?:percent|%|of|million|billion|thousand|years?|months?|weeks?|days?|hours?|times|the\s+number)\b"
+    rf"|\b\d+(?:[.,]\d+)?\s*(?:°[NSEW]?|%|percent|per\s+cent|million|billion|thousand|trillion|km|kilometres?|kilometers?|miles?|meters?|metres?|feet|ft|inches?|cm|mm|kg|lbs?|pounds?|grams?|oz|hours?|hrs?|minutes?|mins?|seconds?|days?|weeks?|months?|years?|decades?|centuries|times|dollars?|euros?)\b"
+    rf"|\b(?:about\s+|over\s+|nearly\s+|around\s+|approximately\s+)?(?:{_NUM_WORDS_RE}(?:[- ]{_NUM_WORDS_RE}){{0,2}})\s*(?:percent|%|of|million|billion|thousand|years?|months?|weeks?|days?|hours?|minutes?|times|the\s+number)\b"
     rf"|\b(?:about\s+|over\s+|nearly\s+)?(?:one|two|three|four|five|six|seven|eight|nine|ten)-(?:half|thirds?|fourths?|quarters?|fifths?|sixths?|sevenths?|eighths?|ninths?|tenths?)\b"
+    rf"|\b(?:once|twice|thrice|double|triple|over\s+a\s+(?:year|month|week|day|hour))\b"
     rf"|\b\d+(?:[.,]\d+)?\b)",
     re.I,
 )
+_MD_LIST_NUM_RE = re.compile(r"(?:^|\n)\s*\d+[.)]\s+(?=\*\*|[A-Z])")
+_CJK_CHAR_RE = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af]")
+_UNI_WORD_RE = re.compile(r"[A-Za-z0-9À-ÖØ-öø-ÿ\u0400-\u04ff\u0600-\u06ff]+(?:['’][A-Za-z0-9À-ÖØ-öø-ÿ\u0400-\u04ff\u0600-\u06ff]+)?")
 _PERCENT_FRAC_RE = re.compile(
     rf"(?:\d+(?:[.,]\d+)?\s*(?:%|percent|per\s+cent)|\b(?:one|two|three|four|five|six|seven|eight|nine|ten)-(?:half|thirds?|fourths?|quarters?|fifths?|sixths?|sevenths?|eighths?|ninths?|tenths?)\b|\b(?:half|quarter|third|majority|minority|proportion|ratio|fraction)\b)",
     re.I,
@@ -135,10 +152,71 @@ _CLAUSE_SPLIT_RE = re.compile(
 )
 
 
+# Purely grammatical English irregular verb/inflection forms (ZERO domain schemas)
+_IRREGULAR_LEMMAS: dict[str, str] = {
+    "fled": "flee", "wrote": "write", "written": "write", "built": "build",
+    "found": "find", "made": "make", "took": "take", "taken": "take",
+    "gave": "give", "given": "give", "went": "go", "gone": "go",
+    "came": "come", "saw": "see", "seen": "see", "bought": "buy",
+    "sold": "sell", "spent": "spend", "kept": "keep", "left": "leave",
+    "met": "meet", "paid": "pay", "sent": "send", "held": "hold",
+    "told": "tell", "heard": "hear", "knew": "know", "known": "know",
+    "grew": "grow", "grown": "grow", "drew": "draw", "drawn": "draw",
+    "flew": "fly", "flown": "fly", "began": "begin", "begun": "begin",
+    "won": "win", "lost": "lose", "ran": "run", "ate": "eat", "eaten": "eat",
+    "drank": "drink", "drunk": "drink", "drove": "drive", "driven": "drive",
+    "rode": "ride", "ridden": "ride", "spoke": "speak", "spoken": "speak",
+    "broke": "break", "broken": "break", "chose": "choose", "chosen": "choose",
+    "wore": "wear", "worn": "wear", "taught": "teach", "caught": "catch",
+    "brought": "bring", "thought": "think", "fought": "fight", "sought": "seek",
+    "led": "lead", "fell": "fall", "fallen": "fall", "rose": "rise", "risen": "rise",
+    "sang": "sing", "sung": "sing", "swam": "swim", "swum": "swim",
+    "threw": "throw", "thrown": "throw", "hid": "hide", "hidden": "hide",
+    "dug": "dig", "hung": "hang", "slept": "sleep", "felt": "feel",
+    "meant": "mean", "dealt": "deal", "stood": "stand", "understood": "understand",
+    "sat": "sit", "laid": "lay", "lain": "lie", "struck": "strike", "stuck": "stick",
+    "swung": "swing", "bent": "bend", "lent": "lend", "shook": "shake", "shaken": "shake",
+    "froze": "freeze", "frozen": "freeze", "stole": "steal", "stolen": "steal",
+    "forgot": "forget", "forgotten": "forget", "became": "become",
+    "children": "child", "men": "man", "women": "woman", "people": "person",
+    "feet": "foot", "teeth": "tooth", "mice": "mouse", "geese": "goose",
+}
+
+
+def unicode_tokenize(text: str) -> tuple[str, ...]:
+    """UTF-8 script-agnostic tokenizer: Latin/European/Cyrillic/Arabic words + CJK character bigrams."""
+    if not text:
+        return ()
+    words = [m.group(0).casefold() for m in _UNI_WORD_RE.finditer(text)]
+    if _CJK_CHAR_RE.search(text):
+        cjk_runs = re.findall(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af]+", text)
+        for run in cjk_runs:
+            if len(run) == 1:
+                words.append(run)
+            else:
+                for i in range(len(run) - 1):
+                    words.append(run[i : i + 2])
+    return tuple(words)
+
+
+def unicode_content_tokens(text: str) -> tuple[str, ...]:
+    """Content tokens across any UTF-8 script (drops ASCII stopwords & 1-char Latin tokens)."""
+    toks = unicode_tokenize(text)
+    out: list[str] = []
+    for tok in toks:
+        if tok in STOPWORDS or tok in CLAUSE_PIVOTS:
+            continue
+        if len(tok) > 1 or _CJK_CHAR_RE.match(tok):
+            out.append(tok)
+    return tuple(out)
+
+
 @lru_cache(maxsize=65536)
 def morph_stem(word: str) -> str:
     """Deterministic lightweight domain-agnostic morphological stemmer (pure stdlib)."""
     w = word.casefold().strip("'’")
+    if w in _IRREGULAR_LEMMAS:
+        w = _IRREGULAR_LEMMAS[w]
     if len(w) <= 3:
         return w
     if w.endswith("'s") or w.endswith("’s"):
@@ -167,7 +245,7 @@ def morph_stem(word: str) -> str:
 
 
 def stemmed_content_tokens(text: str) -> tuple[str, ...]:
-    return tuple(morph_stem(t) for t in content_tokens(text))
+    return tuple(morph_stem(t) for t in unicode_content_tokens(text))
 
 
 def char_trigram_sim(a: str, b: str) -> float:
@@ -230,7 +308,7 @@ class StructuralPivotTable:
 
     def observe_texts(self, texts: Iterable[str]) -> None:
         for text in texts:
-            toks = set(tokenize(text))
+            toks = set(unicode_tokenize(text))
             if not toks:
                 continue
             self._num_docs += 1
@@ -346,6 +424,7 @@ def extract_candidate_spans(
     *,
     pivots: frozenset[str] = CLAUSE_PIVOTS,
     compute_hv: bool = False,
+    max_hv_spans: int | None = None,
 ) -> tuple[CandidateEntity, ...]:
     """Discover all schema-free candidate entity and answer spans from one ``RawEvidenceUnit``."""
     raw_text = unit.text
@@ -380,7 +459,10 @@ def extract_candidate_spans(
     for m in _PERCENT_FRAC_RE.finditer(text):
         _add(m.start(), m.end(), m.group(0), "PERCENT_FRAC")
 
+    md_bullet_starts = {m.start() for m in _MD_LIST_NUM_RE.finditer(text)}
     for m in _QUANTITY_SPAN_RE.finditer(text):
+        if m.start() in md_bullet_starts or (m.start() <= 2 and _MD_LIST_NUM_RE.match(text)):
+            continue
         _add(m.start(), m.end(), m.group(0), "QUANTITY_NUM")
 
     for m in _PROPER_SPAN_RE.finditer(text):
@@ -435,7 +517,7 @@ def extract_candidate_spans(
         i = max(i + 1, j)
 
     for m_prep in re.finditer(
-        r"\b(?:to|by|through|via|because of|due to|called|named|known as|means?|mean|as|into|in|under|on|at|instituted|introducing)\s+(?:a|an|the)?\s*([^.,;:!?()\[\]]{2,75})",
+        r"\b(?:to|by|through|via|because of|due to|called|named|known as|means?|mean|as|into|in|under|on|at)\s+(?:a|an|the)?\s*([^.,;:!?()\[\]]{2,75})",
         text,
         re.I,
     ):
@@ -446,18 +528,33 @@ def extract_candidate_spans(
             shape = "CLAUSE_SPAN" if len(phrase.split()) >= 5 else "NOUN_CHUNK"
             _add(cs, ce, phrase, shape)
 
+    if not raw_matches and _CJK_CHAR_RE.search(text):
+        for m_cjk in re.finditer(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af0-9]{1,16}", text):
+            seg = m_cjk.group(0)
+            _add(m_cjk.start(), m_cjk.end(), seg, "NOUN_CHUNK")
+            if len(seg) >= 3:
+                for k in range(0, min(len(seg) - 1, 12)):
+                    _add(m_cjk.start() + k, m_cjk.start() + k + 2, seg[k : k + 2], "NOUN_CHUNK")
+
     entities: list[CandidateEntity] = []
+    hv_computed = 0
     for idx, (cs, ce, surf, shape) in enumerate(raw_matches):
         lp, rp = _left_right_pivots(text, cs, ce)
         hv = 0
-        if compute_hv and tok_matches:
+        if (
+            compute_hv
+            and tok_matches
+            and shape in {"PROPER_SPAN", "NOUN_CHUNK", "QUOTED_SPAN"}
+            and (max_hv_spans is None or hv_computed < max_hv_spans)
+        ):
             center_idx = 0
             for t_i, tm in enumerate(tok_matches):
                 if tm.start() >= cs:
                     center_idx = t_i
                     break
             hv = _encode_context_hv(tok_strs, center_idx, window=4)
-        canon = " ".join(morph_stem(w) for w in tokenize(surf) if w not in {"a", "an", "the"}) or surf.casefold()
+            hv_computed += 1
+        canon = " ".join(morph_stem(w) for w in unicode_tokenize(surf) if w not in {"a", "an", "the"}) or surf.casefold()
         entities.append(
             CandidateEntity(
                 entity_id=f"{unit.evidence_id}:ent{idx}",
@@ -494,7 +591,7 @@ def cluster_coreferent_entities(
             ent_to_conf[ent.entity_id] = 1.0
             continue
 
-        words = set(content_tokens(ent.surface))
+        words = set(unicode_content_tokens(ent.surface))
         matched_cid: str | None = None
         matched_conf = 1.0
 

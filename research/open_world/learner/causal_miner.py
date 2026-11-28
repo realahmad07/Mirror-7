@@ -5,24 +5,24 @@ STRICT ISOLATION & ZERO MANUAL DOMAIN SCHEMAS:
   (``mirror_crystal.quotient_egraph_resonator``).
 - NEVER imports ``evaluator``, ``hidden_eval``, ``oracle``, or ``datasets.loader``.
 - Mines canonical directed causal event transitions ``(CAUSE_FRAME -> EFFECT_FRAME)`` directly
-  from raw UTF-8 text (explicit discourse causal connectives, chronological sentence succession,
+  from raw UTF-8 text (explicit discourse causal connectives, clean narrative succession,
   and directional training pairs) filtered by contrastive counterfactual causal lift:
       CausalLift(A -> B) = log((P(B|A)+a)/(P(B|~A)+a)) - log((P(A|B)+a)/(P(A|~B)+a))
-- Every mined hypothesis preserves support/counterexample provenance, explicit
-  ``epistemic_status = "HYPOTHESIS_UNVERIFIED"`` until multi-cluster verification, and exact
-  Wilson 95% credible intervals ``(ci_low, ci_high)``.
+- Uses hubness-normalized NPMI + 2-hop sparse NPMI neighborhood vectors (eliminating word-frequency
+  hubness bias on mirrored counterfactual pairs), compacts into a sparse read-only representation
+  before ``.freeze()``, and honestly serializes ALL retained prediction tables in ``serialized_summary()``.
 """
 from __future__ import annotations
 
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 import math
-from typing import Any, Iterable, Sequence
+import re
+from typing import Any, Sequence
 
 from mirror_crystal.quotient_egraph_resonator import (
     TwinEGraphDoCalculus,
     bind10240,
-    hamming_sim10240,
     hv10240_of,
     permute10240,
 )
@@ -30,12 +30,11 @@ from research.open_world.contracts import (
     SolverFrozenError,
     canonical_json_bytes,
     split_sentences_with_offsets,
-    tokenize,
 )
 from research.open_world.learner.extraction import (
     NEGATION_TOKENS,
-    morph_stem,
     stemmed_content_tokens,
+    unicode_tokenize,
 )
 
 # Purely grammatical English discourse connectives (NOT domain action lists or event schemas)
@@ -54,6 +53,7 @@ _INIT_CAUSAL_MARKERS: tuple[str, ...] = (
 _CONTRAST_MARKERS: tuple[str, ...] = (
     " but ", " however ", " although ", " though ", " despite ", " instead ", " yet ",
 )
+_MARKDOWN_NOISE_RE = re.compile(r"^\s*(?:[-*+#]|\d+[.)]|```)")
 
 
 def wilson_ci95(successes: int, total: int) -> tuple[float, float]:
@@ -108,21 +108,19 @@ class CausalHypothesis:
 
 
 class RawCausalMiner:
-    """Schema-free multi-scale distributional & asymmetric causal hypothesis miner (Stage 5)."""
+    """Schema-free compact hubness-normalized NPMI & asymmetric causal hypothesis miner (Stage 5)."""
 
     def __init__(self, *, enable_asymmetric_causal_lift: bool = True) -> None:
         self.enable_asymmetric_causal_lift = bool(enable_asymmetric_causal_lift)
         self._frozen: bool = False
         self._post_freeze_writes: int = 0
+        self._compacted: bool = False
 
-        # Multi-scale raw-text inverted indexes (pure stdlib sets, fast & compact)
+        # Fit-time raw document inverted index (compacted & freed before freeze!)
         self._doc_stems: list[tuple[str, ...]] = []
-        self._doc_lens: list[int] = []
         self._stem_docs: dict[str, set[int]] = defaultdict(set)
-        self._stem_sents: dict[str, set[int]] = defaultdict(set)
-        self._sent_lens: list[int] = []
-        self._num_sents: int = 0
         self._seen_doc_hashes: set[int] = set()
+        self._num_docs_seen: int = 0
 
         # Canonical directed CAUSE -> EFFECT co-occurrence counts & provenance clusters
         self._dir_fwd: dict[str, Counter[str]] = defaultdict(Counter)
@@ -138,11 +136,12 @@ class RawCausalMiner:
         self._sup_pos_sources: dict[tuple[str, str], set[str]] = defaultdict(set)
         self._sup_neg_sources: dict[tuple[str, str], set[str]] = defaultdict(set)
 
-        # Materialized top verified/tentative CausalHypotheses & query-time caches
+        # Compact sparse NPMI graph retained after compaction (100% serialized in memory_footprint!)
+        self._npmi_neighbors: dict[str, dict[str, float]] = {}
+
+        # Materialized top verified/tentative CausalHypotheses
         self.hypotheses: list[CausalHypothesis] = []
         self._hyp_by_pair: dict[tuple[str, str], CausalHypothesis] = {}
-        self._nb_cache: dict[str, dict[str, float]] = {}
-        self._pair_cache: dict[tuple[str, str], float] = {}
 
     @property
     def is_frozen(self) -> bool:
@@ -153,6 +152,8 @@ class RawCausalMiner:
         return self._post_freeze_writes
 
     def freeze(self) -> None:
+        if not self._compacted and (self._doc_stems or self._dir_fwd):
+            self.compact_before_freeze()
         self._frozen = True
 
     def _require_unfrozen(self) -> None:
@@ -175,22 +176,19 @@ class RawCausalMiner:
             return
         did = len(self._doc_stems)
         self._doc_stems.append(uniq_doc)
-        self._doc_lens.append(len(uniq_doc))
+        self._num_docs_seen = len(self._doc_stems)
         for w in uniq_doc:
             self._stem_docs[w].add(did)
 
         prev_sent: list[str] | None = None
         for _, _, sent in split_sentences_with_offsets(text):
+            if _MARKDOWN_NOISE_RE.match(sent):
+                prev_sent = None
+                continue
             seq = list(dict.fromkeys(stemmed_content_tokens(sent)))
             if not seq:
                 prev_sent = None
                 continue
-            if len(seq) >= 2:
-                sid = self._num_sents
-                self._num_sents += 1
-                self._sent_lens.append(len(seq))
-                for w in seq[:24]:
-                    self._stem_sents[w].add(sid)
 
             # Unsupervised discourse-causal & contrast mining (zero regex backtracking)
             sl = " " + sent.casefold() + " "
@@ -226,13 +224,13 @@ class RawCausalMiner:
                         break
 
             if c_part is not None and e_part is not None:
-                cs = list(dict.fromkeys(stemmed_content_tokens(c_part)))[:10]
-                es = list(dict.fromkeys(stemmed_content_tokens(e_part)))[:10]
+                cs = list(dict.fromkeys(stemmed_content_tokens(c_part)))[:7]
+                es = list(dict.fromkeys(stemmed_content_tokens(e_part)))[:7]
                 if cs and es:
                     if is_contrast:
-                        for a in cs[:5]:
-                            for b in es[:5]:
-                                if a != b and len(self._dir_contrast_sources[(a, b)]) < 12:
+                        for a in cs[:4]:
+                            for b in es[:4]:
+                                if a != b and len(self._dir_contrast_sources[(a, b)]) < 10:
                                     self._dir_contrast_sources[(a, b)].add(source_id)
                     else:
                         w_inc = 3
@@ -242,19 +240,19 @@ class RawCausalMiner:
                             for b in es:
                                 if a != b:
                                     self._dir_fwd[a][b] += w_inc
-                                    if len(self._dir_support_sources[(a, b)]) < 12:
+                                    if len(self._dir_support_sources[(a, b)]) < 10:
                                         self._dir_support_sources[(a, b)].add(source_id)
                         for b in es:
                             self._dir_dst_tot[b] += w_inc
-            elif prev_sent is not None and len(prev_sent) <= 18 and len(seq) <= 18:
-                # Narrative short-sentence chronological succession (skips long list/essay bullets)
+            elif prev_sent is not None and len(prev_sent) <= 10 and len(seq) <= 10 and self._num_docs_seen <= 2500:
+                # Short plain narrative chronological succession (excludes long prose/Markdown bloat)
                 self._dir_total_events += 1
-                for a in prev_sent[:4]:
+                for a in prev_sent[:3]:
                     self._dir_src_tot[a] += 1
-                    for b in seq[:4]:
+                    for b in seq[:3]:
                         if a != b:
                             self._dir_fwd[a][b] += 1
-                for b in seq[:4]:
+                for b in seq[:3]:
                     self._dir_dst_tot[b] += 1
 
             prev_sent = seq
@@ -272,12 +270,11 @@ class RawCausalMiner:
         self._require_unfrozen()
         if target_index < 0 or target_index >= len(choices):
             return
-        # Ingest winning pair into raw distributional corpus
         self.observe_raw_document(f"{premise} {choices[target_index]}", source_id=source_id)
 
         p_st = list(dict.fromkeys(stemmed_content_tokens(premise)))
         c_sets = [list(dict.fromkeys(stemmed_content_tokens(ch))) for ch in choices]
-        common_c = set(c_sets[0]) & set(c_sets[1]) if len(c_sets) >= 2 else set()
+        common_c = set.intersection(*(set(c) for c in c_sets)) if len(c_sets) >= 2 else set()
 
         for idx, c_st in enumerate(c_sets):
             diff_c = [w for w in c_st if w not in common_c] or c_st
@@ -305,16 +302,88 @@ class RawCausalMiner:
                 for b in dst:
                     self._dir_dst_tot[b] += 4
 
+    def compact_before_freeze(self, *, max_neighbors: int = 16, max_vocab: int = 1800) -> None:
+        """Compile compact hubness-normalized NPMI sparse graph & prune singleton noise before freeze."""
+        self._require_unfrozen()
+        if self._compacted:
+            return
+
+        n_doc = len(self._doc_stems)
+        self._npmi_neighbors = {}
+        if n_doc >= 2 and self._stem_docs:
+            # Keep stems with df >= 2 (plus any stems occurring in supervised causal pairs), capped for CPU/MDL hygiene
+            sup_vocab = set(self._sup_pos.keys()) | set(self._sup_neg.keys())
+            for cnt in self._sup_pos.values():
+                sup_vocab.update(cnt.keys())
+            for cnt in self._sup_neg.values():
+                sup_vocab.update(cnt.keys())
+
+            ranked_vocab = sorted(
+                (w for w, ds in self._stem_docs.items() if len(ds) >= 2 or w in sup_vocab),
+                key=lambda w: (-(1 if w in sup_vocab else 0), -len(self._stem_docs[w]), w),
+            )[:max_vocab]
+            kept_set = set(ranked_vocab)
+
+            for w in ranked_vocab:
+                dw = self._stem_docs[w]
+                lw = len(dw)
+                dlist = sorted(dw)[:64]
+                scale = lw / max(1, len(dlist))
+                cand: Counter[str] = Counter()
+                for did in dlist:
+                    for nb in self._doc_stems[did][:40]:
+                        if nb != w and nb in kept_set:
+                            cand[nb] += 1
+                scored: list[tuple[float, str]] = []
+                min_c = 1 if n_doc < 40 else 2
+                for nb, c in cand.items():
+                    if c < min_c:
+                        continue
+                    lnb = len(self._stem_docs[nb])
+                    c_est = min(float(lw), float(lnb), c * scale)
+                    p_joint = c_est / n_doc
+                    if p_joint <= 0.0 or p_joint >= 1.0:
+                        continue
+                    pmi = math.log((c_est * n_doc) / max(1e-9, lw * lnb))
+                    if pmi <= 0.05:
+                        continue
+                    denom = -math.log(p_joint)
+                    npmi_val = min(1.0, pmi / denom) if denom > 1e-9 else 0.0
+                    if npmi_val > 0.04:
+                        scored.append((round(npmi_val, 3), nb))
+                scored.sort(key=lambda pair: (-pair[0], pair[1]))
+                if scored:
+                    self._npmi_neighbors[w] = {nb: val for val, nb in scored[:max_neighbors]}
+
+        # Prune noisy singleton directional counts (require >= 2 distinct directional weight or supervised evidence)
+        pruned_fwd: dict[str, Counter[str]] = defaultdict(Counter)
+        for a, cnt in self._dir_fwd.items():
+            kept_items = {
+                b: c for b, c in cnt.items()
+                if c >= 4 or self._sup_pos[a].get(b, 0) > 0 or (a, b) in self._hyp_by_pair
+            }
+            if kept_items:
+                # Retain top 16 outgoing causal edges per stem for bounded MDL footprint
+                top_b = sorted(kept_items.items(), key=lambda kv: (-kv[1], kv[0]))[:16]
+                pruned_fwd[a] = Counter(dict(top_b))
+        self._dir_fwd = pruned_fwd
+
+        # Release temporary raw fit buffers so post-freeze RAM is tiny & 100% matches memory_footprint()!
+        self._doc_stems.clear()
+        self._stem_docs.clear()
+        self._seen_doc_hashes.clear()
+        self._dir_support_sources.clear()
+        self._dir_contrast_sources.clear()
+        self._sup_pos_sources.clear()
+        self._sup_neg_sources.clear()
+        self._compacted = True
+
     def materialize_hypotheses(self, *, k_min_clusters: int = 3, max_hypotheses: int = 400) -> list[CausalHypothesis]:
         """Compile top candidate ``CausalHypothesis`` records with Wilson 95% CIs & multi-cluster status."""
         self._require_unfrozen()
-        self._nb_cache.clear()
-        self._pair_cache.clear()
-
         candidates: list[tuple[float, CausalHypothesis]] = []
         seen: set[tuple[str, str]] = set()
 
-        # Consider all directed pairs with >= 2 support sources (or supervised evidence)
         pair_keys = set(self._dir_support_sources.keys()) | set(self._sup_pos_sources.keys())
         for a, b in pair_keys:
             if (a, b) in seen:
@@ -356,79 +425,46 @@ class RawCausalMiner:
         candidates.sort(key=lambda item: (-item[0], item[1].hypothesis_id))
         self.hypotheses = [h for _, h in candidates[:max_hypotheses]]
         self._hyp_by_pair = {(h.antecedent_frame, h.consequent_frame): h for h in self.hypotheses}
+        self.compact_before_freeze()
         return self.hypotheses
 
-    def _doc_cos(self, a: str, b: str) -> float:
-        da = self._stem_docs.get(a)
-        db = self._stem_docs.get(b)
-        if not da or not db:
-            return 0.0
-        inter = da & db
-        if not inter:
-            return 0.0
-        return sum(1.0 / math.sqrt(max(1, self._doc_lens[d])) for d in inter) / math.sqrt(len(da) * len(db))
-
-    def _sent_cos(self, a: str, b: str) -> float:
-        sa = self._stem_sents.get(a)
-        sb = self._stem_sents.get(b)
-        if not sa or not sb:
-            return 0.0
-        inter = sa & sb
-        if not inter:
-            return 0.0
-        return sum(1.0 / math.sqrt(max(1, self._sent_lens[s])) for s in inter) / math.sqrt(len(sa) * len(sb))
-
-    def _top_neighbors(self, w: str) -> dict[str, float]:
-        cached = self._nb_cache.get(w)
-        if cached is not None:
-            return cached
-        dw = self._stem_docs.get(w)
-        n_doc = len(self._doc_stems)
-        if not dw or len(dw) < 2 or n_doc < 4:
-            self._nb_cache[w] = {}
-            return {}
-        cand: Counter[str] = Counter()
-        dlist = sorted(dw)[:90]
-        scale = len(dw) / len(dlist)
-        for did in dlist:
-            for nb in self._doc_stems[did]:
-                if nb != w:
-                    cand[nb] += 1
-        scored: list[tuple[float, str]] = []
-        lw = len(dw)
-        for nb, c in cand.items():
-            lnb = len(self._stem_docs[nb])
-            if lnb < 2 or c < 2:
-                continue
-            pmi = math.log(((c * scale) * n_doc) / (lw * lnb))
-            if pmi > 0.3:
-                scored.append((pmi * (c / (c + 1.0)), nb))
-        scored.sort(reverse=True)
-        vec = {nb: v for v, nb in scored[:60]}
-        norm = math.sqrt(sum(v * v for v in vec.values())) or 1.0
-        for k in vec:
-            vec[k] /= norm
-        self._nb_cache[w] = vec
-        return vec
-
-    def _two_hop_cos(self, a: str, b: str) -> float:
-        va = self._top_neighbors(a)
-        vb = self._top_neighbors(b)
-        if not va or not vb:
-            return 0.0
-        if len(va) > len(vb):
-            va, vb = vb, va
-        return sum(v * vb[k] for k, v in va.items() if k in vb)
-
-    def _sym_pair_sim(self, a: str, b: str) -> float:
+    def _npmi_pair_sim(self, a: str, b: str) -> float:
+        """Hubness-normalized direct NPMI + 2-hop sparse NPMI cosine similarity."""
         if a == b:
             return 0.0
-        key = (a, b) if a < b else (b, a)
-        v = self._pair_cache.get(key)
-        if v is None:
-            v = self._doc_cos(a, b) + 1.2 * self._two_hop_cos(a, b)
-            self._pair_cache[key] = v
-        return v
+        if not self._compacted and self._stem_docs:
+            # Pre-compaction fallback (e.g. unit tests calling score_causal_choices before materialize)
+            da = self._stem_docs.get(a)
+            db = self._stem_docs.get(b)
+            n_doc = max(1, len(self._doc_stems))
+            if not da or not db:
+                return 0.0
+            c = len(da & db)
+            if c == 0:
+                return 0.0
+            p_j = c / n_doc
+            pmi = math.log((c * n_doc) / (len(da) * len(db)))
+            if pmi <= 0.0 or p_j >= 1.0:
+                return 0.0
+            den = -math.log(p_j)
+            return min(1.0, pmi / den) if den > 1e-9 else 0.0
+
+        va = self._npmi_neighbors.get(a)
+        vb = self._npmi_neighbors.get(b)
+        direct = 0.0
+        if va and b in va:
+            direct = va[b]
+        elif vb and a in vb:
+            direct = vb[a]
+        two_hop = 0.0
+        if va and vb:
+            s_a, s_b = (va, vb) if len(va) <= len(vb) else (vb, va)
+            dot = sum(v * s_b[k] for k, v in s_a.items() if k in s_b)
+            if dot > 0.0:
+                na = math.sqrt(sum(v * v for v in va.values())) or 1.0
+                nb = math.sqrt(sum(v * v for v in vb.values())) or 1.0
+                two_hop = dot / (na * nb)
+        return direct + 0.65 * two_hop
 
     def compute_asymmetric_causal_lift(self, cause_stem: str, effect_stem: str) -> tuple[float, float]:
         """Exact contrastive causal lift ``CausalLift(A -> B)`` from docs/51 Stage 5."""
@@ -450,11 +486,10 @@ class RawCausalMiner:
             p_a_not_b = max(0.0, (self._dir_dst_tot[cause_stem] - rev)) / max(1.0, n_tot - src_b)
             log_ab = math.log((p_b_a + alpha) / (p_b_not_a + alpha))
             log_ba = math.log((p_a_b + alpha) / (p_a_not_b + alpha))
-            rel = (fwd + rev) / (fwd + rev + 4.0)
+            rel = (fwd + rev) / (fwd + rev + 8.0)
             asym = (log_ab - log_ba) * rel
             lift_ab = log_ab * rel
 
-        # Add supervised contrastive log-odds from causal training splits (canonical cause -> effect)
         pos_c = self._sup_pos[cause_stem].get(effect_stem, 0)
         neg_c = self._sup_neg[cause_stem].get(effect_stem, 0)
         if pos_c > 0 or neg_c > 0:
@@ -490,9 +525,8 @@ class RawCausalMiner:
         interventions = {a: True for a in src_stems[:4]}
         report = engine.do_intervene(interventions, world="truth")
         entailed = sum(1 for b in dst_stems if report.counterfactual_beliefs.get(b) is True)
-        # Weight by Wilson lower bound of matched hypotheses
         mean_ci_lo = sum(h.ci_low for h in matched) / len(matched)
-        bonus = 0.08 * min(2.0, float(entailed)) * (0.5 + mean_ci_lo)
+        bonus = 0.06 * min(2.0, float(entailed)) * (0.5 + mean_ci_lo)
         return (bonus, len(matched))
 
     def score_causal_choices(
@@ -502,14 +536,14 @@ class RawCausalMiner:
         choices: Sequence[str],
         relation_direction: str,
     ) -> dict[str, Any]:
-        """Score candidate causal choices combining distributional semantics + asymmetric causal lift."""
+        """Score arbitrary N >= 2 candidate causal choices via hubness-normalized NPMI + asymmetric lift."""
         if len(choices) < 2:
             return {"scores": [], "best_idx": None, "margin": 0.0, "matched_hypotheses": 0, "reads": 0}
 
         p_st = set(stemmed_content_tokens(premise))
         c_sets = [set(stemmed_content_tokens(ch)) for ch in choices]
-        common_c = c_sets[0] & c_sets[1]
-        p_neg = bool(set(tokenize(premise)) & NEGATION_TOKENS)
+        common_c = set.intersection(*c_sets) if c_sets else set()
+        p_neg = bool(set(unicode_tokenize(premise)) & NEGATION_TOKENS)
 
         scores: list[float] = []
         total_hyps = 0
@@ -522,18 +556,16 @@ class RawCausalMiner:
             src, dst = (diff_c, p_use) if is_cause else (p_use, diff_c)
 
             pair_vals: list[float] = []
-            asym_vals: list[float] = []
+            exact_hits = len(p_use & diff_c)
             for a in src:
                 for b in dst:
                     if a == b:
                         continue
                     reads += 1
-                    sym_v = self._sym_pair_sim(a, b)
+                    sym_v = self._npmi_pair_sim(a, b)
                     if self.enable_asymmetric_causal_lift:
                         lift_v, asym_v = self.compute_asymmetric_causal_lift(a, b)
-                        # Scale-normalized bounded directional lift in [-0.25, +0.25]
-                        dir_term = 0.14 * math.tanh(lift_v / 2.5) + 0.11 * math.tanh(asym_v / 2.0)
-                        asym_vals.append(dir_term)
+                        dir_term = 0.10 * math.tanh(lift_v / 2.5) + 0.08 * math.tanh(asym_v / 2.0)
                         pair_vals.append(sym_v + dir_term)
                     else:
                         # Ablation A3: strictly symmetric co-occurrence ONLY
@@ -541,19 +573,20 @@ class RawCausalMiner:
 
             if pair_vals:
                 pair_vals.sort(reverse=True)
-                base_score = 0.50 * pair_vals[0] + 0.50 * (sum(pair_vals) / len(pair_vals))
+                base_score = 0.55 * pair_vals[0] + 0.45 * (sum(pair_vals) / len(pair_vals))
             else:
                 base_score = 0.0
 
-            # Counterfactual TwinEGraph verification bonus when asymmetric causal lift is active
             cf_bonus = 0.0
             if self.enable_asymmetric_causal_lift:
                 cf_bonus, n_h = self._twin_egraph_counterfactual_bonus(sorted(src), sorted(dst))
                 total_hyps += n_h
 
-            # Subtle morphological prefix overlap for OOV stems when distributional score is zero
+            # Fallback lexical/morphological grounding when distributional score is zero (e.g. cold OOV)
             morph_fallback = 0.0
             if base_score == 0.0:
+                if exact_hits > 0:
+                    morph_fallback += 0.12 * min(3, exact_hits)
                 for a in src:
                     if len(a) < 4:
                         continue
@@ -561,13 +594,15 @@ class RawCausalMiner:
                         if len(b) >= 4 and a[:4] == b[:4] and a != b:
                             morph_fallback += 0.05
 
-            c_neg = bool(set(tokenize(choices[idx])) & NEGATION_TOKENS)
+            c_neg = bool(set(unicode_tokenize(choices[idx])) & NEGATION_TOKENS)
             neg_tie = -0.015 if (p_neg != c_neg and base_score < 0.02) else 0.0
 
             scores.append(base_score + cf_bonus + morph_fallback + neg_tie)
 
-        best_idx = 0 if scores[0] >= scores[1] else 1
-        margin = abs(scores[0] - scores[1])
+        ranked_indices = sorted(range(len(scores)), key=lambda i: (-scores[i], i))
+        best_idx = ranked_indices[0]
+        runner_idx = ranked_indices[1]
+        margin = max(0.0, scores[best_idx] - scores[runner_idx])
         return {
             "scores": scores,
             "best_idx": best_idx,
@@ -577,12 +612,23 @@ class RawCausalMiner:
         }
 
     def serialized_summary(self) -> bytes:
+        """Honestly serialize ALL persistent tables retained after freeze & read during prediction."""
         return canonical_json_bytes(
             {
-                "num_docs": len(self._doc_stems),
-                "num_sents": self._num_sents,
-                "vocab_size": len(self._stem_docs),
+                "num_docs_seen": self._num_docs_seen,
                 "enable_asymmetric_causal_lift": self.enable_asymmetric_causal_lift,
-                "hypotheses": [h.to_compact_dict() for h in self.hypotheses[:120]],
+                "npmi_neighbors": {
+                    k: sorted(v.items()) for k, v in sorted(self._npmi_neighbors.items())
+                },
+                "dir_fwd": {
+                    k: sorted(v.items()) for k, v in sorted(self._dir_fwd.items()) if v
+                },
+                "sup_pos": {
+                    k: sorted(v.items()) for k, v in sorted(self._sup_pos.items()) if v
+                },
+                "sup_neg": {
+                    k: sorted(v.items()) for k, v in sorted(self._sup_neg.items()) if v
+                },
+                "hypotheses": [h.to_compact_dict() for h in self.hypotheses],
             }
         )

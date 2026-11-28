@@ -53,6 +53,7 @@ from research.open_world.evaluation.run_s11_0_foundation import (
 )
 from research.open_world.evaluation.run_s11_1_experiment import (
     REQUIRED_ABLATIONS,
+    audit_zero_manual_domain_schemas,
     run_s11_1_experiment,
 )
 from research.open_world.evaluator import build_offline_smoke_bundles
@@ -611,3 +612,139 @@ def test_s11_1_committed_real_dataset_artifacts_integrity_and_honest_verdict() -
     }
     found_raw = [p.name for p in S11_PACKAGE_ROOT.rglob("*") if p.name in forbidden_raw_names]
     assert found_raw == [], f"Raw external benchmark files must never be committed in git: {found_raw}"
+
+
+def test_s11_1_review_regressions_contested_abstention_jtms_large_bucket_multichoice_utf8_and_sqlite_commit(
+    tmp_path: Path,
+) -> None:
+    """Adversarial regression suite covering all Step-2 review findings (zero test weakening)."""
+    # 1. Programmatic zero-manual-schema audit passes cleanly
+    schema_audit = audit_zero_manual_domain_schemas(S11_PACKAGE_ROOT / "learner")
+    assert schema_audit["passed"] is True, f"Manual schema/hack violation: {schema_audit}"
+
+    # 2. File-backed SQLite single append_unit() persists immediately across connections
+    db_path = tmp_path / "evidence_ledger.sqlite"
+    ledger_disk = RawEvidenceLedger(db_path=str(db_path))
+    u_disk = RawEvidenceUnit(
+        evidence_id="disk_u0", source_id="src_disk", byte_start=0, byte_end=11,
+        observed_timestamp="2024/05/01", observed_ordinal=739007, speaker_role="user",
+        raw_utf8_bytes=b"hello world", text="hello world",
+        sha256=hashlib.sha256(b"hello world").hexdigest(),
+    )
+    assert ledger_disk.append_unit(u_disk) is not None
+    ledger_disk.close()
+    conn_check = sqlite3.connect(str(db_path))
+    row_cnt = conn_check.execute("SELECT COUNT(*) FROM raw_evidence_records").fetchone()[0]
+    conn_check.close()
+    assert row_cnt == 1
+
+    # 3. End-to-end CONTESTED contradictory observation MUST abstain in RawObservationOpenWorldLearner.predict()
+    learner = RawObservationOpenWorldLearner(seed=101)
+    learner.freeze()
+    obs_conflict = OpenWorldObservation(
+        task_id="reg_conflict",
+        benchmark_id="longmemeval",
+        split="hidden_eval",
+        task_kind="long_memory_qa",
+        prompt_text="Question date: 2024/04/05",
+        question_text="What is my studio locker code?",
+        question_date="2024/04/05",
+        sessions=(
+            ConversationSession("cs1", "2024/04/01", (ConversationTurn("cs1::t0", "cs1", 0, "user", "My studio locker code is 4821."),)),
+            ConversationSession("cs2", "2024/04/01", (ConversationTurn("cs2::t0", "cs2", 0, "user", "My studio locker code is 9934."),)),
+        ),
+    )
+    p_conf = learner.predict(obs_conflict)
+    assert p_conf.abstained is True, f"CONTESTED observation must abstain, got {p_conf}"
+    assert p_conf.metadata.get("verification", {}).get("bitemporal_contested") is True
+
+    # 4. Large >25-relation bucket, TropicalJTMS defeat, Stage 3 BSC coreference, and same-day t_event progression
+    sessions_many = tuple(
+        ConversationSession(
+            f"s_{i}", f"2024/01/{i + 1:02d}",
+            (ConversationTurn(f"t_{i}", f"s_{i}", 0, "user", f"My observatory telescope is stored in room {i}."),),
+        )
+        for i in range(28)
+    ) + (
+        ConversationSession(
+            "s_28", "2024/02/01",
+            (ConversationTurn("t_28", "s_28", 0, "user", "Actually I moved my observatory telescope to the rooftop dome."),),
+        ),
+    )
+    obs_many = OpenWorldObservation(
+        task_id="reg_many", benchmark_id="longmemeval", split="hidden_eval", task_kind="long_memory_qa",
+        prompt_text="", question_text="Where is my observatory telescope?", sessions=sessions_many, question_date="2024/02/10",
+    )
+    bt_many = BiTemporalGraph(enable_bitemporal_supersession=True)
+    bt_many.ingest_units(extract_evidence_units(obs_many))
+    st_many = bt_many.stats()
+    assert st_many["num_supersedes_edges"] >= 1
+    assert st_many["jtms_defeated_relations"] >= 1
+    assert st_many["jtms_active_relations"] == 1
+    assert st_many["num_entity_clusters"] >= 1
+
+    # Same calendar date with relative event-date progression ("yesterday" -> "today")
+    obs_sameday = OpenWorldObservation(
+        task_id="reg_sameday", benchmark_id="longmemeval", split="hidden_eval", task_kind="long_memory_qa",
+        prompt_text="", question_text="Where is my bicycle?", question_date="2024/05/12",
+        sessions=(
+            ConversationSession("sd1", "2024/05/10", (ConversationTurn("sd1::t0", "sd1", 0, "user", "Yesterday my bicycle was in the shed."),)),
+            ConversationSession("sd2", "2024/05/10", (ConversationTurn("sd2::t0", "sd2", 0, "user", "Today I moved my bicycle to the porch."),)),
+        ),
+    )
+    bt_sd = BiTemporalGraph(enable_bitemporal_supersession=True)
+    bt_sd.ingest_units(extract_evidence_units(obs_sameday))
+    assert bt_sd.stats()["num_supersedes_edges"] >= 1
+
+    # 5. 3-choice causal reasoning selects choice index 2 (not hardcoded 0 vs 1!)
+    obs_3c = OpenWorldObservation(
+        task_id="reg_3c", benchmark_id="balanced_copa", split="hidden_eval", task_kind="causal_choice",
+        prompt_text="A heavy cyclone hit the coastal town.",
+        question_text="What happened as a result?",
+        candidate_choices=("Nothing changed.", "A cat slept quietly.", "Severe cyclone flooding damaged coastal homes."),
+        relation_direction="effect",
+    )
+    p_3c = learner.predict(obs_3c)
+    assert p_3c.predicted_choice_index == 2
+
+    # 6. Non-Latin UTF-8 (Japanese) tokenization, contraction entity bug fix, coordinated operand & Markdown bullet rejection
+    from research.open_world.learner.extraction import unicode_tokenize
+    from research.open_world.learner.verifier import _extract_question_proper_entities, answer_satisfies_type
+
+    jp_toks = unicode_tokenize("東京は日本の首都です。")
+    assert "東京" in jp_toks and "首都" in jp_toks
+
+    # Contraction apostrophes ("I've ... I'm") must NEVER be parsed as quoted proper entities!
+    ents_contr = _extract_question_proper_entities("I've been thinking about making tea, but I'm not sure which blend to pick?")
+    assert all("been thinking" not in e for e in ents_contr)
+
+    # Markdown numbered list bullet must be rejected as a numeric answer
+    assert answer_satisfies_type("8. **Lemon Bars**: Tart and sweet", "numeric") is False
+    assert answer_satisfies_type("45 minutes", "numeric") is True
+    assert answer_satisfies_type("twice", "numeric") is True
+
+    # Coordinated operand missing check ("tomatoes and chili peppers" vs "5 tomato plants")
+    u_tom = RawEvidenceUnit(
+        evidence_id="u_tom", source_id="s_tom", byte_start=0, byte_end=34,
+        observed_timestamp="2024/04/01", observed_ordinal=738977, speaker_role="user",
+        raw_utf8_bytes=b"I planted 5 tomato plants initially.", text="I planted 5 tomato plants initially.",
+        sha256=hashlib.sha256(b"I planted 5 tomato plants initially.").hexdigest(),
+    )
+    ver_coord = verify_evidence_grounding(
+        question="How many plants did I initially plant for tomatoes and chili peppers?",
+        proposed_answer="5",
+        cited_units=(u_tom,),
+        all_units=(u_tom,),
+        idf_lookup={},
+    )
+    assert ver_coord.coord_operand_ungrounded is True
+    assert "ungrounded_coordinated_operand" in ver_coord.rejection_reasons
+
+    # 7. Honest memory_footprint() includes retained persistent tables (idf_by_bench, causal npmi_neighbors)
+    smoke = build_offline_smoke_bundles()
+    l_mem = RawObservationOpenWorldLearner(seed=101)
+    l_mem.fit("smoke_qa", smoke["smoke_qa"].train_examples)
+    l_mem.freeze()
+    fp = l_mem.memory_footprint()
+    assert fp.serialized_bytes > 500
+    assert fp.active_entry_count >= len(l_mem._idf_by_bench["smoke_qa"])

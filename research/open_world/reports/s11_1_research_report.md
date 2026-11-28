@@ -9,27 +9,27 @@
 
 | Benchmark | Variant | Primary Score (95% CI) | Val Mirr | Evid F1 | Unans Rec | False Abs | ECE | SHARD Cands/Q | CPU ms/item | Peak RAM (MB) |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| `balanced_copa` | `s11_1_full` | `47.61% [43.2,51.8]` | `14.77%` | `73.80%` | `—` | `0.00%` | `0.0612` | `46.70` | `6.256` | `104.346` |
-| `balanced_copa` | `A1_no_evidence_grounding_verifier` | `47.61% [43.2,51.8]` | `14.77%` | `73.80%` | `—` | `0.00%` | `0.0612` | `46.70` | `4.824` | `0.428` |
-| `balanced_copa` | `A2_no_bitemporal_supersession` | `47.61% [43.2,51.8]` | `14.77%` | `73.80%` | `—` | `0.00%` | `0.0612` | `46.70` | `4.793` | `0.428` |
-| `balanced_copa` | `A3_no_asymmetric_causal_lift` | `48.61% [43.8,52.8]` | `15.44%` | `74.30%` | `—` | `0.00%` | `0.0272` | `46.70` | `4.669` | `0.421` |
-| `balanced_copa` | `A4_no_capability_anti_unification` | `47.61% [43.2,51.8]` | `14.77%` | `73.80%` | `—` | `0.00%` | `0.0612` | `112.71` | `5.105` | `0.473` |
-| `balanced_copa` | `A5_no_shard_lsh_indexing` | `47.61% [43.2,51.8]` | `14.77%` | `73.80%` | `—` | `0.00%` | `0.0612` | `361.00` | `6.630` | `0.432` |
-| `balanced_copa` | `A6_no_abstention_gate` | `47.61% [43.2,51.8]` | `14.77%` | `73.80%` | `—` | `0.00%` | `0.0612` | `46.70` | `5.011` | `0.428` |
-| `squad_v2` | `s11_1_full` | `30.67% [26.2,34.8]` | `—` | `75.40%` | `25.24%` | `13.33%` | `0.0381` | `9.88` | `3.757` | `1.181` |
-| `squad_v2` | `A1_no_evidence_grounding_verifier` | `28.11% [23.9,32.3]` | `—` | `75.40%` | `20.95%` | `13.33%` | `0.0552` | `9.88` | `7.664` | `0.094` |
-| `squad_v2` | `A2_no_bitemporal_supersession` | `30.67% [26.2,34.8]` | `—` | `75.40%` | `25.24%` | `13.33%` | `0.0381` | `9.88` | `6.957` | `0.119` |
-| `squad_v2` | `A3_no_asymmetric_causal_lift` | `30.67% [26.2,34.8]` | `—` | `75.40%` | `25.24%` | `13.33%` | `0.0381` | `9.88` | `4.873` | `0.119` |
-| `squad_v2` | `A4_no_capability_anti_unification` | `30.93% [26.6,34.2]` | `—` | `75.40%` | `27.14%` | `13.33%` | `0.0762` | `193.04` | `5.097` | `0.177` |
-| `squad_v2` | `A5_no_shard_lsh_indexing` | `30.67% [26.2,34.8]` | `—` | `75.40%` | `25.24%` | `13.33%` | `0.0381` | `10.00` | `6.027` | `0.117` |
-| `squad_v2` | `A6_no_abstention_gate` | `18.89% [15.5,22.2]` | `—` | `83.05%` | `0.00%` | `0.00%` | `0.0438` | `9.88` | `4.576` | `0.119` |
-| `longmemeval` | `s11_1_full` | `22.16% [16.8,27.2]` | `—` | `74.95%` | `35.71%` | `10.64%` | `0.0616` | `16.36` | `127.939` | `7.327` |
-| `longmemeval` | `A1_no_evidence_grounding_verifier` | `19.62% [13.5,24.8]` | `—` | `74.37%` | `7.14%` | `11.70%` | `0.0505` | `16.36` | `130.183` | `1.796` |
-| `longmemeval` | `A2_no_bitemporal_supersession` | `16.27% [11.7,21.4]` | `—` | `64.65%` | `35.71%` | `12.77%` | `0.0434` | `16.36` | `117.961` | `1.839` |
-| `longmemeval` | `A3_no_asymmetric_causal_lift` | `22.16% [16.8,27.2]` | `—` | `74.95%` | `35.71%` | `10.64%` | `0.0616` | `16.36` | `92.590` | `1.845` |
-| `longmemeval` | `A4_no_capability_anti_unification` | `20.68% [14.9,25.9]` | `—` | `74.95%` | `35.71%` | `10.64%` | `0.0800` | `141.51` | `107.905` | `1.845` |
-| `longmemeval` | `A5_no_shard_lsh_indexing` | `22.16% [16.8,27.2]` | `—` | `74.95%` | `35.71%` | `10.64%` | `0.0616` | `18.00` | `94.678` | `1.836` |
-| `longmemeval` | `A6_no_abstention_gate` | `20.35% [14.3,25.4]` | `—` | `79.81%` | `0.00%` | `0.00%` | `0.0303` | `16.36` | `84.700` | `1.838` |
+| `balanced_copa` | `s11_1_full` | `49.20% [44.8,53.8]` | `17.45%` | `74.60%` | `—` | `0.00%` | `0.0346` | `50.25` | `0.591` | `60.962` |
+| `balanced_copa` | `A1_no_evidence_grounding_verifier` | `49.20% [44.8,53.8]` | `17.45%` | `74.60%` | `—` | `0.00%` | `0.0346` | `50.25` | `0.560` | `60.943` |
+| `balanced_copa` | `A2_no_bitemporal_supersession` | `49.20% [44.8,53.8]` | `17.45%` | `74.60%` | `—` | `0.00%` | `0.0346` | `50.25` | `0.498` | `60.943` |
+| `balanced_copa` | `A3_no_asymmetric_causal_lift` | `47.61% [43.2,52.2]` | `16.11%` | `73.80%` | `—` | `0.00%` | `0.0287` | `50.25` | `0.467` | `60.942` |
+| `balanced_copa` | `A4_no_capability_anti_unification` | `49.20% [44.8,53.8]` | `17.45%` | `74.60%` | `—` | `0.00%` | `0.0346` | `110.95` | `0.840` | `60.954` |
+| `balanced_copa` | `A5_no_shard_lsh_indexing` | `49.20% [44.8,53.8]` | `17.45%` | `74.60%` | `—` | `0.00%` | `0.0346` | `362.00` | `1.401` | `60.942` |
+| `balanced_copa` | `A6_no_abstention_gate` | `49.20% [44.8,53.8]` | `17.45%` | `74.60%` | `—` | `0.00%` | `0.0346` | `50.25` | `0.498` | `60.943` |
+| `squad_v2` | `s11_1_full` | `28.89% [24.0,32.5]` | `—` | `81.75%` | `20.00%` | `3.33%` | `0.0505` | `9.87` | `3.943` | `2.406` |
+| `squad_v2` | `A1_no_evidence_grounding_verifier` | `26.69% [22.0,30.4]` | `—` | `79.52%` | `16.67%` | `8.57%` | `0.0534` | `9.87` | `3.125` | `2.430` |
+| `squad_v2` | `A2_no_bitemporal_supersession` | `28.89% [24.0,32.5]` | `—` | `81.75%` | `20.00%` | `3.33%` | `0.0505` | `9.87` | `4.055` | `2.400` |
+| `squad_v2` | `A3_no_asymmetric_causal_lift` | `28.89% [24.0,32.5]` | `—` | `81.75%` | `20.00%` | `3.33%` | `0.0505` | `9.87` | `4.204` | `2.401` |
+| `squad_v2` | `A4_no_capability_anti_unification` | `29.13% [24.6,32.6]` | `—` | `81.75%` | `22.86%` | `3.33%` | `0.0671` | `193.54` | `4.688` | `2.753` |
+| `squad_v2` | `A5_no_shard_lsh_indexing` | `28.89% [24.0,32.5]` | `—` | `81.75%` | `20.00%` | `3.33%` | `0.0505` | `10.00` | `3.869` | `2.398` |
+| `squad_v2` | `A6_no_abstention_gate` | `19.13% [15.7,22.3]` | `—` | `83.37%` | `0.00%` | `0.00%` | `0.0349` | `9.87` | `4.092` | `2.401` |
+| `longmemeval` | `s11_1_full` | `24.37% [17.9,30.1]` | `—` | `60.16%` | `57.14%` | `27.66%` | `0.0296` | `16.46` | `85.009` | `11.643` |
+| `longmemeval` | `A1_no_evidence_grounding_verifier` | `22.79% [16.4,28.3]` | `—` | `72.66%` | `28.57%` | `14.89%` | `0.0122` | `16.46` | `79.904` | `11.674` |
+| `longmemeval` | `A2_no_bitemporal_supersession` | `17.25% [12.5,22.2]` | `—` | `50.74%` | `42.86%` | `32.45%` | `0.0390` | `16.46` | `83.540` | `11.644` |
+| `longmemeval` | `A3_no_asymmetric_causal_lift` | `24.37% [17.9,30.1]` | `—` | `60.16%` | `57.14%` | `27.66%` | `0.0296` | `16.46` | `94.833` | `11.644` |
+| `longmemeval` | `A4_no_capability_anti_unification` | `22.96% [16.5,29.1]` | `—` | `60.16%` | `57.14%` | `27.66%` | `0.0077` | `141.56` | `86.015` | `11.872` |
+| `longmemeval` | `A5_no_shard_lsh_indexing` | `24.37% [17.9,30.1]` | `—` | `60.16%` | `57.14%` | `27.66%` | `0.0296` | `18.00` | `249.304` | `11.643` |
+| `longmemeval` | `A6_no_abstention_gate` | `22.34% [15.5,27.1]` | `—` | `80.72%` | `0.00%` | `0.00%` | `0.0185` | `16.46` | `178.063` | `11.643` |
 
 ## 2. Preregistered S11.1 Gate Evaluation (Zero Gate Weakening)
 
@@ -51,7 +51,7 @@
 ### `S11_1_G3` — `FAIL`
 - [x] `primary_score_beats_best_non_oracle_by_5pp`: `PASS`
 - [x] `cross_category_transfer_improved`: `PASS`
-- [x] `session_evidence_f1_ge_best_baseline`: `PASS`
+- [ ] `session_evidence_f1_ge_best_baseline`: `FAIL`
 - [ ] `unanswerable_abs_recall_ge_60pct`: `FAIL`
 
 ### `S11_1_G4` — `PASS`
@@ -66,7 +66,8 @@
 ## 3. Unseen-Combination & Stage 9 Rollback Probe Suite
 
 - [x] `unseen_bitemporal_supersession_latest_and_historical`: `PASS`
-- [x] `unseen_contradictory_observation_marked_contested`: `PASS`
+- [x] `unseen_contradictory_observation_marked_contested_and_abstained`: `PASS`
 - [x] `unseen_executable_date_arithmetic`: `PASS`
 - [x] `unseen_adversarial_antonym_and_entity_swap_abstention`: `PASS`
 - [x] `stage9_poison_quarantine_and_non_destructive_rollback`: `PASS`
+- [x] `unseen_utf8_nonlatin_and_multichoice_causal_robustness`: `PASS`

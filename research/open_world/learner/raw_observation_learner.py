@@ -45,6 +45,8 @@ from research.open_world.learner.extraction import (
     extract_candidate_spans,
     morph_stem,
     token_grounded_in_set,
+    unicode_content_tokens,
+    unicode_tokenize,
 )
 from research.open_world.learner.temporal_graph import BiTemporalGraph
 from research.open_world.learner.verifier import (
@@ -261,7 +263,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                 for txt in (obs.prompt_text,) + obs.candidate_choices:
                     raw_texts_for_pivots.append(txt)
                     doc_count += 1
-                    for tok in set(content_tokens(txt)):
+                    for tok in set(unicode_content_tokens(txt)):
                         df[tok] += 1
                         df[morph_stem(tok)] += 1
             elif obs.task_kind == "extractive_qa":
@@ -269,7 +271,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                 for u in units:
                     doc_count += 1
                     seen_st: set[str] = set()
-                    for tok in content_tokens(u.text):
+                    for tok in unicode_content_tokens(u.text):
                         seen_st.add(tok)
                         seen_st.add(morph_stem(tok))
                     for t in seen_st:
@@ -285,7 +287,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                     for turn in sess.turns:
                         if turn.content:
                             raw_texts_for_pivots.append(turn.content[:400])
-                            for tok in content_tokens(turn.content):
+                            for tok in unicode_content_tokens(turn.content):
                                 s_toks.add(tok)
                                 s_toks.add(morph_stem(tok))
                     for t in s_toks:
@@ -294,10 +296,15 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         if raw_texts_for_pivots:
             self._pivots.observe_texts(raw_texts_for_pivots[:2500])
 
-        self._idf_by_bench[benchmark_id] = {
-            tok: math.log(1.0 + (doc_count - c + 0.5) / (c + 0.5))
+        # Keep informative persistent IDF entries (df >= 2 when corpus is large) + true OOV IDF
+        min_df = 2 if len(df) > 2500 else 1
+        idf_tbl = {
+            tok: round(math.log(1.0 + (doc_count - c + 0.5) / (c + 0.5)), 2)
             for tok, c in df.items()
+            if c >= min_df
         }
+        idf_tbl["__oov_idf__"] = round(min(5.2, math.log(1.0 + (doc_count + 0.5) / 3.0)), 2)
+        self._idf_by_bench[benchmark_id] = idf_tbl
 
         hyps = []
         if any(ex.observation.task_kind == "causal_choice" for ex in train_examples):
@@ -324,7 +331,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         speaker_target: str = "document",
         allow_fuzzy: bool = True,
     ) -> float:
-        u_raw = set(tokenize(unit.text))
+        u_raw = set(unicode_tokenize(unit.text))
         if not u_raw:
             return 0.0
         u_stems = {morph_stem(t) for t in u_raw}
@@ -334,7 +341,8 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         hit_w = 0.0
         for tok in q_content:
             st = morph_stem(tok)
-            c_w = float(idf.get(tok, idf.get(st, 2.2)))
+            oov_w = float(idf.get("__oov_idf__", 3.5)) if idf else 2.2
+            c_w = float(idf.get(tok, idf.get(st, oov_w)))
             if local_idf:
                 l_w = float(local_idf.get(st, 2.2))
                 w = 0.65 * l_w + 0.35 * c_w
@@ -345,7 +353,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                 hit_w += w
         lex_cov = hit_w / max(1e-6, total_w)
 
-        u_seq = [morph_stem(t) for t in content_tokens(unit.text)]
+        u_seq = [morph_stem(t) for t in unicode_content_tokens(unit.text)]
         u_bigs = {(u_seq[i], u_seq[i + 1]) for i in range(len(u_seq) - 1)} if len(u_seq) >= 2 else set()
         bg_bonus = 0.16 * (len(q_bigrams & u_bigs) / max(1, len(q_bigrams))) if q_bigrams else 0.0
 
@@ -354,7 +362,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
             ehits = sum(
                 1 for e in q_entities
                 if e.casefold() in u_low
-                or all(token_grounded_in_set(t, u_stems, u_raw, allow_fuzzy=allow_fuzzy) for t in content_tokens(e)[:2])
+                or all(token_grounded_in_set(t, u_stems, u_raw, allow_fuzzy=allow_fuzzy) for t in unicode_content_tokens(e)[:2])
             )
             ent_bonus = 0.18 * (ehits / len(q_entities))
         num_bonus = 0.0
@@ -391,9 +399,9 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         qsig = dict(extract_query_signature(question, task_kind="extractive_qa"))
         wh = qsig["wh_class"]
         req_type = detect_required_answer_type(question)
-        q_toks = set(tokenize(question))
-        q_stems = {morph_stem(t) for t in content_tokens(question) if t not in _QUESTION_META_WORDS}
-        q_all_stems = {morph_stem(t) for t in content_tokens(question)}
+        q_toks = set(unicode_tokenize(question))
+        q_stems = {morph_stem(t) for t in unicode_content_tokens(question) if t not in _QUESTION_META_WORDS}
+        q_all_stems = {morph_stem(t) for t in unicode_content_tokens(question)}
 
         anchors: list[tuple[int, float]] = []
         for m in re.finditer(r"[^\W_]+", unit.text):
@@ -439,9 +447,6 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         }
         prior_shapes = {"PERCENT_FRAC"} if req_type == "percentage" else wh_shape_prior.get(wh, set())
 
-        if wh == "boolean_verify" and "no known case" in unit.text.casefold():
-            return ("There is no known case", 0.85, "boolean_clause")
-
         best_span = spans[0].surface
         best_score = -1e9
         max_sw = max(shape_weights.values()) if shape_weights else 1.0
@@ -449,10 +454,10 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
 
         for cand in spans:
             surf = cand.surface
-            s_toks = tokenize(surf)
+            s_toks = unicode_tokenize(surf)
             if not s_toks:
                 continue
-            s_stems = [morph_stem(t) for t in content_tokens(surf)]
+            s_stems = [morph_stem(t) for t in unicode_content_tokens(surf)]
             if s_stems:
                 novel_frac = sum(1 for st in s_stems if st not in q_all_stems) / len(s_stems)
             else:
@@ -515,7 +520,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
             else:
                 conc = 0.18 if 1 <= n_w <= 3 else (0.08 if n_w <= 5 else -0.10)
 
-            pivot_boost = 0.12 if cand.left_pivot in {"called", "named", "means", "mean", "to", "in", "by", "as", "at", "from", "under", "on", "instituted"} else 0.0
+            pivot_boost = 0.12 if cand.left_pivot in {"called", "named", "means", "mean", "to", "in", "by", "as", "at", "from", "under", "on"} else 0.0
             total = card_score + prox_score + 0.30 * novel_frac + conc + pivot_boost
             if total > best_score:
                 best_score = total
@@ -531,10 +536,10 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
 
         local_idf = compute_local_idf(units)
         req_type = detect_required_answer_type(obs.question_text)
-        q_content = list(dict.fromkeys(t for t in content_tokens(obs.question_text) if t not in _QUESTION_META_WORDS))
+        q_content = list(dict.fromkeys(t for t in unicode_content_tokens(obs.question_text) if t not in _QUESTION_META_WORDS))
         if not q_content:
-            q_content = list(dict.fromkeys(content_tokens(obs.question_text)))
-        q_seq = [morph_stem(t) for t in content_tokens(obs.question_text)]
+            q_content = list(dict.fromkeys(unicode_content_tokens(obs.question_text)))
+        q_seq = [morph_stem(t) for t in unicode_content_tokens(obs.question_text)]
         q_bigs = {(q_seq[i], q_seq[i + 1]) for i in range(len(q_seq) - 1)} if len(q_seq) >= 2 else set()
         q_ents = _extract_question_proper_entities(obs.question_text)
         q_nums = set(re.findall(r"\b\d+(?:[.,]\d+)?\b", obs.question_text))
@@ -567,11 +572,17 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                 idf_lookup=idf,
                 is_computed_answer=False,
             )
-            epistemic_score = 0.22 * min(1.0, best_sent_sc) + 0.56 * ver.support_score + 0.22 * min(1.0, span_sc / 2.2)
+            epistemic_score = 0.15 * min(1.0, best_sent_sc) + 0.65 * ver.support_score + 0.20 * min(1.0, span_sc / 2.2)
             if not ver.answer_type_compatible:
                 epistemic_score *= 0.25
             if ver.antonym_contradiction or not ver.polarity_consistent:
                 epistemic_score *= 0.25
+            if ver.neg_implicative_ungrounded:
+                epistemic_score *= 0.45
+            if ver.coord_operand_ungrounded:
+                epistemic_score *= 0.50
+            if ver.bitemporal_contested:
+                epistemic_score *= 0.15
             if ver.missing_numbers and ver.number_grounding_cov < 0.5:
                 epistemic_score *= 0.30
             if ver.missing_entities and ver.entity_passage_cov < 0.5:
@@ -592,6 +603,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                 or (not ver.answer_type_compatible)
                 or ver.antonym_contradiction
                 or (not ver.polarity_consistent)
+                or ver.bitemporal_contested
                 or (bool(ver.missing_numbers) and ver.number_grounding_cov < 0.5)
                 or (bool(ver.missing_entities) and ver.entity_passage_cov < 0.5)
             )
@@ -618,12 +630,13 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         qsig = dict(extract_query_signature(obs.question_text, task_kind="long_memory_qa"))
         speaker_target = qsig["speaker_target"]
         temporal_mode = "earliest" if qsig["temporal_mode"] == "historical_earliest" else "latest"
+        lm_req_type = detect_required_answer_type(obs.question_text)
 
-        q_content = list(dict.fromkeys(t for t in content_tokens(obs.question_text) if t not in _QUESTION_META_WORDS))
+        q_content = list(dict.fromkeys(t for t in unicode_content_tokens(obs.question_text) if t not in _QUESTION_META_WORDS))
         if not q_content:
-            q_content = list(dict.fromkeys(content_tokens(obs.question_text)))
+            q_content = list(dict.fromkeys(unicode_content_tokens(obs.question_text)))
         q_stems_set = {morph_stem(t) for t in q_content}
-        q_seq = [morph_stem(t) for t in content_tokens(obs.question_text)]
+        q_seq = [morph_stem(t) for t in unicode_content_tokens(obs.question_text)]
         q_bigs = {(q_seq[i], q_seq[i + 1]) for i in range(len(q_seq) - 1)} if len(q_seq) >= 2 else set()
         q_ents = _extract_question_proper_entities(obs.question_text)
         q_nums = set(re.findall(r"\b\d+(?:[.,]\d+)?\b", obs.question_text))
@@ -633,7 +646,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         sess_bags: dict[str, set[str]] = defaultdict(set)
 
         for u in units:
-            u_toks = content_tokens(u.text)
+            u_toks = unicode_content_tokens(u.text)
             if not u_toks:
                 continue
             u_stems = {morph_stem(t) for t in u_toks}
@@ -642,7 +655,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                 continue
             sc = self._score_sentence_unit(
                 obs.question_text, q_content, q_bigs, q_ents, q_nums, u, idf,
-                req_type="general", speaker_target=speaker_target, allow_fuzzy=False,
+                req_type=lm_req_type, speaker_target=speaker_target, allow_fuzzy=False,
             )
             scored_units.append((sc, u))
             by_session[u.source_id].append((sc, u))
@@ -651,7 +664,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
             for u in units[:30]:
                 sc = self._score_sentence_unit(
                     obs.question_text, q_content, q_bigs, q_ents, q_nums, u, idf,
-                    req_type="general", speaker_target=speaker_target, allow_fuzzy=True,
+                    req_type=lm_req_type, speaker_target=speaker_target, allow_fuzzy=True,
                 )
                 scored_units.append((sc, u))
                 by_session[u.source_id].append((sc, u))
@@ -682,7 +695,7 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
             item for item in sess_ranked[:4]
             if item[0] >= max(0.22, 0.72 * top_sess_sc)
         ] or [sess_ranked[0]]
-        top_units_for_graph = [u for _, _, _, _, su_list in graph_sessions for _, u in su_list[:8]]
+        top_units_for_graph = [u for _, _, _, _, su_list in graph_sessions[:5] for _, u in su_list[:4]]
         bt_graph = BiTemporalGraph(enable_bitemporal_supersession=self.config.enable_bitemporal_supersession)
         bt_graph.ingest_units(top_units_for_graph)
 
@@ -714,6 +727,14 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
             user_cands = [(sc, u) for sc, u in chosen_sess[4] if u.speaker_role == "user"]
             if user_cands and user_cands[0][0] >= 0.70 * chosen_sess[4][0][0]:
                 winning_unit = user_cands[0][1]
+        elif lm_req_type != "general" and not unit_satisfies_answer_type(winning_unit.text, obs.question_text, lm_req_type):
+            # Prefer a high-scoring sentence in the same winning session that actually satisfies the grammatical answer type
+            typed_cands = [
+                (sc, u) for sc, u in chosen_sess[4]
+                if sc >= 0.62 * chosen_sess[4][0][0] and unit_satisfies_answer_type(u.text, obs.question_text, lm_req_type)
+            ]
+            if typed_cands:
+                winning_unit = typed_cands[0][1]
 
         proposed_cards = self._cap_store.propose_cards(obs.question_text, task_kind="long_memory_qa", top_k=6)
 
@@ -753,8 +774,12 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         if self.config.enable_evidence_grounding_verifier:
             # Scope passage verification to the cited session(s) so coincidental words in 10 unrelated
             # distractor sessions CANNOT falsely validate a missing entity or attribute!
-            cited_sid_set = set(cited_sids)
-            cited_session_units = tuple(u for u in units if u.source_id in cited_sid_set)
+            # Include cited sessions + runner-up strong session for multi-entity comparisons (e.g. A or B)
+            ver_sid_set = set(cited_sids)
+            if re.search(r"\b(?:or|between|compared)\b", obs.question_text, re.I):
+                for item in strong_sessions[:2]:
+                    ver_sid_set.add(item[2])
+            cited_session_units = tuple(u for u in units if u.source_id in ver_sid_set)
             ver = verify_evidence_grounding(
                 question=obs.question_text,
                 proposed_answer=answer,
@@ -765,17 +790,21 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                 bitemporal_graph=bt_graph,
                 temporal_mode=temporal_mode,
             )
-            lm_req_type = detect_required_answer_type(obs.question_text)
-            # Multi-session counting/duration questions ("How many X did I do...") often span turns
-            # without a single literal count digit inside one sentence; do not penalize missing literal digits there.
-            base_supp = ver.support_score
-            if lm_req_type == "numeric" and (not ver.answer_type_compatible):
-                base_supp = min(1.0, base_supp + 0.22)
-            epistemic_score = 0.35 * min(1.0, top_sess_sc) + 0.65 * base_supp
+            epistemic_score = 0.32 * min(1.0, top_sess_sc) + 0.68 * ver.support_score
             if is_computed:
                 epistemic_score = min(1.0, epistemic_score + 0.06)
-            if (not ver.answer_type_compatible) and lm_req_type in ("percentage", "temporal"):
-                epistemic_score *= 0.50
+            if (not ver.answer_type_compatible) and lm_req_type in ("numeric", "percentage", "temporal"):
+                epistemic_score *= 0.32
+            if ver.coord_operand_ungrounded:
+                epistemic_score *= 0.28
+            if ver.neg_implicative_ungrounded:
+                epistemic_score *= 0.45
+            if ver.antonym_contradiction or (not ver.polarity_consistent):
+                epistemic_score *= 0.25
+            if ver.bitemporal_contested:
+                epistemic_score *= 0.15
+            if ver.missing_numbers and ver.number_grounding_cov < 0.5:
+                epistemic_score *= 0.30
             if ver.missing_entities and ver.entity_passage_cov < 0.5:
                 epistemic_score *= 0.28
             if ver.rare_token_grounded_frac < 0.40:
@@ -793,6 +822,11 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
             self.config.enable_evidence_grounding_verifier
             and (
                 (not ver.span_grounded)
+                or ver.bitemporal_contested
+                or (lm_req_type in ("numeric", "percentage") and (not is_computed) and (not ver.answer_type_compatible))
+                or ver.antonym_contradiction
+                or (not ver.polarity_consistent)
+                or (bool(ver.missing_numbers) and ver.number_grounding_cov < 0.5)
                 or (bool(ver.missing_entities) and ver.entity_passage_cov < 0.5)
             )
         )
@@ -864,15 +898,21 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
                 false_abs = 1.0 - (ans_kept / n_ans)
                 unans_rec = unans_abs / n_unans
                 ans_f1_sum = 0.0
+                ev_hit_sum = 0.0
                 for ex, info in scored:
-                    if (not ex.is_unanswerable) and (not bool(info.get("hard_reject", False))) and info["raw_score"] >= thr and ex.target_answer:
-                        ans_f1_sum += _approx_token_f1(str(info["answer"]), ex.target_answer)
+                    if (not ex.is_unanswerable) and (not bool(info.get("hard_reject", False))) and info["raw_score"] >= thr:
+                        if ex.target_answer:
+                            ans_f1_sum += _approx_token_f1(str(info["answer"]), ex.target_answer)
+                        if ex.supporting_evidence_ids and (set(info.get("cited_ids", ())) & set(ex.supporting_evidence_ids)):
+                            ev_hit_sum += 1.0
                 mean_ans_f1 = ans_f1_sum / n_ans
-                fa_cap = 0.14 if kind == "long_memory_qa" else 0.22
+                mean_ev_hit = ev_hit_sum / n_ans
+                fa_cap = 0.16 if kind == "long_memory_qa" else 0.20
                 penalty = 4.0 * (false_abs - fa_cap) if false_abs > fa_cap else 0.0
                 # Class-balanced recall weight when unanswerables are sparse (e.g. LongMemEval _abs)
-                u_w = 0.72 if (n_unans / max(1, n_ans)) < 0.20 else 0.55
-                obj = u_w * unans_rec + 0.55 * mean_ans_f1 + 0.18 * (ans_kept / n_ans) - penalty
+                u_w = 0.78 if (n_unans / max(1, n_ans)) < 0.20 else 0.50
+                a_w = 0.55 if (n_unans / max(1, n_ans)) < 0.20 else 0.50
+                obj = u_w * unans_rec + a_w * mean_ans_f1 + 0.12 * mean_ev_hit - penalty
                 scored_grid.append((obj, thr))
             best_obj = max(o for o, _ in scored_grid)
             near_best = [t for o, t in scored_grid if o >= best_obj - 0.015]
@@ -1003,12 +1043,17 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         }
 
     def memory_footprint(self) -> SolverMemoryFootprint:
+        """Honestly serialize ALL persistent tables retained after freeze and read by ``predict()``."""
         payload = {
             "solver_id": self.solver_id,
             "ablation": self.config.ablation_id(),
             "ledger": self._ledger.summary_bytes().decode("utf-8"),
             "capabilities": self._cap_store.serialized_bytes().decode("utf-8"),
             "causal": self._causal_miner.serialized_summary().decode("utf-8"),
+            "idf_by_bench": {
+                b: sorted(tbl.items()) for b, tbl in sorted(self._idf_by_bench.items())
+            },
+            "induced_pivots": sorted(self._pivots.pivots),
             "thresholds": self._abstain_threshold,
             "platt_answered": self._platt_answered,
             "platt_abstained": self._platt_abstained,
@@ -1017,6 +1062,8 @@ class RawObservationOpenWorldLearner(OpenWorldSolver):
         entries = (
             len(self._cap_store.verified_cards)
             + len(self._causal_miner.hypotheses)
+            + len(self._causal_miner._npmi_neighbors)
+            + sum(len(v) for v in self._idf_by_bench.values())
             + len(self._ledger)
         )
         return SolverMemoryFootprint(

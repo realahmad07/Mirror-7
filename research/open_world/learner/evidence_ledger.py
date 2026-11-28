@@ -87,10 +87,26 @@ def parse_timestamp_date(ts: str) -> date | None:
     return None
 
 
+_TIME_HM_RE = re.compile(r"\b(\d{1,2}):(\d{2})\b")
+
+
 def timestamp_to_ordinal(ts: str) -> int:
     """Return Python calendar day ordinal for ``ts``, or 0 when no calendar date is present."""
     dt = parse_timestamp_date(ts)
     return dt.toordinal() if dt is not None else 0
+
+
+def parse_timestamp_sort_key(ts: str) -> tuple[int, int]:
+    """Return deterministic ``(date_ordinal, minute_of_day)`` key for ``ts``."""
+    ord_day = timestamp_to_ordinal(ts)
+    if ord_day <= 0:
+        return (0, 0)
+    m = _TIME_HM_RE.search(ts or "")
+    if m:
+        hh, mm = int(m.group(1)), int(m.group(2))
+        if 0 <= hh <= 23 and 0 <= mm <= 59:
+            return (ord_day, hh * 60 + mm)
+    return (ord_day, 0)
 
 
 @dataclass(frozen=True)
@@ -110,6 +126,7 @@ class RawEvidenceUnit:
     turn_index: int = -1
     sent_index: int = 0
     citation_id: str = ""
+    observed_minute: int = 0
 
     def to_metadata_dict(self) -> dict[str, Any]:
         return {
@@ -167,7 +184,7 @@ def extract_evidence_units(
     if observation.task_kind == "long_memory_qa" and observation.sessions:
         for sess in observation.sessions:
             ts = "" if flatten_timestamps else sess.session_date
-            ts_ord = 0 if flatten_timestamps else timestamp_to_ordinal(ts)
+            ts_ord, ts_min = (0, 0) if flatten_timestamps else parse_timestamp_sort_key(ts)
             for turn in sess.turns:
                 content = turn.content
                 if not content or not content.strip():
@@ -190,6 +207,7 @@ def extract_evidence_units(
                             turn_index=turn.turn_index,
                             sent_index=0,
                             citation_id=sess.session_id,
+                            observed_minute=ts_min,
                         )
                     )
                     continue
@@ -216,6 +234,7 @@ def extract_evidence_units(
                             turn_index=turn.turn_index,
                             sent_index=s_idx,
                             citation_id=sess.session_id,
+                            observed_minute=ts_min,
                         )
                     )
         return tuple(units)
@@ -223,7 +242,7 @@ def extract_evidence_units(
     if observation.evidence_units:
         base_text = observation.prompt_text or ""
         ts = "" if flatten_timestamps else observation.question_date
-        ts_ord = 0 if flatten_timestamps else timestamp_to_ordinal(ts)
+        ts_ord, ts_min = (0, 0) if flatten_timestamps else parse_timestamp_sort_key(ts)
         for idx, ev in enumerate(observation.evidence_units):
             stext = ev.text.strip()
             if not stext:
@@ -253,6 +272,7 @@ def extract_evidence_units(
                     turn_index=-1,
                     sent_index=idx,
                     citation_id=ev.evidence_id,
+                    observed_minute=ts_min,
                 )
             )
         return tuple(units)
@@ -346,7 +366,7 @@ class RawEvidenceLedger:
     def freeze(self) -> None:
         self._frozen = True
 
-    def append_unit(self, unit: RawEvidenceUnit) -> str | None:
+    def append_unit(self, unit: RawEvidenceUnit, *, commit: bool = True) -> str | None:
         """Append one immutable ``RawEvidenceUnit`` provenance record; returns record SHA-256."""
         if self._frozen:
             self._post_freeze_writes += 1
@@ -394,6 +414,8 @@ class RawEvidenceLedger:
         self._seen_ids.add(unit.evidence_id)
         self._chain_head = rec_sha
         self._count += 1
+        if commit:
+            self._conn.commit()
         return rec_sha
 
     def append_batch(self, units: Sequence[RawEvidenceUnit]) -> int:
@@ -402,7 +424,7 @@ class RawEvidenceLedger:
             raise SolverFrozenError("RawEvidenceLedger is frozen; post-freeze writes are forbidden")
         added = 0
         for u in units:
-            if self.append_unit(u) is not None:
+            if self.append_unit(u, commit=False) is not None:
                 added += 1
         if added > 0:
             self._conn.commit()

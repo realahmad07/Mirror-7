@@ -12,15 +12,18 @@ import math
 import re
 from typing import Any, Mapping, Sequence
 
-from research.open_world.contracts import STOPWORDS, content_tokens, tokenize
+from research.open_world.contracts import STOPWORDS
 from research.open_world.learner.evidence_ledger import RawEvidenceUnit, parse_timestamp_date
 from research.open_world.learner.extraction import (
     _DATE_SPAN_RE,
+    _MD_LIST_NUM_RE,
     _PERCENT_FRAC_RE,
     _QUANTITY_SPAN_RE,
     detect_polarity_and_modality,
     morph_stem,
     token_grounded_in_set,
+    unicode_content_tokens,
+    unicode_tokenize,
 )
 from research.open_world.learner.temporal_graph import BiTemporalGraph, resolve_event_date
 
@@ -72,10 +75,35 @@ for _a, _b in _RAW_CONTRAST_PAIRS:
 _PROPER_Q_RE = re.compile(
     r"(?<!\w)(?:(?:Dr|Mr|Mrs|Ms|Prof|St|Mt)\.\s+)?[A-ZÀ-ÖØ-Þ][^\W_]*(?:['’+-][^\W_]+)*(?:\s+[A-ZÀ-ÖØ-Þ][^\W_]*(?:['’+-][^\W_]+)*){0,4}(?!\w)"
 )
-_QUOTED_Q_RE = re.compile(r"(?:\"([^\"\n]{2,80})\"|'([^'\n]{2,80})'|“([^”\n]{2,80})”)")
+_QUOTED_Q_RE = re.compile(r"(?:\"([^\"\n]{2,80})\"|(?<!\w)'([^'\n]{2,80})'(?!\w)|“([^”\n]{2,80})”)")
 _YEAR_OR_NUM_RE = re.compile(r"\b\d+(?:[.,]\d+)?\b")
+# Universal currency, SI, time, and percentage units ONLY (zero dataset-specific nouns!)
 _QTY_EXTRACT_RE = re.compile(
-    r"(?:([$€£])\s*(\d+(?:[.,]\d+)?)|(\d+(?:[.,]\d+)?)\s*(%|percent|dollars?|euros?|pounds?|days?|weeks?|months?|years?|hours?|hrs?|minutes?|mins?|miles?|km|kilometers?|kilometres?|pages?|books?|times?|items?|people|subjects|tickets?|postcards?|mugs?|cups?|sessions?)?)",
+    r"(?:([$€£])\s*(\d+(?:[.,]\d+)?)|(\d+(?:[.,]\d+)?)\s*(%|percent|dollars?|euros?|pounds?|days?|weeks?|months?|years?|hours?|hrs?|minutes?|mins?|seconds?|miles?|km|kilometers?|kilometres?|meters?|metres?|kg|lbs?|times?)?)",
+    re.I,
+)
+_NEG_IMPLICATIVE_WORDS: frozenset[str] = frozenset(
+    {
+        "never", "without", "avoid", "avoided", "avoiding", "prevent", "prevented",
+        "fail", "failed", "failing", "refuse", "refused", "unable", "impossible",
+        "deny", "denied", "lack", "lacking", "lacked", "except", "excluding",
+        "stop", "stopped", "cease", "ceased", "abandon", "abandoned",
+        "forbid", "forbidden", "prohibit", "prohibited",
+    }
+)
+_EXTENDED_NUM_ANS_RE = re.compile(
+    r"(?:\b\d+(?:[.,]\d+)?\b|\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+    r"thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|"
+    r"seventy|eighty|ninety|hundred|thousand|million|billion|once|twice|thrice|double|triple|half|quarter|"
+    r"couple|few|several|dozen|a\s+(?:day|week|month|year|hour|minute)|an\s+hour)\b)",
+    re.I,
+)
+_COORD_PAIR_RE = re.compile(
+    r"\b([A-Za-z0-9'\-]+(?:\s+[A-Za-z0-9'\-]+){0,5})\s+(and|or)\s+(?:the\s+|my\s+|a\s+|an\s+)?([A-Za-z0-9'\-]+(?:\s+[A-Za-z0-9'\-]+){0,5})(?:\?|,|\.|;|$|\s+(?:in|on|at|for|to|from|of|during|before|after|since|when|while)\b)",
+    re.I,
+)
+_CLAUSE_SPLIT_VER_RE = re.compile(
+    r"[;:]|,\s+(?:which|who|where|when|while|although|though|but|and|or|because|since|whereas)\b",
     re.I,
 )
 _QUESTION_META_WORDS: frozenset[str] = frozenset(
@@ -112,7 +140,13 @@ def detect_required_answer_type(question: str) -> str:
     ql = question.strip().casefold()
     if re.search(r"\b(?:what\s+percentage|what\s+percent|what\s+proportion|what\s+fraction)\b", ql):
         return "percentage"
-    if re.search(r"\b(?:how\s+many|how\s+much|what\s+number|how\s+old|how\s+far|how\s+tall|how\s+long|how\s+fast|what\s+distance|what\s+price|what\s+cost)\b", ql):
+    if re.search(
+        r"\b(?:how\s+many|how\s+much|what\s+number|how\s+old|how\s+far|how\s+tall|how\s+long|how\s+fast|"
+        r"what\s+distance|what\s+price|what\s+cost|"
+        r"what\s+(?:is|was|are|were)\s+(?:the\s+)?(?:total\s+|combined\s+|average\s+|overall\s+|exact\s+)?"
+        r"(?:cost|price|amount|sum|number|count|duration|length|distance|height|weight|age|score|rate|budget))\b",
+        ql,
+    ):
         return "numeric"
     if re.search(
         r"(?:(?:^|[.?!;,]\s*)when\s+(?:did|do|does|was|were|is|are|will|would|had|has|have)\b"
@@ -143,12 +177,16 @@ def unit_satisfies_answer_type(text: str, question: str, req_type: str) -> bool:
                 return True
         return False
     if req_type == "numeric":
-        for m in _QUANTITY_SPAN_RE.finditer(text):
-            val = m.group(0).strip()
-            if re.fullmatch(r"(?:1[0-9]{3}|20[0-9]{2})", val):
-                continue
-            if val not in q_nums and val.casefold() not in question.casefold():
-                return True
+        md_starts = {m.start() for m in _MD_LIST_NUM_RE.finditer(text)}
+        for pat in (_QUANTITY_SPAN_RE, _EXTENDED_NUM_ANS_RE):
+            for m in pat.finditer(text):
+                if m.start() in md_starts or (m.start() <= 2 and _MD_LIST_NUM_RE.match(text)):
+                    continue
+                val = m.group(0).strip()
+                if re.fullmatch(r"(?:1[0-9]{3}|20[0-9]{2})", val):
+                    continue
+                if val not in q_nums and val.casefold() not in question.casefold():
+                    return True
         return False
     return True
 
@@ -156,13 +194,25 @@ def unit_satisfies_answer_type(text: str, question: str, req_type: str) -> bool:
 def answer_satisfies_type(answer: str, req_type: str) -> bool:
     if req_type == "general":
         return True
+    if _MD_LIST_NUM_RE.match(answer.strip()):
+        return False
     if req_type == "temporal":
         return bool(_DATE_SPAN_RE.search(answer) or re.search(r"\b(?:century|decade|year|month|day|week|ago|before|after|since|until|into)\b", answer, re.I))
     if req_type == "percentage":
         return bool(_PERCENT_FRAC_RE.search(answer))
     if req_type == "numeric":
-        return bool(_QUANTITY_SPAN_RE.search(answer))
+        return bool(_QUANTITY_SPAN_RE.search(answer) or _EXTENDED_NUM_ANS_RE.search(answer))
     return True
+
+
+def _extract_coordinated_operand_pairs(question: str) -> list[tuple[list[str], list[str]]]:
+    pairs: list[tuple[list[str], list[str]]] = []
+    for m in _COORD_PAIR_RE.finditer(question):
+        left = [t for t in unicode_content_tokens(m.group(1)) if t not in _QUESTION_META_WORDS]
+        right = [t for t in unicode_content_tokens(m.group(3)) if t not in _QUESTION_META_WORDS]
+        if left and right:
+            pairs.append((left, right))
+    return pairs
 
 
 @dataclass(frozen=True)
@@ -187,6 +237,9 @@ class VerificationResult:
     missing_entities: tuple[str, ...]
     missing_numbers: tuple[str, ...]
     rejection_reasons: tuple[str, ...]
+    coord_operand_ungrounded: bool = False
+    neg_implicative_ungrounded: bool = False
+    clause_grounding_cov: float = 1.0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -205,6 +258,9 @@ class VerificationResult:
             "antonym_contradiction": self.antonym_contradiction,
             "bitemporal_superseded": self.bitemporal_superseded,
             "bitemporal_contested": self.bitemporal_contested,
+            "coord_operand_ungrounded": self.coord_operand_ungrounded,
+            "neg_implicative_ungrounded": self.neg_implicative_ungrounded,
+            "clause_grounding_cov": round(self.clause_grounding_cov, 4),
             "missing_entities": list(self.missing_entities),
             "missing_numbers": list(self.missing_numbers),
             "rejection_reasons": list(self.rejection_reasons),
@@ -245,7 +301,7 @@ def _entity_in_text(entity: str, text_low: str, text_stems: set[str], text_raw: 
     el = entity.casefold()
     if el in text_low:
         return True
-    e_toks = [t for t in content_tokens(entity) if len(t) >= 2]
+    e_toks = [t for t in unicode_content_tokens(entity) if len(t) >= 2]
     if not e_toks:
         return True
     hits = sum(1 for t in e_toks if token_grounded_in_set(t, text_stems, text_raw))
@@ -260,7 +316,7 @@ def compute_local_idf(units: Sequence[RawEvidenceUnit]) -> dict[str, float]:
         return {}
     df: Counter[str] = Counter()
     for u in units:
-        for st in {morph_stem(t) for t in content_tokens(u.text)}:
+        for st in {morph_stem(t) for t in unicode_content_tokens(u.text)}:
             df[st] += 1
     return {st: math.log(1.0 + (n + 0.5) / (c + 0.5)) for st, c in df.items()}
 
@@ -288,17 +344,17 @@ def verify_evidence_grounding(
 
     cited_text = " ".join(u.text for u in cited_units)
     cited_low = cited_text.casefold()
-    cited_raw = set(tokenize(cited_text))
+    cited_raw = set(unicode_tokenize(cited_text))
     cited_stems = {morph_stem(t) for t in cited_raw}
 
     if len(all_units) <= 40:
         all_text = " ".join(u.text for u in all_units) if all_units else cited_text
         all_low = all_text.casefold()
-        all_raw = set(tokenize(all_text))
+        all_raw = set(unicode_tokenize(all_text))
     else:
         all_raw = set(cited_raw)
         for u in all_units:
-            all_raw.update(tokenize(u.text))
+            all_raw.update(unicode_tokenize(u.text))
         all_low = cited_low
     all_stems = {morph_stem(t) for t in all_raw}
 
@@ -312,7 +368,7 @@ def verify_evidence_grounding(
         elif ans_norm in cited_low:
             span_grounded = True
         else:
-            a_toks = set(content_tokens(proposed_answer))
+            a_toks = set(unicode_content_tokens(proposed_answer))
             span_grounded = bool(a_toks) and (len(a_toks & cited_raw) / len(a_toks) >= 0.75)
 
     # 2. Strict grammatical answer-type presence check
@@ -337,7 +393,7 @@ def verify_evidence_grounding(
             elif len(all_units) <= 40:
                 ok_p = _entity_in_text(ent, all_low, all_stems, all_raw)
             else:
-                e_toks = [t for t in content_tokens(ent) if len(t) >= 2]
+                e_toks = [t for t in unicode_content_tokens(ent) if len(t) >= 2]
                 ok_p = all(token_grounded_in_set(t, all_stems, all_raw, allow_fuzzy=False) for t in e_toks) if e_toks else True
             if ok_s:
                 in_sent += 1
@@ -373,11 +429,23 @@ def verify_evidence_grounding(
     ev_pol, _ = detect_polarity_and_modality(cited_text)
     polarity_consistent = not (q_pol == "NEGATED" and ev_pol == "AFFIRMED")
 
-    # 6. Domain-agnostic scalar/antonym contradiction detection
-    q_raw_toks = set(tokenize(question))
+    # 6. Domain-agnostic negative-implicative, scalar/antonym, and coordinated-operand verification
+    q_raw_toks = set(unicode_tokenize(question))
+    neg_implicative_ungrounded = False
+    if "no longer" in question.casefold() and "no longer" not in cited_low:
+        neg_implicative_ungrounded = True
+    else:
+        for qt in q_raw_toks:
+            if qt in _NEG_IMPLICATIVE_WORDS and not token_grounded_in_set(qt, cited_stems, cited_raw, allow_fuzzy=True):
+                neg_implicative_ungrounded = True
+                break
+
+    _temporal_order_q = bool(re.search(r"\b(?:first|last|earlier|later|before|after)\b.*\bor\b", question, re.I))
     antonym_contradiction = False
     for qt in q_raw_toks:
         if qt in STOPWORDS or qt in _QUESTION_META_WORDS:
+            continue
+        if _temporal_order_q and qt in {"first", "last", "earlier", "later", "before", "after"}:
             continue
         qst = morph_stem(qt)
         opposites = CONTRAST_MAP.get(qt) or CONTRAST_MAP.get(qst)
@@ -388,9 +456,17 @@ def verify_evidence_grounding(
                 antonym_contradiction = True
                 break
 
+    coord_operand_ungrounded = False
+    for left_toks, right_toks in _extract_coordinated_operand_pairs(question):
+        l_ok = all(token_grounded_in_set(t, all_stems, all_raw, allow_fuzzy=True) for t in left_toks[-2:])
+        r_ok = all(token_grounded_in_set(t, all_stems, all_raw, allow_fuzzy=True) for t in right_toks[-2:])
+        if (l_ok and not r_ok) or (r_ok and not l_ok):
+            coord_operand_ungrounded = True
+            break
+
     # 7. Local-IDF + Corpus-IDF weighted focal content grounding
     local_idf = compute_local_idf(all_units) if len(all_units) <= 40 else {}
-    q_content = [t for t in content_tokens(question) if t not in _QUESTION_META_WORDS]
+    q_content = [t for t in unicode_content_tokens(question) if t not in _QUESTION_META_WORDS]
     if q_content:
         total_w = 0.0
         sent_w = 0.0
@@ -400,9 +476,10 @@ def verify_evidence_grounding(
         rare_hit = 0
         uniq_q = list(dict.fromkeys(q_content))
         weights: list[tuple[str, float]] = []
+        oov_idf = float(idf_lookup.get("__oov_idf__", 4.8)) if idf_lookup else 3.0
         for tok in uniq_q:
             st = morph_stem(tok)
-            c_idf = float(idf_lookup.get(tok, idf_lookup.get(st, 2.5)))
+            c_idf = float(idf_lookup.get(tok, idf_lookup.get(st, oov_idf)))
             l_idf = float(local_idf.get(st, math.log(1.0 + max(2, len(all_units))))) if local_idf else c_idf
             w = 0.55 * l_idf + 0.45 * c_idf
             weights.append((tok, w))
@@ -427,11 +504,20 @@ def verify_evidence_grounding(
         content_pass_cov = pass_w / max(1e-6, total_w)
         focal_missing_frac = min(1.0, focal_missing_w / max(1e-6, total_w))
         rare_frac = (rare_hit / rare_total) if rare_total > 0 else content_pass_cov
+        clauses = [cl.strip() for cl in _CLAUSE_SPLIT_VER_RE.split(cited_text) if cl.strip()] or [cited_text]
+        best_cl_cov = 0.0
+        for cl in clauses:
+            cl_raw = set(unicode_tokenize(cl))
+            cl_stems = {morph_stem(t) for t in cl_raw}
+            cl_hits = sum(1 for tok in uniq_q if token_grounded_in_set(tok, cl_stems, cl_raw, allow_fuzzy=True))
+            best_cl_cov = max(best_cl_cov, cl_hits / len(uniq_q))
+        clause_cov = best_cl_cov
     else:
         content_sent_cov = 0.5
         content_pass_cov = 0.5
         focal_missing_frac = 0.5
         rare_frac = 0.5
+        clause_cov = 0.5
 
     # 8. Bi-temporal contradiction & supersession audit
     bitemp_superseded = False
@@ -440,9 +526,9 @@ def verify_evidence_grounding(
         cited_ev_ids = {u.evidence_id for u in cited_units}
         for rid, rel in bitemporal_graph.relations.items():
             if rel.evidence_id in cited_ev_ids:
-                if temporal_mode != "earliest" and bitemporal_graph.has_later_supersession(rid):
+                if temporal_mode != "earliest" and not bitemporal_graph.is_jtms_active(rid):
                     bitemp_superseded = True
-                if bitemporal_graph.is_contested(rid):
+                if bitemporal_graph.is_contested(rid) and bitemporal_graph.is_jtms_active(rid):
                     bitemp_contested = True
 
     # Structural SQuAD/open-world contradiction signals (zero domain schemas):
@@ -451,7 +537,7 @@ def verify_evidence_grounding(
     # (b) Main final non-entity predicate/verb grounding in cited sentence
     proper_tok_set: set[str] = set()
     for _e in q_entities:
-        proper_tok_set.update(tokenize(_e))
+        proper_tok_set.update(unicode_tokenize(_e))
     non_ent_q = [t for t in q_content if t not in proper_tok_set and not t.isdigit()]
     last_pred_ok = (
         True
@@ -470,10 +556,11 @@ def verify_evidence_grounding(
 
     reasons: list[str] = []
     score = (
-        0.42 * content_sent_cov
-        + 0.22 * ent_sent_cov
+        0.34 * content_sent_cov
+        + 0.12 * clause_cov
+        + 0.20 * ent_sent_cov
         + 0.12 * num_cov
-        + 0.12 * rare_frac
+        + 0.10 * rare_frac
         + (0.12 if last_pred_ok else 0.0)
         - 0.26 * focal_missing_frac
         - 0.30 * ent_split_gap
@@ -485,6 +572,12 @@ def verify_evidence_grounding(
     if ungrounded_super:
         score -= 0.16
         reasons.append("ungrounded_scalar_superlative_modifier")
+    if neg_implicative_ungrounded:
+        score -= 0.22
+        reasons.append("ungrounded_negative_implicative_constraint")
+    if coord_operand_ungrounded:
+        score -= 0.34
+        reasons.append("ungrounded_coordinated_operand")
     if not span_grounded:
         score -= 0.40
         reasons.append("span_not_grounded_in_raw_utf8_bytes")
@@ -507,7 +600,7 @@ def verify_evidence_grounding(
         score -= 0.10
         reasons.append("bitemporal_superseded_by_later_observation")
     if bitemp_contested:
-        score -= 0.22
+        score -= 0.45
         reasons.append("unresolved_contested_observation")
 
     score = max(0.0, min(1.0, score))
@@ -516,6 +609,7 @@ def verify_evidence_grounding(
         or not type_ok
         or antonym_contradiction
         or (not polarity_consistent)
+        or bitemp_contested
         or (bool(missing_nums) and num_cov < 0.5)
         or (bool(missing_ents) and ent_pass_cov < 0.5)
     )
@@ -531,6 +625,9 @@ def verify_evidence_grounding(
         bitemporal_superseded=bitemp_superseded, bitemporal_contested=bitemp_contested,
         missing_entities=tuple(missing_ents), missing_numbers=tuple(missing_nums),
         rejection_reasons=tuple(reasons),
+        coord_operand_ungrounded=coord_operand_ungrounded,
+        neg_implicative_ungrounded=neg_implicative_ungrounded,
+        clause_grounding_cov=clause_cov,
     )
 
 
@@ -539,10 +636,10 @@ def _score_unit_against_clause(
     unit: RawEvidenceUnit,
     idf_lookup: Mapping[str, float],
 ) -> float:
-    ctoks = [t for t in content_tokens(clause_text) if t not in _QUESTION_META_WORDS]
+    ctoks = [t for t in unicode_content_tokens(clause_text) if t not in _QUESTION_META_WORDS]
     if not ctoks:
         return 0.0
-    u_raw = set(tokenize(unit.text))
+    u_raw = set(unicode_tokenize(unit.text))
     u_stems = {morph_stem(t) for t in u_raw}
     num = 0.0
     den = 0.0
@@ -568,23 +665,19 @@ def execute_temporal_or_numeric_verifier(
     ql = question.strip().casefold()
 
     m_dur = re.search(
-        r"\bhow\s+many\s+(days?|weeks?|months?|years?)\s+(?:have|has|had|were|did)?\s*(?:passed|elapsed|been|between|ago|separated)",
+        r"\bhow\s+many\s+(days?|weeks?|months?|years?)\s+(?:have|has|had|were|did)?\s*(?:passed|elapsed|been|between|ago|separated|it\s+take)",
         ql,
     )
     if not m_dur:
-        m_dur = re.search(r"\bhow\s+long\s+(?:ago|has\s+it\s+been|had\s+passed|between)\b", ql)
+        m_dur = re.search(r"\bhow\s+long\s+(?:ago|has\s+it\s+been|had\s+passed|between|did\s+it\s+take)\b", ql)
     if m_dur and enable_bitemporal:
         req_unit = m_dur.group(1).casefold() if m_dur.lastindex else "days"
         q_dt = parse_timestamp_date(question_date)
 
-        split_m = re.search(
-            r"between\s+(.{6,}?)\s+and\s+(.{6,})",
-            question,
-            re.I,
-        ) or re.search(
-            r"since\s+(.{8,}?)\s+(?:when|before|until|to\s+when)\s+(.{8,})",
-            question,
-            re.I,
+        split_m = (
+            re.search(r"between\s+(.{6,}?)\s+and\s+(.{6,})", question, re.I)
+            or re.search(r"since\s+(.{8,}?)\s+(?:when|before|until|to\s+when)\s+(.{8,})", question, re.I)
+            or re.search(r"for\s+(.{6,}?)\s+after\s+(.{6,})", question, re.I)
         )
         if split_m:
             part_a, part_b = split_m.group(1), split_m.group(2)
@@ -607,7 +700,7 @@ def execute_temporal_or_numeric_verifier(
                         "confidence_boost": 0.18,
                     }
 
-        if q_dt is not None:
+        if q_dt is not None and not re.search(r"\bdid\s+it\s+take\b", ql):
             dated_ranked = [(sc, u) for sc, u in ranked_units if u.observed_ordinal > 0]
             if dated_ranked:
                 top_sc = dated_ranked[0][0]
@@ -633,7 +726,7 @@ def execute_temporal_or_numeric_verifier(
         m_or = re.search(r"(.{4,60}?)\s+or\s+(.{4,60}?)\??$", question, re.I)
         if m_or:
             opt_a = re.sub(
-                r"^.*?\b(?:did i|happened|came|was|were|first|earlier|last|later|get|buy|visit|attend|read|finish|start|adopt)\b\s*",
+                r"^.*?\b(?:did i|happened|came|was|were|first|earlier|last|later)\b\s*",
                 "",
                 m_or.group(1),
                 flags=re.I,
@@ -673,6 +766,8 @@ def execute_temporal_or_numeric_verifier(
                     continue
                 seen_src.add(u.source_id)
                 strong_distinct.append(u)
+                if _MD_LIST_NUM_RE.match(u.text.strip()):
+                    continue
                 m_q = _QTY_EXTRACT_RE.search(u.text)
                 if not m_q:
                     continue
@@ -718,6 +813,36 @@ def execute_temporal_or_numeric_verifier(
                     "operation": f"distinct_session_count({len(strong_distinct)})",
                     "confidence_boost": 0.10,
                 }
+
+    if (
+        re.search(r"\bhow\s+many\s+(?!days?\b|weeks?\b|months?\b|years?\b|hours?\b|minutes?\b|pages?\b)", ql)
+        and re.search(r"\b(?:have\s+i|did\s+i)\b", ql)
+        and not wants_diff
+        and not wants_sum
+    ):
+        user_ranked = [(sc, u) for sc, u in ranked_units if u.speaker_role == "user"]
+        if user_ranked:
+            top_sc, top_u = user_ranked[0]
+            if top_sc >= 0.28 and not unit_satisfies_answer_type(top_u.text, question, "numeric"):
+                seen_src_c: set[str] = set()
+                matched_sessions: list[RawEvidenceUnit] = []
+                for sc, u in user_ranked:
+                    if sc < max(0.24, 0.72 * top_sc):
+                        continue
+                    if u.source_id in seen_src_c:
+                        continue
+                    seen_src_c.add(u.source_id)
+                    matched_sessions.append(u)
+                    if len(matched_sessions) >= 5:
+                        break
+                if len(matched_sessions) >= 2:
+                    return {
+                        "answer": str(len(matched_sessions)),
+                        "cited_units": tuple(matched_sessions[:4]),
+                        "cited_ids": tuple(dict.fromkeys(u.citation_id for u in matched_sessions[:4])),
+                        "operation": f"distinct_session_count({len(matched_sessions)})",
+                        "confidence_boost": 0.08,
+                    }
     return None
 
 
