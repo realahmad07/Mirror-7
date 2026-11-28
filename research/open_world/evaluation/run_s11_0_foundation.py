@@ -201,6 +201,7 @@ def audit_s11_isolation_and_constraints(package_root: Path = S11_PACKAGE_ROOT) -
         Path("evaluator/oracle.py"),
         Path("evaluator/metrics.py"),
         Path("evaluation/run_s11_0_foundation.py"),
+        Path("evaluation/run_s11_1_experiment.py"),
     }
 
     for fpath in sorted(package_root.rglob("*.py")):

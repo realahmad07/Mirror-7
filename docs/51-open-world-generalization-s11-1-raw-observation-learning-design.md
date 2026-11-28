@@ -1,6 +1,7 @@
 # 51 — Stage S11.1 Research Design Proposal: Raw-Observation Open-World Learning Experiment
 
 - **Status:** `DESIGN_PROPOSAL_ONLY` (not yet implemented; preregistered against Stage S11.0 baseline protocol `s11.0-open-world-eval-v1`)
+- **Implementation & Experimental Results:** Implemented in `research/open_world/learner/` (branch `research/open-world-s11-1-raw-observation-learning`); full 6-ablation hidden-split results and honest `1/4`-gate verdict (`S11_1_PARTIAL_PROGRESS__PREREGISTERED_GATES_NOT_ALL_PASSED`) documented in [`docs/52-open-world-generalization-s11-1-raw-observation-learning-results.md`](52-open-world-generalization-s11-1-raw-observation-learning-results.md).
 - **Branch:** `research/open-world-generalization-s11`
 - **Hard CPU-Native Constraints:** `0` GPU requirement · `0` pretrained LLM or external model weights · `0` external AI APIs · `0` backpropagation/neural training required · `0` manually supplied domain-specific action lists or event schemas · `0` mutations to production `.dcrystal` vaults
 

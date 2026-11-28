@@ -1,4 +1,4 @@
-name: Mirror 7 | Open-World Generalization (S11.0 Foundation)
+name: Mirror 7 | Open-World Generalization (S11.0 & S11.1)
 
 on:
   push:
@@ -9,12 +9,14 @@ on:
       - "research/open_world/**"
       - "docs/50-open-world-generalization-s11-0-evaluation-foundation.md"
       - "docs/51-open-world-generalization-s11-1-raw-observation-learning-design.md"
+      - "docs/52-open-world-generalization-s11-1-raw-observation-learning-results.md"
       - ".github/workflows/open-world-s11.yml"
   pull_request:
     paths:
       - "research/open_world/**"
       - "docs/50-open-world-generalization-s11-0-evaluation-foundation.md"
       - "docs/51-open-world-generalization-s11-1-raw-observation-learning-design.md"
+      - "docs/52-open-world-generalization-s11-1-raw-observation-learning-results.md"
       - ".github/workflows/open-world-s11.yml"
   workflow_dispatch: {}
 
@@ -68,4 +70,25 @@ jobs:
               )
               assert summary["s11_0_gate"]["passed"] is True, summary["s11_0_gate"]
               print("Offline smoke S11.0 gate PASSED:", summary["s11_0_gate"]["checks"])
+          PY
+
+      - name: Run offline smoke S11.1 raw-observation learner (full + 6 ablations + unseen probes)
+        run: |
+          python - <<'PY'
+          import tempfile
+          from pathlib import Path
+          from research.open_world.evaluation.run_s11_1_experiment import run_s11_1_experiment
+
+          with tempfile.TemporaryDirectory() as td:
+              root = Path(td)
+              summary = run_s11_1_experiment(
+                  reports_dir=root / "reports",
+                  offline_smoke=True,
+                  allow_download=False,
+              )
+              assert summary["isolation_audit"]["passed"] is True, summary["isolation_audit"]
+              assert summary["vault_integrity"]["untouched"] is True
+              assert summary["gate_evaluation"]["gates"]["S11_1_G4"]["passed"] is True, summary["gate_evaluation"]
+              assert summary["unseen_combination_probes"]["passed"] is True, summary["unseen_combination_probes"]
+              print("Offline smoke S11.1 G4 & unseen probes PASSED:", summary["unseen_combination_probes"]["checks"])
           PY
